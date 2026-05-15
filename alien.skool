@@ -1292,41 +1292,223 @@ b26569 DEFB 138,64,170,72,77,64,73,64
  26609 DEFB 230,78,166,64,43,64,133,72
  26617 DEFB 11,80,49,72,197,64,9,72
  26625 DEFB 69,72,237,72,143,64,175,72
- 26633 DEFB 38,72,134,64,3,255,192,2
- 26641 DEFB 0,64,2,0,64,2,0,64
- 26649 DEFB 2,60,64,2,36,64,2,36
- 26657 DEFB 64,2,60,64,2,0,64,2
- 26665 DEFB 0,64,2,0,64,3,255,192
- 26673 DEFB 0,0,0,1,255,128,1,0
- 26681 DEFB 128,1,126,128,1,66,128,1
- 26689 DEFB 66,128,1,66,128,1,66,128
- 26697 DEFB 1,126,128,1,0,128,1,255
- 26705 DEFB 128,0,0,0,0,0,0,0
- 26713 DEFB 0,0,0,255,0,0,129,0
- 26721 DEFB 0,189,0,0,165,0,0,165
- 26729 DEFB 0,0,189,0,0,129,0,0
- 26737 DEFB 255,0,0,0,0,0,0,0
- 26745 DEFB 0,0,0,0,0,0,0,0
- 26753 DEFB 0,0,126,0,0,66,0,0
- 26761 DEFB 90,0,0,90,0,0,66,0
- 26769 DEFB 0,126,0,0,0,0,0,0
- 26777 DEFB 0,0,0,0,0,0,0,0
- 26785 DEFB 8,0,0,28,0,0,8,0
- 26793 DEFB 0,62,0,0,93,0,0,62
- 26801 DEFB 0,0,28,0,0,20,0,0
- 26809 DEFB 20,0,0,20,0,0,54,0
- 26817 DEFB 0,8,0,0,20,0,0,34
- 26825 DEFB 0,0,54,0,0,65,0,0
- 26833 DEFB 162,128,0,65,0,0,34,0
- 26841 DEFB 0,42,0,0,42,0,0,107
- 26849 DEFB 0,0,73,0
+ 26633 DEFB 38,72,134,64
 
-; Data block at 26853
-b26853 DEFB 157,104,157,104,193,104,193,104
+; RoomCursor0
+;
+; Room indicator cursor, phase 0 (used by AnimateCrewB #R35016, phase 0).
+; XOR-blit sprite: 24px wide x 12px tall (3 bytes per row).
+; Largest box — wide outer border with a small inner rectangle. This
+; cursor blinks over the current room on the corridor map.
+;
+; Full 24px per row (left-byte | centre-byte | right-byte):
+;   ......## ######## ##......  (row  0, outer border)
+;   ......#. ........ .#......  (row  1)
+;   ......#. ........ .#......  (row  2)
+;   ......#. ........ .#......  (row  3)
+;   ......#. ..####.. .#......  (row  4, inner rectangle)
+;   ......#. ..#..#.. .#......  (row  5)
+;   ......#. ..#..#.. .#......  (row  6)
+;   ......#. ..####.. .#......  (row  7)
+;   ......#. ........ .#......  (row  8)
+;   ......#. ........ .#......  (row  9)
+;   ......#. ........ .#......  (row 10)
+;   ......## ######## ##......  (row 11, outer border)
+@label=RoomCursor0
+b26637 DEFB 3,255,192           ; row  0: top border
+ 26640 DEFB 2,0,64              ; row  1
+ 26643 DEFB 2,0,64              ; row  2
+ 26646 DEFB 2,0,64              ; row  3
+ 26649 DEFB 2,60,64             ; row  4: inner box top
+ 26652 DEFB 2,36,64             ; row  5: inner box sides
+ 26655 DEFB 2,36,64             ; row  6: inner box sides
+ 26658 DEFB 2,60,64             ; row  7: inner box bottom
+ 26661 DEFB 2,0,64              ; row  8
+ 26664 DEFB 2,0,64              ; row  9
+ 26667 DEFB 2,0,64              ; row 10
+ 26670 DEFB 3,255,192           ; row 11: bottom border
 
-; Data block at 26861
-b26861 DEFB 13,104,49,104,85,104,121,104
- 26869 DEFB 0,0,0,0,0,0,0,0
+; RoomCursor1
+;
+; Room indicator cursor, phase 1 (AnimateCrewB phase 1). Narrower 1-pixel
+; border with an oval interior — cursor drawn at reduced size.
+;
+;   ........ ........ ........  (row  0, blank)
+;   .......# ######## #.......  (row  1, narrow top border)
+;   .......# ........ #.......  (row  2)
+;   .......# .######. #.......  (row  3, oval)
+;   .......# .#....#. #.......  (row  4)
+;   .......# .#....#. #.......  (row  5)
+;   .......# .#....#. #.......  (row  6)
+;   .......# .######. #.......  (row  7)
+;   .......# ........ #.......  (row  8)
+;   .......# ######## #.......  (row  9, narrow bottom border)
+;   ........ ........ ........  (rows 10-11, blank)
+@label=RoomCursor1
+b26673 DEFB 0,0,0               ; row  0: blank
+ 26676 DEFB 1,255,128           ; row  1: top border
+ 26679 DEFB 1,0,128             ; row  2
+ 26682 DEFB 1,126,128           ; row  3: oval top
+ 26685 DEFB 1,66,128            ; row  4: oval sides
+ 26688 DEFB 1,66,128            ; row  5
+ 26691 DEFB 1,66,128            ; row  6
+ 26694 DEFB 1,126,128           ; row  7: oval bottom
+ 26697 DEFB 1,0,128             ; row  8
+ 26700 DEFB 1,255,128           ; row  9: bottom border
+ 26703 DEFB 0,0,0               ; row 10: blank
+ 26706 DEFB 0,0,0               ; row 11: blank
+
+; RoomCursor2
+;
+; Room indicator cursor, phase 2 (AnimateCrewB phase 2). Centre-only
+; pattern — horizontal bars with inner ring detail.
+;
+;   ........ ........ ........  (rows 0-1, blank)
+;   ........ ######## ........  (row  2, top bar)
+;   ........ #......# ........  (row  3, outer edge)
+;   ........ #.####.# ........  (row  4, inner ring)
+;   ........ #.#..#.# ........  (row  5, detail)
+;   ........ #.#..#.# ........  (row  6)
+;   ........ #.####.# ........  (row  7)
+;   ........ #......# ........  (row  8)
+;   ........ ######## ........  (row  9, bottom bar)
+;   ........ ........ ........  (rows 10-11, blank)
+@label=RoomCursor2
+b26709 DEFB 0,0,0               ; row  0: blank
+ 26712 DEFB 0,0,0               ; row  1: blank
+ 26715 DEFB 0,255,0             ; row  2: top bar
+ 26718 DEFB 0,129,0             ; row  3: outer edge
+ 26721 DEFB 0,189,0             ; row  4: inner ring
+ 26724 DEFB 0,165,0             ; row  5: eye sockets
+ 26727 DEFB 0,165,0             ; row  6
+ 26730 DEFB 0,189,0             ; row  7
+ 26733 DEFB 0,129,0             ; row  8
+ 26736 DEFB 0,255,0             ; row  9: bottom bar
+ 26739 DEFB 0,0,0               ; row 10: blank
+ 26742 DEFB 0,0,0               ; row 11: blank
+
+; RoomCursor3
+;
+; Room indicator cursor, phase 3 (AnimateCrewB phase 3). Smallest
+; oval shape — cursor at its most contracted phase.
+;
+;   ........ ........ ........  (rows 0-2, blank)
+;   ........ .######. ........  (row  3, oval)
+;   ........ .#....#. ........  (row  4)
+;   ........ .#.##.#. ........  (row  5, inner detail)
+;   ........ .#.##.#. ........  (row  6)
+;   ........ .#....#. ........  (row  7)
+;   ........ .######. ........  (row  8, oval)
+;   ........ ........ ........  (rows 9-11, blank)
+@label=RoomCursor3
+b26745 DEFB 0,0,0               ; row  0: blank
+ 26748 DEFB 0,0,0               ; row  1: blank
+ 26751 DEFB 0,0,0               ; row  2: blank
+ 26754 DEFB 0,126,0             ; row  3: head oval
+ 26757 DEFB 0,66,0              ; row  4
+ 26760 DEFB 0,90,0              ; row  5: inner detail
+ 26763 DEFB 0,90,0              ; row  6
+ 26766 DEFB 0,66,0              ; row  7
+ 26769 DEFB 0,126,0             ; row  8: head oval
+ 26772 DEFB 0,0,0               ; row  9: blank
+ 26775 DEFB 0,0,0               ; row 10: blank
+ 26778 DEFB 0,0,0               ; row 11: blank
+
+; CrewWalkA1
+;
+; Crew member walking sprite, phase 1 (AnimateCrewA #R34967, phases 0-1).
+; XOR-blit sprite: 24px wide x 12px tall (3 bytes per row).
+; Upright standing/walking pose — arms close to body, feet together.
+; Left and right bytes are zero (figure fits in the 8-pixel centre column).
+;
+; Centre 8px:
+;   ........  (row  0, blank)
+;   ....#...  (row  1, $08, head top)
+;   ...###..  (row  2, $1C, head)
+;   ....#...  (row  3, $08, chin)
+;   ..#####.  (row  4, $3E, shoulders)
+;   .#.###.#  (row  5, $5D, torso)
+;   ..#####.  (row  6, $3E, body)
+;   ...###..  (row  7, $1C, hips)
+;   ...#.#..  (row  8, $14, upper legs)
+;   ...#.#..  (row  9, $14, mid legs)
+;   ...#.#..  (row 10, $14, lower legs)
+;   ..##.##.  (row 11, $36, feet)
+@label=CrewWalkA1
+b26781 DEFB 0,0,0               ; row  0: blank
+ 26784 DEFB 0,8,0               ; row  1: head top
+ 26787 DEFB 0,28,0              ; row  2: head
+ 26790 DEFB 0,8,0               ; row  3: chin
+ 26793 DEFB 0,62,0              ; row  4: shoulders
+ 26796 DEFB 0,93,0              ; row  5: torso
+ 26799 DEFB 0,62,0              ; row  6: body
+ 26802 DEFB 0,28,0              ; row  7: hips
+ 26805 DEFB 0,20,0              ; row  8: upper legs
+ 26808 DEFB 0,20,0              ; row  9: mid legs
+ 26811 DEFB 0,20,0              ; row 10: lower legs
+ 26814 DEFB 0,54,0              ; row 11: feet
+
+; CrewWalkA2
+;
+; Crew member walking sprite, phase 2 (AnimateCrewA #R34967, phases 2-3).
+; Mid-stride pose — arms pumping outward, legs spread in step.
+; Row 5 has a stray pixel in the right byte (arm extension).
+;
+; Centre 8px (+ right byte for row 5):
+;   ....#...                    (row  0, $08, head)
+;   ...#.#..                    (row  1, $14, head wide)
+;   ..#...#.                    (row  2, $22, arms raising)
+;   ..##.##.                    (row  3, $36, upper arms)
+;   .#.....#                    (row  4, $41, arms spread)
+;   #.#...#. + #.......         (row  5, $A2+$80, torso+arm)
+;   .#.....#                    (row  6, $41)
+;   ..#...#.                    (row  7, $22, arms return)
+;   ..#.#.#.                    (row  8, $2A, legs mid-stride)
+;   ..#.#.#.                    (row  9, $2A)
+;   .##.#.##                    (row 10, $6B, feet contact)
+;   .#..#..#                    (row 11, $49, feet split)
+@label=CrewWalkA2
+b26817 DEFB 0,8,0               ; row  0: head
+ 26820 DEFB 0,20,0              ; row  1: head wide
+ 26823 DEFB 0,34,0              ; row  2: arms raising
+ 26826 DEFB 0,54,0              ; row  3: upper arms
+ 26829 DEFB 0,65,0              ; row  4: arms spread
+ 26832 DEFB 0,162,128           ; row  5: torso + arm extension
+ 26835 DEFB 0,65,0              ; row  6
+ 26838 DEFB 0,34,0              ; row  7: arms return
+ 26841 DEFB 0,42,0              ; row  8: legs mid-stride
+ 26844 DEFB 0,42,0              ; row  9
+ 26847 DEFB 0,107,0             ; row 10: feet contact
+ 26850 DEFB 0,73,0              ; row 11: feet split
+
+; AnimCrewAFrames
+;
+; 4 × 16-bit pointers to crew animation frame-A sprite bitmaps.
+; Indexed by frame phase (0-3); phases 0-1 share one bitmap, 2-3 share
+; another, producing a two-frame walk cycle at rate 10 (10 frames/step).
+; Used by AnimateCrewA (#R34967) to XOR-blit crew sprites onto the screen.
+;
+w26853 DEFW 26781,26781,26817,26817
+
+; AnimCrewBFrames
+;
+; 4 × 16-bit pointers to room indicator cursor bitmaps (faster channel,
+; rate 5). Used by AnimateCrewB (#R35016) to XOR-blit the animated room
+; cursor that highlights the current room on the corridor map.
+;
+w26861 DEFW 26637,26673,26709,26745
+
+; CharTileBitmaps
+;
+; Master 8×8 pixel tileset used by DrawSpriteRow (#R31369) for all corridor
+; and room graphics. 169 tiles × 8 bytes each (one byte per pixel row).
+; Tile N starts at $68F5 + N×8. Referenced by DrawSprite (#R31634) which
+; looks up 10 tile indices per sprite from the sprite table at $6E3D (#R28221).
+;
+; Sprite sheet — 16 tiles per row, 2× scale:
+;
+; #HTML(#UDGARRAY16,56,2(26869-28213-8)(char_tiles))
+b26869 DEFB 0,0,0,0,0,0,0,0
  26877 DEFB 0,0,255,0,0,255,0,0
  26885 DEFB 36,36,36,36,36,36,36,36
  26893 DEFB 2,4,8,17,34,68,136,16
@@ -3351,16 +3533,29 @@ c33740 RST 56        ;
 ; Data block at 33792
 b33792 DEFB 10,5
 
-; Data block at 33794
-b33794 DEFB 242,137,242,137,10,138,10,138
- 33802 DEFB 250,138,120,138,91,137,91,137
- 33810 DEFB 91,137,91,137,91,137,91,137
- 33818 DEFB 91,137,150,137,120,138,120,138
- 33826 DEFB 120,138,138,137,138,137,138,137
- 33834 DEFB 120,138,120,138,120,138,120,138
- 33842 DEFB 232,138,54,138,54,138,54,138
- 33850 DEFB 54,138,54,138,120,138,121,138
- 33858 DEFB 123,138,54,139
+; RoomDispatchTable
+;
+; 34 × 16-bit function pointers for the per-room game handler dispatch.
+; Indexed as table[room_mode × 2], accessed by the dispatcher at #R35314
+; via JP (HL). Room modes 0-33 each map to a handler routine. Pairs of
+; entries often share the same handler (modes 0-1, 4-5, etc.).
+;
+; Room mode → handler mapping:
+;  0-1: #R35314  2-3: #R35338  4: #R35578  5: #R35448
+;  6-12: #R35163 (RoomHandlerCommon)        13: #R35222
+;  14-16: #R35448  17-19: #R35210  20-23: #R35448
+;  24: #R35560  25-29: #R35382  30-31: #R35448  32: #R35449
+;  33: #R35451
+;
+w33794 DEFW 35314,35314,35338,35338
+ 33802 DEFW 35578,35448,35163,35163
+ 33810 DEFW 35163,35163,35163,35163
+ 33818 DEFW 35163,35222,35448,35448
+ 33826 DEFW 35448,35210,35210,35210
+ 33834 DEFW 35448,35448,35448,35448
+ 33842 DEFW 35560,35382,35382,35382
+ 33850 DEFW 35382,35382,35448,35449
+ 33858 DEFW 35451,35638
 
 ; Routine at 33862
 @label=GetCorridorTableEntry
@@ -4276,11 +4471,11 @@ c34967 LD A,(31263)  ; A = animation-freeze / frame-phase byte ($7A1F)
 
 ; AnimateCrewB
 ;
-; Animates crew sprite set B. Identical logic to #R34967 (AnimateCrewA) but
-; uses a faster frame rate (counter resets to 5 rather than 10), the B-set
-; animation table at $68ED, and the B-channel screen address at $83C8. This
-; drives the alien sprite or a second crew animation channel at twice the
-; speed of set A.
+; Animates the room indicator cursor (B channel). Identical logic to
+; #R34967 (AnimateCrewA) but uses a faster frame rate (counter resets to 5
+; rather than 10), the B-set animation table at $68ED (#R26861), and the
+; B-channel screen address at $83C8. Cycles through four cursor shapes
+; (RoomCursor0-3) at twice the speed of the crew walk animation.
 ;
 ; Used by the routines at #R36457, #R38379 and #R42821.
 @label=AnimateCrewB
@@ -8907,14 +9102,21 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
 
 ; DrawShipMap
 ;
-; Draws the ship overview map and handles room-selection. Sets border to green
-; (4), fills attributes with 32 (green ink), clears display, then renders the
-; Nostromo deck plan as a series of tile/character blocks at various screen
-; positions. After drawing, reads keys 1-4 on port $F7FE to scroll a cursor
-; among the three deck levels, key 4 dispatches through a jump table at
-; $A8EF indexed by the cursor to enter a specific room handler. This is the
-; strategic map screen from which the player directs crew to different
-; sections of the ship.
+; Draws the Nostromo ship overview map and handles game-mode selection.
+; Sets border green, fills attributes (32), clears display, then blits the
+; deck plan as tile blocks at fixed screen positions. After drawing, prints
+; the crew names via #R31690 (one name per corridor segment) and the
+; four-line menu ("1: Short Game", "2: Long Game", "3: Introduction",
+; "4: Select") from the text table at $A885 (#R43141).
+;
+; Key input loop reads port $F7FE:
+;   Key 1 — highlight "Short Game"   (selection 0)
+;   Key 2 — highlight "Long Game"    (selection 1)
+;   Key 3 — highlight "Introduction" (selection 2)
+;   Key 4 — confirm: dispatch through 3-word table at $A87F (#R43135)
+;            to the handler for the highlighted mode, then return
+;
+; "4: Select" is a confirm key, not a fourth game mode.
 ;
 ; Used by the routine at #R36457.
 @label=DrawShipMap
@@ -9061,72 +9263,40 @@ c42821 LD A,4        ; A = 4 (green border)
  43132 LD H,(HL)     ;
  43133 LD L,A        ;
  43134 JP (HL)       ;
- 43135 JP NZ,9390    ;
- 43138 AND L         ;
- 43139 JP PE,12712   ;
- 43142 LD A,(21280)  ;
- 43145 LD L,B        ;
- 43146 LD L,A        ;
- 43147 LD (HL),D     ;
- 43148 LD (HL),H     ;
- 43149 JR NZ,43222   ;
- 43151 LD H,C        ;
- 43152 LD L,L        ;
- 43153 LD H,L        ;
- 43154 RST 56        ;
- 43155 LD (8250),A   ;
- 43158 LD C,H        ;
- 43159 LD L,A        ;
- 43160 LD L,(HL)     ;
- 43161 LD H,A        ;
- 43162 JR NZ,43235   ;
- 43164 LD H,C        ;
- 43165 LD L,L        ;
- 43166 LD H,L        ;
- 43167 RST 56        ;
- 43168 INC SP        ;
- 43169 LD A,(18720)  ;
- 43172 LD L,(HL)     ;
- 43173 LD (HL),H     ;
- 43174 LD (HL),D     ;
- 43175 LD L,A        ;
- 43176 LD H,H        ;
- 43177 LD (HL),L     ;
- 43178 LD H,E        ;
- 43179 LD (HL),H     ;
- 43180 LD L,C        ;
- 43181 LD L,A        ;
- 43182 LD L,(HL)     ;
- 43183 RST 56        ;
- 43184 INC (HL)      ;
- 43185 LD A,(21280)  ;
- 43188 LD H,L        ;
- 43189 LD L,H        ;
- 43190 LD H,L        ;
- 43191 LD H,E        ;
- 43192 LD (HL),H     ;
- 43193 RST 56        ;
- 43194 LD D,B        ;
- 43195 LD (HL),D     ;
- 43196 LD H,L        ;
- 43197 LD (HL),E     ;
- 43198 LD (HL),E     ;
- 43199 JR NZ,43266   ;
- 43201 LD (HL),B     ;
- 43202 LD (HL),B     ;
- 43203 LD (HL),D     ;
- 43204 LD L,A        ;
- 43205 LD (HL),B     ;
- 43206 LD (HL),D     ;
- 43207 LD L,C        ;
- 43208 LD H,C        ;
- 43209 LD (HL),H     ;
- 43210 LD H,L        ;
- 43211 JR NZ,43288   ;
- 43213 LD H,L        ;
- 43214 LD A,C        ;
- 43215 RST 56        ;
-*43216 LD HL,23017   ;
+
+; GameModeDispatchTable
+;
+; 3-word jump table indexed by the highlighted game mode (0-2).
+; JP (HL) at 43134 lands here; the word for the current selection
+; is loaded into HL and jumped to.
+;
+;   Mode 0 — Short Game   → #R44738
+;   Mode 1 — Long Game    → #R42276
+;   Mode 2 — Introduction → #R43242
+@label=GameModeDispatchTable
+w43135 DEFW 44738,42276,43242
+
+; GameModeText
+;
+; 0xFF-terminated text strings for the game-mode menu, rendered by
+; #R42821 (DrawShipMap) via five calls to #R31693.
+; Indices 0-3 are the four menu lines; index 4 is the footer prompt.
+@label=GameModeText
+b43141 DEFB 49,58,32,83,104,111,114,116,32,71,97,109,101,255     ; "1: Short Game"
+ 43155 DEFB 50,58,32,76,111,110,103,32,71,97,109,101,255          ; "2: Long Game"
+ 43168 DEFB 51,58,32,73,110,116,114,111,100,117,99,116,105,111,110,255  ; "3: Introduction"
+ 43184 DEFB 52,58,32,83,101,108,101,99,116,255                    ; "4: Select"
+ 43194 DEFB 80,114,101,115,115,32,65,112,112,114,111,112,114,105,97,116,101,32,75,101,121,255  ; "Press Appropriate Key"
+
+; HighlightGameMode
+;
+; XOR-toggles the attribute colour of the currently selected menu
+; row, used by DrawShipMap (#R42821) to highlight or erase the
+; cursor. Loads the base attribute address $59E9 (row 15, col 9),
+; steps 64 bytes per row (selection × 64), then XORs 15 consecutive
+; attribute bytes with 36 (flipping ink/paper to show highlight).
+@label=HighlightGameMode
+c43216 LD HL,23017   ;
 ; This entry point is used by the routine at #R43610.
 *43219 LD DE,64      ;
 *43222 LD A,(33683)  ;
@@ -9142,6 +9312,13 @@ c42821 LD A,4        ; A = 4 (green border)
  43238 INC HL        ;
  43239 DJNZ 43234    ;
  43241 RET           ;
+
+; IntroductionMode
+;
+; Game-mode handler for "3: Introduction" (dispatched from
+; #R43135). Clears display, sets border/attrs white, then replays
+; the animated intro screen and returns to the main loop.
+@label=IntroductionMode
  43242 CALL 42501    ;
  43245 XOR A         ;
  43246 OUT (254),A   ;
@@ -24894,7 +25071,18 @@ b60000 DEFB 0,0,0,15,128,0,0,0
  61920 DEFB 0,0,0,0,0,0,0,0
  61928 DEFB 0,0,0,0,0,0,0,0
 
-; Data block at 61936
+; IntroTileData
+;
+; 8×8 pixel tile bitmaps for the game's extra-data area ($EA60-$F5FF).
+; The first 8 tiles ($F1B0-$F22F, addresses 61936-61999) are blank padding.
+; Tile graphics used by DrawIntroScreen (#R42581) start at $F230 (62000):
+; tile index N maps to address 62000 + N×8. The tile map at $9E38 indexes
+; into this set to build the 15×11 title-screen graphic. Subsequent tiles
+; (beyond the intro set) are used by other game screens and the ship map.
+;
+; Intro tile sheet — tiles starting at $F230, 16 per row, 2× scale:
+;
+; #HTML(#UDGARRAY16,56,2(62000-62728-8)(intro_tiles))
 b61936 DEFB 0,0,0,0,0,0,0,0
  61944 DEFB 0,0,0,0,0,0,0,0
  61952 DEFB 0,0,0,0,0,0,0,0

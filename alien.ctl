@@ -13,6 +13,24 @@ b 23756
 ; -----------------------------------------------------------------------
 ; Sprite pixel data: 8x8 pixel tiles and character bitmaps
 b 24576
+; Room indicator cursor, phase 0 — wide outer box with inner rectangle
+@ 26637 label=RoomCursor0
+b 26637
+; Room indicator cursor, phase 1 — narrow border with oval interior
+@ 26673 label=RoomCursor1
+b 26673
+; Room indicator cursor, phase 2 — centre-only bars with inner ring
+@ 26709 label=RoomCursor2
+b 26709
+; Room indicator cursor, phase 3 — smallest oval shape
+@ 26745 label=RoomCursor3
+b 26745
+; Crew walking sprite, phase 1 — upright pose (AnimateCrewA phases 0-1)
+@ 26781 label=CrewWalkA1
+b 26781
+; Crew walking sprite, phase 2 — mid-stride pose (AnimateCrewA phases 2-3)
+@ 26817 label=CrewWalkA2
+b 26817
 ; Sprite sequence table: 0xFF-terminated lists of sprite indices
 b 29516
 ; Crew data records (8 bytes each, 7 crew members max)
@@ -31,10 +49,12 @@ b 30197
 b 30492
 ; Direction/movement vector table (4 directions × 2 bytes)
 b 30626
-; Crew sprite animation frame A lookup (4 frame pointers)
-b 26853
-; Crew sprite animation frame B lookup (4 frame pointers)
-b 26861
+; Crew sprite animation frame A lookup (4 × 16-bit frame pointers)
+w 26853
+; Crew sprite animation frame B lookup (4 × 16-bit frame pointers)
+w 26861
+; Character tile bitmap array (8 bytes per 8×8 pixel tile, 169 tiles)
+b 26869
 ; Sprite address lookup table (indexed by sprite ID)
 b 26569
 ; Sprite pixel data at 0x6E3D (character bitmaps, 10 bytes each)
@@ -68,8 +88,8 @@ c 33610
 c 33740
 @ 33862 label=GetCorridorTableEntry
 c 33862
-; Dispatch table: 16-bit function pointers indexed by game mode (2×mode)
-b 33794
+; Room dispatch table: 34 × 16-bit function pointers indexed by room mode
+w 33794
 ; Data islands within code region (sprite data, lookup tables)
 b 33792
 ; -----------------------------------------------------------------------
@@ -104,6 +124,18 @@ c 42501
 c 42515
 c 42581
 c 42821
+; Game-mode selection dispatch table (3 × 16-bit pointers: Short/Long/Introduction)
+@ 43135 label=GameModeDispatchTable
+w 43135
+; Game-mode menu text strings (0xFF-terminated: Short Game / Long Game / Introduction / Select / prompt)
+@ 43141 label=GameModeText
+b 43141
+; XOR-toggles 15 attribute bytes to highlight the selected menu row
+@ 43216 label=HighlightGameMode
+c 43216
+; Introduction game-mode handler (dispatched from GameModeDispatchTable)
+@ 43242 label=IntroductionMode
+c 43242
 c 43610
 c 44313
 c 44561
