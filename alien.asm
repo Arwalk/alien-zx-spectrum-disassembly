@@ -1,11 +1,13 @@
   ORG $4000
 
-; Data block at 16384
+; Data block at DisplayFile
+DisplayFile:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_4028:
   DEFB $00,$38,$00,$00,$E0,$00,$00,$FE
   DEFB $00,$00,$7F,$00,$00,$44,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -229,6 +231,7 @@
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_4720:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -261,6 +264,7 @@
   DEFB $00,$00,$00,$1F,$D8,$20,$00,$00
   DEFB $00,$00,$02,$C0,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_4820:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$FC,$10,$80,$00,$00
   DEFB $00,$00,$00,$2C,$00,$00,$00,$00
@@ -274,6 +278,7 @@
   DEFB $00,$00,$00,$01,$C0,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_4888:
   DEFB $00,$00,$1F,$FF,$A7,$CD,$70,$00
   DEFB $00,$00,$02,$7F,$C0,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -286,6 +291,7 @@
   DEFB $FF,$00,$7D,$FC,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_48E8:
   DEFB $00,$00,$00,$1F,$FF,$FF,$7F,$7F
   DEFB $FF,$5E,$FF,$80,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -389,6 +395,7 @@
   DEFB $00,$00,$00,$7E,$11,$40,$00,$00
   DEFB $00,$00,$00,$30,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_4C20:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$03,$FF,$11,$00,$00,$00
   DEFB $00,$00,$00,$12,$00,$00,$00,$00
@@ -517,6 +524,7 @@
   DEFB $00,$00,$00,$00,$1F,$FE,$37,$FF
   DEFB $B7,$BE,$F0,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_5020:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$04,$B1,$26,$FF,$7F
   DEFB $FF,$D0,$00,$00,$00,$00,$00,$00
@@ -525,23 +533,30 @@
   DEFB $00,$00,$00,$00,$00,$01,$22,$42
   DEFB $44,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_5060:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_5080:
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_5090:
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_50A0:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_50C0:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_50E0:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_50E8:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -581,6 +596,7 @@
   DEFB $00,$00,$00,$00,$07,$FE,$EF,$7F
   DEFB $FF,$7F,$40,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_5220:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$03,$7C,$CB,$FD,$CE
   DEFB $A5,$00,$00,$00,$00,$00,$00,$00
@@ -613,6 +629,7 @@
   DEFB $00,$00,$00,$00,$03,$FF,$5F,$7F
   DEFB $FF,$F4,$80,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_5320:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$05,$F0,$69,$FF,$59
   DEFB $AA,$00,$00,$00,$00,$00,$00,$00
@@ -677,6 +694,7 @@
   DEFB $00,$00,$00,$20,$00,$FF,$FF,$FA
   DEFB $E8,$F6,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_5520:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$3B,$6A,$7F,$CA
   DEFB $20,$00,$00,$00,$00,$00,$00,$00
@@ -769,6 +787,7 @@
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_5800:
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
@@ -809,6 +828,7 @@
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
+Auto_5940:
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
@@ -861,12 +881,14 @@
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
+Auto_5AE0:
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
   DEFB $07,$07,$07,$07,$07,$07,$07,$07
 
-; Data block at 23296
+; Data block at SystemArea
+SystemArea:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -900,6 +922,7 @@
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $FF,$00,$00,$00,$FF,$00,$23,$0D
+Auto_5C08:
   DEFB $0D,$23,$05,$00,$00,$00,$11,$00
   DEFB $01,$00,$06,$00,$0B,$00,$01,$00
   DEFB $01,$00,$06,$00,$10,$00,$00,$00
@@ -914,6 +937,7 @@
   DEFB $5E,$E4,$5E,$E4,$5E,$E4,$5E,$1F
   DEFB $92,$5C,$10,$00,$00,$00,$00,$00
   DEFB $00,$02,$6C,$D8,$C7,$1A,$00,$00
+Auto_5C78:
   DEFB $41,$90,$00,$58,$FF,$00,$00,$21
   DEFB $00,$5B,$21,$17,$00,$40,$E0,$50
   DEFB $21,$18,$21,$17,$01,$00,$00,$07
@@ -926,7 +950,8 @@
   DEFB $81,$0F,$C4,$15,$52,$F4,$09,$C4
   DEFB $15,$50,$80,$00
 
-; Data block at 23756
+; Data block at LoadedCode
+LoadedCode:
   DEFB $00,$6C,$00,$EA,$DD,$21,$00,$40
   DEFB $11,$80,$1A,$37,$3E,$FF,$CD,$56
   DEFB $05,$DD,$21,$00,$60,$11,$FC,$53
@@ -1031,7 +1056,8 @@
   DEFB $DF,$5E,$5C,$00,$3E,$1F,$76,$1B
   DEFB $03,$13,$00,$3E
 
-; Data block at 24576
+; Data block at ShipMapData
+ShipMapData:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$55,$50,$50
@@ -1283,7 +1309,8 @@
   DEFB $0C,$03,$0E,$0F,$0E,$09,$01,$02
   DEFB $05
 
-; Data block at 26569
+; Data block at CrewSpriteBitmaps
+CrewSpriteBitmaps:
   DEFB $8A,$40,$AA,$48,$4D,$40,$49,$40
   DEFB $09,$48,$C9,$48,$01,$48,$2F,$48
   DEFB $04,$4E,$08,$49,$8D,$46,$4D,$48
@@ -1292,40 +1319,196 @@
   DEFB $E6,$4E,$A6,$40,$2B,$40,$85,$48
   DEFB $0B,$50,$31,$48,$C5,$40,$09,$48
   DEFB $45,$48,$ED,$48,$8F,$40,$AF,$48
-  DEFB $26,$48,$86,$40,$03,$FF,$C0,$02
-  DEFB $00,$40,$02,$00,$40,$02,$00,$40
-  DEFB $02,$3C,$40,$02,$24,$40,$02,$24
-  DEFB $40,$02,$3C,$40,$02,$00,$40,$02
-  DEFB $00,$40,$02,$00,$40,$03,$FF,$C0
-  DEFB $00,$00,$00,$01,$FF,$80,$01,$00
-  DEFB $80,$01,$7E,$80,$01,$42,$80,$01
-  DEFB $42,$80,$01,$42,$80,$01,$42,$80
-  DEFB $01,$7E,$80,$01,$00,$80,$01,$FF
-  DEFB $80,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$FF,$00,$00,$81,$00
-  DEFB $00,$BD,$00,$00,$A5,$00,$00,$A5
-  DEFB $00,$00,$BD,$00,$00,$81,$00,$00
-  DEFB $FF,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$7E,$00,$00,$42,$00,$00
-  DEFB $5A,$00,$00,$5A,$00,$00,$42,$00
-  DEFB $00,$7E,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $08,$00,$00,$1C,$00,$00,$08,$00
-  DEFB $00,$3E,$00,$00,$5D,$00,$00,$3E
-  DEFB $00,$00,$1C,$00,$00,$14,$00,$00
-  DEFB $14,$00,$00,$14,$00,$00,$36,$00
-  DEFB $00,$08,$00,$00,$14,$00,$00,$22
-  DEFB $00,$00,$36,$00,$00,$41,$00,$00
-  DEFB $A2,$80,$00,$41,$00,$00,$22,$00
-  DEFB $00,$2A,$00,$00,$2A,$00,$00,$6B
-  DEFB $00,$00,$49,$00
+  DEFB $26,$48,$86,$40
 
-; Data block at 26853
-  DEFB $9D,$68,$9D,$68,$C1,$68,$C1,$68
+; RoomCursor0
+;
+; Room indicator cursor, phase 0 (used by AnimateCrewB AnimateCrewB, phase 0).
+; XOR-blit sprite: 24px wide x 12px tall (3 bytes per row). Largest box — wide
+; outer border with a small inner rectangle. This cursor blinks over the
+; current room on the corridor map.
+;
+; FULL 24px per row (left-byte | centre-byte | right-byte): .....## ########
+;      ##......  (row  0, outer border) .....#. ........ .#......  (row  1)
+;      .....#. ........ .#......  (row  2) .....#. ........ .#......  (row  3)
+;      .....#. ..####.. .#......  (row  4, inner rectangle) .....#. ..#..#..
+;      .#......  (row  5) .....#. ..#..#.. .#......  (row  6) .....#. ..####..
+;      .#......  (row  7) .....#. ........ .#......  (row  8) .....#. ........
+;      .#......  (row  9) .....#. ........ .#......  (row 10) .....## ########
+;      ##......  (row 11, outer border)
+RoomCursor0:
+  DEFB $03,$FF,$C0        ; row  0: top border
+  DEFB $02,$00,$40        ; row  1
+  DEFB $02,$00,$40        ; row  2
+  DEFB $02,$00,$40        ; row  3
+  DEFB $02,$3C,$40        ; row  4: inner box top
+  DEFB $02,$24,$40        ; row  5: inner box sides
+  DEFB $02,$24,$40        ; row  6: inner box sides
+  DEFB $02,$3C,$40        ; row  7: inner box bottom
+  DEFB $02,$00,$40        ; row  8
+  DEFB $02,$00,$40        ; row  9
+  DEFB $02,$00,$40        ; row 10
+  DEFB $03,$FF,$C0        ; row 11: bottom border
 
-; Data block at 26861
-  DEFB $0D,$68,$31,$68,$55,$68,$79,$68
+; RoomCursor1
+;
+; Room indicator cursor, phase 1 (AnimateCrewB phase 1). Narrower 1-pixel
+; border with an oval interior — cursor drawn at reduced size.
+;
+;  ...... ........ ........  (row  0, blank) ......# ######## #.......  (row
+;  1, narrow top border) ......# ........ #.......  (row  2) ......# .######.
+;  #.......  (row  3, oval) ......# .#....#. #.......  (row  4) ......#
+;  .#....#. #.......  (row  5) ......# .#....#. #.......  (row  6) ......#
+;  .######. #.......  (row  7) ......# ........ #.......  (row  8) ......#
+;  ######## #.......  (row  9, narrow bottom border) ....... ........ ........
+;  (rows 10-11, blank)
+RoomCursor1:
+  DEFB $00,$00,$00        ; row  0: blank
+  DEFB $01,$FF,$80        ; row  1: top border
+  DEFB $01,$00,$80        ; row  2
+  DEFB $01,$7E,$80        ; row  3: oval top
+  DEFB $01,$42,$80        ; row  4: oval sides
+  DEFB $01,$42,$80        ; row  5
+  DEFB $01,$42,$80        ; row  6
+  DEFB $01,$7E,$80        ; row  7: oval bottom
+  DEFB $01,$00,$80        ; row  8
+  DEFB $01,$FF,$80        ; row  9: bottom border
+  DEFB $00,$00,$00        ; row 10: blank
+  DEFB $00,$00,$00        ; row 11: blank
+
+; RoomCursor2
+;
+; Room indicator cursor, phase 2 (AnimateCrewB phase 2). Centre-only pattern —
+; horizontal bars with inner ring detail.
+;
+;  ...... ........ ........  (rows 0-1, blank) ....... ######## ........  (row
+;  2, top bar) ....... #......# ........  (row  3, outer edge) ....... #.####.#
+;  ........  (row  4, inner ring) ....... #.#..#.# ........  (row  5, detail)
+;  ....... #.#..#.# ........  (row  6) ....... #.####.# ........  (row  7)
+;  ....... #......# ........  (row  8) ....... ######## ........  (row  9,
+;  bottom bar) ....... ........ ........  (rows 10-11, blank)
+RoomCursor2:
+  DEFB $00,$00,$00        ; row  0: blank
+  DEFB $00,$00,$00        ; row  1: blank
+  DEFB $00,$FF,$00        ; row  2: top bar
+  DEFB $00,$81,$00        ; row  3: outer edge
+  DEFB $00,$BD,$00        ; row  4: inner ring
+  DEFB $00,$A5,$00        ; row  5: eye sockets
+  DEFB $00,$A5,$00        ; row  6
+  DEFB $00,$BD,$00        ; row  7
+  DEFB $00,$81,$00        ; row  8
+  DEFB $00,$FF,$00        ; row  9: bottom bar
+  DEFB $00,$00,$00        ; row 10: blank
+  DEFB $00,$00,$00        ; row 11: blank
+
+; RoomCursor3
+;
+; Room indicator cursor, phase 3 (AnimateCrewB phase 3). Smallest oval shape —
+; cursor at its most contracted phase.
+;
+;  ...... ........ ........  (rows 0-2, blank) ....... .######. ........  (row
+;  3, oval) ....... .#....#. ........  (row  4) ....... .#.##.#. ........  (row
+;  5, inner detail) ....... .#.##.#. ........  (row  6) ....... .#....#.
+;  ........  (row  7) ....... .######. ........  (row  8, oval) .......
+;  ........ ........  (rows 9-11, blank)
+RoomCursor3:
+  DEFB $00,$00,$00        ; row  0: blank
+  DEFB $00,$00,$00        ; row  1: blank
+  DEFB $00,$00,$00        ; row  2: blank
+  DEFB $00,$7E,$00        ; row  3: head oval
+  DEFB $00,$42,$00        ; row  4
+  DEFB $00,$5A,$00        ; row  5: inner detail
+  DEFB $00,$5A,$00        ; row  6
+  DEFB $00,$42,$00        ; row  7
+  DEFB $00,$7E,$00        ; row  8: head oval
+  DEFB $00,$00,$00        ; row  9: blank
+  DEFB $00,$00,$00        ; row 10: blank
+  DEFB $00,$00,$00        ; row 11: blank
+
+; CrewWalkA1
+;
+; Crew member walking sprite, phase 1 (AnimateCrewA AnimateCrewA, phases 0-1).
+; XOR-blit sprite: 24px wide x 12px tall (3 bytes per row). Upright
+; standing/walking pose — arms close to body, feet together. Left and right
+; bytes are zero (figure fits in the 8-pixel centre column).
+;
+; CENTRE 8px: .......  (row  0, blank) ...#...  (row  1, $08, head top) ..###..
+;        (row  2, $1C, head) ...#...  (row  3, $08, chin) .#####.  (row  4,
+;        $3E, shoulders) #.###.#  (row  5, $5D, torso) .#####.  (row  6, $3E,
+;        body) ..###..  (row  7, $1C, hips) ..#.#..  (row  8, $14, upper legs)
+;        ..#.#..  (row  9, $14, mid legs) ..#.#..  (row 10, $14, lower legs)
+;        .##.##.  (row 11, $36, feet)
+CrewWalkA1:
+  DEFB $00,$00,$00        ; row  0: blank
+  DEFB $00,$08,$00        ; row  1: head top
+  DEFB $00,$1C,$00        ; row  2: head
+  DEFB $00,$08,$00        ; row  3: chin
+  DEFB $00,$3E,$00        ; row  4: shoulders
+  DEFB $00,$5D,$00        ; row  5: torso
+  DEFB $00,$3E,$00        ; row  6: body
+  DEFB $00,$1C,$00        ; row  7: hips
+  DEFB $00,$14,$00        ; row  8: upper legs
+  DEFB $00,$14,$00        ; row  9: mid legs
+  DEFB $00,$14,$00        ; row 10: lower legs
+  DEFB $00,$36,$00        ; row 11: feet
+
+; CrewWalkA2
+;
+; Crew member walking sprite, phase 2 (AnimateCrewA AnimateCrewA, phases 2-3).
+; Mid-stride pose — arms pumping outward, legs spread in step. Row 5 has a
+; stray pixel in the right byte (arm extension).
+;
+; CENTRE 8px (+ right byte for row 5): ...#...                    (row  0, $08,
+;        head) ..#.#..                    (row  1, $14, head wide) .#...#.
+;        (row  2, $22, arms raising) .##.##.                    (row  3, $36,
+;        upper arms) #.....#                    (row  4, $41, arms spread)
+; . ...#. + #.......         (row  5, $A2+$80, torso+arm) #.....#
+;   (row  6, $41) .#...#.                    (row  7, $22, arms return) .#.#.#.
+;   (row  8, $2A, legs mid-stride) .#.#.#.                    (row  9, $2A)
+;   ##.#.##                    (row 10, $6B, feet contact) #..#..#
+;   (row 11, $49, feet split)
+CrewWalkA2:
+  DEFB $00,$08,$00        ; row  0: head
+  DEFB $00,$14,$00        ; row  1: head wide
+  DEFB $00,$22,$00        ; row  2: arms raising
+  DEFB $00,$36,$00        ; row  3: upper arms
+  DEFB $00,$41,$00        ; row  4: arms spread
+  DEFB $00,$A2,$80        ; row  5: torso + arm extension
+  DEFB $00,$41,$00        ; row  6
+  DEFB $00,$22,$00        ; row  7: arms return
+  DEFB $00,$2A,$00        ; row  8: legs mid-stride
+  DEFB $00,$2A,$00        ; row  9
+  DEFB $00,$6B,$00        ; row 10: feet contact
+  DEFB $00,$49,$00        ; row 11: feet split
+
+; AnimCrewAFrames
+;
+; 4 × 16-bit pointers to crew animation frame-A sprite bitmaps. Indexed by
+; frame phase (0-3); phases 0-1 share one bitmap, 2-3 share another, producing
+; a two-frame walk cycle at rate 10 (10 frames/step). Used by AnimateCrewA
+; (AnimateCrewA) to XOR-blit crew sprites onto the screen.
+CrewWalkAnimA:
+  DEFW CrewWalkA1,CrewWalkA1,CrewWalkA2,CrewWalkA2
+
+; AnimCrewBFrames
+;
+; 4 × 16-bit pointers to room indicator cursor bitmaps (faster channel, rate
+; 5). Used by AnimateCrewB (AnimateCrewB) to XOR-blit the animated room cursor
+; that highlights the current room on the corridor map.
+CrewWalkAnimB:
+  DEFW RoomCursor0,RoomCursor1,RoomCursor2,RoomCursor3
+
+; CharTileBitmaps
+;
+; Master 8×8 pixel tileset used by DrawSpriteRow (DrawSpriteRow) for all
+; corridor and room graphics. 169 tiles × 8 bytes each (one byte per pixel
+; row). Tile N starts at CharBitmaps + N×8. Referenced by DrawSprite
+; (DrawSprite) which looks up 10 tile indices per sprite from the sprite table
+; at RoomNameTable (RoomNameTable).
+;
+; SPRITE sheet — 16 tiles per row, 2× scale:
+;
+CharBitmaps:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$FF,$00,$00,$FF,$00,$00
   DEFB $24,$24,$24,$24,$24,$24,$24,$24
@@ -1496,7 +1679,8 @@
   DEFB $00,$00,$00,$00,$01,$01,$03,$07
   DEFB $FC,$FC,$F0,$F0,$E0,$E0,$C0,$C0
 
-; Data block at 28221
+; Data block at RoomNameTable
+RoomNameTable:
   DEFB $41,$69,$72,$6C,$6F,$63,$6B,$20
   DEFB $23,$31,$41,$69,$72,$6C,$6F,$63
   DEFB $6B,$20,$23,$32,$41,$72,$6D,$6F
@@ -1660,7 +1844,8 @@
   DEFB $0D,$0D,$1F,$01,$1F,$21,$21,$10
   DEFB $20,$20,$21,$03,$03,$20,$20
 
-; Data block at 29516
+; Data block at CrewNameTable
+CrewNameTable:
   DEFB $41,$4C,$49,$45,$4E,$FF,$44,$61
   DEFB $6C,$6C,$61,$73,$FF,$4B,$61,$6E
   DEFB $65,$FF,$52,$69,$70,$6C,$65,$79
@@ -1669,24 +1854,31 @@
   DEFB $6B,$65,$72,$FF,$42,$72,$65,$74
   DEFB $74,$FF
 
-; Data block at 29566
+; Data block at CrewData
+CrewData:
   DEFB $00,$00,$00,$00,$00,$00,$00
 
-; Data block at 29573
+; Data block at CrewStateTable
+CrewStateTable:
   DEFB $00,$40,$0C,$00,$00,$02,$02,$02
+Auto_738D:
   DEFB $00,$40,$16,$00,$00,$04,$04,$04
   DEFB $00,$40,$4B,$00,$00,$04,$02,$02
   DEFB $00,$40,$09,$00,$00,$04,$04,$04
   DEFB $00,$40,$1B,$00,$00,$03,$04,$04
   DEFB $00,$40,$0B,$00,$00,$03
 
-; Data block at 29619
+; Data block at CrewStateExtra
+CrewStateExtra:
   DEFB $04,$04,$00,$22,$13,$00,$00,$04
   DEFB $02,$02,$00
 
-; Data block at 29630
+; Data block at CorridorPosTable
+CorridorPosTable:
   DEFB $49,$FF,$FF,$FF,$FF,$FF,$FF,$4A
+Auto_73C6:
   DEFB $FF,$FF,$FF,$FF,$4B,$FF,$FF,$FF
+Auto_73CE:
   DEFB $FF,$FF,$FF,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -1732,9 +1924,11 @@
   DEFB $00,$00,$01,$01,$01,$02,$02,$02
   DEFB $00,$00,$01,$01,$01,$01,$02,$02
   DEFB $02,$02,$00,$00,$01,$01,$01,$01
+Auto_7536:
   DEFB $30,$30,$30
 
-; Data block at 30009
+; Data block at SpriteScanData
+SpriteScanData:
   DEFB $30,$30,$30,$30,$30,$30,$30,$30
   DEFB $30,$30,$30,$30,$30,$30,$30,$30
   DEFB $30,$30,$30,$30,$30,$30,$30,$30
@@ -1760,10 +1954,35 @@
   DEFB $57,$FF,$FF,$FF,$FF,$58,$FF,$FF
   DEFB $FF,$FF,$3D,$FF
 
-; Data block at 30197
+; Corridor position template
+;
+; 19-byte template copied verbatim to CorridorPosTable by room-init code within
+; InitGameView (InitGameView). The next 504 bytes starting at CrewPortraits are
+; the crew portrait bitmaps; see CrewPortraits.
+CorridorTemplates:
   DEFB $53,$34,$34,$34,$34,$34,$34,$34
+Auto_75FD:
   DEFB $4F,$50,$54,$55,$2C,$2D,$2E,$FF
-  DEFB $FF,$FF,$FF,$00,$00,$00,$01,$01
+  DEFB $FF,$FF,$FF
+
+; Crew portrait bitmaps
+;
+; Seven 3x3-character (24x24 pixel) raw bitmap portraits, drawn by
+; DrawSprite_118. Used by DrawShipMap (DrawShipMap -- all 7 at once) and by the
+; crew-status display (single-portrait draw, crew index from ScreenDrawPtr, via
+; DrawSprite). Crew member names from CrewNameTable (CrewNameTable); portrait N
+; is at address CrewPortraits + (N-1)*72. Portrait data continues into
+; CrewPortraitsCont and CrewPortraitsCont2 due to block boundaries.
+;
+; DALLAS (1):
+; KANE (2):
+; RIPLEY (3):
+; ASH (4):
+; LAMBERT (5):
+; PARKER (6):
+; BRETT (7):
+CrewPortraits:
+  DEFB $00,$00,$00,$01,$01
   DEFB $03,$03,$03,$7D,$FF,$FF,$DF,$BF
   DEFB $99,$00,$6B,$80,$C0,$C0,$E0,$E0
   DEFB $E0,$60,$70,$03,$03,$03,$03,$01
@@ -1799,7 +2018,8 @@
   DEFB $C0,$80,$E0,$08,$F0,$10,$13,$1C
   DEFB $00,$00,$00,$84,$49,$21,$D2
 
-; Data block at 30492
+; Portrait data continuation (portraits 4 end, 5, 6 start)
+CrewPortraitsCont:
   DEFB $0C,$00,$00,$00,$90,$0F,$04,$FC
   DEFB $00,$00,$00,$00,$00,$01,$03,$07
   DEFB $07,$07,$07,$07,$7F,$FF,$FF,$E7
@@ -1818,7 +2038,8 @@
   DEFB $FB,$F1,$7F,$BF,$60,$E0,$C0,$C0
   DEFB $C0,$80,$80,$70,$7E,$82
 
-; Data block at 30626
+; Portrait data continuation (portrait 6 end, portrait 7)
+CrewPortraitsCont2:
   DEFB $02,$01,$01,$00,$00,$00,$DF,$60
   DEFB $7F,$7F,$3E,$00,$00,$00,$4F,$90
   DEFB $90,$20,$40,$00,$00,$00,$00,$00
@@ -1830,7 +2051,14 @@
   DEFB $10,$20,$40,$C0,$C0,$40,$00,$0F
   DEFB $3E,$7E,$FF,$00,$00,$00,$FE,$20
   DEFB $A0,$A1,$52,$00,$00,$00,$78,$57
-  DEFB $AF,$5F,$9F,$00,$00,$00,$14,$02
+  DEFB $AF,$5F,$9F,$00,$00,$00
+
+; Room tile-index maps
+;
+; Tile-index sequences defining the visual appearance of each room type. Loaded
+; into HL within DrawSprite (DrawSprite) and used via DrawSprite_88.
+RoomTileMaps:
+  DEFB $14,$02
   DEFB $92,$93,$0C,$94,$95,$02,$92,$93
   DEFB $92,$93,$0C,$94,$95,$94,$95,$92
   DEFB $93,$10,$94,$95,$14,$14,$02,$92
@@ -1896,17 +2124,33 @@
   DEFB $09,$2D,$2D,$2D,$2D,$2D,$09,$09
   DEFB $09,$09,$09,$09,$09,$2D
 
-; Data block at 31232
+; Data block at GameStateBase
+GameStateBase:
   DEFB $09,$09,$09,$09,$09,$09,$09,$2D
-  DEFB $2D,$05,$06,$01,$00,$00,$00,$00
-  DEFB $FF,$FF,$FF,$FF,$00,$00,$00,$00
-  DEFB $58,$00,$40,$00,$60,$00,$00,$80
-  DEFB $80,$00,$00,$11,$0C,$00,$21,$00
+  DEFB $2D
+ScreenDrawPtr:
+  DEFB $05,$06
+RoomTypeByte:
+  DEFB $01,$00,$00,$00,$00
+GameState_7A10:
+  DEFB $FF,$FF,$FF,$FF
+RoomModeByte:
+  DEFB $00,$00,$00,$00
+  DEFB $58,$00,$40,$00,$60
+CorridorTilePtr:
+  DEFB $00,$00
+CrewAnimFlags:
+  DEFB $80
+AnimFramePhase:
+  DEFB $80
+ScriptPointer:
+  DEFB $00,$00,$11,$0C,$00,$21,$00
   DEFB $58,$0E,$13,$06,$14,$36,$04,$23
   DEFB $10,$FB,$19,$0D,$20,$F5,$11,$7C
   DEFB $01,$21,$00,$60,$3A,$0B,$7A,$FE
   DEFB $03,$CA,$6C,$83,$FE,$04,$CA,$07
   DEFB $9B,$A7,$28,$04,$19,$3D,$20,$FC
+GameState_7A30:
   DEFB $22,$1B,$7A,$21,$00,$40,$22,$19
   DEFB $7A,$0E,$13,$06,$14,$C5,$ED,$5B
   DEFB $1B,$7A,$CD,$89,$7A,$21,$19,$7A
@@ -1920,30 +2164,31 @@
 ;
 ; Draws one 8-pixel-tall column of a sprite tile onto the screen. Reads a tile
 ; index byte from (DE), multiplies by 8 to get an offset into the
-; 8-byte-per-row character bitmap table at $6935 ($26869 + index×8), then
-; writes all 8 bytes vertically downward from the current draw pointer at $7A09
-; (INC H steps through ZX Spectrum display rows within the same character cell
-; column).
+; 8-byte-per-row character bitmap table at $6935 ($CharBitmaps + index×8), then
+; writes all 8 bytes vertically downward from the current draw pointer at
+; ScreenDrawPtr (INC H steps through ZX Spectrum display rows within the same
+; character cell column).
 ;
-;  Input: (DE) = tile/character index; ($7A09) = screen destination address
+;  Input: (DE) = tile/character index; (ScreenDrawPtr) = screen destination
+;         address
 ; Output: screen updated; DE advanced; H incremented 8 times
 ;
-; Used by the routines at DrawSprite, UpdateCrewAI, 95EB, DrawIntroScreen and
-; DrawStatusPanel.
+; Used by the routines at DrawSprite, UpdateCrewAI, UpdateRoomActors,
+; DrawIntroScreen and DrawStatusPanel.
 DrawSpriteRow:
   LD A,(DE)               ; read tile index from source pointer
 ; This entry point is used by the routines at DrawSprite, UpdateCrewAI and
-; 95EB.
+; UpdateRoomActors.
 DrawSpriteRow_0:
   LD L,A                  ; L = tile index
   LD H,$00
   ADD HL,HL               ; HL = index × 2
   ADD HL,HL               ; HL = index × 4
   ADD HL,HL               ; HL = index × 8
-  LD BC,$68F5             ; BC = $6935 (character bitmap base)
+  LD BC,CharBitmaps       ; BC = $6935 (character bitmap base)
   ADD HL,BC               ; HL = address of first row of tile bitmap
   EX DE,HL                ; DE = bitmap source; HL = old DE (tile index ptr)
-  LD HL,($7A19)           ; HL = screen destination ($7A09)
+  LD HL,($7A19)           ; HL = screen destination (ScreenDrawPtr)
   LD B,$08                ; 8 pixel rows per character
 DrawSpriteRow_1:
   LD A,(DE)               ; read bitmap byte for this pixel row
@@ -1964,7 +2209,7 @@ DrawSpriteRow_3:
   LD A,L
   CP $E0
   JR NC,DrawSpriteRow_4
-  LD DE,$F920
+  LD DE,Auto_F920
   ADD HL,DE
   RET
 DrawSpriteRow_4:
@@ -1975,36 +2220,40 @@ DrawSpriteRow_4:
 ; InitGameView
 ;
 ; Initialises the corridor view for the current room. Clears the room mode
-; byte, freezes both crew animation channels (sets bit 7 of $7A1F/$7A20),
-; resets the corridor cursor to segment 8, copies the 19-byte corridor position
-; template from $75F5 to $73BE, then draws the room's attribute colours and
-; initial crew sprites.
+; byte, freezes both crew animation channels (sets bit 7 of
+; CrewAnimFlags/AnimFramePhase), resets the corridor cursor to segment 8,
+; copies the 19-byte corridor position template from CorridorTemplates to
+; CorridorPosTable, then draws the room's attribute colours and initial crew
+; sprites.
 ;
-; USED by the routines at RoomHandlerCommon, 8A0A, 8A36, GameEntry, 9272, 95EB,
+; USED by the routines at RoomHandlerCommon, RoomHandler_2, RoomHandler_25,
+;      GameEntry, XorHAddE, UpdateRoomActors,
 ; R40826 AND R45401.
 InitGameView:
   XOR A                   ; A = 0
-  LD ($7A14),A            ; clear room mode byte at $7A14
-  LD HL,$7A1F             ; HL = $7A1F (crew animation flags)
+  LD (RoomModeByte),A     ; clear room mode byte at RoomModeByte
+  LD HL,CrewAnimFlags     ; HL = CrewAnimFlags (crew animation flags)
   SET 7,(HL)              ; freeze animation channel A (bit 7 = freeze)
   INC HL
   SET 7,(HL)              ; freeze animation channel B
   LD A,$80                ; $80
-  LD ($9B3D),A            ; set alien pixel X sentinel ($9B3D)
-  LD ($9B49),A            ; set alien pixel Y sentinel ($9B49)
+  LD (Auto_9B3D),A        ; set alien pixel X sentinel (Auto_9B3D)
+  LD (Auto_9B49),A        ; set alien pixel Y sentinel (Auto_9B49)
   LD A,$08                ; segment 8 = centre of 19-segment corridor
-  LD ($8393),A            ; store as current corridor cursor ($836B)
+  LD (CorridorCursor),A   ; store as current corridor cursor (DifficultyByte)
   LD A,$20                ; space char
   CALL DrawSprite_111     ; draw blank room border / clear game window
-  LD A,($7A0B)            ; read room-type byte ($7A0B)
+  LD A,(RoomTypeByte)     ; read room-type byte (RoomTypeByte)
   CP $04                  ; room type 4 = special (engine room)
   JR NZ,InitGameView_0
   LD A,$01                ; remap type 4 → type 1
-  LD ($7A0B),A
+  LD (RoomTypeByte),A
 InitGameView_0:
   CALL $7A23              ; draw room background (walls, doors, floor tiles)
-  LD DE,$73BE             ; DE = $73BE (corridor position table, 19 bytes)
-  LD HL,$75F5             ; HL = $75F5 (corridor position templates)
+  LD DE,CorridorPosTable  ; DE = CorridorPosTable (corridor position table, 19
+                          ; bytes)
+  LD HL,CorridorTemplates ; HL = CorridorTemplates (corridor position
+                          ; templates)
   LD BC,$0013             ; copy 19 entries
   LDIR                    ; initialise position table from template
   LD HL,$5816             ; HL = $5816 (attribute row for top of game window)
@@ -2030,8 +2279,8 @@ InitGameView_0:
   LD ($7A19),HL
   LD A,$52
   CALL DrawSprite
-  LD HL,$75F5
-  LD ($7A1D),HL
+  LD HL,CorridorTemplates
+  LD (CorridorTilePtr),HL
   CALL DrawNextCorridorTile
   LD B,$07
 InitGameView_1:
@@ -2050,7 +2299,7 @@ InitGameView_2:
   EX AF,AF'
   LD HL,($7A19)
 
-; Routine at 31562
+; Routine at NextCorridorEntry
 NextCorridorEntry:
   LD A,D
   PUSH AF
@@ -2069,7 +2318,7 @@ NextCorridorEntry:
 ; bytes (one full character-row stride in the attribute file region), pops AF
 ; to recover the colour and segment counter from the stack, then draws 10
 ; corridor tiles using DrawNextCorridorTile. Also updates the ambient sound and
-; room- display state via HandleInput_15 and 9A94.
+; room- display state via HandleInput_15 and Auto_9A94.
 FillAttributeBlock:
   LD DE,$0720             ; stride to next character row in attribute area
 ; This entry point is used by the routine at NextCorridorEntry.
@@ -2081,8 +2330,8 @@ FillAttributeBlock_0:
   EX AF,AF'
   DEC A
   JR NZ,InitGameView_2
-  LD HL,$75FD
-  LD ($7A1D),HL
+  LD HL,Auto_75FD
+  LD (CorridorTilePtr),HL
   LD B,$0A
 FillAttributeBlock_1:
   PUSH BC
@@ -2090,10 +2339,10 @@ FillAttributeBlock_1:
   POP BC
   DJNZ FillAttributeBlock_1
   CALL HandleInput_15
-  CALL $9A94
+  CALL Auto_9A94
   RET
 ; This entry point is used by the routines at InitGameView, DrawSprite,
-; HandleInput, 8996 and 8AFA.
+; HandleInput, RoomHandler_13 and RoomHandler_4.
 FillAttributeBlock_2:
   LD DE,$0016
 FillAttributeBlock_3:
@@ -2109,31 +2358,34 @@ FillAttributeBlock_4:
 
 ; DrawNextCorridorTile
 ;
-; Reads the next tile index from the corridor position pointer at $7A1D, draws
-; it by falling through into DrawSprite (DrawSprite), and advances the pointer.
+; Reads the next tile index from the corridor position pointer at
+; CorridorTilePtr, draws it by falling through into DrawSprite (DrawSprite),
+; and advances the pointer.
 ;
-; USED by the routines at InitGameView, FillAttributeBlock, DrawSprite, 89DA
-;      and 8AFA.
+; USED by the routines at InitGameView, FillAttributeBlock, DrawSprite,
+;      DrawRoomCorridor and RoomHandler_4.
 DrawNextCorridorTile:
-  LD HL,($7A1D)           ; HL = corridor tile-source pointer ($7A1D)
+  LD HL,(CorridorTilePtr) ; HL = corridor tile-source pointer (CorridorTilePtr)
   LD A,(HL)               ; A = next tile index
   INC HL                  ; advance pointer
-  LD ($7A1D),HL           ; save updated pointer; fall through to DrawSprite
+  LD (CorridorTilePtr),HL ; save updated pointer; fall through to DrawSprite
 
 ; DrawSprite
 ;
 ; Draws a 10-column × 8-row (80px wide) sprite at the current draw position
-; ($7A09). Each column is one 8-pixel-tall tile drawn by DrawSpriteRow. The
-; sprite data is a table of 10 tile indices (each 10 bytes wide) looked up from
-; the 10-byte-per-sprite character table at $6E3D ($28221). After drawing 10
-; columns, advances $7A09 to the next character row accounting for the ZX
-; Spectrum display-file row wrapping.
+; (ScreenDrawPtr). Each column is one 8-pixel-tall tile drawn by DrawSpriteRow.
+; The sprite data is a table of 10 tile indices (each 10 bytes wide) looked up
+; from the 10-byte-per-sprite character table at RoomNameTable
+; ($RoomNameTable). After drawing 10 columns, advances ScreenDrawPtr to the
+; next character row accounting for the ZX Spectrum display-file row wrapping.
 ;
 ; Input: A = sprite index (255 → use default/blank sprite index 92)
-;       $7A09 = screen destination address
+;       ScreenDrawPtr = screen destination address
 ;
-; Used by the routines at InitGameView, DrawCrewStatusHalf, 89DA, 8A7B, 8AFA,
-; GameEntry, 8FFB, UpdateCrewAI, 9272, 95EB, UpdateAlien, PlayMusic and B159.
+; Used by the routines at InitGameView, DrawCrewStatusHalf, DrawRoomCorridor,
+; RoomHandler_33, RoomHandler_4, GameEntry, UpdateAlienEventTimer,
+; UpdateCrewAI, XorHAddE, UpdateRoomActors, UpdateAlien, PlayMusic and
+; UpdateAllCrew.
 DrawSprite:
   CP $FF                  ; sprite index 255 = invalid/absent
   JR NZ,DrawSprite_0      ; valid index: draw it
@@ -2147,7 +2399,7 @@ DrawSprite_0:
   ADD HL,HL               ; HL = index × 8
   POP DE                  ; DE = index × 2
   ADD HL,DE               ; HL = index × 10 (sprite record size)
-  LD DE,$6E3D             ; DE = $6E3D (character sprite table base)
+  LD DE,RoomNameTable     ; DE = RoomNameTable (character sprite table base)
   ADD HL,DE               ; HL = address of sprite's 10 tile-index bytes
   EX DE,HL                ; DE = sprite data source
   LD B,$0A                ; 10 tile columns per sprite
@@ -2157,7 +2409,7 @@ DrawSprite_1:
   CALL DrawSpriteRow      ; DrawSpriteRow: draw one tile column (8px tall)
   POP DE                  ; restore sprite data pointer
   INC DE                  ; advance to next tile index byte
-  LD HL,$7A19             ; HL → draw pointer ($7A09)
+  LD HL,$7A19             ; HL → draw pointer (ScreenDrawPtr)
   INC (HL)                ; move draw pointer right by 1 character column
   POP BC
   DJNZ DrawSprite_1       ; repeat for all 10 columns
@@ -2173,9 +2425,9 @@ DrawSprite_2:
   LD ($7A19),HL           ; save updated draw pointer
   RET
 ; This entry point is used by the routines at NextCorridorEntry, UpdateCrewAI,
-; DrawShipMap, DrawStatusPanel and B159.
+; DrawShipMap, DrawStatusPanel and UpdateAllCrew.
 DrawSprite_3:
-  LD DE,$734C
+  LD DE,CrewNameTable
 ; This entry point is used by the routine at DrawShipMap.
 DrawSprite_4:
   AND A
@@ -2200,13 +2452,13 @@ DrawSprite_6:
   RET
 ; This entry point is used by the routine at RoomHandlerCommon.
 DrawSprite_7:
-  LD A,($7A09)
+  LD A,(ScreenDrawPtr)
   ADD A,A
   ADD A,A
   ADD A,A
   LD E,A
   LD D,$00
-  LD IX,$737E
+  LD IX,CrewData
   ADD IX,DE
   LD A,(IX+$01)
   CP $FF
@@ -2218,7 +2470,7 @@ DrawSprite_7:
   LD HL,$74D1
   ADD HL,DE
   LD A,(HL)
-  LD ($7A0B),A
+  LD (RoomTypeByte),A
   RET
 DrawSprite_8:
   LD A,($7A0A)
@@ -2265,10 +2517,11 @@ DrawSprite_13:
   DEC HL
   DJNZ DrawSprite_12
   RET
-; This entry point is used by the routines at 8A7B, 8AFA and PlayMusic.
+; This entry point is used by the routines at RoomHandler_33, RoomHandler_4 and
+; PlayMusic.
 DrawSprite_14:
-  LD A,($7A09)
-; This entry point is used by the routines at 9272 and UpdateAlien.
+  LD A,(ScreenDrawPtr)
+; This entry point is used by the routines at XorHAddE and UpdateAlien.
 DrawSprite_15:
   ADD A,$80
   LD C,A
@@ -2289,12 +2542,13 @@ DrawSprite_17:
   JR NZ,DrawSprite_18
   LD A,B
   DEC A
-  LD ($7A10),A
+  LD (GameState_7A10),A
 DrawSprite_18:
   DEC HL
   DJNZ DrawSprite_16
   RET
-; This entry point is used by the routines at 8A7B, 8AFA and 9272.
+; This entry point is used by the routines at RoomHandler_33, RoomHandler_4 and
+; XorHAddE.
 DrawSprite_19:
   LD E,$23
   CP $03
@@ -2335,8 +2589,8 @@ DrawSprite_22:
   RET
 DrawSprite_23:
   LD C,$FF
-  LD HL,$73C6
-  LD A,($7A10)
+  LD HL,Auto_73C6
+  LD A,(GameState_7A10)
   CP C
   CALL NZ,DrawSprite_19
   LD (HL),A
@@ -2357,17 +2611,17 @@ DrawSprite_23:
   LD (HL),A
 DrawSprite_24:
   INC HL
-  LD A,($7A10)
+  LD A,(GameState_7A10)
   CP C
   RET Z
   LD A,$30
   LD (HL),A
   RET
 DrawSprite_25:
-  LD A,($83A7)
+  LD A,(AlienTargetID)
   CP $08
   JR NC,DrawSprite_26
-  LD A,($83A8)
+  LD A,(AlienActiveFlag)
   AND A
   JR Z,DrawSprite_26
   LD HL,($83A5)
@@ -2377,7 +2631,7 @@ DrawSprite_25:
   CALL Z,DrawSprite_42
 DrawSprite_26:
   LD A,($7A0A)
-  LD HL,$83AA
+  LD HL,AlienEventTimer
   CP (HL)
   CALL Z,DrawSprite_38
   LD HL,$737F
@@ -2463,7 +2717,7 @@ DrawSprite_38:
   LD DE,$73CC
   LD A,$33
   LD (DE),A
-  CALL $9AE7
+  CALL Auto_9AE7
   POP AF
   RET
 DrawSprite_39:
@@ -2474,7 +2728,7 @@ DrawSprite_40:
   LD A,$34
   LD (DE),A
   XOR A
-  LD ($9B3D),A
+  LD (Auto_9B3D),A
 ; This entry point is used by the routine at PlayMusic.
 DrawSprite_41:
   POP AF
@@ -2490,14 +2744,14 @@ DrawSprite_43:
 DrawSprite_44:
   POP AF
   RET
-; This entry point is used by the routine at 9272.
+; This entry point is used by the routine at XorHAddE.
 DrawSprite_45:
   LD A,($7A0A)
   BIT 6,A
   JR Z,DrawSprite_46
   LD A,$5D
 DrawSprite_46:
-  LD HL,$5060
+  LD HL,Auto_5060
   LD ($7A19),HL
   CALL DrawSprite
   LD HL,$7A0A
@@ -2511,7 +2765,7 @@ DrawSprite_46:
   ADD A,A
   LD L,A
   LD H,$00
-  LD DE,$7536
+  LD DE,Auto_7536
   ADD HL,DE
   EX DE,HL
   LD HL,$5072
@@ -2528,6 +2782,7 @@ DrawSprite_46:
   LD A,$87
   CALL DrawSpriteRow_0
   RET
+Auto_7DDB:
   LD C,C
   LD (HL),H
   LD H,L
@@ -2540,12 +2795,14 @@ DrawSprite_46:
   LD H,L
   LD L,(HL)
   LD (HL),H
+Auto_7DE8:
   LD B,A
   LD (HL),D
   LD L,C
   LD L,H
   LD L,H
   LD H,L
+Auto_7DEE:
   JR NZ,$7E59
   LD (HL),E
   JR NZ,$7D7B
@@ -2583,9 +2840,9 @@ DrawSprite_46:
   LD A,(HL)
   CP $FF
   JR Z,DrawSprite_50
-  LD HL,$5080
+  LD HL,Auto_5080
   LD ($7A19),HL
-  LD DE,$7DDB
+  LD DE,Auto_7DDB
   LD B,$0D
 DrawSprite_47:
   PUSH BC
@@ -2603,8 +2860,8 @@ DrawSprite_50:
   LD A,($7A0A)
   CP $22
   RET Z
-  LD DE,$7DE8
-  LD HL,$5090
+  LD DE,Auto_7DE8
+  LD HL,Auto_5090
   LD ($7A19),HL
 DrawSprite_51:
   LD B,$06
@@ -2642,13 +2899,14 @@ DrawSprite_55:
   LD A,$31
   LD (DE),A
   RET
-; This entry point is used by the routines at 8A7B, 95EB, B0EA and B159.
+; This entry point is used by the routines at RoomHandler_33, UpdateRoomActors,
+; WrapScreenAddr and UpdateAllCrew.
 DrawSprite_56:
-  LD A,($7A09)
-  LD HL,$50A0
+  LD A,(ScreenDrawPtr)
+  LD HL,Auto_50A0
   LD ($7A19),HL
   CALL DrawSprite_3
-  LD DE,$7DEE
+  LD DE,Auto_7DEE
   LD B,$04
 DrawSprite_57:
   PUSH BC
@@ -2702,12 +2960,12 @@ DrawSprite_62:
 DrawSprite_63:
   LD DE,$75BC
   CALL DrawSprite_4
-  JP $B27F
+  JP Auto_B27F
 DrawSprite_64:
   LD HL,$7387
   LD DE,$7A12
   LD BC,$0701
-  LD A,($7A09)
+  LD A,(ScreenDrawPtr)
   EX AF,AF'
   LD A,($7A0A)
 DrawSprite_65:
@@ -2730,10 +2988,10 @@ DrawSprite_67:
   INC C
   DJNZ DrawSprite_65
   RET
-; This entry point is used by the routines at GameEntry and B159.
+; This entry point is used by the routines at GameEntry and UpdateAllCrew.
 DrawSprite_68:
   CALL DrawSprite_64
-  LD HL,$50C0
+  LD HL,Auto_50C0
   LD ($7A19),HL
   LD BC,$0200
   LD DE,$7A12
@@ -2749,7 +3007,7 @@ DrawSprite_69:
   LD E,A
   XOR A
   LD D,A
-  LD HL,$7385
+  LD HL,CrewStateTable
   ADD HL,DE
   CP (HL)
   JR Z,DrawSprite_70
@@ -2799,8 +3057,8 @@ DrawSprite_71:
   INC (HL)
   LD A,($7A13)
   CALL DrawCrewStatusHalf
-  JP $B27C
-; This entry point is used by the routine at B159.
+  JP Auto_B27C
+; This entry point is used by the routine at UpdateAllCrew.
 DrawSprite_72:
   XOR A
   CALL DrawSpriteRow_0
@@ -2811,7 +3069,7 @@ DrawSprite_72:
   RET Z
   JR DrawSprite_72
 DrawSprite_73:
-  LD DE,$73BE
+  LD DE,CorridorPosTable
   LD HL,$75E2
   LD BC,$0013
   LDIR
@@ -2823,25 +3081,25 @@ DrawSprite_74:
   INC HL
   DJNZ DrawSprite_74
   LD ($7A11),A
-  LD ($7A10),A
+  LD (GameState_7A10),A
   LD ($7A12),A
   LD ($7A13),A
   RET
-; This entry point is used by the routines at RoomHandlerCommon, 8AFA, 8C85,
-; 95EB and PauseMenu.
+; This entry point is used by the routines at RoomHandlerCommon, RoomHandler_4,
+; ResetCrewTimers, UpdateRoomActors and PauseMenu.
 DrawSprite_75:
   CALL DrawSprite_73
-  LD HL,$8080
-  LD ($7A1F),HL
+  LD HL,Auto_8080
+  LD (CrewAnimFlags),HL
   LD A,$80
-  LD ($9B49),A
-  LD ($9B3D),A
+  LD (Auto_9B49),A
+  LD (Auto_9B3D),A
   CALL DrawSprite_7
   LD A,($7A0A)
   LD HL,$737F
   CP (HL)
   JR NZ,DrawSprite_76
-  LD HL,$7A0B
+  LD HL,RoomTypeByte
   LD (HL),$04
 DrawSprite_76:
   BIT 6,A
@@ -2863,7 +3121,7 @@ DrawSprite_78:
   CALL DrawSprite_68
   CALL DrawSprite_25
   CALL DrawSprite_79
-  LD A,($7A0B)
+  LD A,(RoomTypeByte)
   CP $04
   RET Z
   LD A,($7A0A)
@@ -2881,7 +3139,7 @@ DrawSprite_80:
   POP HL
   INC HL
   LD ($7A19),HL
-  LD A,($7A09)
+  LD A,(ScreenDrawPtr)
   CALL DrawSprite_3
   LD HL,$5816
   LD A,$07
@@ -2907,12 +3165,13 @@ DrawSprite_80:
   CALL FillAttributeBlock_2
   LD A,$3D
   LD ($8395),A
+Auto_8080:
   LD A,$11
-  LD ($8393),A
+  LD (CorridorCursor),A
   LD A,$01
-  LD ($7A14),A
-  LD HL,$73BE
-  LD ($7A1D),HL
+  LD (RoomModeByte),A
+  LD HL,CorridorPosTable
+  LD (CorridorTilePtr),HL
   LD HL,$4036
   LD ($7A19),HL
   LD B,$12
@@ -2922,8 +3181,9 @@ DrawSprite_81:
   POP BC
   DJNZ DrawSprite_81
   CALL HandleInput_15
-  CALL $9A94
+  CALL Auto_9A94
   RET
+Auto_80A6:
   LD A,L
   LD L,H
   ADD A,D
@@ -2955,10 +3215,10 @@ DrawSprite_81:
   LD L,H
   ADD A,D
 DrawSprite_82:
-  LD A,($7A0B)
+  LD A,(RoomTypeByte)
   CP $04
   JR NZ,DrawSprite_83
-  CALL $9B07
+  CALL Auto_9B07
   CALL DrawSprite_106
   RET
 DrawSprite_83:
@@ -2987,7 +3247,7 @@ DrawSprite_84:
   ADD HL,DE
   LD ($7A1B),HL
   LD HL,($7A17)
-  LD DE,$FFE0
+  LD DE,Auto_FFE0
   LD ($7A0C),DE
   ADD HL,DE
   LD ($7A17),HL
@@ -3082,7 +3342,7 @@ DrawSprite_93:
   ADD HL,BC
   LD ($7A1B),HL
   POP BC
-  LD HL,$5800
+  LD HL,Auto_5800
   LD DE,$0020
 DrawSprite_94:
   ADD HL,DE
@@ -3093,7 +3353,7 @@ DrawSprite_94:
 DrawSprite_95:
   LD HL,($7A1B)
   LD A,(HL)
-  LD HL,$80A6
+  LD HL,Auto_80A6
 DrawSprite_96:
   CP (HL)
   JR Z,DrawSprite_97
@@ -3139,7 +3399,7 @@ DrawSprite_99:
   LD HL,$0001
   CP $20
   JR Z,DrawSprite_100
-  LD DE,$FFE0
+  LD DE,Auto_FFE0
   LD HL,$FFEC
 DrawSprite_100:
   LD ($7A0C),DE
@@ -3147,7 +3407,7 @@ DrawSprite_100:
   RET
   LD HL,($7A0C)
   LD A,L
-  LD DE,$FFE0
+  LD DE,Auto_FFE0
   LD HL,$FFEC
   CP $01
   JR Z,DrawSprite_101
@@ -3175,7 +3435,7 @@ DrawSprite_102:
   RET
 DrawSprite_103:
   LD DE,$000C
-  LD HL,$5800
+  LD HL,Auto_5800
   LD C,$13
 DrawSprite_104:
   LD B,$14
@@ -3187,7 +3447,7 @@ DrawSprite_105:
   DEC C
   JR NZ,DrawSprite_104
   LD HL,$6609
-  CALL $7A50
+  CALL GameState_7A30
   RET
 DrawSprite_106:
   LD A,($7A0A)
@@ -3232,7 +3492,7 @@ DrawSprite_110:
   RET
 ; This entry point is used by the routines at InitGameView and PauseMenu.
 DrawSprite_111:
-  LD HL,$5060
+  LD HL,Auto_5060
   LD ($7A19),HL
   LD B,$80
 DrawSprite_112:
@@ -3258,8 +3518,8 @@ DrawSprite_115:
   ADD HL,DE
   JR NZ,DrawSprite_114
   LD DE,$0048
-  LD HL,$7608
-  LD A,($7A09)
+  LD HL,CrewPortraits
+  LD A,(ScreenDrawPtr)
   DEC A
   JR Z,DrawSprite_117
   LD B,A
@@ -3307,18 +3567,18 @@ DrawSprite_122:
 ; AdvanceScriptPtr
 ;
 ; Steps the ROM-traversal script pointer forward by one byte and returns the
-; low nibble (0-15) of the new byte in A. The pointer lives at $7A21 and walks
-; through ZX Spectrum ROM bytes starting at $1041 (SEED $9041 with H masked to
-; $10). Each nibble encodes one game command for the AI scheduler.
+; low nibble (0-15) of the new byte in A. The pointer lives at ScriptPointer
+; and walks through ZX Spectrum ROM bytes starting at $1041 (SEED $9041 with H
+; masked to $10). Each nibble encodes one game command for the AI scheduler.
 ;
 ; Output: A = next script command (0-15)
 ;
-; Used by the routines at 8AFA, GameEntry, 8FFB, UpdateCrewAI, 9272, 95EB and
-; A130.
+; Used by the routines at RoomHandler_4, GameEntry, UpdateAlienEventTimer,
+; UpdateCrewAI, XorHAddE, UpdateRoomActors and TriggerAlienEvent.
 AdvanceScriptPtr:
-  LD HL,($7A21)           ; HL = current script pointer ($7A21)
+  LD HL,(ScriptPointer)   ; HL = current script pointer (ScriptPointer)
   INC HL                  ; advance to next ROM byte
-  LD ($7A21),HL           ; save updated pointer
+  LD (ScriptPointer),HL   ; save updated pointer
   LD A,(HL)               ; read ROM byte at new address
   AND $0F                 ; keep only low nibble → command 0-15
   RET
@@ -3326,24 +3586,25 @@ AdvanceScriptPtr:
 ; ResetScriptPtr
 ;
 ; Resets the ROM-traversal script pointer to its starting address. Reads the
-; SEED value from $5C78 (ZX Spectrum system variable SEED, updated by RAND),
-; calls the address-masking helper at B0EA to compute $1041 (ROM address $9041
-; with H masked to $10), and stores the result at $7A21.
+; SEED value from Auto_5C78 (ZX Spectrum system variable SEED, updated by
+; RAND), calls the address-masking helper at WrapScreenAddr to compute $1041
+; (ROM address $9041 with H masked to $10), and stores the result at
+; ScriptPointer.
 ;
 ; USED by the routines at GameEntry and PlayMusic.
 ResetScriptPtr:
-  LD HL,($5C78)           ; HL = SEED ($5C78): ZX ROM random seed value
-  CALL $B0EA              ; mask H to $10: HL → ROM address in range
+  LD HL,(Auto_5C78)       ; HL = SEED (Auto_5C78): ZX ROM random seed value
+  CALL WrapScreenAddr     ; mask H to $10: HL → ROM address in range
                           ; $1000-$1FFF
-  LD ($7A21),HL           ; store as script pointer at $7A21
+  LD (ScriptPointer),HL   ; store as script pointer at ScriptPointer
   RET
 
-; Routine at 33610
+; Routine at DrawCrewStatusHalf
 ;
 ; Used by the routine at DrawSprite.
 DrawCrewStatusHalf:
   PUSH AF
-  LD HL,$7385
+  LD HL,CrewStateTable
   LD DE,$0008
   LD B,A
 DrawCrewStatusHalf_0:
@@ -3351,7 +3612,7 @@ DrawCrewStatusHalf_0:
   DJNZ DrawCrewStatusHalf_0
   LD A,(HL)
   AND A
-  JR Z,DrawCrewStatusHalf_1
+  JR Z,KeyInputByte
   LD HL,($7A19)
   PUSH HL
   LD A,$5E
@@ -3360,58 +3621,86 @@ DrawCrewStatusHalf_0:
   LD DE,$0008
   ADD HL,DE
   LD ($7A19),HL
-DrawCrewStatusHalf_1:
+KeyInputByte:
   POP AF
+DifficultyByte:
   RET
-  LD HL,$7800
+  LD HL,RoomTileMaps
   CALL DrawSprite_88
   LD DE,$788D
-  LD HL,$5800
+  LD HL,Auto_5800
   LD C,$13
-DrawCrewStatusHalf_2:
+DrawCrewStatusHalf_1:
   LD B,$14
-DrawCrewStatusHalf_3:
+DrawCrewStatusHalf_2:
   LD A,(DE)
   LD (HL),A
   INC DE
   INC HL
-  DJNZ DrawCrewStatusHalf_3
+  DJNZ DrawCrewStatusHalf_2
   PUSH DE
   LD DE,$000C
   ADD HL,DE
   POP DE
   DEC C
-  JR NZ,DrawCrewStatusHalf_2
+  JR NZ,DrawCrewStatusHalf_1
   LD HL,$6609
-  CALL $7A50
+  CALL GameState_7A30
   RET
+AlienFlags:
   NOP
+CorridorCursor:
   LD DE,$0000
+SprDestA:
   NOP
   LD B,B
+SpriteDestAddr:
   NOP
   LD B,B
+FrameCounterB:
   ADD HL,DE
+Auto_839B:
   ADD HL,DE
+Auto_839C:
   RST $38
   RST $38
   RST $38
+Auto_839F:
   RST $38
+Auto_83A0:
   RST $38
+Auto_83A1:
   RST $38
+Auto_83A2:
   NOP
+SoundRequest:
   NOP
+CrewIndex:
   LD BC,$7386
+AlienTargetID:
   ADD HL,BC
+AlienActiveFlag:
   NOP
+Auto_83A9:
   NOP
+AlienEventTimer:
   LD B,$FF
+Auto_83AC:
   NOP
+Auto_83AD:
   NOP
+Auto_83AE:
   RET PO
   LD E,D
+Auto_83B0:
   RST $38
+Auto_83B1:
   RST $38
+Auto_83B2:
+  NOP
+  NOP
+  NOP
+Auto_83B5:
   NOP
   NOP
   NOP
@@ -3426,27 +3715,33 @@ DrawCrewStatusHalf_3:
   NOP
   NOP
   NOP
+SoundReqFlag:
   NOP
   NOP
   NOP
+SprScreenAddrA:
   NOP
   NOP
+SprScreenAddrB:
   NOP
-  NOP
-  NOP
-  NOP
+MusicActiveFlag:
   NOP
   RST $38
+AnimFrameCnt:
   RST $38
 
-; Routine at 33740
+; Routine at DrawCorridorSegment
 DrawCorridorSegment:
   RST $38
+Auto_83CD:
   OR D
   ADD A,E
+Auto_83CF:
   RST $38
   RST $38
+Auto_83D1:
   RRCA
+Auto_83D2:
   NOP
   NOP
   NOP
@@ -3461,6 +3756,7 @@ DrawCorridorSegment:
   INC BC
   LD BC,$0808
   EX AF,AF'
+Auto_83E2:
   NOP
   LD C,$0E
   DEC C
@@ -3475,6 +3771,7 @@ DrawCorridorSegment:
   OR H
   LD D,B
   LD D,B
+Auto_83F2:
   NOP
   NOP
   JR NC,$8406
@@ -3482,6 +3779,7 @@ DrawCorridorSegment:
   NOP
   NOP
   NOP
+Auto_83FA:
   NOP
   RLCA
   DEC B
@@ -3489,21 +3787,37 @@ DrawCorridorSegment:
   RLCA
   INC BC
 
-; Data block at 33792
+; Data block at TileTableBounds
+TileTableBounds:
   DEFB $0A,$05
 
-; Data block at 33794
-  DEFB $F2,$89,$F2,$89,$0A,$8A,$0A,$8A
-  DEFB $FA,$8A,$78,$8A,$5B,$89,$5B,$89
-  DEFB $5B,$89,$5B,$89,$5B,$89,$5B,$89
-  DEFB $5B,$89,$96,$89,$78,$8A,$78,$8A
-  DEFB $78,$8A,$8A,$89,$8A,$89,$8A,$89
-  DEFB $78,$8A,$78,$8A,$78,$8A,$78,$8A
-  DEFB $E8,$8A,$36,$8A,$36,$8A,$36,$8A
-  DEFB $36,$8A,$36,$8A,$78,$8A,$79,$8A
-  DEFB $7B,$8A,$36,$8B
+; RoomDispatchTable
+;
+; 34 × 16-bit function pointers for the per-room game handler dispatch. Indexed
+; as table[room_mode × 2], accessed by the dispatcher at RoomModeDispatch via
+; JP (HL). Room modes 0-33 each map to a handler routine. Pairs of entries
+; often share the same handler (modes 0-1, 4-5, etc.).
+;
+;       ROOM mode → handler mapping:
+;   0-1: RoomModeDispatch  2-3: RoomHandler_2  4: RoomHandler_4  5:
+;        RoomHandlerNop
+;  6-12: RoomHandlerCommon (RoomHandlerCommon)        13: RoomHandler_13
+; 14-16: RoomHandlerNop  17-19: RoomHandler_17  20-23: RoomHandlerNop
+;    24: RoomHandler_24  25-29: RoomHandler_25  30-31: RoomHandlerNop  32:
+;        RoomHandlerNop2
+;    33: RoomHandler_33
+RoomDispatchTable:
+  DEFW RoomModeDispatch,RoomModeDispatch,RoomHandler_2,RoomHandler_2
+  DEFW RoomHandler_4,RoomHandlerNop,RoomHandlerCommon,RoomHandlerCommon
+  DEFW RoomHandlerCommon,RoomHandlerCommon,RoomHandlerCommon,RoomHandlerCommon
+  DEFW RoomHandlerCommon,RoomHandler_13,RoomHandlerNop,RoomHandlerNop
+  DEFW RoomHandlerNop,RoomHandler_17,RoomHandler_17,RoomHandler_17
+  DEFW RoomHandlerNop,RoomHandlerNop,RoomHandlerNop,RoomHandlerNop
+  DEFW RoomHandler_24,RoomHandler_25,RoomHandler_25,RoomHandler_25
+  DEFW RoomHandler_25,RoomHandler_25,RoomHandlerNop,RoomHandlerNop2
+  DEFW RoomHandler_33,$8B36
 
-; Routine at 33862
+; Routine at GetCorridorTableEntry
 GetCorridorTableEntry:
   ADC A,L
   ADC A,E
@@ -3516,6 +3830,7 @@ GetCorridorTableEntry:
   CP $95
   LD (HL),B
   ADC A,D
+Auto_8454:
   LD A,B
   ADC A,D
   JP NZ,$058C
@@ -3529,6 +3844,7 @@ GetCorridorTableEntry:
   SUB A
   DEC (HL)
   SBC A,A
+Auto_8464:
   CP $20
   LD D,E
   LD H,L
@@ -3881,7 +4197,7 @@ GetCorridorTableEntry_26:
   LD B,L
   LD B,H
   RST $38
-  CALL M,$5020
+  CALL M,Auto_5020
   LD D,D
   LD B,L
   LD D,E
@@ -4236,7 +4552,7 @@ GetCorridorTableEntry_54:
   CALL GetCorridorTableEntry_55
   RET
 GetCorridorTableEntry_55:
-  LD HL,$8392
+  LD HL,AlienFlags
   LD (HL),$00
   LD BC,$F7FE
   IN A,(C)
@@ -4267,7 +4583,7 @@ GetCorridorTableEntry_60:
 ; HandleInput
 ;
 ; Reads the keyboard and moves the selected crew member. Calls the key-scanner
-; at GetCorridorTableEntry_54 which packs five keys into $836A: bit 4 =
+; at GetCorridorTableEntry_54 which packs five keys into KeyInputByte: bit 4 =
 ; fire/action, bit 3 = move right (key 8), bit 2 = move left (key 5), bits 1-0
 ; = up/down (keys 6/7). If the action key (bit 4) is held, enters a beeper loop
 ; toggling port $FE until released. Otherwise dispatches movement: right →
@@ -4276,8 +4592,8 @@ GetCorridorTableEntry_60:
 ;
 ; USED by the routine at GameEntry.
 HandleInput:
-  CALL GetCorridorTableEntry_54 ; scan keyboard → $836A bitmask
-  LD A,($8392)            ; A = key bitmask ($836A)
+  CALL GetCorridorTableEntry_54 ; scan keyboard → KeyInputByte bitmask
+  LD A,(AlienFlags)       ; A = key bitmask (KeyInputByte)
   AND A                   ; any key pressed?
   RET Z                   ; no: return immediately
   BIT 4,A                 ; action/fire key held?
@@ -4286,7 +4602,7 @@ HandleInput:
 HandleInput_0:
   EX AF,AF'               ; save border colour to A'
   CALL GetCorridorTableEntry_54 ; re-scan keyboard (wait for release)
-  LD A,($8392)            ; read updated key state
+  LD A,(AlienFlags)       ; read updated key state
   BIT 4,A                 ; action key still held?
   JP Z,HandleInput_12     ; released: return to caller
   EX AF,AF'               ; restore A' border colour
@@ -4305,7 +4621,7 @@ HandleInput_2:
 ; This entry point is used by the routine at GetCorridorTableEntry.
 HandleInput_3:
   RET Z                   ; no directional key: return
-  LD A,($7A14)            ; A = room mode ($7A14)
+  LD A,(RoomModeByte)     ; A = room mode (RoomModeByte)
   AND A                   ; mode 0 = single-row corridor (no up/down)
   RET Z                   ; in single-row mode: up/down keys ignored
 ; This entry point is used by the routine at GetCorridorTableEntry.
@@ -4315,16 +4631,17 @@ HandleInput_4:
   RET Z                   ; at left wall: cannot move
   CALL HandleInput_5      ; move one step (shares forward-move code)
   JR HandleInput_4        ; keep moving while at edge
-; This entry point is used by the routines at 8AFA, 8FFB and 9272.
+; This entry point is used by the routines at RoomHandler_4,
+; UpdateAlienEventTimer and XorHAddE.
 HandleInput_5:
   CALL HandleInput_13
-  LD HL,$8393
+  LD HL,CorridorCursor
   LD A,($8395)
   CP $46
   JR C,HandleInput_6
   INC (HL)
 HandleInput_6:
-  LD HL,$8393
+  LD HL,CorridorCursor
   LD A,(HL)
   CP $12
   JR C,HandleInput_7
@@ -4334,7 +4651,7 @@ HandleInput_7:
   LD (HL),A
   LD D,$00
   LD E,A
-  LD HL,$73BE
+  LD HL,CorridorPosTable
   ADD HL,DE
   LD A,(HL)
   CP $52
@@ -4345,16 +4662,16 @@ HandleInput_7:
 HandleInput_8:
   CALL HandleInput_13
 HandleInput_9:
-  LD A,($8393)
+  LD A,(CorridorCursor)
   AND A
   JR NZ,HandleInput_10
   LD A,$13
 HandleInput_10:
   DEC A
-  LD ($8393),A
+  LD (CorridorCursor),A
   LD D,$00
   LD E,A
-  LD HL,$73BE
+  LD HL,CorridorPosTable
   ADD HL,DE
   LD A,(HL)
   CP $52
@@ -4367,7 +4684,7 @@ HandleInput_10:
   JR C,HandleInput_11
   CP $52
   JR NC,HandleInput_11
-  LD HL,$8393
+  LD HL,CorridorCursor
   DEC (HL)
 HandleInput_11:
   CALL HandleInput_15
@@ -4376,8 +4693,8 @@ HandleInput_11:
 HandleInput_12:
   XOR A
   OUT ($FE),A
-  LD HL,$8402
-  LD A,($7A14)
+  LD HL,RoomDispatchTable
+  LD A,(RoomModeByte)
   LD E,A
   LD D,$00
   ADD HL,DE
@@ -4388,7 +4705,7 @@ HandleInput_12:
   LD L,A
   JP (HL)
 HandleInput_13:
-  LD A,($8393)
+  LD A,(CorridorCursor)
   CALL HandleInput_17
   LD A,($8395)
   LD C,$01
@@ -4400,13 +4717,13 @@ HandleInput_14:
   CALL FillAttributeBlock_2
   RET
 ; This entry point is used by the routines at FillAttributeBlock, DrawSprite,
-; 89DA and 8AFA.
+; DrawRoomCorridor and RoomHandler_4.
 HandleInput_15:
-  LD A,($8393)
+  LD A,(CorridorCursor)
   PUSH AF
   LD E,A
   LD D,$00
-  LD HL,$73BE
+  LD HL,CorridorPosTable
   ADD HL,DE
   LD A,(HL)
   LD ($8395),A
@@ -4436,7 +4753,7 @@ HandleInput_18:
   RET
 HandleInput_19:
   CALL AnimateCrewB_7
-  LD A,($7A14)
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
   LD A,($8395)
@@ -4446,7 +4763,7 @@ HandleInput_19:
   LD D,$00
   LD HL,$74D1
   ADD HL,DE
-  LD A,($7A0B)
+  LD A,(RoomTypeByte)
   CP (HL)
   RET NZ
   LD A,($8395)
@@ -4456,19 +4773,21 @@ HandleInput_19:
 ; AnimateCrewA
 ;
 ; Animates crew sprite set A. Skips if bit 7 of the animation-freeze flag at
-; $7A1F is set. Decrements the frame counter at $83CB; when it reaches zero,
-; resets the counter to 10 and XOR-blits two consecutive 3×12-byte sprite
-; frames from the animation table at $68E5 (indexed by the frame phase in $7A1F
-; bits 0-1) onto the display at the address stored in $83C6. Calling this
-; routine twice per frame (once to erase, once to draw the next frame) produces
-; flicker-free sprite animation via double-buffered XOR.
+; CrewAnimFlags is set. Decrements the frame counter at AnimFrameCnt; when it
+; reaches zero, resets the counter to 10 and XOR-blits two consecutive
+; 3×12-byte sprite frames from the animation table at CrewWalkAnimA (indexed by
+; the frame phase in CrewAnimFlags bits 0-1) onto the display at the address
+; stored in SprScreenAddrA. Calling this routine twice per frame (once to
+; erase, once to draw the next frame) produces flicker-free sprite animation
+; via double-buffered XOR.
 ;
-; USED by the routines at GameEntry, 95EB and DrawShipMap.
+; USED by the routines at GameEntry, UpdateRoomActors and DrawShipMap.
 AnimateCrewA:
-  LD A,($7A1F)            ; A = animation-freeze / frame-phase byte ($7A1F)
+  LD A,(CrewAnimFlags)    ; A = animation-freeze / frame-phase byte
+                          ; (CrewAnimFlags)
   BIT 7,A                 ; bit 7 = freeze flag
   RET NZ                  ; frozen: skip animation this frame
-  LD HL,$839B             ; HL = frame counter A ($83CB)
+  LD HL,Auto_839B         ; HL = frame counter A (AnimFrameCnt)
   DEC (HL)                ; tick down counter
   RET NZ                  ; not expired: nothing to do
   LD (HL),$0A             ; reset counter to 10 frames per phase
@@ -4478,7 +4797,7 @@ AnimateCrewA_0:
   PUSH BC                 ; save row counter
   LD E,A                  ; E = frame phase (0-3)
   LD D,$00
-  LD HL,$68E5             ; HL = base of crew-A animation table ($68E5)
+  LD HL,CrewWalkAnimA     ; HL = base of crew-A animation table (CrewWalkAnimA)
   ADD HL,DE               ; index by phase × 2
   ADD HL,DE
   LD A,(HL)               ; read 16-bit sprite bitmap pointer
@@ -4486,31 +4805,32 @@ AnimateCrewA_0:
   LD H,(HL)
   LD L,A                  ; HL = pointer to 3-byte sprite row data
   EX DE,HL                ; DE = sprite data source
-  LD HL,($8396)           ; HL = screen destination address ($83C6)
+  LD HL,(SprDestA)        ; HL = screen destination address (SprScreenAddrA)
   CALL AnimateCrewB_1     ; XOR-blit 3 bytes × 12 rows onto screen
   POP BC                  ; restore row counter
   DEC B
   RET Z                   ; done after 2 rows
-  LD A,($7A1F)            ; advance to next frame phase
+  LD A,(CrewAnimFlags)    ; advance to next frame phase
   INC A
   AND $03                 ; wrap phase 0-3
-  LD ($7A1F),A            ; store updated phase
+  LD (CrewAnimFlags),A    ; store updated phase
   JR AnimateCrewA_0       ; blit second sprite row
 
 ; AnimateCrewB
 ;
-; Animates crew sprite set B. Identical logic to AnimateCrewA (AnimateCrewA)
-; but uses a faster frame rate (counter resets to 5 rather than 10), the B-set
-; animation table at $68ED, and the B-channel screen address at $83C8. This
-; drives the alien sprite or a second crew animation channel at twice the speed
-; of set A.
+; Animates the room indicator cursor (B channel). Identical logic to
+; AnimateCrewA (AnimateCrewA) but uses a faster frame rate (counter resets to 5
+; rather than 10), the B-set animation table at CrewWalkAnimB (CrewWalkAnimB),
+; and the B-channel screen address at SprScreenAddrB. Cycles through four
+; cursor shapes (RoomCursor0-3) at twice the speed of the crew walk animation.
 ;
-; USED by the routines at GameEntry, 95EB and DrawShipMap.
+; USED by the routines at GameEntry, UpdateRoomActors and DrawShipMap.
 AnimateCrewB:
-  LD A,($7A20)            ; A = animation-freeze / frame-phase byte ($7A20)
+  LD A,(AnimFramePhase)   ; A = animation-freeze / frame-phase byte
+                          ; (AnimFramePhase)
   BIT 7,A                 ; bit 7 = freeze flag
   RET NZ                  ; frozen: skip
-  LD HL,$839A             ; HL = frame counter B ($83CA)
+  LD HL,FrameCounterB     ; HL = frame counter B ($83CA)
   DEC (HL)                ; tick down counter
   RET NZ                  ; not expired
   LD (HL),$05             ; reset to 5 frames per phase (2× speed of set A)
@@ -4520,7 +4840,7 @@ AnimateCrewB_0:
   PUSH BC
   LD E,A                  ; E = frame phase (0-3)
   LD D,$00
-  LD HL,$68ED             ; base of crew-B animation table ($68ED)
+  LD HL,CrewWalkAnimB     ; base of crew-B animation table (CrewWalkAnimB)
   ADD HL,DE               ; index by phase × 2
   ADD HL,DE
   LD A,(HL)               ; read 16-bit sprite bitmap pointer
@@ -4528,15 +4848,15 @@ AnimateCrewB_0:
   LD H,(HL)
   LD L,A                  ; HL = pointer to sprite row data
   EX DE,HL                ; DE = sprite data source
-  LD HL,($8398)           ; HL = screen destination address ($83C8)
+  LD HL,(SpriteDestAddr)  ; HL = screen destination address (SprScreenAddrB)
   CALL AnimateCrewB_1     ; XOR-blit 3 bytes × 12 rows onto screen
   POP BC
   DEC B
   RET Z
-  LD A,($7A20)            ; advance frame phase
+  LD A,(AnimFramePhase)   ; advance frame phase
   INC A
   AND $03                 ; wrap 0-3
-  LD ($7A20),A
+  LD (AnimFramePhase),A
   JR AnimateCrewB_0
 ; This entry point is used by the routine at AnimateCrewA.
 AnimateCrewB_1:
@@ -4563,7 +4883,7 @@ AnimateCrewB_4:
   ADD A,A
   LD D,$00
   LD E,A
-  LD HL,$67C9
+  LD HL,CrewSpriteBitmaps
   ADD HL,DE
   LD A,(HL)
   INC HL
@@ -4572,23 +4892,23 @@ AnimateCrewB_4:
   RET
 ; This entry point is used by the routine at DrawSprite.
 AnimateCrewB_5:
-  LD A,($7A0B)
+  LD A,(RoomTypeByte)
   CP $03
   RET NC
   LD A,($7A0A)
   CALL AnimateCrewB_4
-  LD ($8396),HL
-  LD HL,$7A1F
+  LD (SprDestA),HL
+  LD HL,CrewAnimFlags
   RES 7,(HL)
   LD A,(HL)
   LD B,$01
   CALL AnimateCrewA_0
   RET
-; This entry point is used by the routines at HandleInput and 8A0A.
+; This entry point is used by the routines at HandleInput and RoomHandler_2.
 AnimateCrewB_6:
   CALL AnimateCrewB_4
-  LD ($8398),HL
-  LD HL,$7A20
+  LD (SpriteDestAddr),HL
+  LD HL,AnimFramePhase
   RES 7,(HL)
   LD A,(HL)
   LD B,$01
@@ -4596,7 +4916,7 @@ AnimateCrewB_6:
   RET
 ; This entry point is used by the routine at HandleInput.
 AnimateCrewB_7:
-  LD HL,$7A20
+  LD HL,AnimFramePhase
   BIT 7,(HL)
   RET NZ
   PUSH HL
@@ -4610,62 +4930,68 @@ AnimateCrewB_7:
 ; RoomHandlerCommon
 ;
 ; Standard corridor room handler for rooms 6-12. Saves the current corridor
-; cursor ($836B) to $7A09, sets up 17 corridor segments (positions 0-16)
-; starting at position 61, draws the corridor using DrawSprite_7, then checks
-; IX+7 (alive flag of the crew member assigned to this room). If the crew
-; member is dead (IX+7=0), jumps to InitGameView to redraw the view. If the
-; alien is active ($83C8 non-zero) and its target corridor matches the saved
-; cursor, calls the alien-in-room handler DrawSprite_75.
+; cursor (DifficultyByte) to ScreenDrawPtr, sets up 17 corridor segments
+; (positions 0-16) starting at position 61, draws the corridor using
+; DrawSprite_7, then checks IX+7 (alive flag of the crew member assigned to
+; this room). If the crew member is dead (IX+7=0), jumps to InitGameView to
+; redraw the view. If the alien is active (SprScreenAddrB non-zero) and its
+; target corridor matches the saved cursor, calls the alien-in-room handler
+; DrawSprite_75.
 RoomHandlerCommon:
-  LD A,($8393)            ; A = corridor cursor ($836B)
-  LD ($7A09),A            ; save as room-entry position ($7A09)
+  LD A,(CorridorCursor)   ; A = corridor cursor (DifficultyByte)
+  LD (ScreenDrawPtr),A    ; save as room-entry position (ScreenDrawPtr)
   LD A,$11                ; 17 segments in a standard corridor
-  LD ($8393),A            ; set segment counter
+  LD (CorridorCursor),A   ; set segment counter
   LD A,$3D                ; starting position = 61 (leftmost)
   LD ($8395),A            ; store starting corridor position ($836D)
   CALL DrawSprite_7       ; draw all corridor segments
   XOR A                   ; A = 0
   CP (IX+$07)             ; is crew member alive? (IX+7 = alive flag)
   JP NZ,InitGameView      ; crew dead: reinit view
-  LD A,($83A8)            ; A = alien active flag ($83C8)
+  LD A,(AlienActiveFlag)  ; A = alien active flag (SprScreenAddrB)
   AND A                   ; alien present?
   JP Z,DrawSprite_75      ; no alien: draw room contents
-  LD HL,$83A7             ; HL = alien target corridor ($83C7)
-  LD A,($7A09)            ; A = saved entry cursor
+  LD HL,AlienTargetID     ; HL = alien target corridor ($83C7)
+  LD A,(ScreenDrawPtr)    ; A = saved entry cursor
   CP (HL)                 ; alien on this room's corridor?
   JP Z,InitGameView       ; yes: alien blocks entry, redraw
   CALL DrawSprite_75      ; draw room contents (crew sprites etc.)
   RET
 
-; Routine at 35210
-  LD A,($8393)
+; Routine at RoomHandler_17
+RoomHandler_17:
+  LD A,(CorridorCursor)
   SUB $0C
-  LD ($7A0B),A
+  LD (RoomTypeByte),A
   CALL $7A23
   RET
 
-; Routine at 35222
+; Routine at RoomHandler_13
 ;
-; Used by the routine at 8A0A.
+; Used by the routine at RoomHandler_2.
+RoomHandler_13:
   LD A,$02
   LD E,$00
-  JR $89A0
-; This entry point is used by the routine at 8A0A.
+  JR Auto_89A0
+; This entry point is used by the routine at RoomHandler_2.
+Auto_899C:
   LD A,$03
   LD E,$11
-  LD ($7A14),A
+Auto_89A0:
+  LD (RoomModeByte),A
   LD A,$12
-  LD ($8393),A
+  LD (CorridorCursor),A
   LD A,$3D
   LD ($8395),A
-  LD HL,$73BE
+  LD HL,CorridorPosTable
   LD (HL),$3E
   INC HL
   LD B,$11
+Auto_89B5:
   LD (HL),E
   INC HL
   INC E
-  DJNZ $89B5
+  DJNZ Auto_89B5
   LD (HL),$3D
   LD HL,$5836
   LD A,$38
@@ -4680,27 +5006,31 @@ RoomHandlerCommon:
   LD HL,$4016
   LD ($7A19),HL
 
-; Routine at 35290
+; Routine at DrawRoomCorridor
+DrawRoomCorridor:
   LD A,$50
   CALL DrawSprite
-  LD HL,$73BE
-  LD ($7A1D),HL
+  LD HL,CorridorPosTable
+  LD (CorridorTilePtr),HL
   LD B,$13
+Auto_89E7:
   PUSH BC
   CALL DrawNextCorridorTile
   POP BC
-  DJNZ $89E7
+  DJNZ Auto_89E7
   CALL HandleInput_15
   RET
 
-; Routine at 35314
-  CALL $B2B9
+; Routine at RoomModeDispatch
+RoomModeDispatch:
+  CALL Auto_B2B9
   LD HL,$840C
   LD DE,$0024
   AND A
-  JR Z,$89FF
+  JR Z,Auto_89FF
   ADD HL,DE
-  LD A,($8393)
+Auto_89FF:
+  LD A,(CorridorCursor)
   LD E,A
   ADD HL,DE
   ADD HL,DE
@@ -4710,38 +5040,42 @@ RoomHandlerCommon:
   LD L,A
   JP (HL)
 
-; Routine at 35338
+; Routine at RoomHandler_2
+RoomHandler_2:
   LD A,($8395)
   CP $3D
   JP Z,InitGameView
   CP $3E
-  JR NZ,$8A21
-  LD A,($7A14)
+  JR NZ,Auto_8A21
+  LD A,(RoomModeByte)
   CP $02
-  JP Z,$899C
-  JP $8996
+  JP Z,Auto_899C
+  JP RoomHandler_13
+Auto_8A21:
   LD E,A
   LD D,$00
   LD HL,$74D1
   ADD HL,DE
   LD A,(HL)
-  LD ($7A0B),A
+  LD (RoomTypeByte),A
   CALL $7A23
   LD A,($8395)
   CALL AnimateCrewB_6
   RET
 
-; Routine at 35382
+; Routine at RoomHandler_25
+RoomHandler_25:
   LD A,$40
-  CALL $8BE6
+  CALL Auto_8BE6
   LD (IX+$03),$01
   LD A,($7A0A)
   BIT 6,A
-  JR NZ,$8A4D
+  JR NZ,Auto_8A4D
   LD A,($8395)
   LD (IX+$02),A
   RET
-  LD A,($8393)
+Auto_8A4D:
+  LD A,(CorridorCursor)
   SUB $02
   PUSH AF
   LD A,($7A0A)
@@ -4763,21 +5097,24 @@ RoomHandlerCommon:
   OR $40
   LD (IX+$02),A
   RET
-  LD HL,$7A1F
+  LD HL,CrewAnimFlags
   SET 7,(HL)
   JP InitGameView
 
-; Routine at 35448
+; Routine at RoomHandlerNop
+RoomHandlerNop:
   RET
 
-; Routine at 35449
+; Routine at RoomHandlerNop2
+RoomHandlerNop2:
   RET
   RET
 
-; Routine at 35451
+; Routine at RoomHandler_33
+RoomHandler_33:
   CALL DrawSprite_14
   LD (IX+$00),$00
-  LD DE,($7A10)
+  LD DE,(GameState_7A10)
   LD HL,$7520
   PUSH HL
   LD C,E
@@ -4792,20 +5129,22 @@ RoomHandlerCommon:
   SUB E
   ADD A,D
   CP $7F
-  JR C,$8A9D
+  JR C,Auto_8A9D
   XOR A
+Auto_8A9D:
   LD (IX+$05),A
   LD A,(IX+$06)
   SUB E
   ADD A,D
   CP $7F
-  JR C,$8AAA
+  JR C,Auto_8AAA
   XOR A
+Auto_8AAA:
   LD (IX+$06),A
-  LD BC,($7A10)
+  LD BC,(GameState_7A10)
   LD L,B
   LD H,C
-  LD ($7A10),HL
+  LD (GameState_7A10),HL
   LD HL,$74F4
   PUSH HL
   LD E,C
@@ -4822,7 +5161,7 @@ RoomHandlerCommon:
   LD (HL),A
   LD HL,$4836
   LD ($7A19),HL
-  LD A,($7A10)
+  LD A,(GameState_7A10)
   CALL DrawSprite_19
   CALL DrawSprite
   LD A,($7A11)
@@ -4832,31 +5171,33 @@ RoomHandlerCommon:
   CALL GameEntry_23
   RET
 
-; Routine at 35560
+; Routine at RoomHandler_24
 ;
 ; Used by the routine at GameEntry.
+RoomHandler_24:
   LD A,$40
-  CALL $8BE6
+  CALL Auto_8BE6
   LD (IX+$03),$02
   LD A,($7A0A)
   XOR $40
   LD (IX+$02),A
   RET
 
-; Routine at 35578
+; Routine at RoomHandler_4
+RoomHandler_4:
   LD A,($8395)
   CP $3D
   JP Z,DrawSprite_75
-  LD A,($8393)
+  LD A,(CorridorCursor)
   LD E,A
   LD D,$00
   LD HL,$750A
   ADD HL,DE
   LD E,(HL)
   LD C,$80
-  LD A,($7A10)
+  LD A,(GameState_7A10)
   CP $FF
-  JR NZ,$8B2A
+  JR NZ,Auto_8B2A
   LD HL,$7520
   ADD HL,DE
   LD A,(IX+$05)
@@ -4866,31 +5207,34 @@ RoomHandlerCommon:
   ADD A,(HL)
   LD (IX+$06),A
   LD C,$A0
-  LD A,($7A09)
+Auto_8B2A:
+  LD A,(ScreenDrawPtr)
   ADD A,C
   LD HL,$74F4
   ADD HL,DE
   LD (HL),A
   JP DrawSprite_75
   LD (IX+$00),$00
-  LD DE,$73BE
+  LD DE,CorridorPosTable
   LD HL,$750A
   LD B,$11
+Auto_8B42:
   LD A,(HL)
   CP $FF
-  JR Z,$8B4C
+  JR Z,Auto_8B4C
   PUSH DE
   CALL DrawSprite_19
   POP DE
+Auto_8B4C:
   LD (DE),A
   INC HL
   INC DE
-  DJNZ $8B42
+  DJNZ Auto_8B42
   LD A,$3D
   LD ($73CF),A
   LD ($8395),A
   LD A,$11
-  LD ($8393),A
+  LD (CorridorCursor),A
   LD HL,$5836
   LD A,$0F
   LD C,$11
@@ -4898,24 +5242,25 @@ RoomHandlerCommon:
   LD A,$38
   LD C,$01
   CALL FillAttributeBlock_2
-  LD HL,$73BE
-  LD ($7A1D),HL
+  LD HL,CorridorPosTable
+  LD (CorridorTilePtr),HL
   LD HL,$4036
   LD ($7A19),HL
   LD B,$13
+Auto_8B7D:
   PUSH BC
   CALL DrawNextCorridorTile
   POP BC
-  DJNZ $8B7D
+  DJNZ Auto_8B7D
   LD A,$04
-  LD ($7A14),A
+  LD (RoomModeByte),A
   CALL HandleInput_15
   RET
   LD (IX+$00),$00
   LD A,($7A11)
   CP $FF
-  JR NZ,$8BC6
-  LD A,($7A10)
+  JR NZ,Auto_8BC6
+  LD A,(GameState_7A10)
   LD E,A
   LD D,$00
   LD HL,$7520
@@ -4923,42 +5268,50 @@ RoomHandlerCommon:
   LD A,(IX+$05)
   SUB (HL)
   CP $7F
-  JR C,$8BAB
+  JR C,Auto_8BAB
   XOR A
+Auto_8BAB:
   LD (IX+$05),A
   LD A,(IX+$06)
   SUB (HL)
   CP $7F
-  JR C,$8BB7
+  JR C,Auto_8BB7
   XOR A
+Auto_8BB7:
   LD (IX+$06),A
+Auto_8BBA:
   LD HL,$74F4
   ADD HL,DE
   LD A,($7A0A)
   LD (HL),A
   CALL DrawSprite_75
   RET
+Auto_8BC6:
   LD E,A
   LD D,$00
-  JR $8BBA
-  JP $B306
-; This entry point is used by the routine at B159.
+  JR Auto_8BBA
+  JP Auto_B306
+; This entry point is used by the routine at UpdateAllCrew.
+Auto_8BCE:
   CP $34
-  JP Z,$9275
-; This entry point is used by the routine at B159.
-  LD A,($7A09)
+  JP Z,Auto_9275
+; This entry point is used by the routine at UpdateAllCrew.
+Auto_8BD3:
+  LD A,(ScreenDrawPtr)
   LD E,A
   LD D,$00
   LD HL,$83EA
   ADD HL,DE
   LD A,(HL)
-  CALL $8BE6
+  CALL Auto_8BE6
   LD (IX+$03),$03
   RET
-; This entry point is used by the routines at 8A36, 8AE8, GameEntry and 9272.
+; This entry point is used by the routines at RoomHandler_25, RoomHandler_24,
+; GameEntry and XorHAddE.
+Auto_8BE6:
   PUSH AF
-  LD HL,$83FA
-  LD A,($7A09)
+  LD HL,Auto_83FA
+  LD A,(ScreenDrawPtr)
   LD D,$00
   LD E,A
   ADD HL,DE
@@ -4966,7 +5319,7 @@ RoomHandlerCommon:
   LD A,(IX+$04)
   AND $07
   LD E,A
-  LD HL,$83F2
+  LD HL,Auto_83F2
   ADD HL,DE
   LD A,(HL)
   ADD A,C
@@ -4976,31 +5329,34 @@ RoomHandlerCommon:
   LD (IX+$00),A
   RET
   LD (IX+$00),$00
-  LD A,($7A10)
+  LD A,(GameState_7A10)
   CP $11
-  JR Z,$8C13
+  JR Z,Auto_8C13
   CP $10
   RET NZ
-  LD A,($7A09)
+Auto_8C13:
+  LD A,(ScreenDrawPtr)
   LD E,A
   LD D,$00
-  LD HL,$83E2
+  LD HL,Auto_83E2
   ADD HL,DE
   LD E,(HL)
-  LD A,($7A10)
+  LD A,(GameState_7A10)
   CP $11
-  JR Z,$8C29
+  JR Z,Auto_8C29
   LD A,E
   SUB $04
   LD E,A
+Auto_8C29:
   CALL AdvanceScriptPtr
   CP E
-  JR NC,$8C38
+  JR NC,Auto_8C38
   LD HL,$83AB
   LD (HL),$01
-  CALL $8FFB
+  CALL UpdateAlienEventTimer
   RET
-  LD A,($7A10)
+Auto_8C38:
+  LD A,(GameState_7A10)
   LD HL,$74F4
   LD E,A
   LD D,$00
@@ -5008,17 +5364,17 @@ RoomHandlerCommon:
   LD (HL),$FF
   LD E,$04
   ADD HL,DE
-  LD A,($7A09)
+  LD A,(ScreenDrawPtr)
   ADD A,$A0
   LD (HL),A
   CALL DrawSprite_14
-  LD A,($7A10)
+  LD A,(GameState_7A10)
   CALL DrawSprite_19
-  LD ($73C6),A
+  LD (Auto_73C6),A
   LD HL,$4836
   LD ($7A19),HL
   CALL DrawSprite
-  CALL $B1C6
+  CALL Auto_B1C6
   LD (HL),$FF
   LD HL,$48F6
   LD ($7A19),HL
@@ -5026,43 +5382,47 @@ RoomHandlerCommon:
   LD ($73CC),A
   CALL DrawSprite
   CALL HandleInput_5
-  CALL $9AF6
-  LD A,($7A09)
+  CALL Auto_9AF6
+  LD A,(ScreenDrawPtr)
   LD L,A
   LD A,$02
   CALL UpdateCrewAI_8
   RET
 
-; Routine at 35973
+; Routine at ResetCrewTimers
 ;
 ; Used by the routine at GameEntry.
+ResetCrewTimers:
   PUSH IX
   XOR A
-  LD ($83A4),A
-  LD IX,$737E
+  LD (CrewIndex),A
+  LD IX,CrewData
   LD B,$08
+Auto_8C91:
   PUSH BC
   LD A,(IX+$00)
   AND A
-  JR Z,$8C9F
+  JR Z,Auto_8C9F
   DEC A
   LD (IX+$00),A
   CALL PlayMusic_25
+Auto_8C9F:
   LD DE,$0008
   ADD IX,DE
-  LD HL,$83A4
+  LD HL,CrewIndex
   INC (HL)
   POP BC
-  DJNZ $8C91
+  DJNZ Auto_8C91
   POP IX
   RET
 ; This entry point is used by the routine at PlayMusic.
+Auto_8CAE:
   CALL GameEntry_3
   AND A
   RET Z
   LD E,(IX+$03)
   LD D,$00
-  LD HL,$8454
+  LD HL,Auto_8454
   ADD HL,DE
   ADD HL,DE
   LD A,(HL)
@@ -5070,63 +5430,70 @@ RoomHandlerCommon:
   LD H,(HL)
   LD L,A
   JP (HL)
-; This entry point is used by the routine at 9272.
+; This entry point is used by the routine at XorHAddE.
+Auto_8CC2:
   LD A,(IX+$02)
   CP (IX+$01)
   RET Z
   LD (IX+$01),A
   BIT 6,A
-  JR NZ,$8CD5
+  JR NZ,Auto_8CD5
   LD A,$01
-  LD ($83A3),A
-  CALL $8D5B
+  LD (SoundRequest),A
+Auto_8CD5:
+  CALL Auto_8D5B
   LD A,(IX+$01)
   LD E,$02
   AND A
-  JR Z,$8CE6
+  JR Z,Auto_8CE6
   CP $01
-  JR NZ,$8CF1
+  JR NZ,Auto_8CF1
   LD E,$04
+Auto_8CE6:
   LD A,E
   LD HL,$7A15
   AND (HL)
-  JR Z,$8CF1
+  JR Z,Auto_8CF1
   LD (IX+$01),$0D
-  LD A,($7A14)
+Auto_8CF1:
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
-  LD A,($83A4)
-  LD HL,$7A09
+  LD A,(CrewIndex)
+  LD HL,ScreenDrawPtr
   CP (HL)
   JP Z,DrawSprite_75
-  CALL $B11A
+  CALL Auto_B11A
   RET
   LD E,(IX+$01)
   LD A,(IX+$05)
   BIT 6,E
-  JR NZ,$8D11
+  JR NZ,Auto_8D11
   DEC A
   DEC A
+Auto_8D11:
   INC A
   CP $7F
-  JR C,$8D17
+  JR C,Auto_8D17
   XOR A
+Auto_8D17:
   LD (IX+$05),A
   LD A,E
   XOR $40
   LD (IX+$01),A
-  CALL $8D5B
-  LD A,($7A14)
+  CALL Auto_8D5B
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
-  LD A,($83A4)
-  LD HL,$7A09
+  LD A,(CrewIndex)
+  LD HL,ScreenDrawPtr
   CP (HL)
   JP Z,DrawSprite_75
-  JP $B11A
+  JP Auto_B11A
 ; This entry point is used by the routine at GameEntry.
+Auto_8D36:
   LD A,$01
-  LD ($83A9),A
+  LD (Auto_83A9),A
   LD A,(IX+$01)
   AND $3F
   LD HL,$757C
@@ -5134,7 +5501,7 @@ RoomHandlerCommon:
   LD D,$00
   ADD HL,DE
   LD (HL),$00
-  LD A,($7A14)
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
   LD A,($7A0A)
@@ -5142,143 +5509,163 @@ RoomHandlerCommon:
   CP E
   JP Z,DrawSprite_75
   JP GameEntry_23
+Auto_8D5B:
   LD HL,$FFFF
   LD ($7A12),HL
   LD HL,$7387
   LD C,$01
-  LD A,($83A4)
+  LD A,(CrewIndex)
   AND A
   RET Z
   EX AF,AF'
   LD DE,$7A12
   LD A,(IX+$01)
   LD B,$07
+Auto_8D74:
   CP (HL)
-  JR NZ,$8D80
+  JR NZ,Auto_8D80
   EX AF,AF'
   CP C
-  JR Z,$8D7F
+  JR Z,Auto_8D7F
   EX DE,HL
   LD (HL),C
   EX DE,HL
   INC DE
+Auto_8D7F:
   EX AF,AF'
+Auto_8D80:
   PUSH DE
   LD DE,$0008
   ADD HL,DE
   POP DE
   INC C
-  DJNZ $8D74
+  DJNZ Auto_8D74
   PUSH IX
-  LD A,($83A4)
-  LD ($839F),A
+  LD A,(CrewIndex)
+  LD (Auto_839F),A
   LD HL,($7A12)
-  LD ($83A0),HL
-  CALL $8DBB
-  LD HL,($83A0)
-  LD A,($839F)
-  LD ($83A1),A
-  LD ($839F),HL
-  CALL $8DBB
-  LD HL,($83A0)
-  LD A,($839F)
-  LD ($83A1),A
-  LD ($839F),HL
-  CALL $8DBB
+  LD (Auto_83A0),HL
+  CALL Auto_8DBB
+  LD HL,(Auto_83A0)
+  LD A,(Auto_839F)
+  LD (Auto_83A1),A
+  LD (Auto_839F),HL
+  CALL Auto_8DBB
+  LD HL,(Auto_83A0)
+  LD A,(Auto_839F)
+  LD (Auto_83A1),A
+  LD (Auto_839F),HL
+  CALL Auto_8DBB
   POP IX
   RET
+Auto_8DBB:
   XOR A
-  LD ($83A2),A
-  LD A,($839F)
+  LD (Auto_83A2),A
+  LD A,(Auto_839F)
   CP $FF
   RET Z
   LD B,A
-  LD IX,$737E
+  LD IX,CrewData
   LD DE,$0008
+Auto_8DCD:
   ADD IX,DE
-  DJNZ $8DCD
+  DJNZ Auto_8DCD
   XOR A
   CP (IX+$07)
   RET NZ
   PUSH IX
   LD B,$02
-  LD DE,$83A0
+  LD DE,Auto_83A0
+Auto_8DDD:
   PUSH BC
   PUSH DE
   LD A,(DE)
   CP $FF
-  JR Z,$8E21
-  LD IX,$737E
+  JR Z,Auto_8E21
+  LD IX,CrewData
   LD DE,$0008
+Auto_8DEB:
   ADD IX,DE
   DEC A
-  JR NZ,$8DEB
+  JR NZ,Auto_8DEB
   CP (IX+$07)
-  JR Z,$8E14
+  JR Z,Auto_8E14
   INC A
   CP (IX+$07)
-  JR NZ,$8E0E
-  CALL $8E4C
+  JR NZ,Auto_8E0E
+  CALL Auto_8E4C
   POP DE
   PUSH DE
   LD A,(DE)
   LD H,A
-  LD A,($839F)
+  LD A,(Auto_839F)
   LD L,A
   LD A,$14
   CALL UpdateCrewAI_8
   INC (IX+$07)
-  LD HL,$83A2
+Auto_8E0E:
+  LD HL,Auto_83A2
   DEC (HL)
-  JR $8E21
+  JR Auto_8E21
+Auto_8E14:
   LD A,(IX+$05)
   SUB $02
   LD E,A
-  LD A,($83A2)
+  LD A,(Auto_83A2)
   ADD A,E
-  LD ($83A2),A
+  LD (Auto_83A2),A
+Auto_8E21:
   POP DE
   INC DE
   POP BC
-  DJNZ $8DDD
+  DJNZ Auto_8DDD
   POP IX
   LD B,$03
-  LD HL,$839C
+  LD HL,Auto_839C
   LD A,(IX+$01)
+Auto_8E30:
   CP (HL)
-  JR Z,$8E38
+  JR Z,Auto_8E38
   INC HL
-  DJNZ $8E30
-  JR $8E3C
-  LD HL,$83A2
+  DJNZ Auto_8E30
+  JR Auto_8E3C
+Auto_8E38:
+  LD HL,Auto_83A2
   INC (HL)
-  LD HL,$83A2
+Auto_8E3C:
+  LD HL,Auto_83A2
   LD A,(IX+$05)
   ADD A,(HL)
   CP $7F
-  JR C,$8E48
+  JR C,Auto_8E48
   XOR A
+Auto_8E48:
   LD (IX+$06),A
   RET
-; This entry point is used by the routine at B159.
+; This entry point is used by the routine at UpdateAllCrew.
+Auto_8E4C:
   LD HL,$738B
   LD DE,$0008
   LD B,$07
-; This entry point is used by the routine at B159.
+; This entry point is used by the routine at UpdateAllCrew.
+Auto_8E54:
   DEC (HL)
   LD A,$7F
   CP (HL)
-  JR NC,$8E5C
+  JR NC,Auto_8E5C
   LD (HL),$00
-  JP $B1E3
+Auto_8E5C:
+  JP Auto_B1E3
   RET
-; This entry point is used by the routines at 9272, FrameTiming, DrawShipMap,
-; ScreenTransition and PlayMusic.
+; This entry point is used by the routines at XorHAddE, FrameTiming,
+; DrawShipMap, ScreenTransition and PlayMusic.
+Auto_8E60:
   LD BC,$12FF
+Auto_8E63:
   DEC BC
   LD A,C
   OR B
-  JR NZ,$8E63
+  JR NZ,Auto_8E63
   RET
 
 ; GameEntry
@@ -5296,24 +5683,25 @@ GameEntry:
   CALL OptionsScreen      ; OptionsScreen: difficulty selection (keys 1-4)
   CALL ScreenTransition   ; ScreenTransition: wipe to black, set white
                           ; attributes
-  CALL $B159              ; InitCrewPositions: sort crew records by pixel Y
+  CALL UpdateAllCrew      ; InitCrewPositions: sort crew records by pixel Y
   CALL InitGameView       ; InitGameView: draw initial corridor view
 GameEntry_0:
   CALL HandleInput        ; HandleInput: read keyboard, dispatch crew movement
   CALL FrameTiming        ; FrameTiming: one-frame delay or play queued sound
   CALL UpdateAlien        ; UpdateAlien: move alien, attack reachable crew
-  CALL $A130              ; UpdateCrewState: advance per-crew action timers
+  CALL TriggerAlienEvent  ; UpdateCrewState: advance per-crew action timers
   CALL UpdateCrewAI       ; UpdateCrewAI: assign new action to idle crew member
-  CALL $91F3              ; ProcessAnimQueue: step pending corridor animations
-  CALL $8FFB              ; UpdateRoomMode: evaluate current room's game state
-  CALL $8C85              ; UpdateCorridors: advance all crew along corridor
+  CALL Auto_91F3          ; ProcessAnimQueue: step pending corridor animations
+  CALL UpdateAlienEventTimer ; UpdateRoomMode: evaluate current room's game
+                             ; state
+  CALL ResetCrewTimers    ; UpdateCorridors: advance all crew along corridor
   CALL AnimateCrewA       ; AnimateCrewA: XOR-blit crew animation frame set A
   CALL AnimateCrewB       ; AnimateCrewB: XOR-blit crew animation frame set B
   CALL PlayMusic          ; PlayMusic: output ROM-data beeper tone sequence
   CALL AnimateCrewA       ; AnimateCrewA: second blit (double-buffer XOR erase)
   CALL AnimateCrewB       ; AnimateCrewB: second blit (double-buffer XOR erase)
-  CALL $91F3              ; ProcessAnimQueue: second pass
-  CALL $95EB              ; UpdateCorridors: second movement pass
+  CALL Auto_91F3          ; ProcessAnimQueue: second pass
+  CALL UpdateRoomActors   ; UpdateCorridors: second movement pass
   CALL DrawStatusPanel    ; DrawStatusPanel: refresh crew-alive status display
   LD BC,$F7FE             ; BC=$F7FE: keyboard row for keys 1-5
   IN A,(C)                ; read key row (active-low: 0 = key pressed)
@@ -5338,17 +5726,17 @@ GameEntry_2:
   CP $03
   RET NC
   JR GameEntry_4
-; This entry point is used by the routine at 8C85.
+; This entry point is used by the routine at ResetCrewTimers.
 GameEntry_3:
-  LD A,($83A4)
+  LD A,(CrewIndex)
   AND A
   CPL
   RET Z
   XOR A
   CP (IX+$03)
   RET Z
-  LD A,($83A7)
-  LD HL,$83A4
+  LD A,(AlienTargetID)
+  LD HL,CrewIndex
   CP (HL)
   JR Z,GameEntry_1
   XOR A
@@ -5388,7 +5776,7 @@ GameEntry_7:
   RET
 GameEntry_8:
   LD A,$20
-  CALL $8BE6
+  CALL Auto_8BE6
   XOR A
   RET
 GameEntry_9:
@@ -5397,13 +5785,13 @@ GameEntry_9:
   LD A,(IX+$03)
   CP $01
   RET NZ
-  CALL $8D36
-  CALL $8AE8
+  CALL Auto_8D36
+  CALL RoomHandler_24
   XOR A
   RET
 GameEntry_10:
   LD HL,$74F4
-  LD A,($83A4)
+  LD A,(CrewIndex)
   ADD A,$80
   LD E,A
   ADD A,$20
@@ -5423,8 +5811,8 @@ GameEntry_13:
   DJNZ GameEntry_11
   CALL GameEntry_14
   JR GameEntry_4
-; This entry point is used by the routines at UpdateCrewAI, 9272, 95EB and
-; UpdateAlien.
+; This entry point is used by the routines at UpdateCrewAI, XorHAddE,
+; UpdateRoomActors and UpdateAlien.
 GameEntry_14:
   LD A,(IX+$01)
   LD HL,$71F3
@@ -5452,7 +5840,8 @@ GameEntry_16:
 GameEntry_17:
   LD (IX+$02),A
   RET
-; This entry point is used by the routines at 8FFB, UpdateCrewAI and 95EB.
+; This entry point is used by the routines at UpdateAlienEventTimer,
+; UpdateCrewAI and UpdateRoomActors.
 GameEntry_18:
   CP $03
   JR NC,GameEntry_19
@@ -5476,7 +5865,8 @@ GameEntry_21:
 GameEntry_22:
   LD A,$04
   RET
-; This entry point is used by the routines at 8A7B, 8C85 and B0EA.
+; This entry point is used by the routines at RoomHandler_33, ResetCrewTimers
+; and WrapScreenAddr.
 GameEntry_23:
   LD HL,$FFFF
   LD ($7A12),HL
@@ -5485,8 +5875,8 @@ GameEntry_23:
   LD HL,$737F
   CP (HL)
   JR Z,GameEntry_24
-  CALL $9B0F
-  LD A,($83A8)
+  CALL Auto_9B0F
+  LD A,(AlienActiveFlag)
   AND A
   RET Z
   LD HL,($83A5)
@@ -5498,10 +5888,10 @@ GameEntry_24:
   JP PlayMusic_11
 ; This entry point is used by the routine at PlayMusic.
 GameEntry_25:
-  LD HL,$8080
-  LD ($7A1F),HL
+  LD HL,Auto_8080
+  LD (CrewAnimFlags),HL
   LD A,$04
-  LD ($7A0B),A
+  LD (RoomTypeByte),A
 ; This entry point is used by the routine at PlayMusic.
 GameEntry_26:
   LD A,$34
@@ -5511,10 +5901,11 @@ GameEntry_26:
   CALL DrawSprite
   RET
 
-; Routine at 36859
+; Routine at UpdateAlienEventTimer
 ;
-; Used by the routines at 8AFA and GameEntry.
-  LD A,($83AA)
+; Used by the routines at RoomHandler_4 and GameEntry.
+UpdateAlienEventTimer:
+  LD A,(AlienEventTimer)
   CP $FF
   RET Z
   LD HL,$83AB
@@ -5522,13 +5913,15 @@ GameEntry_26:
   RET NZ
   LD (HL),$FF
   EX AF,AF'
-  LD A,($83AA)
+Auto_9009:
+  LD A,(AlienEventTimer)
   LD HL,$71F3
   LD E,A
   LD D,$00
   LD B,$05
+Auto_9014:
   ADD HL,DE
-  DJNZ $9014
+  DJNZ Auto_9014
   PUSH HL
   CALL AdvanceScriptPtr
   CALL GameEntry_18
@@ -5536,37 +5929,41 @@ GameEntry_26:
   POP HL
   ADD HL,DE
   LD A,(HL)
-  LD HL,$83AA
+  LD HL,AlienEventTimer
   LD (HL),A
-  LD A,($7A14)
+  LD A,(RoomModeByte)
   CP $01
-  JR NZ,$904D
+  JR NZ,Auto_904D
   LD HL,$7A0A
   EX AF,AF'
   CP (HL)
-  JR NZ,$904D
+  JR NZ,Auto_904D
   LD A,$FF
   LD ($73CC),A
   LD HL,$48F6
   LD ($7A19),HL
   CALL DrawSprite
-  LD A,($8393)
+  LD A,(CorridorCursor)
   CP $0E
   CALL Z,HandleInput_5
-  CALL $9AF6
-  LD A,($83AA)
+  CALL Auto_9AF6
+Auto_904D:
+  LD A,(AlienEventTimer)
   LD HL,$737F
   LD BC,$0800
   LD DE,$0008
+Auto_9059:
   CP (HL)
-  JR Z,$9061
+  JR Z,Auto_9061
+Auto_905C:
   INC C
   ADD HL,DE
-  DJNZ $9059
+  DJNZ Auto_9059
   RET
+Auto_9061:
   LD A,C
   AND A
-  JR Z,$9009
+  JR Z,Auto_9009
   PUSH HL
   PUSH DE
   LD E,$06
@@ -5575,16 +5972,16 @@ GameEntry_26:
   CP (HL)
   POP DE
   POP HL
-  LD A,($83AA)
-  JR NZ,$905C
+  LD A,(AlienEventTimer)
+  JR NZ,Auto_905C
   XOR A
   LD L,C
   LD H,$00
   CALL UpdateCrewAI_8
-  LD A,($7A14)
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
-  LD A,($83AA)
+  LD A,(AlienEventTimer)
   LD HL,$7A0A
   CP (HL)
   RET NZ
@@ -5593,7 +5990,7 @@ GameEntry_26:
   LD A,$33
   LD ($73CC),A
   CALL DrawSprite
-  CALL $9AE7
+  CALL Auto_9AE7
   RET
 
 ; UpdateCrewAI
@@ -5608,20 +6005,20 @@ GameEntry_26:
 ; USED by the routine at GameEntry.
 UpdateCrewAI:
   PUSH IX                 ; save caller's IX
-  LD IX,$737E             ; IX = crew data base ($7236, first 7-entry crew
+  LD IX,CrewData          ; IX = crew data base ($7236, first 7-entry crew
                           ; table)
   XOR A                   ; A = 0
   CP (IX+$00)             ; is crew member 0's action counter zero (idle)?
-  JR Z,UpdateCrewAI_0     ; yes: assign new action at B299
+  JR Z,UpdateCrewAI_0     ; yes: assign new action at Auto_B299
   POP IX                  ; crew member busy: restore IX
   RET                     ; return without change
 UpdateCrewAI_0:
-  JP $B299                ; tail-call: assign action from script byte
-; This entry point is used by the routine at B159.
+  JP Auto_B299            ; tail-call: assign action from script byte
+; This entry point is used by the routine at UpdateAllCrew.
 UpdateCrewAI_1:
   LD HL,$FFFF
-  LD ($839F),HL
-  LD DE,$839F
+  LD (Auto_839F),HL
+  LD DE,Auto_839F
   LD HL,$7387
   LD BC,$0701
 UpdateCrewAI_2:
@@ -5638,7 +6035,7 @@ UpdateCrewAI_3:
   ADD HL,DE
   POP DE
   DJNZ UpdateCrewAI_2
-  LD A,($839F)
+  LD A,(Auto_839F)
   CP $FF
   JR Z,UpdateCrewAI_4
   LD (IX+$00),$3C
@@ -5668,7 +6065,7 @@ UpdateCrewAI_5:
   CALL GameEntry_18
   CP $02
   JR NC,UpdateCrewAI_7
-; This entry point is used by the routine at B159.
+; This entry point is used by the routine at UpdateAllCrew.
 UpdateCrewAI_6:
   LD A,(IX+$01)
   XOR $40
@@ -5684,14 +6081,15 @@ UpdateCrewAI_7:
   LD A,(IX+$01)
   CP (IX+$02)
   LD A,$01
-  CALL Z,$9526
+  CALL Z,Auto_9526
   POP IX
   RET
-; This entry point is used by the routines at 8AFA, 8C85, 8FFB, 9272, 95EB,
-; 9DF7, UpdateAlien, A130 and B159.
+; This entry point is used by the routines at RoomHandler_4, ResetCrewTimers,
+; UpdateAlienEventTimer, XorHAddE, UpdateRoomActors, PlayMusicPhrase,
+; UpdateAlien, TriggerAlienEvent and UpdateAllCrew.
 UpdateCrewAI_8:
   EX DE,HL
-  LD HL,($83CF)
+  LD HL,(Auto_83CF)
   CP L
   JR NZ,UpdateCrewAI_9
   LD A,E
@@ -5700,7 +6098,7 @@ UpdateCrewAI_8:
   LD A,L
 UpdateCrewAI_9:
   EX AF,AF'
-  LD HL,($83CD)
+  LD HL,(Auto_83CD)
   LD A,(HL)
   CP $FF
   RET Z
@@ -5711,21 +6109,21 @@ UpdateCrewAI_9:
   INC HL
   LD (HL),D
   INC HL
-  LD ($83CD),HL
+  LD (Auto_83CD),HL
   LD L,A
   LD H,E
-  LD ($83CF),HL
-  LD A,($83AD)
+  LD (Auto_83CF),HL
+  LD A,(Auto_83AD)
   AND A
   RET Z
   LD A,$01
-  LD ($83AD),A
+  LD (Auto_83AD),A
   RET
-; This entry point is used by the routine at 91F3.
+; This entry point is used by the routine at Auto_91F3.
 UpdateCrewAI_10:
-  LD HL,$50E0
+  LD HL,Auto_50E0
   LD ($7A19),HL
-  LD DE,$8464
+  LD DE,Auto_8464
   AND A
   JR Z,UpdateCrewAI_12
   LD B,A
@@ -5753,10 +6151,10 @@ UpdateCrewAI_12:
   INC (HL)
   JR UpdateCrewAI_12
 UpdateCrewAI_13:
-  LD A,($83B0)
+  LD A,(Auto_83B0)
   JR UpdateCrewAI_15
 UpdateCrewAI_14:
-  LD A,($83B1)
+  LD A,(Auto_83B1)
 UpdateCrewAI_15:
   INC DE
   PUSH DE
@@ -5766,7 +6164,7 @@ UpdateCrewAI_15:
 UpdateCrewAI_16:
   INC DE
   PUSH DE
-  LD A,($83B0)
+  LD A,(Auto_83B0)
   LD HL,($7A19)
   PUSH HL
   CALL DrawSprite
@@ -5781,11 +6179,11 @@ UpdateCrewAI_17:
   LD A,L
   AND $1F
   OR $80
-  LD ($83AC),A
+  LD (Auto_83AC),A
   RET
-; This entry point is used by the routine at B159.
+; This entry point is used by the routine at UpdateAllCrew.
 UpdateCrewAI_18:
-  LD HL,$50E0
+  LD HL,Auto_50E0
   LD ($7A19),HL
   LD B,$20
 UpdateCrewAI_19:
@@ -5796,94 +6194,103 @@ UpdateCrewAI_19:
   INC (HL)
   POP BC
   DJNZ UpdateCrewAI_19
-  LD HL,$5AE0
+  LD HL,Auto_5AE0
   LD (HL),$12
-  LD ($83AE),HL
+  LD (Auto_83AE),HL
   INC HL
   LD B,$1F
 UpdateCrewAI_20:
   LD (HL),$00
   INC HL
   DJNZ UpdateCrewAI_20
-  LD HL,$83AD
+  LD HL,Auto_83AD
   LD (HL),B
   RET
 
-; Routine at 37363
+; Routine at Auto_91F3
 ;
 ; Used by the routine at GameEntry.
-  LD A,($83AD)
+Auto_91F3:
+  LD A,(Auto_83AD)
   AND A
-  JR Z,$9207
+  JR Z,Auto_9207
   DEC A
-  LD ($83AD),A
+  LD (Auto_83AD),A
   RET NZ
-  LD A,($83AE)
+  LD A,(Auto_83AE)
   AND $1F
-  LD ($83AC),A
+  LD (Auto_83AC),A
   RET
-  LD A,($83AC)
+Auto_9207:
+  LD A,(Auto_83AC)
   AND A
-  JR NZ,$9238
-  LD A,($83CD)
-  LD HL,$83B2
+  JR NZ,Auto_9238
+  LD A,(Auto_83CD)
+  LD HL,Auto_83B2
   CP L
-  JR NZ,$9217
+  JR NZ,Auto_9217
   RET
+Auto_9217:
   LD A,(HL)
   INC HL
   LD E,(HL)
   INC HL
   LD D,(HL)
-  LD ($83B0),DE
+  LD (Auto_83B0),DE
   LD BC,$0015
-  LD DE,$83B2
-  LD HL,$83B5
+  LD DE,Auto_83B2
+  LD HL,Auto_83B5
   LDIR
-  LD HL,($83CD)
+  LD HL,(Auto_83CD)
   DEC HL
   DEC HL
   DEC HL
-  LD ($83CD),HL
+  LD (Auto_83CD),HL
   CALL UpdateCrewAI_10
   RET
+Auto_9238:
   BIT 7,A
-  JR Z,$9265
-  LD HL,($83AE)
+  JR Z,Auto_9265
+  LD HL,(Auto_83AE)
   LD (HL),$28
   INC HL
   LD (HL),$52
-  LD ($83AE),HL
+  LD (Auto_83AE),HL
   DEC A
   CP $80
-  JR Z,$9250
-  LD ($83AC),A
+  JR Z,Auto_9250
+  LD (Auto_83AC),A
   RET
+Auto_9250:
   XOR A
-  LD ($83AC),A
-  LD A,($83CD)
-  LD HL,$83B2
+  LD (Auto_83AC),A
+  LD A,(Auto_83CD)
+  LD HL,Auto_83B2
   CP L
   LD A,$32
-  JR Z,$9261
+  JR Z,Auto_9261
   LD A,$02
-  LD ($83AD),A
+Auto_9261:
+  LD (Auto_83AD),A
   RET
-  LD HL,($83AE)
+Auto_9265:
+  LD HL,(Auto_83AE)
   LD (HL),$00
   DEC HL
   LD (HL),$52
-  LD ($83AE),HL
+  LD (Auto_83AE),HL
   DEC A
-  LD ($83AC),A
+  LD (Auto_83AC),A
 
-; Routine at 37490
+; Routine at XorHAddE
+XorHAddE:
   XOR H
   ADD A,E
   RET
-; This entry point is used by the routine at 8AFA.
+; This entry point is used by the routine at RoomHandler_4.
+Auto_9275:
   LD A,$28
-  CALL $8BE6
+  CALL Auto_8BE6
   LD (IX+$03),$04
   LD A,$FF
   CALL PlayMusic_26
@@ -5894,8 +6301,8 @@ UpdateCrewAI_20:
   RET
   LD A,($737F)
   CP (IX+$01)
-  JR Z,$92AB
-  LD A,($83A8)
+  JR Z,Auto_92AB
+  LD A,(AlienActiveFlag)
   AND A
   RET Z
   LD HL,($83A5)
@@ -5904,16 +6311,19 @@ UpdateCrewAI_20:
   CP (IX+$01)
   RET NZ
   CALL UpdateAlien_2
-  JR $92AE
-  CALL $92D0
+  JR Auto_92AE
+Auto_92AB:
+  CALL Auto_92D0
+Auto_92AE:
   CALL PlayMusic_4
   NOP
   RET
-  LD A,($7A14)
+Auto_92B3:
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
-  LD A,($7A09)
-  LD HL,$83A4
+  LD A,(ScreenDrawPtr)
+  LD HL,CrewIndex
   CP (HL)
   RET NZ
   LD A,$34
@@ -5922,6 +6332,7 @@ UpdateCrewAI_20:
   LD ($7A19),HL
   CALL DrawSprite
   RET
+Auto_92D0:
   LD A,($737F)
   CP (IX+$01)
   RET NZ
@@ -5933,70 +6344,77 @@ UpdateCrewAI_20:
   RET C
   CALL PlayMusic_8
   CALL DrawSprite_15
-  LD A,($7A10)
+  LD A,(GameState_7A10)
   CP $11
-  JP Z,$92B3
+  JP Z,Auto_92B3
   CP $14
-  JP NC,$92B3
+  JP NC,Auto_92B3
   CP $10
-  JR NZ,$930E
-  LD HL,$737E
+  JR NZ,Auto_930E
+  LD HL,CrewData
   LD (HL),$FF
-  CALL $9424
-  LD A,($83A4)
+  CALL Auto_9424
+  LD A,(CrewIndex)
   LD L,A
   LD A,$03
   CALL UpdateCrewAI_8
-  JP $92B3
+  JP Auto_92B3
+Auto_930E:
   PUSH AF
-  LD A,($83A4)
+  LD A,(CrewIndex)
   LD L,A
   LD A,$04
   CALL UpdateCrewAI_8
   POP AF
   CP $06
-  JR C,$9325
+  JR C,Auto_9325
   CP $12
-  JR Z,$9325
+  JR Z,Auto_9325
   CP $13
-  JR NZ,$9333
+  JR NZ,Auto_9333
+Auto_9325:
   LD HL,$7382
   INC (HL)
-  LD A,($83D1)
+  LD A,(Auto_83D1)
   CP (HL)
   JP Z,OptionsScreen_23
-  JP $9468
+  JP Auto_9468
+Auto_9333:
   CP $08
-  JR NC,$9344
-  CALL $9424
-  LD HL,($83A4)
+  JR NC,Auto_9344
+  CALL Auto_9424
+  LD HL,(CrewIndex)
   LD A,$05
   CALL UpdateCrewAI_8
-  JR $9325
+  JR Auto_9325
+Auto_9344:
   CP $0C
-  JR NC,$9362
-  LD HL,$83D2
+  JR NC,Auto_9362
+  LD HL,Auto_83D2
   LD E,A
   LD D,$00
   ADD HL,DE
   LD A,(HL)
   AND A
-  JR Z,$9357
+  JR Z,Auto_9357
   DEC (HL)
-  JP $9468
-  LD HL,($83A4)
+  JP Auto_9468
+Auto_9357:
+  LD HL,(CrewIndex)
   LD A,$06
   CALL UpdateCrewAI_8
-  JP $92B3
-  JP NZ,$93C7
-  CALL $93F4
-  LD DE,$839F
+  JP Auto_92B3
+Auto_9362:
+  JP NZ,Auto_93C7
+  CALL Auto_93F4
+  LD DE,Auto_839F
   LD B,$03
+Auto_936D:
   PUSH BC
   PUSH DE
   LD A,(DE)
   CP $FF
-  JR Z,$93A9
+  JR Z,Auto_93A9
   PUSH AF
   ADD A,$80
   LD E,A
@@ -6005,18 +6423,21 @@ UpdateCrewAI_20:
   LD C,(IX+$01)
   LD HL,$74F4
   LD B,$16
+Auto_9383:
   LD A,(HL)
   CP E
-  JR Z,$938D
+  JR Z,Auto_938D
   CP D
-  JR Z,$938D
+  JR Z,Auto_938D
   CP C
-  JR NZ,$938F
+  JR NZ,Auto_938F
+Auto_938D:
   LD (HL),$FF
+Auto_938F:
   INC HL
-  DJNZ $9383
+  DJNZ Auto_9383
   POP AF
-  LD HL,$737E
+  LD HL,CrewData
   ADD A,A
   ADD A,A
   ADD A,A
@@ -6026,125 +6447,139 @@ UpdateCrewAI_20:
   ADD HL,DE
   XOR A
   CP (HL)
-  JR NZ,$93A9
+  JR NZ,Auto_93A9
   LD (HL),$01
   DEC HL
   DEC HL
   DEC HL
   LD (HL),A
+Auto_93A9:
   POP DE
   INC DE
   POP BC
-  DJNZ $936D
+  DJNZ Auto_936D
   LD A,$0F
-  CALL $9526
+  CALL Auto_9526
   LD HL,$7382
   LD A,(HL)
   ADD A,$05
   LD (HL),A
-  LD HL,$83D1
+  LD HL,Auto_83D1
   CP (HL)
   JP NC,OptionsScreen_23
   CALL InitGameView
-  JP $9468
+  JP Auto_9468
+Auto_93C7:
   LD E,A
   LD D,$00
-  LD HL,$83D2
+  LD HL,Auto_83D2
   ADD HL,DE
   XOR A
   CP (HL)
-  JR Z,$93E9
+  JR Z,Auto_93E9
   DEC (HL)
   LD A,$06
-  CALL $9526
+  CALL Auto_9526
   LD HL,$7382
   LD A,(HL)
   ADD A,$02
   LD (HL),A
-  LD HL,$83D1
+  LD HL,Auto_83D1
   CP (HL)
   JP NC,OptionsScreen_23
-  JP $9468
-  LD HL,($83A4)
+  JP Auto_9468
+Auto_93E9:
+  LD HL,(CrewIndex)
   LD A,$07
   CALL UpdateCrewAI_8
-  JP $92B3
-; This entry point is used by the routines at 9DF7 and UpdateAlien.
+  JP Auto_92B3
+; This entry point is used by the routines at PlayMusicPhrase and UpdateAlien.
+Auto_93F4:
   LD HL,$FFFF
-  LD ($83A0),HL
-  LD DE,$83A0
-  LD A,($83A4)
-  LD ($839F),A
-; This entry point is used by the routine at 95EB.
+  LD (Auto_83A0),HL
+  LD DE,Auto_83A0
+  LD A,(CrewIndex)
+  LD (Auto_839F),A
+; This entry point is used by the routine at UpdateRoomActors.
+Auto_9403:
   LD HL,$7387
   LD C,$01
   EX AF,AF'
   LD A,(IX+$01)
   LD B,$07
+Auto_940E:
   CP (HL)
-  JR NZ,$941A
+  JR NZ,Auto_941A
   EX AF,AF'
   CP C
-  JR Z,$9419
+  JR Z,Auto_9419
   EX DE,HL
   LD (HL),C
   EX DE,HL
   INC DE
+Auto_9419:
   EX AF,AF'
+Auto_941A:
   PUSH DE
   LD DE,$0008
   ADD HL,DE
   POP DE
   INC C
-  DJNZ $940E
+  DJNZ Auto_940E
   RET
 ; This entry point is used by the routine at UpdateAlien.
+Auto_9424:
   LD HL,$4836
   LD ($7A19),HL
-  LD BC,($7A10)
+  LD BC,(GameState_7A10)
   LD E,C
   LD D,$00
   LD HL,$74F4
   ADD HL,DE
   JP PlayMusic_5
 ; This entry point is used by the routine at PlayMusic.
+Auto_9438:
   CP B
-  JR NZ,$9442
-  LD ($73C6),A
+  JR NZ,Auto_9442
+  LD (Auto_73C6),A
   CALL PlayMusic_7
   RET
+Auto_9442:
   LD L,B
   LD H,A
-  LD ($7A10),HL
+  LD (GameState_7A10),HL
   LD A,L
   CALL DrawSprite_19
-  LD ($73C6),A
+  LD (Auto_73C6),A
   CALL DrawSprite
   LD A,$FF
   LD ($73C7),A
   CALL DrawSprite
-  LD A,($7A10)
+  LD A,(GameState_7A10)
 ; This entry point is used by the routine at PlayMusic.
+Auto_945C:
   LD HL,$74F4
   LD E,A
   LD D,$00
   ADD HL,DE
   LD A,(HL)
-  JP $B0EF
+  JP Auto_B0EF
   RET
-  CALL $93F4
+Auto_9468:
+  CALL Auto_93F4
   XOR A
-  LD ($83A2),A
+  LD (Auto_83A2),A
   PUSH IX
-  LD DE,$839F
+  LD DE,Auto_839F
   LD B,$03
+Auto_9476:
   PUSH BC
   PUSH DE
   LD A,(DE)
   CP $08
-  JR NC,$94C4
+  JR NC,Auto_94C4
   PUSH AF
-  LD IX,$737E
+  LD IX,CrewData
   ADD A,A
   ADD A,A
   ADD A,A
@@ -6153,235 +6588,268 @@ UpdateCrewAI_20:
   ADD IX,DE
   LD A,$02
   CP (IX+$04)
-  JR NC,$94C3
+  JR NC,Auto_94C3
   LD A,$04
   CP (IX+$03)
-  JR NZ,$94C3
-  LD HL,$83A2
+  JR NZ,Auto_94C3
+  LD HL,Auto_83A2
   DEC A
   CP (IX+$06)
-  JR NC,$94A2
+  JR NC,Auto_94A2
   INC (HL)
+Auto_94A2:
   POP AF
   CALL DrawSprite_15
-  LD HL,$83A2
-  LD A,($7A10)
+  LD HL,Auto_83A2
+  LD A,(GameState_7A10)
   CP $0D
-  JR NC,$94B9
+  JR NC,Auto_94B9
   CP $06
-  JR NZ,$94B9
+  JR NZ,Auto_94B9
   CP $07
-  JR NZ,$94B9
+  JR NZ,Auto_94B9
   INC (HL)
+Auto_94B9:
   LD A,($7382)
   SRA A
   SRA A
   ADD A,(HL)
   LD (HL),A
   PUSH AF
+Auto_94C3:
   POP AF
+Auto_94C4:
   POP DE
   INC DE
   POP BC
-  DJNZ $9476
+  DJNZ Auto_9476
   CALL AdvanceScriptPtr
   CP $0F
-  JR Z,$9521
-  LD HL,$83A2
+  JR Z,Auto_9521
+  LD HL,Auto_83A2
   CP (HL)
-  JR NC,$9521
-  LD IX,$737E
+  JR NC,Auto_9521
+  LD IX,CrewData
+Auto_94DA:
   CALL GameEntry_14
   LD A,(IX+$01)
   CP (IX+$02)
-  JR Z,$94DA
-  LD A,($83A4)
+  JR Z,Auto_94DA
+  LD A,(CrewIndex)
   PUSH AF
   XOR A
-  LD ($83A4),A
-  CALL $8CC2
+  LD (CrewIndex),A
+  CALL Auto_8CC2
   POP AF
-  LD ($83A4),A
-  CALL $9B0F
+  LD (CrewIndex),A
+  CALL Auto_9B0F
   LD (IX+$00),$00
-  LD DE,$839F
+  LD DE,Auto_839F
   LD B,$03
+Auto_9500:
   PUSH BC
   PUSH DE
   LD A,(DE)
   CP $08
-  JR NC,$9519
+  JR NC,Auto_9519
   ADD A,A
   ADD A,A
   ADD A,A
   LD E,A
   LD D,$00
   LD HL,$7383
-  CALL $B136
+  CALL Auto_B136
   CP $09
-  JR C,$9519
+  JR C,Auto_9519
   LD (HL),$08
+Auto_9519:
   POP DE
   INC DE
   POP BC
-  DJNZ $9500
-  JP $B13D
+  DJNZ Auto_9500
+  JP Auto_B13D
+Auto_9521:
   POP IX
-  JP $92B3
+  JP Auto_92B3
 ; This entry point is used by the routine at UpdateCrewAI.
+Auto_9526:
   LD HL,$737F
   LD E,(HL)
-; This entry point is used by the routines at 95EB and UpdateAlien.
+; This entry point is used by the routines at UpdateRoomActors and UpdateAlien.
+Auto_952A:
   BIT 6,E
   RET NZ
-  LD HL,$7536
+  LD HL,Auto_7536
   LD D,$00
   ADD HL,DE
   ADD HL,DE
   INC HL
   LD B,A
+Auto_9536:
   PUSH BC
   PUSH HL
   PUSH DE
   LD A,(HL)
   CP $35
-  JR Z,$9542
+  JR Z,Auto_9542
   LD (HL),$35
-  JR $959A
+  JR Auto_959A
+Auto_9542:
   LD (HL),$30
   DEC HL
   INC (HL)
   LD A,(HL)
   CP $33
-  JR NZ,$9589
+  JR NZ,Auto_9589
   LD A,E
   CP $06
-  JR NZ,$9554
+  JR NZ,Auto_9554
   LD A,$16
-  JR $9590
+  JR Auto_9590
+Auto_9554:
   CP $07
-  JR NZ,$955C
+  JR NZ,Auto_955C
   LD A,$17
-  JR $9590
+  JR Auto_9590
+Auto_955C:
   CP $19
-  JR NZ,$9564
+  JR NZ,Auto_9564
   LD A,$18
-  JR $9590
+  JR Auto_9590
+Auto_9564:
   CP $22
-  JR NZ,$956C
+  JR NZ,Auto_956C
   LD A,$19
-  JR $9590
+  JR Auto_9590
+Auto_956C:
   CP $11
-  JR C,$959A
+  JR C,Auto_959A
   CP $14
-  JR NC,$959A
+  JR NC,Auto_959A
   AND $03
   LD B,A
   LD A,$04
+Auto_9579:
   ADD A,A
-  DJNZ $9579
+  DJNZ Auto_9579
   LD HL,$7A15
   OR (HL)
   LD (HL),A
   LD L,E
   LD A,$09
   CALL UpdateCrewAI_8
-  JR $959A
+  JR Auto_959A
+Auto_9589:
   CP $37
-  JR NZ,$9595
+  JR NZ,Auto_9595
   LD L,E
   LD A,$08
+Auto_9590:
   CALL UpdateCrewAI_8
-  JR $959A
+  JR Auto_959A
+Auto_9595:
   CP $3A
-  CALL Z,$95AD
+  CALL Z,Auto_95AD
+Auto_959A:
   POP DE
   POP HL
   POP BC
-  DJNZ $9536
-  LD A,($7A14)
+  DJNZ Auto_9536
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
   LD A,($7A0A)
   CP E
   CALL Z,DrawSprite_45
   RET
-; This entry point is used by the routine at 95EB.
+; This entry point is used by the routine at UpdateRoomActors.
+Auto_95AD:
   PUSH BC
   PUSH AF
   LD B,$64
+Auto_95B1:
   PUSH BC
-  CALL $8E60
+  CALL Auto_8E60
   LD A,$07
   CALL FillAttributes
-  CALL $8E60
+  CALL Auto_8E60
   LD A,$38
   CALL FillAttributes
   POP BC
   LD A,B
   AND $07
   OUT ($FE),A
-  DJNZ $95B1
+  DJNZ Auto_95B1
   POP AF
   POP BC
   JP DrawStatusPanel_15
+Auto_95CF:
   NOP
   NOP
   NOP
+Auto_95D2:
   LD ($0003),A
+Auto_95D5:
   LD A,(BC)
+Auto_95D6:
   LD D,H
   LD C,C
   LD C,L
   LD B,L
   LD A,($0020)
   LD A,($0000)
+Auto_95E0:
   LD D,H
   LD C,A
   LD C,A
   LD C,B
   LD A,($3720)
   DEC (HL)
-  JR NC,$961A
+Auto_95E8:
+  JR NC,Auto_961A
+Auto_95EA:
   NOP
 
-; Routine at 38379
+; Routine at UpdateRoomActors
 ;
 ; Used by the routine at GameEntry.
-  CALL $97BE
-  CALL $97F7
-  CALL $9A6B
-  CALL $9903
-  CALL $9881
-  CALL $9B26
+UpdateRoomActors:
+  CALL Auto_97BE
+  CALL Auto_97F7
+  CALL Auto_9A6B
+  CALL Auto_9903
+  CALL Auto_9881
+  CALL Auto_9B26
   RET
-  CALL $B316
-  LD HL,$73BE
+  CALL Auto_B316
+  LD HL,CorridorPosTable
   LD E,A
   LD D,$00
   ADD HL,DE
   LD A,(HL)
   LD ($8395),A
   CP $46
-  JR Z,$9636
+  JR Z,Auto_9636
   CP $48
-  JR Z,$9653
+  JR Z,Auto_9653
   CP $4A
-  JR Z,$9681
+  JR Z,Auto_9681
   CP $4C
-; This entry point is used by the routine at 9272.
-  JR Z,$9692
+; This entry point is used by the routine at XorHAddE.
+Auto_961A:
+  JR Z,Auto_9692
   CP $4E
-  JP Z,$9D14
+  JP Z,Auto_9D14
   CP $35
-  JP Z,$96F5
+  JP Z,Auto_96F5
   CP $36
-  JP Z,$96F5
+  JP Z,Auto_96F5
   CP $37
-  JP Z,$96BC
+  JP Z,Auto_96BC
   CP $38
-  JP Z,$96BC
+  JP Z,Auto_96BC
   RET
+Auto_9636:
   LD A,$0D
   CALL UpdateCrewAI_8
   LD A,$48
@@ -6390,9 +6858,10 @@ UpdateCrewAI_20:
   LD ($7A19),HL
   CALL DrawSprite
   LD A,$49
-  LD ($73CE),A
+  LD (Auto_73CE),A
   CALL DrawSprite
-  JR $966E
+  JR Auto_966E
+Auto_9653:
   LD A,$0E
   CALL UpdateCrewAI_8
   LD A,$46
@@ -6401,8 +6870,9 @@ UpdateCrewAI_20:
   LD ($7A19),HL
   CALL DrawSprite
   LD A,$47
-  LD ($73CE),A
+  LD (Auto_73CE),A
   CALL DrawSprite
+Auto_966E:
   LD HL,$3030
   LD ($95DE),HL
   LD HL,$95DC
@@ -6412,98 +6882,111 @@ UpdateCrewAI_20:
   XOR $01
   LD (HL),A
   RET
+Auto_9681:
   LD (IX+$03),$06
   LD (IX+$00),$FF
   LD A,$0B
-  LD HL,($7A09)
+  LD HL,(ScreenDrawPtr)
   CALL UpdateCrewAI_8
   RET
-  LD A,($7A10)
+Auto_9692:
+  LD A,(GameState_7A10)
   CP $08
   RET C
   CP $0C
   RET NC
   LD E,A
   LD D,$00
-  LD HL,$83D2
+  LD HL,Auto_83D2
   ADD HL,DE
   XOR A
   CP (HL)
-  JR NZ,$96AF
-  LD HL,($7A09)
+  JR NZ,Auto_96AF
+  LD HL,(ScreenDrawPtr)
   LD A,$06
   CALL UpdateCrewAI_8
   RET
+Auto_96AF:
   DEC (HL)
   LD A,($7A0A)
   SUB $11
   LD E,A
-  LD HL,$95CF
+  LD HL,Auto_95CF
   ADD HL,DE
   INC (HL)
   RET
+Auto_96BC:
   LD HL,$7A15
-  LD A,($8393)
+  LD A,(CorridorCursor)
   SUB $0F
   AND A
-  JR Z,$96D9
+  JR Z,Auto_96D9
   RES 2,(HL)
   LD A,$36
-  LD ($73CE),A
+  LD (Auto_73CE),A
   LD HL,$5036
   LD ($7A19),HL
   CALL DrawSprite
-  JR $96E9
+  JR Auto_96E9
+Auto_96D9:
   RES 1,(HL)
   LD A,$35
   LD ($73CD),A
   LD HL,$5016
   LD ($7A19),HL
   CALL DrawSprite
-  LD A,($8393)
+Auto_96E9:
+  LD A,(CorridorCursor)
   SUB $0F
   LD L,A
   LD A,$11
   CALL UpdateCrewAI_8
   RET
+Auto_96F5:
   LD HL,$7A15
-  LD A,($8393)
+  LD A,(CorridorCursor)
   SUB $0F
   AND A
-  JR Z,$9712
+  JR Z,Auto_9712
   SET 2,(HL)
   LD A,$38
-  LD ($73CE),A
+  LD (Auto_73CE),A
   LD HL,$5036
   LD ($7A19),HL
   CALL DrawSprite
-  JR $9722
+  JR Auto_9722
+Auto_9712:
   LD A,$37
   SET 1,(HL)
   LD ($73CD),A
   LD HL,$5016
   LD ($7A19),HL
   CALL DrawSprite
-  LD A,($8393)
+Auto_9722:
+  LD A,(CorridorCursor)
   SUB $0F
   PUSH IX
   LD B,$08
-  LD IX,$737E
+  LD IX,CrewData
   LD DE,$0008
+Auto_9732:
   CP (IX+$01)
-  JR NZ,$973F
+  JR NZ,Auto_973F
   LD (IX+$01),$FF
   LD (IX+$07),$01
+Auto_973F:
   ADD IX,DE
-  DJNZ $9732
+  DJNZ Auto_9732
   POP IX
   LD HL,$74F4
   LD B,$16
+Auto_974A:
   CP (HL)
-  JR NZ,$974F
+  JR NZ,Auto_974F
   LD (HL),$FF
+Auto_974F:
   INC HL
-  DJNZ $974A
+  DJNZ Auto_974A
   LD L,A
   LD A,$10
   CALL UpdateCrewAI_8
@@ -6522,38 +7005,42 @@ UpdateCrewAI_20:
   LD L,A
   LD A,$12
   CALL UpdateCrewAI_8
-  LD HL,$737E
+  LD HL,CrewData
   LD (HL),$00
   RET
-  LD HL,($83A4)
+  LD HL,(CrewIndex)
   LD A,$0C
   CALL UpdateCrewAI_8
   LD (IX+$07),$FF
   LD (IX+$01),$FF
   LD HL,$74F4
-  LD A,($83A4)
+  LD A,(CrewIndex)
   ADD A,$80
   LD E,A
   ADD A,$20
   LD D,A
   LD C,(IX+$01)
   LD B,$16
+Auto_97A1:
   LD A,(HL)
   CP E
-  JR Z,$97A8
+  JR Z,Auto_97A8
   CP D
-  JR NZ,$97AA
+  JR NZ,Auto_97AA
+Auto_97A8:
   LD (HL),$0F
+Auto_97AA:
   INC HL
-  DJNZ $97A1
-  LD A,($7A14)
+  DJNZ Auto_97A1
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
-  LD A,($7A09)
-  LD HL,$83A4
-  JP $B26C
+  LD A,(ScreenDrawPtr)
+  LD HL,CrewIndex
+  JP Auto_B26C
   NOP
   NOP
+Auto_97BE:
   LD HL,$7A15
   BIT 0,(HL)
   RET Z
@@ -6568,36 +7055,39 @@ UpdateCrewAI_20:
   LD HL,($95DE)
   DEC H
   CP H
-  JR NZ,$97F1
+  JR NZ,Auto_97F1
   LD H,$39
   DEC L
   CP L
-  JR NZ,$97F1
+  JR NZ,Auto_97F1
   LD L,$35
   LD ($95DE),HL
   LD HL,$95DC
   DEC (HL)
   CP (HL)
-  JP Z,$95AD
-  JP $9A94
+  JP Z,Auto_95AD
+  JP Auto_9A94
+Auto_97F1:
   LD ($95DE),HL
-  JP $9A94
-  LD HL,$839C
+  JP Auto_9A94
+Auto_97F7:
+  LD HL,Auto_839C
   LD A,($74FA)
   CP $A0
-  CALL NC,$981D
+  CALL NC,Auto_981D
   INC HL
   LD A,($74FB)
   CP $A0
-  CALL NC,$981D
+  CALL NC,Auto_981D
   INC HL
   LD A,($7508)
   CP $A0
-  CALL NC,$981D
+  CALL NC,Auto_981D
   LD A,($7509)
   CP $A0
-  CALL NC,$981D
+  CALL NC,Auto_981D
   RET
+Auto_981D:
   CP $FF
   RET Z
   PUSH HL
@@ -6613,8 +7103,9 @@ UpdateCrewAI_20:
   LD ($95D4),A
   LD BC,$71F3
   BIT 6,A
-  JR Z,$983B
-  CALL $B273
+  JR Z,Auto_983B
+  CALL Auto_B273
+Auto_983B:
   LD L,A
   LD H,$00
   PUSH HL
@@ -6625,93 +7116,103 @@ UpdateCrewAI_20:
   ADD HL,BC
   LD DE,$0008
   LD B,$05
+Auto_9849:
   PUSH BC
   PUSH HL
   LD C,(HL)
   LD A,($95D4)
   CP C
-  JR Z,$986F
-  LD A,($83AA)
-  JP $B289
-; This entry point is used by the routine at B159.
+  JR Z,Auto_986F
+  LD A,(AlienEventTimer)
+  JP Auto_B289
+; This entry point is used by the routine at UpdateAllCrew.
+Auto_9858:
   LD B,$08
   LD HL,$737F
+Auto_985D:
   LD A,(HL)
   AND $3F
   CP C
-  JR NZ,$986C
+  JR NZ,Auto_986C
   PUSH HL
   ADD HL,DE
   DEC HL
   DEC HL
   XOR A
   CP (HL)
-  JR Z,$987A
+  JR Z,Auto_987A
   POP HL
+Auto_986C:
   ADD HL,DE
-  DJNZ $985D
+  DJNZ Auto_985D
+Auto_986F:
   POP HL
   INC HL
   POP BC
-  DJNZ $9849
+  DJNZ Auto_9849
   POP HL
   LD A,($95D4)
   LD (HL),A
   RET
+Auto_987A:
   POP HL
-; This entry point is used by the routine at B159.
+; This entry point is used by the routine at UpdateAllCrew.
+Auto_987B:
   POP HL
   POP BC
   POP HL
   LD (HL),$FF
   RET
+Auto_9881:
   LD D,$08
   LD A,($7A15)
   LD E,$11
   BIT 3,A
-  CALL NZ,$98A5
+  CALL NZ,Auto_98A5
   SLA D
   INC E
   BIT 4,A
-  CALL NZ,$98A5
+  CALL NZ,Auto_98A5
   SLA D
   INC E
   BIT 5,A
-  CALL NZ,$98A5
-  LD HL,$95D2
+  CALL NZ,Auto_98A5
+  LD HL,Auto_95D2
   DEC (HL)
   RET NZ
   LD (HL),$64
   RET
+Auto_98A5:
   PUSH AF
   PUSH DE
   LD C,$01
   LD B,D
   LD D,$00
-  LD HL,$7536
+  LD HL,Auto_7536
   ADD HL,DE
   ADD HL,DE
   LD A,(HL)
   CP $36
-  JR C,$98BC
+  JR C,Auto_98BC
   INC C
   CP $38
-  JR C,$98BC
+  JR C,Auto_98BC
   INC C
+Auto_98BC:
   LD HL,$95BE
   ADD HL,DE
   LD A,(HL)
   CP C
-  JR C,$98F7
+  JR C,Auto_98F7
   LD A,($7A15)
   XOR B
   LD ($7A15),A
-  LD A,($7A14)
+  LD A,(RoomModeByte)
   CP $01
-  JR NZ,$98ED
+  JR NZ,Auto_98ED
   LD A,($7A0A)
   CP E
-  JR NZ,$98ED
+  JR NZ,Auto_98ED
   LD HL,$FFFF
   LD ($73CD),HL
   LD A,L
@@ -6720,6 +7221,7 @@ UpdateCrewAI_20:
   CALL DrawSprite
   LD A,$FF
   CALL DrawSprite
+Auto_98ED:
   POP HL
   PUSH HL
   LD A,$0F
@@ -6727,44 +7229,48 @@ UpdateCrewAI_20:
   POP DE
   POP AF
   RET
-  LD A,($95D2)
+Auto_98F7:
+  LD A,(Auto_95D2)
   DEC A
   LD A,$01
-  CALL Z,$952A
+  CALL Z,Auto_952A
   POP DE
   POP AF
   RET
-  LD A,($7A14)
+Auto_9903:
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
-  LD A,($7A09)
+  LD A,(ScreenDrawPtr)
   ADD A,$A0
   LD C,A
-  LD HL,$839C
+  LD HL,Auto_839C
   LD A,($74FA)
   CP C
-  JR Z,$992D
+  JR Z,Auto_992D
   LD A,($74FB)
   INC HL
   CP C
-  JR Z,$992D
+  JR Z,Auto_992D
   INC HL
   LD A,($7508)
   CP C
-  JR Z,$993C
+  JR Z,Auto_993C
   LD A,($7509)
   CP C
-  JR Z,$993C
+  JR Z,Auto_993C
   RET
+Auto_992D:
   LD A,(HL)
   CP $FF
   RET NZ
-  LD HL,$95EA
+  LD HL,Auto_95EA
   INC (HL)
   LD A,(HL)
   AND $07
-  CALL Z,$994A
+  CALL Z,Auto_994A
   RET
+Auto_993C:
   LD A,(HL)
   CP $FF
   RET NZ
@@ -6774,6 +7280,7 @@ UpdateCrewAI_20:
   CALL UpdateCrewAI_8
   RET
 ; This entry point is used by the routine at DrawShipMap.
+Auto_994A:
   PUSH IX
   LD DE,$0005
   LD HL,$0225
@@ -6781,89 +7288,97 @@ UpdateCrewAI_20:
   POP IX
   RET
   LD HL,$FFFF
-  LD ($83A0),HL
-  LD DE,$839F
+  LD (Auto_83A0),HL
+  LD DE,Auto_839F
   LD A,$FF
   LD (DE),A
   XOR A
-  CALL $9403
+  CALL Auto_9403
   LD C,$00
-  LD HL,$839F
+  LD HL,Auto_839F
   LD A,$FF
   LD B,$03
+Auto_9971:
   CP (HL)
-  JR Z,$9975
+  JR Z,Auto_9975
   INC C
+Auto_9975:
   INC HL
-  DJNZ $9971
+  DJNZ Auto_9971
   LD A,C
   AND A
   RET Z
   CP $01
-  JR NZ,$9982
+  JR NZ,Auto_9982
   XOR A
-  JR $9995
+  JR Auto_9995
+Auto_9982:
   CP $02
-  JR NZ,$998D
+  JR NZ,Auto_998D
   CALL AdvanceScriptPtr
   AND $01
-  JR $9995
+  JR Auto_9995
+Auto_998D:
   CALL AdvanceScriptPtr
   AND $07
   CALL GameEntry_18
+Auto_9995:
   LD E,A
   LD D,$00
-  LD HL,$839F
+  LD HL,Auto_839F
   ADD HL,DE
   LD C,(HL)
   LD (HL),$FF
   LD A,C
+Auto_99A0:
   ADD A,A
   ADD A,A
   ADD A,A
   ADD A,$07
   LD E,A
   LD D,$00
-  LD HL,$737E
+  LD HL,CrewData
   ADD HL,DE
   XOR A
   CP (HL)
-  JP NZ,$9A23
+  JP NZ,Auto_9A23
   DEC HL
   DEC HL
   DEC HL
   DEC (HL)
   LD A,(HL)
   CP $02
-  JR C,$99E8
+  JR C,Auto_99E8
   CP $04
-  JR C,$99C5
+  JR C,Auto_99C5
   LD L,C
   LD A,$01
   CALL UpdateCrewAI_8
   RET
+Auto_99C5:
   LD L,C
   LD A,$0A
   CALL UpdateCrewAI_8
-  LD A,($7A14)
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
   PUSH IX
-  LD A,($7A09)
+  LD A,(ScreenDrawPtr)
   ADD A,A
   ADD A,A
   ADD A,A
-  LD IX,$737E
+  LD IX,CrewData
   LD E,A
   LD D,$00
   ADD IX,DE
   CALL DrawSprite_56
   POP IX
   RET
-; This entry point is used by the routine at 9DF7.
+; This entry point is used by the routine at PlayMusicPhrase.
+Auto_99E8:
   INC HL
   INC HL
-  CALL $B1A4
+  CALL Auto_B1A4
   LD DE,$FFF9
   ADD HL,DE
   LD (HL),$00
@@ -6876,115 +7391,131 @@ UpdateCrewAI_20:
   LD C,(IX+$01)
   LD B,$16
   LD HL,$74F4
+Auto_9A03:
   LD A,(HL)
   CP E
-  JR Z,$9A0A
+  JR Z,Auto_9A0A
   CP D
-  JR NZ,$9A0B
+  JR NZ,Auto_9A0B
+Auto_9A0A:
   LD (HL),C
+Auto_9A0B:
   INC HL
-  DJNZ $9A03
+  DJNZ Auto_9A03
   POP AF
   LD L,A
-  LD A,($7A14)
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
-  LD A,($7A09)
+  LD A,(ScreenDrawPtr)
   CP L
   RET NZ
   LD A,$15
   CALL UpdateCrewAI_8
   JP InitGameView
+Auto_9A23:
   XOR A
   CP (IX+$05)
-  JR NZ,$9A3C
+  JR NZ,Auto_9A3C
   PUSH HL
   CALL AdvanceScriptPtr
   POP HL
   CP $04
-  JR NC,$9A3C
+  JR NC,Auto_9A3C
   LD DE,$FFFA
   ADD HL,DE
   LD (HL),$FF
-  CALL $B1DD
+  CALL Auto_B1DD
   RET
+Auto_9A3C:
   LD DE,$0001
-  LD HL,$839F
+  LD HL,Auto_839F
   CP $07
-  JR C,$9A4C
+  JR C,Auto_9A4C
   LD DE,$FFFF
-  LD HL,$83A1
+  LD HL,Auto_83A1
+Auto_9A4C:
   LD B,$03
+Auto_9A4E:
   LD A,(HL)
   CP $FF
-  JR Z,$9A5C
+  JR Z,Auto_9A5C
   CP C
-  JR Z,$9A5C
+  JR Z,Auto_9A5C
   LD (HL),$FF
   LD C,A
-  JP $99A0
+  JP Auto_99A0
+Auto_9A5C:
   ADD HL,DE
-  DJNZ $9A4E
+  DJNZ Auto_9A4E
   CALL GameEntry_14
   LD (IX+$00),$28
   LD (IX+$03),$01
   RET
-  LD HL,$95D5
+Auto_9A6B:
+  LD HL,Auto_95D5
   DEC (HL)
   RET NZ
-  LD HL,$7385
+  LD HL,CrewStateTable
   LD DE,$0008
   LD BC,$0800
   XOR A
+Auto_9A7A:
   CP (HL)
-  JR Z,$9A7E
+  JR Z,Auto_9A7E
   INC C
+Auto_9A7E:
   ADD HL,DE
-  DJNZ $9A7A
+  DJNZ Auto_9A7A
   LD A,C
   ADD A,A
-  LD ($95D5),A
+  LD (Auto_95D5),A
   LD A,$2F
   LD HL,$95E9
+Auto_9A8B:
   DEC (HL)
   CP (HL)
-  JR NZ,$9A94
+  JR NZ,Auto_9A94
   LD (HL),$39
   DEC HL
-  JR $9A8B
+  JR Auto_9A8B
 ; This entry point is used by the routines at FillAttributeBlock and
 ; DrawSprite.
+Auto_9A94:
   LD HL,($95E6)
   LD A,L
   CP $30
-  JR NZ,$9AB1
+  JR NZ,Auto_9AB1
   LD A,H
   CP $35
-  JR NZ,$9AB1
-  LD HL,($95E8)
+  JR NZ,Auto_9AB1
+  LD HL,(Auto_95E8)
   LD A,$30
   CP L
-  JR NZ,$9AB1
+  JR NZ,Auto_9AB1
   CP H
-  JR NZ,$9AB1
+  JR NZ,Auto_9AB1
   LD A,$1A
   CALL UpdateCrewAI_8
+Auto_9AB1:
   LD A,($95E5)
   CP $20
   JP NZ,OptionsScreen_30
-  LD A,($7A14)
+  LD A,(RoomModeByte)
   CP $02
   RET Z
   CP $03
   RET Z
   LD HL,$5076
   LD ($7A19),HL
-  LD DE,$95E0
+  LD DE,Auto_95E0
   LD HL,$7A15
   BIT 0,(HL)
-  JR Z,$9AD5
-  LD DE,$95D6
+  JR Z,Auto_9AD5
+  LD DE,Auto_95D6
+Auto_9AD5:
   LD B,$0A
+Auto_9AD7:
   PUSH BC
   PUSH DE
   CALL DrawSpriteRow
@@ -6993,59 +7524,69 @@ UpdateCrewAI_20:
   INC DE
   LD HL,$7A19
   INC (HL)
-  DJNZ $9AD7
+  DJNZ Auto_9AD7
   RET
   RET
-; This entry point is used by the routines at DrawSprite and 8FFB.
+; This entry point is used by the routines at DrawSprite and
+; UpdateAlienEventTimer.
+Auto_9AE7:
   XOR A
-  LD ($9B49),A
+  LD (Auto_9B49),A
   LD A,$08
   LD ($9B46),A
   LD B,$01
-  CALL $9B98
+  CALL Auto_9B98
   RET
-; This entry point is used by the routines at 8AFA and 8FFB.
+; This entry point is used by the routines at RoomHandler_4 and
+; UpdateAlienEventTimer.
+Auto_9AF6:
   LD B,$01
-  LD A,($9B49)
+  LD A,(Auto_9B49)
   AND $80
   RET NZ
-  CALL $9B98
+  CALL Auto_9B98
   LD A,$80
-  LD ($9B49),A
+  LD (Auto_9B49),A
   RET
 ; This entry point is used by the routines at DrawSprite and PlayMusic.
-  CALL $9CD5
+Auto_9B07:
+  CALL Auto_9CD5
   XOR A
-  LD ($9B3D),A
+  LD (Auto_9B3D),A
   RET
-; This entry point is used by the routines at GameEntry and 9272.
-  LD A,($9B3D)
+; This entry point is used by the routines at GameEntry and XorHAddE.
+Auto_9B0F:
+  LD A,(Auto_9B3D)
   AND $80
   RET NZ
   LD A,$80
-  LD ($9B3D),A
-  LD A,($7A14)
+  LD (Auto_9B3D),A
+  LD A,(RoomModeByte)
   CP $01
   JP Z,DrawSprite_75
-  CALL $9CD5
+  CALL Auto_9CD5
   RET
+Auto_9B26:
   CALL AnimateCrewA
   CALL AnimateCrewB
-  LD A,($9B49)
+  LD A,(Auto_9B49)
   AND $80
-  CALL Z,$9B96
-  LD A,($9B3D)
+  CALL Z,Auto_9B96
+  LD A,(Auto_9B3D)
   AND $80
-  CALL Z,$9B54
+  CALL Z,Auto_9B54
   RET
+Auto_9B3D:
   NOP
   LD H,B
   JP PE,$EBDA
   LD D,H
   DEFB $ED,$CE
   XOR $00
+Auto_9B47:
   NOP
   LD C,B
+Auto_9B49:
   NOP
   LD C,B
   RET P
@@ -7057,7 +7598,8 @@ UpdateCrewAI_20:
   POP AF
   LD C,B
   POP AF
-  LD HL,$9B3D
+Auto_9B54:
+  LD HL,Auto_9B3D
   LD A,(HL)
   INC A
   AND $03
@@ -7074,6 +7616,7 @@ UpdateCrewAI_20:
   EX DE,HL
   LD B,$3F
   LD C,$00
+Auto_9B6D:
   PUSH BC
   LD B,C
   LD C,$06
@@ -7082,26 +7625,31 @@ UpdateCrewAI_20:
   LD A,H
   AND $07
   CP $07
-  JR Z,$9B7E
+  JR Z,Auto_9B7E
   INC H
-  JR $9B8D
+  JR Auto_9B8D
+Auto_9B7E:
   LD A,L
   CP $E0
-  JR NC,$9B89
-  LD BC,$F920
+  JR NC,Auto_9B89
+  LD BC,Auto_F920
   ADD HL,BC
-  JR $9B8D
+  JR Auto_9B8D
+Auto_9B89:
   LD BC,$0020
   ADD HL,BC
+Auto_9B8D:
   LD BC,$FFFA
   ADD HL,BC
   EX DE,HL
   POP BC
-  DJNZ $9B6D
+  DJNZ Auto_9B6D
   RET
+Auto_9B96:
   LD B,$02
+Auto_9B98:
   PUSH BC
-  LD A,($5800)
+  LD A,(Auto_5800)
   CPL
   AND $07
   LD ($9BC1),A
@@ -7112,23 +7660,25 @@ UpdateCrewAI_20:
   AND $1F
   LD E,A
   LD D,$00
-  LD HL,$4C20
+  LD HL,Auto_4C20
   ADD HL,DE
-  LD ($9B47),HL
-  LD HL,$5940
+  LD (Auto_9B47),HL
+  LD HL,Auto_5940
   ADD HL,DE
   LD DE,$001D
   LD C,$02
+Auto_9BBD:
   LD B,$04
+Auto_9BBF:
   LD A,(HL)
   XOR $07
   LD (HL),A
   INC HL
-  DJNZ $9BBF
+  DJNZ Auto_9BBF
   ADD HL,DE
   DEC C
-  JR NZ,$9BBD
-  LD HL,$9B49
+  JR NZ,Auto_9BBD
+  LD HL,Auto_9B49
   LD E,(HL)
   LD D,$00
   INC HL
@@ -7140,7 +7690,7 @@ UpdateCrewAI_20:
   LD A,($9B46)
   AND $07
   CP $04
-  JP NC,$9C68
+  JP NC,Auto_9C68
   CPL
   AND $03
   LD L,A
@@ -7150,6 +7700,7 @@ UpdateCrewAI_20:
   SUB L
   LD ($9BFC),A
   LD B,$15
+Auto_9BED:
   PUSH BC
   EX DE,HL
   LD B,(HL)
@@ -7159,10 +7710,11 @@ UpdateCrewAI_20:
   LD E,(HL)
   INC HL
   PUSH HL
-  LD HL,($9B47)
+  LD HL,(Auto_9B47)
   PUSH HL
   XOR A
-  JR $9BFB
+Auto_9BFB:
+  JR Auto_9BFB
   SRL B
   RR C
   RR E
@@ -7195,39 +7747,46 @@ UpdateCrewAI_20:
   LD A,H
   AND $07
   CP $07
-  JR Z,$9C2D
+  JR Z,Auto_9C2D
   INC H
-  JR $9C3C
+  JR Auto_9C3C
+Auto_9C2D:
   LD A,L
   CP $E0
-  JR NC,$9C38
-  LD BC,$F920
+  JR NC,Auto_9C38
+  LD BC,Auto_F920
   ADD HL,BC
-  JR $9C3C
+  JR Auto_9C3C
+Auto_9C38:
   LD BC,$0020
   ADD HL,BC
-  LD ($9B47),HL
+Auto_9C3C:
+  LD (Auto_9B47),HL
   POP DE
   POP BC
-  DJNZ $9BED
+  DJNZ Auto_9BED
   POP BC
-  DJNZ $9C47
+  DJNZ Auto_9C47
   RET
+Auto_9C47:
   LD A,($9B46)
   ADD A,$04
   CP $88
-  JR C,$9C56
+  JR C,Auto_9C56
   LD A,$80
-  LD ($9B49),A
+  LD (Auto_9B49),A
   RET
+Auto_9C56:
   LD ($9B46),A
-  LD A,($9B49)
+  LD A,(Auto_9B49)
   INC A
   CP $05
-  JR C,$9C62
+  JR C,Auto_9C62
   XOR A
-  LD ($9B49),A
-  JP $9B98
+Auto_9C62:
+  LD (Auto_9B49),A
+  JP Auto_9B98
+Auto_9C68:
   SUB $04
   LD L,A
   RLCA
@@ -7236,6 +7795,7 @@ UpdateCrewAI_20:
   SUB L
   LD ($9C83),A
   LD B,$15
+Auto_9C74:
   PUSH BC
   EX DE,HL
   LD B,(HL)
@@ -7245,10 +7805,11 @@ UpdateCrewAI_20:
   LD E,(HL)
   INC HL
   PUSH HL
-  LD HL,($9B47)
+  LD HL,(Auto_9B47)
   PUSH HL
   XOR A
-  JR $9C82
+Auto_9C82:
+  JR Auto_9C82
   SLA E
   RL C
   RL B
@@ -7283,130 +7844,150 @@ UpdateCrewAI_20:
   LD A,H
   AND $07
   CP $07
-  JR Z,$9CB9
+  JR Z,Auto_9CB9
   INC H
-  JR $9CC8
+  JR Auto_9CC8
+Auto_9CB9:
   LD A,L
   CP $E0
-  JR NC,$9CC4
-  LD BC,$F920
+  JR NC,Auto_9CC4
+  LD BC,Auto_F920
   ADD HL,BC
-  JR $9CC8
+  JR Auto_9CC8
+Auto_9CC4:
   LD BC,$0020
   ADD HL,BC
-  LD ($9B47),HL
+Auto_9CC8:
+  LD (Auto_9B47),HL
   POP DE
   POP BC
-  DJNZ $9C74
+  DJNZ Auto_9C74
   POP BC
   DEC B
-  JP NZ,$9C47
+  JP NZ,Auto_9C47
   RET
-  LD HL,$4000
+Auto_9CD5:
+  LD HL,DisplayFile
   LD ($7A19),HL
   LD C,$13
+Auto_9CDD:
   LD B,$14
+Auto_9CDF:
   PUSH BC
   XOR A
   CALL DrawSpriteRow_0
   LD HL,$7A19
   INC (HL)
   POP BC
-  DJNZ $9CDF
+  DJNZ Auto_9CDF
   LD DE,$000C
   LD HL,($7A19)
   LD A,L
   CP $E0
-  JR C,$9CF9
+  JR C,Auto_9CF9
   LD DE,$070C
+Auto_9CF9:
   ADD HL,DE
   LD ($7A19),HL
   DEC C
-  JR NZ,$9CDD
+  JR NZ,Auto_9CDD
   LD DE,$000C
-  LD HL,$5800
+  LD HL,Auto_5800
   LD C,$13
+Auto_9D08:
   LD B,$14
+Auto_9D0A:
   LD (HL),$04
   INC HL
-  DJNZ $9D0A
+  DJNZ Auto_9D0A
   ADD HL,DE
   DEC C
-  JR NZ,$9D08
+  JR NZ,Auto_9D08
   RET
-  LD HL,$738D
+Auto_9D14:
+  LD HL,Auto_738D
   LD DE,$0008
   LD B,$07
+Auto_9D1C:
   XOR A
   CP (HL)
-  JR NZ,$9D2B
+  JR NZ,Auto_9D2B
   PUSH DE
   LD DE,$FFFA
   ADD HL,DE
   POP DE
   LD A,(HL)
   CP $22
-  JR NZ,$9D53
+  JR NZ,Auto_9D53
+Auto_9D2B:
   ADD HL,DE
-  DJNZ $9D1C
-  LD A,($83AA)
+  DJNZ Auto_9D1C
+  LD A,(AlienEventTimer)
   CP $22
-  JR Z,$9D59
+  JR Z,Auto_9D59
   CP $FF
-  JR NZ,$9D4E
+  JR NZ,Auto_9D4E
   LD HL,$7508
   LD B,$02
+Auto_9D3E:
   LD A,(HL)
   CP $FF
-  JR Z,$9D4B
+  JR Z,Auto_9D4B
   CP $22
-  JR Z,$9D59
+  JR Z,Auto_9D59
   CP $80
-  JR NC,$9D59
+  JR NC,Auto_9D59
+Auto_9D4B:
   INC HL
-  DJNZ $9D3E
+  DJNZ Auto_9D3E
+Auto_9D4E:
   LD A,$1B
   CALL UpdateCrewAI_8
+Auto_9D53:
   LD A,$1C
   CALL UpdateCrewAI_8
   RET
+Auto_9D59:
   LD B,$4B
+Auto_9D5B:
   PUSH BC
   LD A,$01
-  LD ($83A3),A
+  LD (SoundRequest),A
   CALL FrameTiming
   LD DE,$000C
-  LD HL,$5800
+  LD HL,Auto_5800
   LD C,$13
+Auto_9D6C:
   LD B,$14
+Auto_9D6E:
   LD A,(HL)
   XOR $40
   LD (HL),A
   INC HL
-  DJNZ $9D6E
+  DJNZ Auto_9D6E
   ADD HL,DE
   DEC C
-  JR NZ,$9D6C
+  JR NZ,Auto_9D6C
   POP BC
-  DJNZ $9D5B
+  DJNZ Auto_9D5B
   JP OptionsScreen_26
 
 ; FrameTiming
 ;
 ; Controls frame timing and plays a queued sound effect. Reads the sound-
-; request flag at $83C3. If zero, calls the standard one-frame wait at 8E60
-; (approx 1/50s on a 48K Spectrum) and returns. If non-zero, plays a beeper
-; tone by reading 1-KB ROM bytes starting at $0200 and toggling bit 4 of port
-; $FE for each byte; the outer loop runs 255 × 4 iterations with a short delay
-; (D=64 counts) between each toggle. After playback, clears the sound-request
-; flag.
+; request flag at SoundReqFlag. If zero, calls the standard one-frame wait at
+; Auto_8E60 (approx 1/50s on a 48K Spectrum) and returns. If non-zero, plays a
+; beeper tone by reading 1-KB ROM bytes starting at $0200 and toggling bit 4 of
+; port $FE for each byte; the outer loop runs 255 × 4 iterations with a short
+; delay (D=64 counts) between each toggle. After playback, clears the
+; sound-request flag.
 ;
-; USED by the routines at GameEntry, 95EB and DrawShipMap.
+; USED by the routines at GameEntry, UpdateRoomActors and DrawShipMap.
 FrameTiming:
-  LD A,($83A3)            ; A = sound-request flag ($83C3)
+  LD A,(SoundRequest)     ; A = sound-request flag (SoundReqFlag)
   AND A                   ; any sound queued?
   JR NZ,FrameTiming_0     ; yes: play beeper effect
-  CALL $8E60              ; no: standard one-frame timing wait (~1/50s)
+  CALL Auto_8E60          ; no: standard one-frame timing wait (~1/50s)
   RET
 FrameTiming_0:
   LD HL,$0200             ; HL = $0200 (ROM tone data source)
@@ -7431,8 +8012,9 @@ FrameTiming_3:
   POP BC
   DJNZ FrameTiming_1      ; repeat 255 outer iterations
   XOR A
-  LD ($83A3),A            ; clear sound-request flag
+  LD (SoundRequest),A     ; clear sound-request flag
   RET
+Auto_9DAA:
   DEC C
   NOP
   XOR D
@@ -7464,6 +8046,7 @@ FrameTiming_3:
   LD C,$00
   ADC A,A
   DEC B
+Auto_9DCE:
   NOP
   DEC B
   NOP
@@ -7477,17 +8060,19 @@ FrameTiming_3:
   EX AF,AF'
   INC B
   LD BC,$0000
+Auto_9DE0:
   NOP
   NOP
 
-; Routine at 40418
+; Routine at Auto_9DE2
 ;
-; Used by the routine at 9DF7.
+; Used by the routine at PlayMusicPhrase.
+Auto_9DE2:
   ADD A,A
   ADD A,A
   LD E,A
   LD D,$00
-  LD HL,$9DAA
+  LD HL,Auto_9DAA
   ADD HL,DE
   LD E,(HL)
   INC HL
@@ -7500,43 +8085,51 @@ FrameTiming_3:
   CALL $03B5
   RET
 
-; Routine at 40439
+; Routine at PlayMusicPhrase
 ;
 ; Used by the routine at DrawIntroScreen.
-  LD HL,$9DCE
-  LD ($9DE0),HL
+PlayMusicPhrase:
+  LD HL,Auto_9DCE
+  LD (Auto_9DE0),HL
   LD B,$08
+Auto_9DFF:
   PUSH BC
-  LD HL,($9DE0)
+  LD HL,(Auto_9DE0)
   LD E,(HL)
   INC HL
   LD D,(HL)
   INC HL
-  LD ($9DE0),HL
+  LD (Auto_9DE0),HL
   LD ($9DDE),DE
   LD B,$08
+Auto_9E10:
   PUSH BC
   LD A,($9DDE)
-  CALL $9DE2
+  CALL Auto_9DE2
   LD A,($9DDF)
-  CALL $9DE2
+  CALL Auto_9DE2
   LD BC,$FEFE
+Auto_9E20:
   IN A,(C)
   AND $1F
   XOR $1F
-  JR NZ,$9E33
+  JR NZ,Auto_9E33
   RLC B
-  JR C,$9E20
+  JR C,Auto_9E20
   POP BC
-  DJNZ $9E10
+  DJNZ Auto_9E10
   POP BC
-  DJNZ $9DFF
+  DJNZ Auto_9DFF
   RET
+Auto_9E33:
   POP BC
   POP BC
   RET
+Auto_9E36:
   NOP
+Auto_9E37:
   NOP
+Auto_9E38:
   NOP
   NOP
   NOP
@@ -7568,7 +8161,7 @@ FrameTiming_3:
   NOP
   NOP
   RRCA
-  DJNZ $9E6E
+  DJNZ Auto_9E6E
   LD (DE),A
   NOP
   NOP
@@ -7584,6 +8177,7 @@ FrameTiming_3:
   NOP
   NOP
   JR $9E87
+Auto_9E6E:
   NOP
   LD A,(DE)
   DEC DE
@@ -7605,18 +8199,18 @@ FrameTiming_3:
   INC H
   DEC H
   LD H,$27
-  JR Z,$9EB3
+  JR Z,Auto_9EB3
   NOP
   NOP
   NOP
   LD HL,($2C2B)
   DEC L
   LD L,$2F
-  JR NC,$9EC6
+  JR NC,Auto_9EC6
   LD ($3433),A
   DEC (HL)
   LD (HL),$37
-  JR C,$9ED6
+  JR C,Auto_9ED6
   LD A,($3C3B)
   DEC A
   LD A,$3F
@@ -7636,6 +8230,7 @@ FrameTiming_3:
   NOP
   NOP
   LD C,L
+Auto_9EB3:
   LD C,(HL)
   LD C,A
   LD D,B
@@ -7655,6 +8250,7 @@ FrameTiming_3:
   LD E,H
   LD E,L
   NOP
+Auto_9EC6:
   NOP
   NOP
   LD E,(HL)
@@ -7671,6 +8267,7 @@ FrameTiming_3:
   NOP
   NOP
   LD H,L
+Auto_9ED6:
   LD H,(HL)
   LD H,A
   LD L,B
@@ -7678,6 +8275,7 @@ FrameTiming_3:
   NOP
   NOP
   NOP
+Auto_9EDD:
   RLCA
   RLCA
   RLCA
@@ -7691,21 +8289,23 @@ FrameTiming_3:
   RLCA
   RLCA
   RLCA
-  JR C,$9EF0
+  JR C,Auto_9EF0
   RLCA
   INC B
   RLCA
   INC B
+Auto_9EF0:
   INC B
   RLCA
   RLCA
   RLCA
   RLCA
-  JR C,$9EFB
+  JR C,Auto_9EFB
   INC B
   RLCA
   INC B
   RLCA
+Auto_9EFB:
   RLCA
   RLCA
   RLCA
@@ -7764,22 +8364,23 @@ FrameTiming_3:
   RLCA
   RLCA
   RLCA
-  CALL $93F4
-  LD A,($83A0)
+  CALL Auto_93F4
+  LD A,(Auto_83A0)
   CP $FF
-  JR Z,$9F4E
+  JR Z,Auto_9F4E
   LD C,A
   ADD A,A
   ADD A,A
   ADD A,A
   LD E,A
   LD D,$00
-  LD HL,$7385
+  LD HL,CrewStateTable
   ADD HL,DE
   XOR A
   CP (HL)
-  JR Z,$9F62
-  LD A,($83A1)
+  JR Z,Auto_9F62
+Auto_9F4E:
+  LD A,(Auto_83A1)
   CP $FF
   RET Z
   LD C,A
@@ -7788,22 +8389,23 @@ FrameTiming_3:
   ADD A,A
   LD E,A
   LD D,$00
-  LD HL,$7385
+  LD HL,CrewStateTable
   ADD HL,DE
   XOR A
   CP (HL)
   RET NZ
+Auto_9F62:
   DEC HL
   DEC HL
   DEC HL
   DEC (HL)
   LD A,(HL)
   CP $02
-  JP C,$99E8
+  JP C,Auto_99E8
   CP $04
   RET NC
   LD L,C
-  LD A,($83A7)
+  LD A,(AlienTargetID)
   LD H,A
   LD A,$1D
   CALL UpdateCrewAI_8
@@ -7812,18 +8414,18 @@ FrameTiming_3:
 ; UpdateAlien
 ;
 ; Moves the alien and attacks reachable crew. Returns immediately if the alien
-; is inactive (flag at $83C8 = 0) or if the alien's current target crew record
-; (pointer at $83A5) shows the crew member is already dead (byte 0 of record
-; non-zero means busy/alive). Otherwise checks whether the crew members stored
-; at $83A0 and $83A1 (nearest crew IDs) are still alive by looking up their
-; alive flags in the crew table at $73BD. If neither is alive, calls
-; GameEntry_14 (alien wander) and sets the alien to idle state. If at least one
-; is reachable, calls UpdateCrewAI_8 to move the alien toward the target and
-; sets IX+3=7 (attack state), IX+0 to attack timer.
+; is inactive (flag at SprScreenAddrB = 0) or if the alien's current target
+; crew record (pointer at $83A5) shows the crew member is already dead (byte 0
+; of record non-zero means busy/alive). Otherwise checks whether the crew
+; members stored at Auto_83A0 and Auto_83A1 (nearest crew IDs) are still alive
+; by looking up their alive flags in the crew table at $73BD. If neither is
+; alive, calls GameEntry_14 (alien wander) and sets the alien to idle state. If
+; at least one is reachable, calls UpdateCrewAI_8 to move the alien toward the
+; target and sets IX+3=7 (attack state), IX+0 to attack timer.
 ;
 ; USED by the routine at GameEntry.
 UpdateAlien:
-  LD A,($83A8)            ; A = alien-active flag ($83C8)
+  LD A,(AlienActiveFlag)  ; A = alien-active flag (SprScreenAddrB)
   AND A                   ; alien present on ship?
   RET Z                   ; no: nothing to do
   LD HL,($83A5)           ; HL = pointer to alien's target crew record ($83A5)
@@ -7837,10 +8439,10 @@ UpdateAlien:
   PUSH IX                 ; save caller's IX
   LD IX,($83A5)           ; IX = alien's current target crew record
   LD (IX+$00),$50         ; set alien action state = 80 (attack)
-  LD A,($83A7)            ; A = alien target corridor ID ($83A7)
-  LD ($83A4),A            ; store as alien current corridor ($83A4)
-  CALL $93F4              ; update alien sprite position on screen
-  LD A,($83A0)            ; A = nearest crew ID 1 ($83A0)
+  LD A,(AlienTargetID)    ; A = alien target corridor ID (AlienTargetID)
+  LD (CrewIndex),A        ; store as alien current corridor (CrewIndex)
+  CALL Auto_93F4          ; update alien sprite position on screen
+  LD A,(Auto_83A0)        ; A = nearest crew ID 1 (Auto_83A0)
   CP $FF                  ; $FF = no crew in range
   JR Z,UpdateAlien_0      ; no primary target: wander
   LD C,A                  ; C = crew ID
@@ -7849,12 +8451,12 @@ UpdateAlien:
   ADD A,A
   LD E,A
   LD D,$00
-  LD HL,$7385             ; HL = crew table base ($73BD)
+  LD HL,CrewStateTable    ; HL = crew table base ($73BD)
   ADD HL,DE               ; index to crew record's alive flag
   XOR A
   CP (HL)                 ; alive = 0 → dead
   JR Z,UpdateAlien_1      ; crew 1 alive: attack it
-  LD A,($83A1)            ; A = nearest crew ID 2 ($83A1)
+  LD A,(Auto_83A1)        ; A = nearest crew ID 2 (Auto_83A1)
   CP $FF
   JR Z,UpdateAlien_0      ; no secondary target either: wander
   LD C,A
@@ -7863,7 +8465,7 @@ UpdateAlien:
   ADD A,A
   LD E,A
   LD D,$00
-  LD HL,$7385             ; crew table base
+  LD HL,CrewStateTable    ; crew table base
   ADD HL,DE
   XOR A
   CP (HL)                 ; crew 2 alive?
@@ -7876,7 +8478,7 @@ UpdateAlien_0:
   RET
 UpdateAlien_1:
   LD H,C                  ; H = target crew ID
-  LD A,($83A7)            ; A = alien corridor
+  LD A,(AlienTargetID)    ; A = alien corridor
   LD L,A                  ; L = alien corridor position
   LD A,$1E                ; move distance = 30
   CALL UpdateCrewAI_8     ; move alien toward crew member
@@ -7884,7 +8486,7 @@ UpdateAlien_1:
   LD (IX+$00),$28
   POP IX
   RET
-; This entry point is used by the routine at 9272.
+; This entry point is used by the routine at XorHAddE.
 UpdateAlien_2:
   LD A,(IX+$04)
   CP $02
@@ -7892,9 +8494,9 @@ UpdateAlien_2:
   LD A,(IX+$06)
   CP $02
   RET C
-  LD A,($83A4)
+  LD A,(CrewIndex)
   CALL DrawSprite_15
-  LD A,($7A10)
+  LD A,(GameState_7A10)
   CP $11
   JP Z,UpdateAlien_16
   CP $14
@@ -7903,8 +8505,8 @@ UpdateAlien_2:
   JR NZ,UpdateAlien_3
   LD HL,($83A5)
   LD (HL),$FF
-  CALL $9424
-  LD A,($83A4)
+  CALL Auto_9424
+  LD A,(CrewIndex)
   LD HL,($83A6)
   LD L,A
   LD A,$1F
@@ -7912,7 +8514,7 @@ UpdateAlien_2:
   JP UpdateAlien_16
 UpdateAlien_3:
   PUSH AF
-  LD A,($83A4)
+  LD A,(CrewIndex)
   LD L,A
   LD A,$20
   CALL UpdateCrewAI_8
@@ -7938,7 +8540,7 @@ UpdateAlien_4:
   LD DE,$FFF9
   ADD HL,DE
   LD (HL),$00
-  LD A,($83A7)
+  LD A,(AlienTargetID)
   LD L,A
   LD A,$15
   CALL UpdateCrewAI_8
@@ -7948,15 +8550,15 @@ UpdateAlien_4:
 UpdateAlien_5:
   CP $08
   JR NC,UpdateAlien_6
-  CALL $9424
+  CALL Auto_9424
   LD A,$05
-  LD HL,($83A4)
+  LD HL,(CrewIndex)
   CALL UpdateCrewAI_8
   JR UpdateAlien_4
 UpdateAlien_6:
   CP $0C
   JR NC,UpdateAlien_8
-  LD HL,$83D2
+  LD HL,Auto_83D2
   LD E,A
   LD D,$00
   ADD HL,DE
@@ -7966,14 +8568,14 @@ UpdateAlien_6:
   DEC (HL)
   JP UpdateAlien_16
 UpdateAlien_7:
-  LD HL,($83A4)
+  LD HL,(CrewIndex)
   LD A,$06
   CALL UpdateCrewAI_8
   JP UpdateAlien_16
 UpdateAlien_8:
   JP NZ,UpdateAlien_14
-  CALL $93F4
-  LD DE,$839F
+  CALL Auto_93F4
+  LD DE,Auto_839F
   LD B,$03
 UpdateAlien_9:
   PUSH BC
@@ -8003,7 +8605,7 @@ UpdateAlien_12:
   INC HL
   DJNZ UpdateAlien_10
   POP AF
-  LD HL,$7385
+  LD HL,CrewStateTable
   ADD A,A
   ADD A,A
   ADD A,A
@@ -8024,12 +8626,12 @@ UpdateAlien_13:
   DJNZ UpdateAlien_9
   LD A,$0F
   LD E,(IX+$01)
-  CALL $952A
+  CALL Auto_952A
   JP InitGameView
 UpdateAlien_14:
   LD E,A
   LD D,$00
-  LD HL,$83D2
+  LD HL,Auto_83D2
   ADD HL,DE
   XOR A
   CP (HL)
@@ -8037,22 +8639,22 @@ UpdateAlien_14:
   DEC (HL)
   LD A,$06
   LD E,(IX+$01)
-  CALL $952A
+  CALL Auto_952A
   JP UpdateAlien_4
 UpdateAlien_15:
-  LD HL,($83A4)
+  LD HL,(CrewIndex)
   LD A,$07
   CALL UpdateCrewAI_8
   JP UpdateAlien_16
 UpdateAlien_16:
-  LD A,($7A14)
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
-  LD A,($7A09)
-  LD HL,$83A4
+  LD A,(ScreenDrawPtr)
+  LD HL,CrewIndex
   CP (HL)
   RET NZ
-  LD A,($83A8)
+  LD A,(AlienActiveFlag)
   AND A
   LD A,(HL)
   RET Z
@@ -8063,14 +8665,15 @@ UpdateAlien_16:
   CALL DrawSprite
   RET
 
-; Routine at 41264
+; Routine at TriggerAlienEvent
 ;
 ; Used by the routine at GameEntry.
+TriggerAlienEvent:
   LD HL,$7382
   LD A,(HL)
   CP $06
   RET C
-  LD A,($83A7)
+  LD A,(AlienTargetID)
   CP $08
   RET NC
   LD HL,($83A5)
@@ -8080,44 +8683,51 @@ UpdateAlien_16:
   CP (HL)
   RET NZ
   LD A,$FF
-  JP $B2A4
+  JP Auto_B2A4
   RET
-  LD HL,$8392
+  LD HL,AlienFlags
   LD (HL),$00
   LD BC,$001F
   IN A,(C)
   BIT 2,A
-  JR Z,$A15D
+  JR Z,Auto_A15D
   SET 3,(HL)
+Auto_A15D:
   BIT 3,A
-  JR Z,$A163
+  JR Z,Auto_A163
   SET 2,(HL)
+Auto_A163:
   AND $13
   OR (HL)
   LD (HL),A
   RET
-  LD HL,$8392
+  LD HL,AlienFlags
   LD (HL),$00
   LD BC,$EFFE
   IN A,(C)
   CPL
   RRCA
   RRCA
-  JR NC,$A179
+  JR NC,Auto_A179
   SET 2,(HL)
+Auto_A179:
   RRCA
-  JR NC,$A17E
+  JR NC,Auto_A17E
   SET 3,(HL)
+Auto_A17E:
   RRCA
-  JR NC,$A183
+  JR NC,Auto_A183
   SET 0,(HL)
+Auto_A183:
   RRCA
-  JR NC,$A188
+  JR NC,Auto_A188
   SET 1,(HL)
+Auto_A188:
   AND $08
   RET Z
   SET 4,(HL)
   RET
+Auto_A18E:
   INC BC
   INC B
   DEC B
@@ -8139,6 +8749,7 @@ UpdateAlien_16:
   LD BC,$0502
   LD BC,$0502
   LD (BC),A
+Auto_A1AE:
   LD BC,$0402
   LD B,$01
   LD (BC),A
@@ -8156,14 +8767,16 @@ UpdateAlien_16:
   DJNZ $A1CB
   DJNZ $A1E2
   LD DE,$1312
-  JR NZ,$A1CE
+  JR NZ,Auto_A1CE
   LD (BC),A
   LD (BC),A
-  JR $A1E7
+Auto_A1CE:
+  JR Auto_A1E7
   RRA
   INC D
   RST $38
   RST $38
+Auto_A1D4:
   NOP
   NOP
   NOP
@@ -8178,9 +8791,11 @@ UpdateAlien_16:
   INC BC
   LD BC,$0808
   EX AF,AF'
+Auto_A1E4:
   NOP
   NOP
   NOP
+Auto_A1E7:
   NOP
   NOP
   NOP
@@ -8236,6 +8851,7 @@ UpdateAlien_16:
   INC BC
   INC BC
   NOP
+Auto_A224:
   NOP
   NOP
   NOP
@@ -8296,6 +8912,7 @@ UpdateAlien_16:
   NOP
   NOP
   RST $38
+Auto_A264:
   LD C,L
   LD B,C
   LD D,B
@@ -8303,13 +8920,14 @@ UpdateAlien_16:
   LD C,C
   LD C,(HL)
   LD B,A
-  JR NZ,$A2C0
+  JR NZ,Auto_A2C0
   LD E,C
   LD C,L
   LD B,D
   LD C,A
   LD C,H
   LD D,E
+Auto_A273:
   LD BC,$010F
   JR NZ,$A2B2
   JR NZ,$A2BD
@@ -8322,67 +8940,75 @@ UpdateAlien_16:
   LD L,C
   LD L,(HL)
   LD H,A
-  JR NZ,$A2C9
+  JR NZ,Auto_A2C9
   LD L,A
   LD L,A
   LD (HL),D
+Auto_A288:
   LD A,E
-  JR NZ,$A2AB
-  LD A,($4C20)
+  JR NZ,Auto_A2AB
+  LD A,(Auto_4C20)
   LD H,C
   LD H,H
   LD H,H
   LD H,L
   LD (HL),D
-  JR NZ,$A309
+  JR NZ,Auto_A309
   LD L,A
-  JR NZ,$A2DC
+  JR NZ,Auto_A2DC
   LD H,L
   LD H,E
   LD L,E
-  JR NZ,$A2DE
+  JR NZ,Auto_A2DE
   LD H,D
   LD L,A
   HALT
   LD H,L
+Auto_A2A1:
   LD A,H
-  JR NZ,$A2C4
-  LD A,($4820)
+  JR NZ,Auto_A2C4
+  LD A,(Auto_4820)
   LD H,C
   LD (HL),H
   LD H,E
   LD L,B
+Auto_A2AB:
   LD (HL),A
   LD H,C
   LD A,C
-  JR NZ,$A324
+  JR NZ,Auto_A324
   LD L,A
-  JR NZ,$A2F7
+  JR NZ,Auto_A2F7
   LD H,L
   LD H,E
   LD L,E
-  JR NZ,$A2FA
+  JR NZ,Auto_A2FA
   LD H,L
   LD L,H
   LD L,A
   LD (HL),A
-  LD A,($5320)
+Auto_A2BC:
+  LD A,(Auto_5320)
   LD (HL),L
+Auto_A2C0:
   LD H,D
   LD L,D
   LD H,L
   LD H,E
+Auto_A2C4:
   LD (HL),H
-  JR NZ,$A310
+  JR NZ,Auto_A310
   LD L,(HL)
   LD H,H
+Auto_A2C9:
   LD L,C
   LD H,E
   LD H,C
   LD (HL),H
   LD L,A
   LD (HL),D
-  LD A,($5220)
+Auto_A2CF:
+  LD A,(Auto_5220)
   LD L,A
   LD L,A
   LD L,L
@@ -8392,43 +9018,51 @@ UpdateAlien_16:
   LD L,C
   LD H,E
   LD H,C
+Auto_A2DC:
   LD (HL),H
   LD L,A
+Auto_A2DE:
   LD (HL),D
+Auto_A2DF:
   LD A,L
-  JR NZ,$A302
-  LD A,($4720)
+  JR NZ,Auto_A302
+  LD A,(Auto_4720)
   LD (HL),D
   LD L,C
   LD L,H
   LD L,H
   LD H,L
-  JR NZ,$A360
+  JR NZ,Auto_A360
   LD L,A
-  JR NZ,$A333
+  JR NZ,Auto_A333
   LD (HL),L
   LD H,E
   LD (HL),H
   LD L,C
   LD L,(HL)
   LD H,A
+Auto_A2F5:
   LD D,E
   LD H,L
+Auto_A2F7:
   LD L,H
   LD H,L
   LD H,E
+Auto_A2FA:
   LD (HL),H
-  JR NZ,$A348
+  JR NZ,Auto_A348
   LD H,L
   LD A,C
   LD H,D
   LD L,A
   LD H,C
+Auto_A302:
   LD (HL),D
   LD H,H
   JR NZ,$A375
   LD (HL),D
   JR NZ,$A373
+Auto_A309:
   LD L,A
   LD A,C
   LD (HL),E
@@ -8436,8 +9070,9 @@ UpdateAlien_16:
   LD L,C
   LD H,E
   LD L,E
+Auto_A310:
   LD SP,$3A20
-  JR NZ,$A360
+  JR NZ,Auto_A360
   LD B,L
   LD C,L
   LD D,B
@@ -8445,30 +9080,35 @@ UpdateAlien_16:
   LD D,H
   LD C,A
   LD C,(HL)
+Auto_A31C:
   LD ($3A20),A
-  JR NZ,$A362
+  JR NZ,Auto_A362
   LD B,A
   LD B,(HL)
   SUB B
+Auto_A324:
   LD D,B
   LD D,D
   LD C,A
   LD D,H
   LD B,L
   LD C,E
+Auto_A32A:
   INC SP
-  JR NZ,$A367
-  JR NZ,$A382
+  JR NZ,Auto_A367
+  JR NZ,Auto_A382
   LD C,C
   LD C,(HL)
   LD B,E
   LD C,H
+Auto_A333:
   LD B,C
   LD C,C
   LD D,D
+Auto_A336:
   INC (HL)
   JR NZ,$A373
-  JR NZ,$A386
+  JR NZ,Auto_A386
   LD B,L
   LD E,C
   LD B,D
@@ -8476,20 +9116,23 @@ UpdateAlien_16:
   LD B,C
   LD D,D
   LD B,H
+Auto_A342:
   DEC (HL)
-  JR NZ,$A37F
-  JR NZ,$A39A
+  JR NZ,Auto_A37F
+  JR NZ,Auto_A39A
   LD B,L
+Auto_A348:
   LD C,H
   LD B,L
   LD B,E
   LD D,H
+Auto_A34C:
   LD D,B
   LD D,D
   LD B,L
   LD D,E
   LD D,E
-  JR NZ,$A394
+  JR NZ,Auto_A394
   LD D,B
   LD D,B
   LD D,D
@@ -8500,78 +9143,93 @@ UpdateAlien_16:
   LD B,C
   LD D,H
   LD B,L
-  JR NZ,$A3AA
+  JR NZ,Auto_A3AA
   LD B,L
+Auto_A360:
   LD E,C
+Auto_A361:
   LD B,H
+Auto_A362:
   LD (HL),L
   LD (HL),D
   LD L,C
   LD L,(HL)
   LD H,A
-  JR NZ,$A3B0
+Auto_A367:
+  JR NZ,Auto_A3B0
   LD H,C
   LD L,L
   LD H,L
-  JR NZ,$A3BE
+  JR NZ,Auto_A3BE
   LD (HL),D
   LD H,L
   LD (HL),E
   LD (HL),E
-  JR NZ,$A3A5
-  JR NZ,$A3EA
+  JR NZ,Auto_A3A5
+  JR NZ,Auto_A3EA
   LD L,A
-  JR NZ,$A3C9
+  JR NZ,Auto_A3C9
   LD H,C
   LD (HL),L
   LD (HL),E
   LD H,L
+Auto_A37D:
   LD D,H
   LD L,B
+Auto_A37F:
   LD H,L
   JR NZ,$A3ED
+Auto_A382:
   LD H,L
   LD A,C
   LD H,D
   LD L,A
+Auto_A386:
   LD H,C
   LD (HL),D
   LD H,H
-  JR NZ,$A3F4
+  JR NZ,Auto_A3F4
   LD (HL),E
-  JR NZ,$A403
+  JR NZ,Auto_A403
   LD (HL),E
   LD H,L
   LD (HL),D
-  JR NZ,$A3F7
+  JR NZ,Auto_A3F7
   LD H,L
+Auto_A394:
   LD H,(HL)
   LD L,C
   LD L,(HL)
   LD H,C
   LD H,D
   LD L,H
+Auto_A39A:
   LD H,L
+Auto_A39B:
   LD D,B
   LD (HL),D
   LD H,L
   LD (HL),E
   LD (HL),E
-  JR NZ,$A3FB
-  JR NZ,$A418
+  JR NZ,Auto_A3FB
+  JR NZ,Auto_A418
   LD L,A
-  JR NZ,$A419
+Auto_A3A5:
+  JR NZ,Auto_A419
   LD H,L
   LD H,H
   LD H,L
+Auto_A3AA:
   LD H,(HL)
   LD L,C
   LD L,(HL)
   LD H,L
   JR NZ,$A41B
+Auto_A3B0:
   LD H,L
   LD A,C
   LD (HL),E
+Auto_A3B3:
   LD B,C
   LD L,(HL)
   LD A,C
@@ -8580,66 +9238,79 @@ UpdateAlien_16:
   LD L,B
   LD H,L
   LD (HL),D
-  JR NZ,$A429
+  JR NZ,Auto_A429
+Auto_A3BE:
   LD H,L
   LD A,C
-  JR NZ,$A436
+  JR NZ,Auto_A436
   LD L,A
-  JR NZ,$A428
+  JR NZ,Auto_A428
   LD L,A
   LD L,(HL)
   LD (HL),H
   LD L,C
+Auto_A3C9:
   LD L,(HL)
   LD (HL),L
   LD H,L
+Auto_A3CC:
   LD D,A
   LD L,B
   LD L,C
   LD H,E
   LD L,B
-  JR NZ,$A43E
+  JR NZ,Auto_A43E
   LD H,L
   LD A,C
-  JR NZ,$A43B
+  JR NZ,Auto_A43B
   LD L,A
   JR NZ,$A453
   LD L,A
+Auto_A3DB:
   LD (HL),L
-  JR NZ,$A455
+  JR NZ,Auto_A455
   LD L,C
   LD (HL),E
   LD L,B
-  JR NZ,$A457
+  JR NZ,Auto_A457
   LD L,A
+Auto_A3E4:
   LD (HL),L
   LD (HL),E
   LD H,L
-  JR NZ,$A44F
+  JR NZ,Auto_A44F
   LD L,A
+Auto_A3EA:
   LD (HL),D
-  LD A,($5520)
+  LD A,(Auto_5520)
   LD D,B
+Auto_A3EF:
   LD B,H
   LD C,A
   LD D,A
   LD C,(HL)
+Auto_A3F3:
   LD B,(HL)
+Auto_A3F4:
   LD C,C
   LD D,D
   LD B,L
+Auto_A3F7:
   LD D,D
   LD H,L
   LD (HL),H
   LD (HL),L
+Auto_A3FB:
   LD (HL),D
   LD L,(HL)
-  JR NZ,$A473
+  JR NZ,Auto_A473
   LD L,A
   JR NZ,$A453
   LD D,L
+Auto_A403:
   LD C,C
   LD D,H
+Auto_A405:
   LD C,L
   AND C
   LD D,B
@@ -8648,6 +9319,7 @@ UpdateAlien_16:
   AND C
   ADD HL,BC
   XOR H
+Auto_A40D:
   LD D,H
   LD L,B
   LD H,L
@@ -8656,10 +9328,12 @@ UpdateAlien_16:
   LD L,C
   LD H,L
   LD L,(HL)
-  JR NZ,$A480
+  JR NZ,Auto_A480
+Auto_A418:
   LD H,C
+Auto_A419:
   LD (HL),E
-  JR NZ,$A47E
+  JR NZ,Auto_A47E
   LD H,L
   LD H,L
   LD L,(HL)
@@ -8669,25 +9343,32 @@ UpdateAlien_16:
   LD L,H
   LD H,L
   LD H,H
-  JR NZ,$A491
+Auto_A426:
+  JR NZ,Auto_A491
+Auto_A428:
   LD (HL),E
-  JR NZ,$A48F
+Auto_A429:
+  JR NZ,Auto_A48F
   LD H,L
   LD H,C
   LD H,H
-  JR NZ,$A4A7
+Auto_A42E:
+  JR NZ,Auto_A4A7
   LD H,C
   LD (HL),E
   JR NZ,$A4A8
   LD L,B
   LD H,L
-  JR NZ,$A479
+Auto_A436:
+  JR NZ,Auto_A479
   LD L,(HL)
   LD H,H
   LD (HL),D
+Auto_A43B:
   LD L,A
   LD L,C
   LD H,H
+Auto_A43E:
   LD B,E
   LD L,A
   LD L,L
@@ -8698,18 +9379,23 @@ UpdateAlien_16:
   LD L,(HL)
   LD H,E
   LD H,L
-  JR NZ,$A49C
+  JR NZ,Auto_A49C
   LD H,C
   LD (HL),H
   LD L,C
   LD L,(HL)
   LD H,A
+Auto_A44F:
   LD A,($3020)
-  JR NC,$A3DB
+Auto_A452:
+  JR NC,Auto_A3DB
+Auto_A454:
   LD D,H
+Auto_A455:
   LD L,B
   LD H,L
-  JR NZ,$A4A7
+Auto_A457:
+  JR NZ,Auto_A4A7
   LD H,C
   LD (HL),D
   LD H,E
@@ -8718,9 +9404,9 @@ UpdateAlien_16:
   LD (HL),E
   LD (HL),L
   LD (HL),E
-  JR NZ,$A4CC
+  JR NZ,Auto_A4CC
   LD (HL),E
-  JR NZ,$A4D2
+  JR NZ,Auto_A4D2
   LD H,C
   LD (HL),L
   LD L,(HL)
@@ -8728,22 +9414,27 @@ UpdateAlien_16:
   LD L,B
   LD H,L
   LD H,H
+Auto_A46D:
   LD D,H
   LD L,B
   LD H,L
-  JR NZ,$A4C0
+  JR NZ,Auto_A4C0
   LD L,A
+Auto_A473:
   LD (HL),E
   LD (HL),H
   LD (HL),D
   LD L,A
   LD L,L
   LD L,A
-  JR NZ,$A4F2
+Auto_A479:
+  JR NZ,Auto_A4F2
   LD L,C
   LD L,H
   LD L,H
-  JR NZ,$A4E5
+Auto_A47E:
+  JR NZ,Auto_A4E5
+Auto_A480:
   LD A,B
   LD (HL),B
   LD L,H
@@ -8752,70 +9443,83 @@ UpdateAlien_16:
   LD H,L
   JR NZ,$A4F1
   LD L,(HL)
-  JR NZ,$A4AB
-  JR NZ,$A4FA
+  JR NZ,Auto_A4AB
+  JR NZ,Auto_A4FA
   LD L,C
   LD L,(HL)
+Auto_A48F:
   LD (HL),L
   LD (HL),H
+Auto_A491:
   LD H,L
   LD (HL),E
-  JR NZ,$A4B5
-  JR NZ,$A4B7
+  JR NZ,Auto_A4B5
+  JR NZ,Auto_A4B7
   LD (HL),E
   LD H,L
   LD H,E
   LD L,A
   LD L,(HL)
+Auto_A49C:
   LD H,H
   LD (HL),E
+Auto_A49E:
   LD D,H
   LD L,B
   LD H,L
-  JR NZ,$A4E4
+  JR NZ,Auto_A4E4
   LD L,H
   LD L,C
   LD H,L
   LD L,(HL)
-  JR NZ,$A520
+Auto_A4A7:
+  JR NZ,Auto_A520
   LD L,C
   LD L,H
+Auto_A4AB:
   LD L,H
-  JR NZ,$A510
+  JR NZ,Auto_A510
   LD H,L
   JR NZ,$A526
   LD L,(HL)
   LD L,H
   LD H,L
   LD H,C
+Auto_A4B5:
   LD (HL),E
   LD L,B
+Auto_A4B7:
   LD H,L
   LD H,H
+Auto_A4B9:
   LD (HL),L
   LD (HL),B
   LD L,A
   LD L,(HL)
   JR NZ,$A533
   LD L,B
+Auto_A4C0:
   LD H,L
   JR NZ,$A508
   LD H,C
   LD (HL),D
   LD (HL),H
   LD L,B
+Auto_A4C7:
   LD C,(HL)
   LD L,A
   LD (HL),E
   LD (HL),H
   LD (HL),D
+Auto_A4CC:
   LD L,A
   LD L,L
   LD L,A
   JR NZ,$A539
   LD H,C
+Auto_A4D2:
   LD (HL),E
-  JR NZ,$A53A
+  JR NZ,Auto_A53A
   LD A,B
   LD (HL),B
   LD L,H
@@ -8823,6 +9527,7 @@ UpdateAlien_16:
   LD H,H
   LD H,L
   LD H,H
+Auto_A4DC:
   LD C,H
   LD L,C
   LD H,(HL)
@@ -8830,11 +9535,13 @@ UpdateAlien_16:
   JR NZ,$A535
   LD (HL),L
   LD (HL),B
+Auto_A4E4:
   LD (HL),B
+Auto_A4E5:
   LD L,A
   LD (HL),D
   LD (HL),H
-  JR NZ,$A53D
+  JR NZ,Auto_A53D
   LD A,C
   LD (HL),E
   LD (HL),H
@@ -8842,6 +9549,7 @@ UpdateAlien_16:
   LD L,L
   LD (HL),E
   JR NZ,$A557
+Auto_A4F2:
   LD A,B
   LD L,B
   LD H,C
@@ -8850,6 +9558,7 @@ UpdateAlien_16:
   LD (HL),H
   LD H,L
   LD H,H
+Auto_A4FA:
   LD C,B
   LD (HL),L
   LD L,L
@@ -8858,17 +9567,18 @@ UpdateAlien_16:
   LD L,A
   LD L,C
   LD H,H
-  JR NZ,$A570
+  JR NZ,Auto_A570
   LD L,C
   LD H,(HL)
   LD H,L
-  JR NZ,$A575
+  JR NZ,Auto_A575
   LD H,L
   HALT
   LD H,L
   LD L,H
   LD (HL),E
-  JR NZ,$A57D
+  JR NZ,Auto_A57D
+Auto_A510:
   LD L,C
   LD L,(HL)
   LD L,C
@@ -8883,18 +9593,22 @@ UpdateAlien_16:
   JR NZ,$A55F
   LD C,(HL)
   LD E,C
-  JR NZ,$A56D
+Auto_A520:
+  JR NZ,Auto_A56D
   LD B,L
   LD E,C
-  LD HL,$83B2
-  LD ($83CD),HL
+LongGameInit:
+  LD HL,Auto_83B2
+  LD (Auto_83CD),HL
   XOR A
-  LD ($83AD),A
-  LD ($83AC),A
+  LD (Auto_83AD),A
+  LD (Auto_83AC),A
   CALL PlayMusic_24
-  LD HL,$A1E4
-  LD DE,$737E
+  LD HL,Auto_A1E4
+  LD DE,CrewData
+Auto_A53A:
   LD BC,$0040
+Auto_A53D:
   LDIR
   CALL AdvanceScriptPtr
   LD E,A
@@ -8907,7 +9621,7 @@ UpdateAlien_16:
   ADD A,A
   ADD A,A
   LD E,A
-  LD HL,$737E
+  LD HL,CrewData
   ADD HL,DE
   INC HL
   LD A,(HL)
@@ -8916,23 +9630,29 @@ UpdateAlien_16:
   LD DE,$0006
   ADD HL,DE
   LD (HL),$FF
+Auto_A560:
   CALL AdvanceScriptPtr
-  LD HL,$A1AE
+  LD HL,Auto_A1AE
   LD E,A
   LD D,$00
   ADD HL,DE
   LD C,(HL)
   POP AF
   CP C
-  JR NZ,$A572
+Auto_A56D:
+  JR NZ,Auto_A572
   PUSH AF
-  JR $A560
-  LD HL,$83A7
+Auto_A570:
+  JR Auto_A560
+Auto_A572:
+  LD HL,AlienTargetID
+Auto_A575:
   LD (HL),C
   PUSH BC
   LD L,A
   LD A,$21
   CALL UpdateCrewAI_8
+Auto_A57D:
   POP BC
   LD A,C
   ADD A,A
@@ -8940,17 +9660,18 @@ UpdateAlien_16:
   ADD A,A
   LD E,A
   LD D,$00
-  LD HL,$737E
+  LD HL,CrewData
   ADD HL,DE
   LD ($83A5),HL
 ; This entry point is used by the routine at ScreenTransition.
+Auto_A58C:
   XOR A
-  LD ($83A8),A
-  LD HL,$8080
-  LD ($7A1F),HL
+  LD (AlienActiveFlag),A
+  LD HL,Auto_8080
+  LD (CrewAnimFlags),HL
   LD A,L
-  LD ($9B3D),A
-  LD ($9B49),A
+  LD (Auto_9B3D),A
+  LD (Auto_9B49),A
   LD HL,$A1BE
   LD DE,$74F4
   LD BC,$0016
@@ -8958,9 +9679,10 @@ UpdateAlien_16:
   LD B,$21
   LD HL,$757C
   LD A,$FF
+Auto_A5AF:
   LD (HL),A
   INC HL
-  DJNZ $A5AF
+  DJNZ Auto_A5AF
   LD E,$0D
   LD D,$00
   LD HL,$757C
@@ -8969,44 +9691,44 @@ UpdateAlien_16:
   LD HL,$7A15
   LD (HL),D
   CALL AdvanceScriptPtr
-  LD ($83AA),A
+  LD (AlienEventTimer),A
   CALL AdvanceScriptPtr
   LD E,A
   LD D,$00
-  LD HL,$A18E
+  LD HL,Auto_A18E
   ADD HL,DE
   LD A,(HL)
   OR $40
   LD ($737F),A
-  LD HL,$A1D4
-  LD DE,$83D2
+  LD HL,Auto_A1D4
+  LD DE,Auto_83D2
   LD BC,$0010
   LDIR
-  LD HL,$7536
+  LD HL,Auto_7536
   LD (HL),$30
   LD DE,$7537
   LD BC,$0043
   LDIR
   LD HL,$3030
-  LD ($95E8),HL
+  LD (Auto_95E8),HL
   LD HL,$3537
   LD ($95E6),HL
   LD A,$20
   LD ($95E5),A
   LD A,$01
-  LD ($7A0B),A
+  LD (RoomTypeByte),A
   RET
 
 ; ClearDisplay
 ;
 ; Fills the entire ZX Spectrum display file with zero bytes, blanking all pixel
-; data. The display file occupies $4000-$57FF (6144 bytes). Uses a single LDIR
-; from $4000 into $4001 after priming the first byte to 0.
+; data. The display file occupies DisplayFile-$57FF (6144 bytes). Uses a single
+; LDIR from DisplayFile into $4001 after priming the first byte to 0.
 ;
 ; USED by the routines at DrawIntroScreen, DrawShipMap, OptionsScreen and
 ;      ScreenTransition.
 ClearDisplay:
-  LD HL,$4000             ; HL = $4000 (start of display file)
+  LD HL,DisplayFile       ; HL = DisplayFile (start of display file)
   LD DE,$4001             ; DE = $4001 (destination = source+1)
   LD BC,$17FF             ; BC = 6143 bytes to copy
   LD (HL),$00             ; prime first byte = 0
@@ -9016,21 +9738,22 @@ ClearDisplay:
 ; FillAttributes
 ;
 ; Fills the entire ZX Spectrum attribute file with the value in A. The
-; attribute file occupies $5800-$5AFF (768 bytes). Uses a single LDIR after
+; attribute file occupies Auto_5800-$5AFF (768 bytes). Uses a single LDIR after
 ; priming the first byte. Common attribute values: 0=black on black (hidden),
 ; 7=white ink on black paper, 32=green ink on black paper.
 ;
 ; Input: A = attribute byte to flood-fill
 ;
-; Used by the routines at 9272, DrawIntroScreen, DrawShipMap, OptionsScreen and
-; ScreenTransition.
+; Used by the routines at XorHAddE, DrawIntroScreen, DrawShipMap, OptionsScreen
+; and ScreenTransition.
 FillAttributes:
-  LD HL,$5800             ; HL = $5800 (start of attribute file)
+  LD HL,Auto_5800         ; HL = Auto_5800 (start of attribute file)
   LD DE,$5801             ; DE = $5801
   LD (HL),A               ; prime first attribute byte
   LD BC,$02FF             ; BC = 767 remaining bytes
   LDIR                    ; propagate across entire attribute file
   RET
+Auto_A620:
   LD B,C
   LD C,H
   LD C,C
@@ -9040,24 +9763,29 @@ FillAttributes:
   JR NZ,FillAttributes_1
   JR NZ,FillAttributes_2
   JR NZ,FillAttributes_3
+Auto_A62D:
   LD C,D
   LD L,A
   LD L,B
   LD L,(HL)
+Auto_A631:
   LD C,B
   LD H,L
   LD H,C
   LD (HL),B
+Auto_A635:
   LD B,C
   LD (HL),D
   LD H,A
   LD (HL),L
   LD (HL),E
+Auto_A63A:
   LD D,B
   LD (HL),D
   LD H,L
   LD (HL),E
   LD (HL),E
+Auto_A63F:
   LD D,E
   LD L,A
   LD H,(HL)
@@ -9087,11 +9815,12 @@ FillAttributes_3:
 ;
 ; Draws and animates the Alien title screen. Clears the display, sets border to
 ; black, fills attributes (0 = black on black = hidden). Renders a 15×11 tile
-; grid: each byte of the tile map at $9E38 is a tile index; multiplied by 8
-; gives an offset into the 8-byte-per-tile bitmap array at $F230 (actually at
-; $F230 = 62000 decimal, in the extra-data area loaded at $EA60). Tile rows are
-; blitted column by column down into the display file. After drawing, loops
-; animating colours until any key on row $F7FE is pressed.
+; grid: each byte of the tile map at Auto_9E38 is a tile index; multiplied by 8
+; gives an offset into the 8-byte-per-tile bitmap array at Auto_F230 (actually
+; at Auto_F230 = Auto_F230 decimal, in the extra-data area loaded at
+; ExtraDataArea). Tile rows are blitted column by column down into the display
+; file. After drawing, loops animating colours until any key on row $F7FE is
+; pressed.
 ;
 ; USED by the routine at GameEntry.
 DrawIntroScreen:
@@ -9099,9 +9828,9 @@ DrawIntroScreen:
   XOR A                   ; A = 0 (black border, black attributes)
   OUT ($FE),A             ; set border colour = black
   CALL FillAttributes     ; FillAttributes(0): all black-on-black (invisible)
-  LD DE,$9E38             ; DE = $9E38 (intro tile-map data)
+  LD DE,Auto_9E38         ; DE = Auto_9E38 (intro tile-map data)
   LD HL,$408A             ; HL = $408A (screen address: top-left of tile area)
-  LD ($7A19),HL           ; store as current draw pointer ($7A09)
+  LD ($7A19),HL           ; store as current draw pointer (ScreenDrawPtr)
   LD B,$0F                ; 15 tile columns
 DrawIntroScreen_0:
   PUSH BC
@@ -9115,7 +9844,7 @@ DrawIntroScreen_1:
   ADD HL,HL
   ADD HL,HL
   ADD HL,HL
-  LD DE,$F230
+  LD DE,Auto_F230
   ADD HL,DE
   LD DE,($7A19)
   LD B,$08
@@ -9149,7 +9878,7 @@ DrawIntroScreen_5:
   LD A,$07
   CALL FillAttributes
   LD HL,$596A
-  LD DE,$9EDD
+  LD DE,Auto_9EDD
   LD B,$08
 DrawIntroScreen_6:
   PUSH BC
@@ -9166,7 +9895,7 @@ DrawIntroScreen_7:
   DJNZ DrawIntroScreen_6
   LD HL,$4029
   LD ($7A19),HL
-  LD DE,$A620
+  LD DE,Auto_A620
   LD B,$05
 DrawIntroScreen_8:
   PUSH BC
@@ -9176,7 +9905,7 @@ DrawIntroScreen_8:
   INC (HL)
   INC (HL)
   INC (HL)
-  CALL $9DF7
+  CALL PlayMusicPhrase
   POP DE
   INC DE
   POP BC
@@ -9184,35 +9913,35 @@ DrawIntroScreen_8:
   LD HL,$5084
   LD ($7A19),HL
   LD B,$04
-  LD DE,$A62D
+  LD DE,Auto_A62D
   CALL DrawStatusPanel_14
   LD HL,$50A4
   LD ($7A19),HL
   LD B,$04
-  LD DE,$A631
+  LD DE,Auto_A631
   CALL DrawStatusPanel_14
   LD HL,$5096
   LD ($7A19),HL
   LD B,$05
-  LD DE,$A635
+  LD DE,Auto_A635
   CALL DrawStatusPanel_14
   LD HL,$50B6
   LD ($7A19),HL
   LD B,$05
-  LD DE,$A63A
+  LD DE,Auto_A63A
   CALL DrawStatusPanel_14
   LD HL,$50D6
   LD ($7A19),HL
   LD B,$08
-  LD DE,$A63F
+  LD DE,Auto_A63F
   CALL DrawStatusPanel_14
-  LD HL,$50E8
+  LD HL,Auto_50E8
   LD ($7A19),HL
   LD B,$0E
   LD DE,FillAttributes_0
   CALL DrawStatusPanel_14
 DrawIntroScreen_9:
-  CALL $9DF7
+  CALL PlayMusicPhrase
   LD BC,$FEFE
 DrawIntroScreen_10:
   IN A,(C)
@@ -9225,16 +9954,23 @@ DrawIntroScreen_10:
 
 ; DrawShipMap
 ;
-; Draws the ship overview map and handles room-selection. Sets border to green
-; (4), fills attributes with 32 (green ink), clears display, then renders the
-; Nostromo deck plan as a series of tile/character blocks at various screen
-; positions. After drawing, reads keys 1-4 on port $F7FE to scroll a cursor
-; among the three deck levels, key 4 dispatches through a jump table at $A8EF
-; indexed by the cursor to enter a specific room handler. This is the strategic
-; map screen from which the player directs crew to different sections of the
-; ship.
+; Draws the Nostromo ship overview map and handles game-mode selection. Sets
+; border green, fills attributes (32), clears display, then blits the deck plan
+; as tile blocks at fixed screen positions. After drawing, prints the crew
+; names via DrawSprite_3 (one name per corridor segment) and the four-line menu
+; ("1: Short Game", "2: Long Game", "3: Introduction", "4: Select") from the
+; text table at GameModeText (GameModeText).
 ;
-; USED by the routine at GameEntry.
+; KEY input loop reads port $F7FE:
+; KEY 1 — highlight "Short Game"   (selection 0)
+; KEY 2 — highlight "Long Game"    (selection 1)
+; KEY 3 — highlight "Introduction" (selection 2)
+; KEY 4 — confirm: dispatch through 3-word table at GameModeDispatchTable
+;     (GameModeDispatchTable)
+; TO the handler for the highlighted mode, then return
+;
+; "4: Select" is a confirm key, not a fourth game mode. Used by the routine at
+; GameEntry.
 DrawShipMap:
   LD A,$04                ; A = 4 (green border)
   OUT ($FE),A             ; set border green
@@ -9242,7 +9978,7 @@ DrawShipMap:
   CALL FillAttributes     ; FillAttributes(32)
   CALL ClearDisplay       ; ClearDisplay
   CALL OptionsScreen_21   ; wait for display to stabilise
-  LD DE,$7608
+  LD DE,CrewPortraits
   LD HL,$4044
   LD B,$04
 DrawShipMap_0:
@@ -9303,7 +10039,7 @@ DrawShipMap_1:
   LD ($7A19),HL
   LD A,$07
   CALL DrawSprite_3
-  LD DE,$A885
+  LD DE,GameModeText
   LD HL,$48E9
   LD ($7A19),HL
   PUSH DE
@@ -9333,8 +10069,8 @@ DrawShipMap_1:
   LD A,$04
   CALL DrawSprite_4
   XOR A
-  LD ($8393),A
-  CALL DrawShipMap_7
+  LD (CorridorCursor),A
+  CALL HighlightGameMode
 DrawShipMap_2:
   LD BC,$F7FE
   IN A,(C)
@@ -9348,36 +10084,36 @@ DrawShipMap_2:
   JR Z,DrawShipMap_6
   JR DrawShipMap_2
 DrawShipMap_3:
-  LD A,($8393)
+  LD A,(CorridorCursor)
   AND A
   JR Z,DrawShipMap_2
-  CALL DrawShipMap_7
+  CALL HighlightGameMode
   XOR A
-  LD ($8393),A
-  CALL DrawShipMap_7
+  LD (CorridorCursor),A
+  CALL HighlightGameMode
   JR DrawShipMap_2
 DrawShipMap_4:
-  LD A,($8393)
+  LD A,(CorridorCursor)
   CP $01
   JR Z,DrawShipMap_2
-  CALL DrawShipMap_7
+  CALL HighlightGameMode
   LD A,$01
-  LD ($8393),A
-  CALL DrawShipMap_7
+  LD (CorridorCursor),A
+  CALL HighlightGameMode
   JR DrawShipMap_2
 DrawShipMap_5:
-  LD A,($8393)
+  LD A,(CorridorCursor)
   CP $02
   JR Z,DrawShipMap_2
-  CALL DrawShipMap_7
+  CALL HighlightGameMode
   LD A,$02
-  LD ($8393),A
-  CALL DrawShipMap_7
+  LD (CorridorCursor),A
+  CALL HighlightGameMode
   JR DrawShipMap_2
 DrawShipMap_6:
-  LD A,($8393)
+  LD A,(CorridorCursor)
   ADD A,A
-  LD HL,$A87F
+  LD HL,GameModeDispatchTable
   LD E,A
   LD D,$00
   ADD HL,DE
@@ -9385,141 +10121,119 @@ DrawShipMap_6:
   INC HL
   LD H,(HL)
   LD L,A
+GameModeJump:
   JP (HL)
-  JP NZ,$24AE
-  AND L
-  JP PE,$31A8
-  LD A,($5320)
-  LD L,B
-  LD L,A
-  LD (HL),D
-  LD (HL),H
-  JR NZ,DrawShipMap_9
-  LD H,C
-  LD L,L
-  LD H,L
-  RST $38
-  LD ($203A),A
-  LD C,H
-  LD L,A
-  LD L,(HL)
-  LD H,A
-  JR NZ,DrawShipMap_13
-  LD H,C
-  LD L,L
-  LD H,L
-  RST $38
-  INC SP
-  LD A,($4920)
-  LD L,(HL)
-  LD (HL),H
-  LD (HL),D
-  LD L,A
-  LD H,H
-  LD (HL),L
-  LD H,E
-  LD (HL),H
-  LD L,C
-  LD L,A
-  LD L,(HL)
-  RST $38
-  INC (HL)
-  LD A,($5320)
-  LD H,L
-  LD L,H
-  LD H,L
-  LD H,E
-  LD (HL),H
-  RST $38
-  LD D,B
-  LD (HL),D
-  LD H,L
-  LD (HL),E
-  LD (HL),E
-  JR NZ,$A902
-  LD (HL),B
-  LD (HL),B
-  LD (HL),D
-  LD L,A
-  LD (HL),B
-  LD (HL),D
-  LD L,C
-  LD H,C
-  LD (HL),H
-  LD H,L
-  JR NZ,$A918
-  LD H,L
-  LD A,C
-  RST $38
-DrawShipMap_7:
+
+; GameModeDispatchTable
+;
+; 3-word jump table indexed by the highlighted game mode (0-2). JP (HL) at
+; GameModeJump lands here; the word for the current selection is loaded into HL
+; and jumped to.
+;
+; MODE 0 — Short Game   → ShortGameInit
+; MODE 1 — Long Game    → LongGameInit
+; MODE 2 — Introduction → IntroductionMode
+GameModeDispatchTable:
+  DEFW ShortGameInit,LongGameInit,IntroductionMode
+
+; GameModeText
+;
+; 0xFF-terminated text strings for the game-mode menu, rendered by DrawShipMap
+; (DrawShipMap) via five calls to DrawSprite_4. Indices 0-3 are the four menu
+; lines; index 4 is the footer prompt.
+GameModeText:
+  DEFB $31,$3A,$20,$53,$68,$6F,$72,$74,$20,$47,$61,$6D,$65,$FF ; "1: Short
+                                                               ; Game"
+  DEFB $32,$3A,$20,$4C,$6F,$6E,$67,$20,$47,$61,$6D,$65,$FF ; "2: Long Game"
+  DEFB $33,$3A,$20,$49,$6E,$74,$72,$6F ; "3: Intro
+  DEFB $64,$75,$63,$74,$69,$6F,$6E,$FF ; duction"
+  DEFB $34,$3A,$20,$53,$65,$6C,$65,$63,$74,$FF ; "4: Select"
+  DEFB $50,$72,$65,$73,$73,$20,$41,$70,$70,$72,$6F ; "Press Appro
+  DEFB $70,$72,$69,$61,$74,$65,$20,$4B,$65,$79,$FF ; priate Key"
+
+; HighlightGameMode
+;
+; XOR-toggles the attribute colour of the currently selected menu row, used by
+; DrawShipMap (DrawShipMap) to highlight or erase the cursor. Loads the base
+; attribute address $59E9 (row 15, col 9), steps 64 bytes per row (selection ×
+; 64), then XORs 15 consecutive attribute bytes with 36 (flipping ink/paper to
+; show highlight).
+HighlightGameMode:
   LD HL,$59E9
 ; This entry point is used by the routine at OptionsScreen.
-DrawShipMap_8:
+HighlightGameMode_0:
   LD DE,$0040
-DrawShipMap_9:
-  LD A,($8393)
+HighlightGameMode_1:
+  LD A,(CorridorCursor)
   AND A
-  JR Z,DrawShipMap_11
+  JR Z,HighlightGameMode_3
   LD B,A
-DrawShipMap_10:
+HighlightGameMode_2:
   ADD HL,DE
-  DJNZ DrawShipMap_10
-DrawShipMap_11:
+  DJNZ HighlightGameMode_2
+HighlightGameMode_3:
   LD B,$0F
-DrawShipMap_12:
+HighlightGameMode_4:
   LD A,(HL)
-DrawShipMap_13:
+HighlightGameMode_5:
   XOR $24
   LD (HL),A
   INC HL
-  DJNZ DrawShipMap_12
+  DJNZ HighlightGameMode_4
   RET
+
+; IntroductionMode
+;
+; Game-mode handler for "3: Introduction" (dispatched from
+; GameModeDispatchTable). Clears display, sets border/attrs white, then replays
+; the animated intro screen and returns to the main loop.
+IntroductionMode:
   CALL ClearDisplay
   XOR A
   OUT ($FE),A
   LD A,$07
   CALL FillAttributes
-  LD HL,$4028
+  LD HL,Auto_4028
   LD ($7A19),HL
-  LD DE,$A264
+  LD DE,Auto_A264
   LD B,$0F
   CALL DrawStatusPanel_14
   LD HL,$40A4
   LD ($7A19),HL
-  LD DE,$A273
+  LD DE,Auto_A273
   LD B,$15
   CALL DrawStatusPanel_14
   LD HL,$40E5
   LD ($7A19),HL
-  LD DE,$A288
+  LD DE,Auto_A288
   LD B,$19
   CALL DrawStatusPanel_14
   LD HL,$4825
   LD ($7A19),HL
-  LD DE,$A2A1
+  LD DE,Auto_A2A1
   LD B,$1B
   CALL DrawStatusPanel_14
-  LD HL,$4888
+  LD HL,Auto_4888
   LD ($7A19),HL
-  LD DE,$A2BC
+  LD DE,Auto_A2BC
   LD B,$13
   CALL DrawStatusPanel_14
-  LD HL,$48E8
+  LD HL,Auto_48E8
   LD ($7A19),HL
-  LD DE,$A2CF
+  LD DE,Auto_A2CF
   LD B,$10
   CALL DrawStatusPanel_14
   LD HL,$5025
   LD ($7A19),HL
-  LD DE,$A2DF
+  LD DE,Auto_A2DF
   LD B,$16
   CALL DrawStatusPanel_14
   LD HL,$0000
-  LD ($7A1F),HL
+  LD (CrewAnimFlags),HL
   LD HL,$4864
-  LD ($8396),HL
+  LD (SprDestA),HL
   LD HL,$48C4
-  LD ($8398),HL
+  LD (SpriteDestAddr),HL
   XOR A
   LD B,$01
   CALL AnimateCrewB_0
@@ -9528,71 +10242,72 @@ DrawShipMap_13:
   CALL AnimateCrewA_0
   LD HL,$5085
   LD ($7A19),HL
-  LD DE,$AA07
+  LD DE,Auto_AA07
   LD B,$16
   CALL DrawStatusPanel_14
   LD HL,$50C5
   LD ($7A19),HL
-  LD DE,$AA1D
+  LD DE,Auto_AA1D
   LD B,$11
   CALL DrawStatusPanel_14
   LD B,$05
-DrawShipMap_14:
+IntroductionMode_0:
   PUSH BC
   LD A,$01
-  LD ($83A3),A
+  LD (SoundRequest),A
   CALL FrameTiming
-  CALL DrawShipMap_18
+  CALL IntroductionMode_4
   POP BC
-  DJNZ DrawShipMap_14
+  DJNZ IntroductionMode_0
   LD HL,$50C5
   LD ($7A19),HL
-  LD DE,$AA2E
+  LD DE,Auto_AA2E
   LD B,$14
   CALL DrawStatusPanel_14
   LD B,$05
-DrawShipMap_15:
+IntroductionMode_1:
   PUSH BC
   LD A,$01
-  LD ($83A9),A
+  LD (Auto_83A9),A
   CALL PlayMusic
-  CALL DrawShipMap_18
+  CALL IntroductionMode_4
   POP BC
-  DJNZ DrawShipMap_15
+  DJNZ IntroductionMode_1
   LD HL,$50C5
   LD ($7A19),HL
-  LD DE,$AA42
+  LD DE,Auto_AA42
   LD B,$18
   CALL DrawStatusPanel_14
   LD B,$0F
-DrawShipMap_16:
+IntroductionMode_2:
   PUSH BC
-  CALL $994A
-  CALL DrawShipMap_18
+  CALL Auto_994A
+  CALL IntroductionMode_4
   POP BC
-  DJNZ DrawShipMap_16
+  DJNZ IntroductionMode_2
   XOR A
-  LD ($5C08),A
-DrawShipMap_17:
-  CALL $8E60
+  LD (Auto_5C08),A
+IntroductionMode_3:
+  CALL Auto_8E60
   CALL AnimateCrewB
   CALL AnimateCrewA
-  LD A,($5C08)
+  LD A,(Auto_5C08)
   AND A
-  JR Z,DrawShipMap_17
+  JR Z,IntroductionMode_3
   JP DrawShipMap
-DrawShipMap_18:
+IntroductionMode_4:
   LD B,$14
-DrawShipMap_19:
+IntroductionMode_5:
   PUSH BC
   CALL AnimateCrewB
   CALL AnimateCrewA
-  CALL $8E60
+  CALL Auto_8E60
   CALL AnimateCrewB
   CALL AnimateCrewA
   POP BC
-  DJNZ DrawShipMap_19
+  DJNZ IntroductionMode_5
   RET
+Auto_AA07:
   LD D,H
   LD L,B
   LD L,C
@@ -9610,6 +10325,7 @@ DrawShipMap_19:
   JR NZ,OptionsScreen_4
   LD H,(HL)
   JR NZ,OptionsScreen_1
+Auto_AA1D:
   LD B,H
   LD L,A
   LD L,A
@@ -9625,6 +10341,7 @@ DrawShipMap_19:
   LD L,(HL)
   LD H,L
   LD H,H
+Auto_AA2E:
   LD B,A
   LD (HL),D
   LD L,C
@@ -9643,6 +10360,7 @@ DrawShipMap_19:
   HALT
   LD H,L
   LD H,H
+Auto_AA42:
   LD D,B
   LD L,A
   LD (HL),E
@@ -9671,10 +10389,10 @@ DrawShipMap_19:
 ; Draws the difficulty-selection screen and waits for a key. Clears display,
 ; fills attributes green (32), then draws the game title and five option lines
 ; using the tile-blit helper DrawStatusPanel_14. Reads port $F7FE in a loop:
-; keys 1-4 (bits 0-3) set $836B (difficulty, 0-3) and redraw the highlighted
-; option; key 5 (bit 4) confirms the selection and returns. The selected
-; difficulty level is stored at $836B and used throughout the game to scale
-; alien speed and crew health.
+; keys 1-4 (bits 0-3) set DifficultyByte (difficulty, 0-3) and redraw the
+; highlighted option; key 5 (bit 4) confirms the selection and returns. The
+; selected difficulty level is stored at DifficultyByte and used throughout the
+; game to scale alien speed and crew health.
 ;
 ; USED by the routine at GameEntry.
 OptionsScreen:
@@ -9683,14 +10401,14 @@ OptionsScreen:
   CALL FillAttributes     ; FillAttributes(32)
   LD HL,$4042             ; HL = $4042 (screen row for title)
   LD ($7A19),HL           ; set draw pointer
-  LD DE,$A2F5             ; DE = $A2F5 (title tile data)
+  LD DE,Auto_A2F5         ; DE = Auto_A2F5 (title tile data)
   LD B,$1B                ; 27 characters wide
   CALL DrawStatusPanel_14 ; blit title text
   LD HL,$40EB
   LD ($7A19),HL
 ; This entry point is used by the routine at DrawShipMap.
 OptionsScreen_0:
-  LD DE,$A310
+  LD DE,Auto_A310
   LD B,$0C
   CALL DrawStatusPanel_14
 ; This entry point is used by the routine at DrawShipMap.
@@ -9699,7 +10417,7 @@ OptionsScreen_1:
   LD ($7A19),HL
 ; This entry point is used by the routine at DrawShipMap.
 OptionsScreen_2:
-  LD DE,$A31C
+  LD DE,Auto_A31C
 ; This entry point is used by the routine at DrawShipMap.
 OptionsScreen_3:
   LD B,$0E
@@ -9708,39 +10426,39 @@ OptionsScreen_4:
   CALL DrawStatusPanel_14
   LD HL,$486B
   LD ($7A19),HL
-  LD DE,$A32A
+  LD DE,Auto_A32A
   LD B,$0C
   CALL DrawStatusPanel_14
   LD HL,$48AB
   LD ($7A19),HL
 ; This entry point is used by the routine at DrawShipMap.
 OptionsScreen_5:
-  LD DE,$A336
+  LD DE,Auto_A336
   LD B,$0C
   CALL DrawStatusPanel_14
   LD HL,$48EB
   LD ($7A19),HL
 ; This entry point is used by the routine at DrawShipMap.
 OptionsScreen_6:
-  LD DE,$A342
+  LD DE,Auto_A342
   LD B,$0A
   CALL DrawStatusPanel_14
   LD HL,$5066
   LD ($7A19),HL
-  LD DE,$A34C
+  LD DE,Auto_A34C
   LD B,$15
   CALL DrawStatusPanel_14
   LD HL,$50C2
   LD ($7A19),HL
-  LD DE,$A361
+  LD DE,Auto_A361
   LD B,$1C
   CALL DrawStatusPanel_14
   XOR A
-  LD ($8393),A
+  LD (CorridorCursor),A
 OptionsScreen_7:
   CALL OptionsScreen_15
 OptionsScreen_8:
-  LD HL,$8393
+  LD HL,CorridorCursor
   LD BC,$F7FE
   IN A,(C)
   RRA
@@ -9787,14 +10505,14 @@ OptionsScreen_13:
   ADD A,A
   LD E,A
   LD D,$00
-  LD HL,$A405
+  LD HL,Auto_A405
   ADD HL,DE
   LD A,(HL)
   INC HL
   LD H,(HL)
   LD L,A
   LD ($874D),HL
-  LD A,($8393)
+  LD A,(CorridorCursor)
   CP $03
   RET NZ
   CALL ClearDisplay
@@ -9803,24 +10521,24 @@ OptionsScreen_13:
   CALL OptionsScreen_21
   LD HL,$4041
   LD ($7A19),HL
-  LD DE,$A37D
+  LD DE,Auto_A37D
   LD B,$1E
   CALL DrawStatusPanel_14
-  LD A,($9E36)
+  LD A,(Auto_9E36)
   AND A
   JR Z,OptionsScreen_14
   LD HL,$4084
   LD ($7A19),HL
-  LD DE,$A39B
+  LD DE,Auto_A39B
   LD B,$18
   CALL DrawStatusPanel_14
   LD HL,$40A4
   LD ($7A19),HL
-  LD DE,$A3B3
+  LD DE,Auto_A3B3
   LD B,$19
   CALL DrawStatusPanel_14
   CALL OptionsScreen_19
-  LD BC,$DFFE
+  LD BC,Auto_DFFE
   IN A,(C)
   AND $10
   RET NZ
@@ -9828,12 +10546,12 @@ OptionsScreen_13:
 OptionsScreen_14:
   LD HL,$4804
   LD ($7A19),HL
-  LD DE,$A3CC
+  LD DE,Auto_A3CC
   LD B,$18
   CALL DrawStatusPanel_14
   LD HL,$4844
   LD ($7A19),HL
-  LD DE,$A3E4
+  LD DE,Auto_A3E4
   LD B,$0B
   CALL DrawStatusPanel_14
   CALL OptionsScreen_19
@@ -9842,7 +10560,7 @@ OptionsScreen_14:
   CALL OptionsScreen_21
   LD HL,$484D
   LD ($7A19),HL
-  LD DE,$A3EF
+  LD DE,Auto_A3EF
   LD B,$04
   CALL DrawStatusPanel_14
   CALL OptionsScreen_19
@@ -9851,7 +10569,7 @@ OptionsScreen_14:
   CALL OptionsScreen_21
   LD HL,$484D
   LD ($7A19),HL
-  LD DE,$A3F3
+  LD DE,Auto_A3F3
   LD B,$04
   CALL DrawStatusPanel_14
   CALL OptionsScreen_19
@@ -9860,7 +10578,7 @@ OptionsScreen_14:
   CALL OptionsScreen_21
   LD HL,$484D
   LD ($7A19),HL
-  LD DE,$A3F7
+  LD DE,Auto_A3F7
   LD B,$0E
   CALL DrawStatusPanel_14
   CALL OptionsScreen_19
@@ -9868,15 +10586,15 @@ OptionsScreen_14:
   LD ($AC38),A
   CALL OptionsScreen_21
   LD A,$FF
-  LD ($9E36),A
+  LD (Auto_9E36),A
   RET
 OptionsScreen_15:
   PUSH HL
   LD HL,$58EB
-  CALL DrawShipMap_8
+  CALL HighlightGameMode_0
   POP HL
   RET
-  LD HL,$8392
+  LD HL,AlienFlags
   LD (HL),$00
   LD BC,$7FFE
   IN A,(C)
@@ -9927,11 +10645,11 @@ OptionsScreen_22:
   RLC B
   JR C,OptionsScreen_22
   RET
-; This entry point is used by the routines at 9272 and 95EB.
+; This entry point is used by the routines at XorHAddE and UpdateRoomActors.
 OptionsScreen_23:
   CALL ScreenTransition
   XOR A
-  LD ($9E37),A
+  LD (Auto_9E37),A
   CALL ScreenTransition_5
   CALL ScreenTransition_8
 ; This entry point is used by the routine at DrawStatusPanel.
@@ -9944,12 +10662,12 @@ OptionsScreen_25:
   CALL DrawStatusPanel_8
   CALL ScreenTransition_2
   JP GameEntry
-; This entry point is used by the routine at 95EB.
+; This entry point is used by the routine at UpdateRoomActors.
 OptionsScreen_26:
   CALL ScreenTransition
   XOR A
-  LD ($9E37),A
-  LD DE,$A454
+  LD (Auto_9E37),A
+  LD DE,Auto_A454
   LD B,$19
   LD HL,$4003
   LD ($7A19),HL
@@ -9967,7 +10685,7 @@ OptionsScreen_27:
   LD HL,$4043
   LD ($7A19),HL
   LD B,$19
-  LD DE,$A46D
+  LD DE,Auto_A46D
   CALL DrawStatusPanel_14
   LD HL,$4063
   LD ($7A19),HL
@@ -9981,10 +10699,10 @@ OptionsScreen_27:
 OptionsScreen_28:
   CALL ScreenTransition
   XOR A
-  LD ($9E37),A
+  LD (Auto_9E37),A
   LD HL,$4002
   LD ($7A19),HL
-  LD DE,$A4FA
+  LD DE,Auto_A4FA
   LD B,$1C
   CALL DrawStatusPanel_14
 OptionsScreen_29:
@@ -9993,17 +10711,17 @@ OptionsScreen_29:
   JP NZ,OptionsScreen_27
   CALL ScreenTransition_4
   JP OptionsScreen_25
-; This entry point is used by the routine at 95EB.
+; This entry point is used by the routine at UpdateRoomActors.
 OptionsScreen_30:
   CALL ScreenTransition
   LD HL,$4001
   LD ($7A19),HL
-  LD DE,$A4DC
+  LD DE,Auto_A4DC
   LD B,$1E
   CALL DrawStatusPanel_14
   XOR A
-  LD ($9E37),A
-  LD HL,$738D
+  LD (Auto_9E37),A
+  LD HL,Auto_738D
   LD DE,$0008
   LD B,$07
 OptionsScreen_31:
@@ -10015,20 +10733,22 @@ OptionsScreen_31:
 ; DrawStatusPanel
 ;
 ; Refreshes the crew-status display at the right side of the game window. Scans
-; all 7 crew records starting at the alive-flag byte ($738D = $7386+7). For
-; each crew member: if its crew-ID matches the alien's current target ($83A7)
-; it is highlighted; if its alive flag is 0 (dead) the scan stops early (crew
-; records are kept in alive-descending order). Live crew members get their
-; portrait sprite drawn at the status panel position ($40A4 column).
+; all 7 crew records starting at the alive-flag byte (Auto_738D = $7386+7). For
+; each crew member: if its crew-ID matches the alien's current target
+; (AlienTargetID) it is highlighted; if its alive flag is 0 (dead) the scan
+; stops early (crew records are kept in alive-descending order). Live crew
+; members get their portrait sprite drawn at the status panel position ($40A4
+; column).
 ;
 ; USED by the routine at GameEntry.
 DrawStatusPanel:
-  LD HL,$738D             ; HL = $738D (alive-flag byte of first crew record)
+  LD HL,Auto_738D         ; HL = Auto_738D (alive-flag byte of first crew
+                          ; record)
   XOR A                   ; A = 0
   LD BC,$0701             ; B=7 (7 crew members), C=1 (crew index, 1-based)
   LD DE,$0008             ; DE = 8 (crew record stride)
 DrawStatusPanel_0:
-  LD A,($83A7)            ; A = alien's target crew ID ($83A7)
+  LD A,(AlienTargetID)    ; A = alien's target crew ID (AlienTargetID)
   CP C                    ; is this crew member the alien's current target?
   JR Z,DrawStatusPanel_1  ; yes: always include (even if at door)
   XOR A                   ; A = 0
@@ -10044,7 +10764,7 @@ DrawStatusPanel_2:
   LD HL,$4044
   LD ($7A19),HL
   LD B,$19
-  LD DE,$A40D
+  LD DE,Auto_A40D
   CALL DrawStatusPanel_14
   RET
 ; This entry point is used by the routine at OptionsScreen.
@@ -10057,7 +10777,7 @@ DrawStatusPanel_3:
 DrawStatusPanel_4:
   PUSH BC
   PUSH DE
-  LD A,($83A7)
+  LD A,(AlienTargetID)
   CP C
   JR Z,DrawStatusPanel_6
   LD A,(IX+$07)
@@ -10069,7 +10789,7 @@ DrawStatusPanel_4:
   PUSH HL
   LD A,C
   CALL DrawSprite_3
-  LD DE,$A426
+  LD DE,Auto_A426
   LD B,$08
   CALL DrawStatusPanel_14
   POP HL
@@ -10092,17 +10812,17 @@ DrawStatusPanel_6:
 DrawStatusPanel_7:
   LD HL,$5024
   LD ($7A19),HL
-  LD A,($83A7)
+  LD A,(AlienTargetID)
   CP $08
   RET NC
   CALL DrawSprite_3
-  LD DE,$A42E
+  LD DE,Auto_A42E
   LD B,$10
   CALL DrawStatusPanel_14
   RET
 ; This entry point is used by the routine at OptionsScreen.
 DrawStatusPanel_8:
-  LD A,($9E37)
+  LD A,(Auto_9E37)
   CP $64
   JR C,DrawStatusPanel_9
   LD A,$64
@@ -10112,7 +10832,7 @@ DrawStatusPanel_9:
   AND A
   JR Z,DrawStatusPanel_13
   LD B,A
-  LD HL,$A452
+  LD HL,Auto_A452
   LD A,$3A
 DrawStatusPanel_10:
   INC (HL)
@@ -10132,7 +10852,7 @@ DrawStatusPanel_12:
 DrawStatusPanel_13:
   LD HL,$5084
   LD ($7A19),HL
-  LD DE,$A43E
+  LD DE,Auto_A43E
   LD B,$16
   CALL DrawStatusPanel_14
   RET
@@ -10149,10 +10869,10 @@ DrawStatusPanel_14:
   POP BC
   DJNZ DrawStatusPanel_14
   RET
-; This entry point is used by the routine at 9272.
+; This entry point is used by the routine at XorHAddE.
 DrawStatusPanel_15:
   CALL ScreenTransition
-  LD HL,$738D
+  LD HL,Auto_738D
   LD B,$07
   LD DE,$0008
 DrawStatusPanel_16:
@@ -10161,11 +10881,11 @@ DrawStatusPanel_16:
   DJNZ DrawStatusPanel_16
   LD HL,$4005
   LD ($7A19),HL
-  LD DE,$A4C7
+  LD DE,Auto_A4C7
   LD B,$15
   CALL DrawStatusPanel_14
   XOR A
-  LD ($9E37),A
+  LD (Auto_9E37),A
   JP OptionsScreen_24
 
 ; ScreenTransition
@@ -10178,7 +10898,7 @@ DrawStatusPanel_16:
 ;
 ; USED by the routines at GameEntry, OptionsScreen and DrawStatusPanel.
 ScreenTransition:
-  LD HL,$5800             ; HL = $5800 (start of attribute file)
+  LD HL,Auto_5800         ; HL = Auto_5800 (start of attribute file)
   XOR A                   ; A = 0 (black-on-black attribute)
   LD B,$18                ; 24 character rows to wipe
 ScreenTransition_0:
@@ -10189,7 +10909,7 @@ ScreenTransition_1:
   INC HL
   DJNZ ScreenTransition_1 ; fill entire character row
   PUSH HL                 ; save attribute pointer
-  CALL $8E60              ; one-frame delay (~20ms): visible wipe effect
+  CALL Auto_8E60          ; one-frame delay (~20ms): visible wipe effect
   POP HL
   POP BC
   DJNZ ScreenTransition_0 ; next row
@@ -10199,28 +10919,28 @@ ScreenTransition_1:
   RET
 ; This entry point is used by the routine at OptionsScreen.
 ScreenTransition_2:
-  CALL $8E60
+  CALL Auto_8E60
   LD HL,$50E9
   LD ($7A19),HL
   LD DE,$A517
   LD B,$0D
   CALL DrawStatusPanel_14
   XOR A
-  LD ($5C08),A
-  CALL $8E60
+  LD (Auto_5C08),A
+  CALL Auto_8E60
 ScreenTransition_3:
-  LD A,($5C08)
+  LD A,(Auto_5C08)
   AND A
   JR Z,ScreenTransition_3
   RET
 ; This entry point is used by the routine at OptionsScreen.
 ScreenTransition_4:
-  LD DE,$A49E
+  LD DE,Auto_A49E
   LD HL,$4043
   LD ($7A19),HL
   LD B,$1B
   CALL DrawStatusPanel_14
-  LD DE,$A4B9
+  LD DE,Auto_A4B9
   LD HL,$4069
   LD ($7A19),HL
   LD B,$0E
@@ -10234,7 +10954,7 @@ ScreenTransition_5:
   EX AF,AF'
   LD BC,$0701
 ScreenTransition_6:
-  LD A,($83A7)
+  LD A,(AlienTargetID)
   CP C
   JR Z,ScreenTransition_7
   LD A,(IX+$07)
@@ -10251,14 +10971,14 @@ ScreenTransition_7:
   DJNZ ScreenTransition_6
   EX AF,AF'
   LD C,A
-  LD A,($9E37)
+  LD A,(Auto_9E37)
   ADD A,C
-  LD ($9E37),A
+  LD (Auto_9E37),A
   RET
 ; This entry point is used by the routine at OptionsScreen.
 ScreenTransition_8:
   LD BC,$2200
-  LD HL,$7536
+  LD HL,Auto_7536
 ScreenTransition_9:
   LD A,(HL)
   CP $32
@@ -10268,9 +10988,9 @@ ScreenTransition_10:
   INC HL
   INC HL
   DJNZ ScreenTransition_9
-  LD A,($9E37)
+  LD A,(Auto_9E37)
   ADD A,C
-  LD ($9E37),A
+  LD (Auto_9E37),A
   RET
 ; This entry point is used by the routine at OptionsScreen.
 ScreenTransition_11:
@@ -10278,22 +10998,24 @@ ScreenTransition_11:
   SUB $30
   SLA A
   LD C,A
-  LD A,($9E37)
+  LD A,(Auto_9E37)
   ADD A,C
-  LD ($9E37),A
+  LD (Auto_9E37),A
   RET
+ShortGameInit:
   XOR A
-  LD ($83AC),A
-  LD ($83AD),A
-  LD HL,$83B2
-  LD ($83CD),HL
+  LD (Auto_83AC),A
+  LD (Auto_83AD),A
+  LD HL,Auto_83B2
+  LD (Auto_83CD),HL
   LD A,$09
-  LD ($83A7),A
-  LD HL,$A224
-  LD DE,$737E
+  LD (AlienTargetID),A
+  LD HL,Auto_A224
+  LD DE,CrewData
   LD BC,$0040
   LDIR
-  JP $A58C
+  JP Auto_A58C
+Auto_AEE2:
   LD D,B
   LD D,D
   LD B,L
@@ -10310,6 +11032,7 @@ ScreenTransition_11:
   LD B,C
   LD C,L
   LD B,L
+Auto_AEF6:
   LD B,C
   LD C,(HL)
   LD E,C
@@ -10350,12 +11073,12 @@ PauseMenu:
   LD B,$14                ; 20-character message line
 ; This entry point is used by the routine at ScreenTransition.
 PauseMenu_0:
-  LD DE,$AEE2             ; DE = text data for pause message line 1
+  LD DE,Auto_AEE2         ; DE = text data for pause message line 1
   CALL DrawStatusPanel_14 ; blit text
   LD HL,$50C3             ; next screen row
   LD ($7A19),HL
   LD B,$19                ; 25-character second line
-  LD DE,$AEF6             ; text data for "PRESS 1 TO RESTART" line
+  LD DE,Auto_AEF6         ; text data for "PRESS 1 TO RESTART" line
   CALL DrawStatusPanel_14 ; blit text
   CALL OptionsScreen_21   ; short wait (debounce key release)
 ; This entry point is used by the routine at ScreenTransition.
@@ -10372,7 +11095,7 @@ PauseMenu_2:
   XOR A                   ; A = 0
   OUT ($FE),A             ; restore border to black
   CALL DrawSprite_111     ; redraw game-window frame
-  LD A,($7A14)            ; A = room mode ($7A14)
+  LD A,(RoomModeByte)     ; A = room mode (RoomModeByte)
 ; This entry point is used by the routine at ScreenTransition.
 PauseMenu_3:
   CP $01                  ; mode 1 = corridor view active
@@ -10384,19 +11107,19 @@ PauseMenu_4:
 ; PlayMusic
 ;
 ; Plays a background music phrase through the ZX Spectrum beeper. Reads the
-; music-active flag at $83C9. If zero, falls through to the standard frame-
-; timing wait at 8E60 and returns. Otherwise plays a descending sequence of
-; tones: reads 32 consecutive ROM bytes from $0200 and for each byte toggles
-; bit 4 of port $FE (beeper output), with a delay of C counts between toggles.
-; After each 32-byte block, decrements C by 8 to raise the pitch, producing a
-; descending arpeggio effect. Runs until C underflows (B=255 exhausted), then
-; returns.
+; music-active flag at MusicActiveFlag. If zero, falls through to the standard
+; frame- timing wait at Auto_8E60 and returns. Otherwise plays a descending
+; sequence of tones: reads 32 consecutive ROM bytes from $0200 and for each
+; byte toggles bit 4 of port $FE (beeper output), with a delay of C counts
+; between toggles. After each 32-byte block, decrements C by 8 to raise the
+; pitch, producing a descending arpeggio effect. Runs until C underflows (B=255
+; exhausted), then returns.
 ;
 ; USED by the routines at GameEntry and DrawShipMap.
 PlayMusic:
-  LD A,($83A9)            ; A = music-active flag ($83C9)
+  LD A,(Auto_83A9)        ; A = music-active flag (MusicActiveFlag)
   AND A                   ; music enabled?
-  JP Z,$8E60              ; no: standard frame-timing wait and return
+  JP Z,Auto_8E60          ; no: standard frame-timing wait and return
   LD HL,$0200             ; HL = $0200 (ROM data used as tone source)
   LD BC,$0880             ; B=8 (8 pitch steps), C=$88 (initial delay = 136)
 PlayMusic_0:
@@ -10421,48 +11144,48 @@ PlayMusic_3:
   LD C,A                  ; store updated delay
   DJNZ PlayMusic_0
   XOR A
-  LD ($83A9),A
+  LD (Auto_83A9),A
   RET
-; This entry point is used by the routine at 9272.
+; This entry point is used by the routine at XorHAddE.
 PlayMusic_4:
   LD (IX+$03),$00
   LD HL,$FFFF
-  LD ($7A10),HL
+  LD (GameState_7A10),HL
   CALL DrawSprite_14
   RET
-; This entry point is used by the routine at 9272.
+; This entry point is used by the routine at XorHAddE.
 PlayMusic_5:
   LD A,$FF
   LD (HL),A
-  LD A,($7A14)
+  LD A,(RoomModeByte)
   CP $01
   JR NZ,PlayMusic_6
   PUSH HL
-  LD A,($83A4)
-  LD HL,$7A09
+  LD A,(CrewIndex)
+  LD HL,ScreenDrawPtr
   CP (HL)
   POP HL
   JR NZ,PlayMusic_6
   LD A,$FF
-  JP $9438
+  JP Auto_9438
 PlayMusic_6:
   LD A,$FF
   CP B
   LD A,($7A11)
-  JP NZ,$945C
+  JP NZ,Auto_945C
   RET
-; This entry point is used by the routine at 9272.
+; This entry point is used by the routine at XorHAddE.
 PlayMusic_7:
   CALL DrawSprite
   LD A,$FF
   LD ($73C9),A
   CALL DrawSprite_79
   RET
-; This entry point is used by the routine at 9272.
+; This entry point is used by the routine at XorHAddE.
 PlayMusic_8:
   LD HL,$FFFF
-  LD ($7A10),HL
-  LD A,($83A4)
+  LD (GameState_7A10),HL
+  LD A,(CrewIndex)
   RET
 ; This entry point is used by the routine at DrawSprite.
 PlayMusic_9:
@@ -10480,13 +11203,13 @@ PlayMusic_10:
 PlayMusic_11:
   PUSH IX
   PUSH DE
-  LD A,($7A09)
+  LD A,(ScreenDrawPtr)
   ADD A,A
   ADD A,A
   ADD A,A
   LD E,A
   LD D,$00
-  LD IX,$737E
+  LD IX,CrewData
   ADD IX,DE
   LD A,(IX+$03)
   CP $04
@@ -10498,29 +11221,29 @@ PlayMusic_12:
   POP DE
   POP IX
   CALL PlayMusic_29
-  CALL $9B07
+  CALL Auto_9B07
   JP GameEntry_25
 PlayMusic_13:
   POP DE
   POP IX
-  CALL $9B07
-  LD HL,$8080
-  LD ($7A1F),HL
+  CALL Auto_9B07
+  LD HL,Auto_8080
+  LD (CrewAnimFlags),HL
   LD A,$04
-  LD ($7A0B),A
+  LD (RoomTypeByte),A
   RET
 ; This entry point is used by the routine at GameEntry.
 PlayMusic_14:
   RET NZ
   PUSH IX
   PUSH DE
-  LD A,($7A09)
+  LD A,(ScreenDrawPtr)
   ADD A,A
   ADD A,A
   ADD A,A
   LD E,A
   LD D,$00
-  LD IX,$737E
+  LD IX,CrewData
   ADD IX,DE
   LD A,(IX+$03)
   CP $04
@@ -10551,7 +11274,7 @@ PlayMusic_18:
   JP DrawSprite_43
 ; This entry point is used by the routine at UpdateAlien.
 PlayMusic_19:
-  LD A,($7A14)
+  LD A,(RoomModeByte)
   CP $01
   JR NZ,PlayMusic_21
   LD HL,($83A5)
@@ -10579,7 +11302,7 @@ PlayMusic_20:
   LD ($73CB),A
   CALL DrawSprite_79
 PlayMusic_21:
-  LD HL,$83A8
+  LD HL,AlienActiveFlag
   RET
 ; This entry point is used by the routine at DrawStatusPanel.
 PlayMusic_22:
@@ -10593,19 +11316,19 @@ PlayMusic_23:
   DEC HL
   LD (HL),$31
   RET
-; This entry point is used by the routine at A130.
+; This entry point is used by the routine at TriggerAlienEvent.
 PlayMusic_24:
   LD HL,$FFFF
-  LD ($83CF),HL
+  LD (Auto_83CF),HL
   CALL ResetScriptPtr
   RET
-; This entry point is used by the routine at 8C85.
+; This entry point is used by the routine at ResetCrewTimers.
 PlayMusic_25:
   PUSH IX
-  CALL Z,$8CAE
+  CALL Z,Auto_8CAE
   POP IX
   RET
-; This entry point is used by the routine at 9272.
+; This entry point is used by the routine at XorHAddE.
 PlayMusic_26:
   LD A,($7A0A)
   AND $3F
@@ -10623,7 +11346,7 @@ PlayMusic_27:
   LD A,$31
   LD ($73CB),A
   RET
-; This entry point is used by the routines at 9272 and UpdateAlien.
+; This entry point is used by the routines at XorHAddE and UpdateAlien.
 PlayMusic_28:
   CALL PlayMusic_29
   LD A,$34
@@ -10637,14 +11360,16 @@ PlayMusic_29:
   LD ($8395),A
   RET
 
-; Routine at 45290
+; Routine at WrapScreenAddr
 ;
 ; Used by the routine at ResetScriptPtr.
+WrapScreenAddr:
   LD A,H
   AND $1F
   LD H,A
   RET
-; This entry point is used by the routine at 9272.
+; This entry point is used by the routine at XorHAddE.
+Auto_B0EF:
   ADD A,$20
   LD (HL),A
   LD C,E
@@ -10658,29 +11383,32 @@ PlayMusic_29:
   LD A,(IX+$06)
   ADD A,B
   LD (IX+$06),A
-  LD A,($7A14)
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
-  LD A,($83A4)
-  LD HL,$7A09
+  LD A,(CrewIndex)
+  LD HL,ScreenDrawPtr
   CP (HL)
   RET NZ
   CALL DrawSprite_56
   RET
-; This entry point is used by the routine at 8C85.
+; This entry point is used by the routine at ResetCrewTimers.
+Auto_B11A:
   CALL GameEntry_23
-  LD A,($83A4)
+  LD A,(CrewIndex)
   CP $00
   RET Z
-  LD A,($7A09)
+  LD A,(ScreenDrawPtr)
   LD B,A
-  LD IX,$737E
+  LD IX,CrewData
   LD DE,$0008
+Auto_B12E:
   ADD IX,DE
-  DJNZ $B12E
+  DJNZ Auto_B12E
   CALL DrawSprite_56
   RET
-; This entry point is used by the routine at 9272.
+; This entry point is used by the routine at XorHAddE.
+Auto_B136:
   ADD HL,DE
   INC (HL)
   INC HL
@@ -10688,43 +11416,51 @@ PlayMusic_29:
   DEC HL
   LD A,(HL)
   RET
-; This entry point is used by the routine at 9272.
-  LD A,($7A14)
+; This entry point is used by the routine at XorHAddE.
+Auto_B13D:
+  LD A,(RoomModeByte)
   CP $01
-  JR NZ,$B156
-  LD A,($7A09)
+  JR NZ,Auto_B156
+  LD A,(ScreenDrawPtr)
   LD B,A
-  LD IX,$737E
+  LD IX,CrewData
   LD DE,$0008
+Auto_B14F:
   ADD IX,DE
-  DJNZ $B14F
+  DJNZ Auto_B14F
   CALL DrawSprite_56
+Auto_B156:
   POP IX
   RET
 
-; Routine at 45401
+; Routine at UpdateAllCrew
 ;
 ; Used by the routine at GameEntry.
+UpdateAllCrew:
   LD IX,$7386
   LD C,$06
+Auto_B15F:
   LD H,(IX+$01)
   LD L,(IX+$05)
   LD B,C
   PUSH IX
-  CALL $B19E
+Auto_B168:
+  CALL Auto_B19E
   LD A,H
   CP (IX+$01)
-  JR Z,$B184
-  DJNZ $B168
+  JR Z,Auto_B184
+Auto_B171:
+  DJNZ Auto_B168
   POP IX
   DEC C
-  CALL $B19E
+  CALL Auto_B19E
   LD A,IXl
   CP $B6
-  JR NZ,$B15F
+  JR NZ,Auto_B15F
   CALL UpdateCrewAI_18
   RET
   NOP
+Auto_B184:
   LD A,L
   SUB $02
   ADD A,(IX+$06)
@@ -10741,18 +11477,22 @@ PlayMusic_29:
   ADD A,(IX+$05)
   SUB $02
   LD (DE),A
-  JR $B171
+  JR Auto_B171
+Auto_B19E:
   LD DE,$0008
   ADD IX,DE
   RET
-; This entry point is used by the routine at 95EB.
-  CALL $B211
-  LD A,($7A14)
+; This entry point is used by the routine at UpdateRoomActors.
+Auto_B1A4:
+  CALL Auto_B211
+Auto_B1A7:
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
-  LD A,($7A09)
+  LD A,(ScreenDrawPtr)
   CP C
   RET Z
+Auto_B1B2:
   PUSH BC
   PUSH DE
   PUSH HL
@@ -10765,7 +11505,8 @@ PlayMusic_29:
   POP DE
   POP BC
   RET
-; This entry point is used by the routine at 8AFA.
+; This entry point is used by the routine at RoomHandler_4.
+Auto_B1C6:
   LD A,(IX+$05)
   ADD A,$01
   LD (IX+$05),A
@@ -10773,55 +11514,60 @@ PlayMusic_29:
   ADD A,$01
   LD (IX+$06),A
   CALL DrawSprite_56
-  LD HL,$83AA
+  LD HL,AlienEventTimer
   RET
-; This entry point is used by the routine at 95EB.
+; This entry point is used by the routine at UpdateRoomActors.
+Auto_B1DD:
   LD (IX+$05),C
-  JP $B1A7
-; This entry point is used by the routine at 8C85.
+  JP Auto_B1A7
+; This entry point is used by the routine at ResetCrewTimers.
+Auto_B1E3:
   INC HL
   DEC (HL)
   LD A,$7F
   CP (HL)
-  JR NC,$B1EC
+  JR NC,Auto_B1EC
   LD (HL),$00
+Auto_B1EC:
   DEC HL
   ADD HL,DE
   DEC B
-  JP NZ,$8E54
-  LD A,($7A14)
+  JP NZ,Auto_8E54
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
   PUSH BC
   PUSH IX
-  LD A,($7A09)
+  LD A,(ScreenDrawPtr)
   LD B,A
-  LD IX,$737E
+  LD IX,CrewData
   LD DE,$0008
+Auto_B206:
   ADD IX,DE
-  DJNZ $B206
+  DJNZ Auto_B206
   CALL DrawSprite_56
   POP IX
   POP BC
   RET
+Auto_B211:
   INC HL
   LD (HL),$01
   PUSH BC
   PUSH IX
   PUSH HL
   LD H,$00
-  LD A,($839F)
+  LD A,(Auto_839F)
   CP $FF
-  CALL NZ,$B24A
-  LD A,($83A0)
+  CALL NZ,Auto_B24A
+  LD A,(Auto_83A0)
   CP $FF
-  CALL NZ,$B24A
-  LD A,($83A1)
+  CALL NZ,Auto_B24A
+  LD A,(Auto_83A1)
   CP $FF
-  CALL NZ,$B24A
+  CALL NZ,Auto_B24A
   LD A,H
   CP $00
-  JR Z,$B245
+  JR Z,Auto_B245
   POP HL
   LD (HL),$02
   PUSH HL
@@ -10829,16 +11575,19 @@ PlayMusic_29:
   LD H,C
   LD A,$14
   CALL UpdateCrewAI_8
-  CALL $8E4C
+  CALL Auto_8E4C
+Auto_B245:
   POP HL
   POP IX
   POP BC
   RET
+Auto_B24A:
   LD B,A
-  LD IX,$737E
+  LD IX,CrewData
   LD DE,$0008
+Auto_B252:
   ADD IX,DE
-  DJNZ $B252
+  DJNZ Auto_B252
   LD B,A
   LD A,(IX+$07)
   OR A
@@ -10846,68 +11595,79 @@ PlayMusic_29:
   DEC (IX+$06)
   LD A,$7F
   CP (IX+$06)
-  JR NC,$B26A
+  JR NC,Auto_B26A
   LD (IX+$06),$00
+Auto_B26A:
   LD H,B
   RET
-; This entry point is used by the routine at 95EB.
+; This entry point is used by the routine at UpdateRoomActors.
+Auto_B26C:
   CP (HL)
   JP Z,InitGameView
-  JP $B1B2
-; This entry point is used by the routine at 95EB.
+  JP Auto_B1B2
+; This entry point is used by the routine at UpdateRoomActors.
+Auto_B273:
   LD BC,$72A2
   AND $3F
   LD ($95D4),A
   RET
 ; This entry point is used by the routine at DrawSprite.
+Auto_B27C:
   CALL DrawSprite_3
 ; This entry point is used by the routine at DrawSprite.
+Auto_B27F:
   LD HL,$7A19
   LD A,(HL)
   AND $1F
   RET Z
   JP DrawSprite_72
-; This entry point is used by the routine at 95EB.
+; This entry point is used by the routine at UpdateRoomActors.
+Auto_B289:
   CP C
-  JP Z,$987B
+  JP Z,Auto_987B
   LD A,($737F)
   AND $3F
   CP C
-  JP Z,$987B
-  JP $9858
+  JP Z,Auto_987B
+  JP Auto_9858
 ; This entry point is used by the routine at UpdateCrewAI.
+Auto_B299:
   LD A,(IX+$01)
   CP $62
   JP Z,UpdateCrewAI_6
   JP UpdateCrewAI_1
-; This entry point is used by the routine at A130.
-  LD ($83A8),A
-  LD A,($7A14)
+; This entry point is used by the routine at TriggerAlienEvent.
+Auto_B2A4:
+  LD (AlienActiveFlag),A
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
-  LD A,($83A7)
+  LD A,(AlienTargetID)
   LD D,A
-  LD A,($7A09)
+  LD A,(ScreenDrawPtr)
   CP D
   RET NZ
   JP InitGameView
-; This entry point is used by the routine at 89F2.
-  CALL $B2C0
-  LD A,($7A14)
+; This entry point is used by the routine at RoomModeDispatch.
+Auto_B2B9:
+  CALL Auto_B2C0
+  LD A,(RoomModeByte)
   RET
-  LD A,($7A14)
+Auto_B2C0:
+  LD A,(RoomModeByte)
   CP $01
   RET NZ
-  LD A,($8393)
+  LD A,(CorridorCursor)
   CP $11
   RET Z
   CP $08
-  JR NZ,$B2D4
+  JR NZ,Auto_B2D4
   LD (IX+$00),$00
+Auto_B2D4:
   LD A,($737F)
   CP (IX+$01)
-  JR Z,$B2EB
-  LD A,($83A8)
+  JR Z,Auto_B2EB
+  LD A,(AlienActiveFlag)
   CP $FF
   RET NZ
   LD HL,($83A5)
@@ -10915,26 +11675,30 @@ PlayMusic_29:
   LD A,(HL)
   CP (IX+$01)
   RET NZ
+Auto_B2EB:
   LD A,($8395)
   CP $31
-  JR NZ,$B2F7
+  JR NZ,Auto_B2F7
   LD A,$EE
   LD ($8395),A
+Auto_B2F7:
   LD A,$34
   LD ($73CB),A
   LD HL,$48D6
   LD ($7A19),HL
   CALL DrawSprite
   RET
-; This entry point is used by the routine at 8AFA.
+; This entry point is used by the routine at RoomHandler_4.
+Auto_B306:
   LD A,($8395)
   CP $EE
-  JP NZ,$8BCE
+  JP NZ,Auto_8BCE
   LD A,$34
   LD ($8395),A
-  JP $8BD3
-; This entry point is used by the routine at 95EB.
-  LD A,($8393)
+  JP Auto_8BD3
+; This entry point is used by the routine at UpdateRoomActors.
+Auto_B316:
+  LD A,(CorridorCursor)
   LD (IX+$00),$00
   RET
   NOP
@@ -22425,6 +23189,7 @@ PlayMusic_29:
   NOP
   NOP
   NOP
+Auto_DFFE:
   NOP
   NOP
   NOP
@@ -25084,7 +25849,8 @@ PlayMusic_29:
   NOP
   NOP
 
-; Data block at 60000
+; Data block at ExtraDataArea
+ExtraDataArea:
   DEFB $00,$00,$00,$0F,$80,$00,$00,$00
   DEFB $00,$3F,$C0,$00,$00,$00,$00,$7F
   DEFB $E0,$00,$02,$00,$38,$FF,$E0,$00
@@ -25328,7 +26094,19 @@ PlayMusic_29:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
 
-; Data block at 61936
+; IntroTileData
+;
+; 8×8 pixel tile bitmaps for the game's extra-data area (ExtraDataArea-$F5FF).
+; The first 8 tiles ($F1B0-$F22F, addresses 61936-61999) are blank padding.
+; Tile graphics used by DrawIntroScreen (DrawIntroScreen) start at Auto_F230
+; (Auto_F230): tile index N maps to address Auto_F230 + N×8. The tile map at
+; Auto_9E38 indexes into this set to build the 15×11 title-screen graphic.
+; Subsequent tiles (beyond the intro set) are used by other game screens and
+; the ship map.
+;
+; INTRO tile sheet — tiles starting at Auto_F230, 16 per row, 2× scale:
+;
+IntroTileData:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -25337,6 +26115,7 @@ PlayMusic_29:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_F230:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$01,$03,$07
   DEFB $01,$0F,$1F,$3D,$C6,$EE,$F6,$ED
@@ -25559,6 +26338,7 @@ PlayMusic_29:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
+Auto_F920:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -25775,6 +26555,7 @@ PlayMusic_29:
   DEFB $00,$3C,$42,$42,$42,$42,$3C,$00
   DEFB $00,$7C,$42,$42,$7C,$40,$40,$00
   DEFB $00,$3C,$42,$42,$52,$4A,$3C,$00
+Auto_FFE0:
   DEFB $00,$7C,$42,$42,$7C,$44,$42,$00
   DEFB $00,$3C,$40,$3C,$02,$42,$3C,$00
   DEFB $00,$FE,$10,$10,$10,$10,$10,$00
