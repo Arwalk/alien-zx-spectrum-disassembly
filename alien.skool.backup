@@ -1,13 +1,11 @@
 @start
 @org
-; Data block at #R16384
-@label=DisplayFile
+; Data block at 16384
 b16384 DEFB 0,0,0,0,0,0,0,0
  16392 DEFB 0,0,0,0,0,0,0,0
  16400 DEFB 0,0,0,0,0,0,0,0
  16408 DEFB 0,0,0,0,0,0,0,0
  16416 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_4028
  16424 DEFB 0,56,0,0,224,0,0,254
  16432 DEFB 0,0,127,0,0,68,0,0
  16440 DEFB 0,0,0,0,0,0,0,0
@@ -231,7 +229,6 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  18184 DEFB 0,0,0,0,0,0,0,0
  18192 DEFB 0,0,0,0,0,0,0,0
  18200 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_4720
  18208 DEFB 0,0,0,0,0,0,0,0
  18216 DEFB 0,0,0,0,0,0,0,0
  18224 DEFB 0,0,0,0,0,0,0,0
@@ -264,7 +261,6 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  18440 DEFB 0,0,0,31,216,32,0,0
  18448 DEFB 0,0,2,192,0,0,0,0
  18456 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_4820
  18464 DEFB 0,0,0,0,0,0,0,0
  18472 DEFB 0,0,0,252,16,128,0,0
  18480 DEFB 0,0,0,44,0,0,0,0
@@ -278,7 +274,6 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  18544 DEFB 0,0,0,1,192,0,0,0
  18552 DEFB 0,0,0,0,0,0,0,0
  18560 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_4888
  18568 DEFB 0,0,31,255,167,205,112,0
  18576 DEFB 0,0,2,127,192,0,0,0
  18584 DEFB 0,0,0,0,0,0,0,0
@@ -291,7 +286,6 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  18640 DEFB 255,0,125,252,0,0,0,0
  18648 DEFB 0,0,0,0,0,0,0,0
  18656 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_48E8
  18664 DEFB 0,0,0,31,255,255,127,127
  18672 DEFB 255,94,255,128,0,0,0,0
  18680 DEFB 0,0,0,0,0,0,0,0
@@ -395,7 +389,6 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  19464 DEFB 0,0,0,126,17,64,0,0
  19472 DEFB 0,0,0,48,0,0,0,0
  19480 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_4C20
  19488 DEFB 0,0,0,0,0,0,0,0
  19496 DEFB 0,0,3,255,17,0,0,0
  19504 DEFB 0,0,0,18,0,0,0,0
@@ -524,7 +517,6 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  20488 DEFB 0,0,0,0,31,254,55,255
  20496 DEFB 183,190,240,0,0,0,0,0
  20504 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5020
 *20512 DEFB 0,0,0,0,0,0,0,0
  20520 DEFB 0,0,0,4,177,38,255,127
  20528 DEFB 255,208,0,0,0,0,0,0
@@ -533,30 +525,23 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  20552 DEFB 0,0,0,0,0,1,34,66
  20560 DEFB 68,0,0,0,0,0,0,0
  20568 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5060
  20576 DEFB 0,0,0,0,0,0,0,0
  20584 DEFB 0,0,0,0,0,0,0,0
  20592 DEFB 0,0,0,0,0,0,0,0
  20600 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5080
  20608 DEFB 0,0,0,0,0,0,0,0
  20616 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5090
  20624 DEFB 0,0,0,0,0,0,0,0
  20632 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_50A0
  20640 DEFB 0,0,0,0,0,0,0,0
  20648 DEFB 0,0,0,0,0,0,0,0
  20656 DEFB 0,0,0,0,0,0,0,0
  20664 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_50C0
  20672 DEFB 0,0,0,0,0,0,0,0
  20680 DEFB 0,0,0,0,0,0,0,0
  20688 DEFB 0,0,0,0,0,0,0,0
  20696 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_50E0
  20704 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_50E8
  20712 DEFB 0,0,0,0,0,0,0,0
  20720 DEFB 0,0,0,0,0,0,0,0
  20728 DEFB 0,0,0,0,0,0,0,0
@@ -596,7 +581,6 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  21000 DEFB 0,0,0,0,7,254,239,127
  21008 DEFB 255,127,64,0,0,0,0,0
  21016 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5220
  21024 DEFB 0,0,0,0,0,0,0,0
  21032 DEFB 0,0,0,3,124,203,253,206
  21040 DEFB 165,0,0,0,0,0,0,0
@@ -629,7 +613,6 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  21256 DEFB 0,0,0,0,3,255,95,127
  21264 DEFB 255,244,128,0,0,0,0,0
  21272 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5320
  21280 DEFB 0,0,0,0,0,0,0,0
  21288 DEFB 0,0,0,5,240,105,255,89
  21296 DEFB 170,0,0,0,0,0,0,0
@@ -694,7 +677,6 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  21768 DEFB 0,0,0,32,0,255,255,250
  21776 DEFB 232,246,0,0,0,0,0,0
  21784 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5520
  21792 DEFB 0,0,0,0,0,0,0,0
  21800 DEFB 0,0,0,0,59,106,127,202
  21808 DEFB 32,0,0,0,0,0,0,0
@@ -787,7 +769,6 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  22504 DEFB 0,0,0,0,0,0,0,0
  22512 DEFB 0,0,0,0,0,0,0,0
  22520 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5800
  22528 DEFB 7,7,7,7,7,7,7,7
  22536 DEFB 7,7,7,7,7,7,7,7
  22544 DEFB 7,7,7,7,7,7,7,7
@@ -828,7 +809,6 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  22824 DEFB 7,7,7,7,7,7,7,7
  22832 DEFB 7,7,7,7,7,7,7,7
  22840 DEFB 7,7,7,7,7,7,7,7
-@label=Auto_5940
  22848 DEFB 7,7,7,7,7,7,7,7
  22856 DEFB 7,7,7,7,7,7,7,7
  22864 DEFB 7,7,7,7,7,7,7,7
@@ -881,14 +861,12 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  23240 DEFB 7,7,7,7,7,7,7,7
  23248 DEFB 7,7,7,7,7,7,7,7
  23256 DEFB 7,7,7,7,7,7,7,7
-@label=Auto_5AE0
  23264 DEFB 7,7,7,7,7,7,7,7
  23272 DEFB 7,7,7,7,7,7,7,7
  23280 DEFB 7,7,7,7,7,7,7,7
  23288 DEFB 7,7,7,7,7,7,7,7
 
-; Data block at #R23296
-@label=SystemArea
+; Data block at 23296
 b23296 DEFB 0,0,0,0,0,0,0,0
  23304 DEFB 0,0,0,0,0,0,0,0
  23312 DEFB 0,0,0,0,0,0,0,0
@@ -922,7 +900,6 @@ b23296 DEFB 0,0,0,0,0,0,0,0
  23536 DEFB 0,0,0,0,0,0,0,0
  23544 DEFB 0,0,0,0,0,0,0,0
  23552 DEFB 255,0,0,0,255,0,35,13
-@label=Auto_5C08
  23560 DEFB 13,35,5,0,0,0,17,0
  23568 DEFB 1,0,6,0,11,0,1,0
  23576 DEFB 1,0,6,0,16,0,0,0
@@ -937,7 +914,6 @@ b23296 DEFB 0,0,0,0,0,0,0,0
  23648 DEFB 94,228,94,228,94,228,94,31
  23656 DEFB 146,92,16,0,0,0,0,0
  23664 DEFB 0,2,108,216,199,26,0,0
-@label=Auto_5C78
  23672 DEFB 65,144,0,88,255,0,0,33
  23680 DEFB 0,91,33,23,0,64,224,80
  23688 DEFB 33,24,33,23,1,0,0,7
@@ -950,8 +926,7 @@ b23296 DEFB 0,0,0,0,0,0,0,0
  23744 DEFB 129,15,196,21,82,244,9,196
  23752 DEFB 21,80,128,0
 
-; Data block at #R23756
-@label=LoadedCode
+; Data block at 23756
 b23756 DEFB 0,108,0,234,221,33,0,64
  23764 DEFB 17,128,26,55,62,255,205,86
  23772 DEFB 5,221,33,0,96,17,252,83
@@ -1056,8 +1031,7 @@ b23756 DEFB 0,108,0,234,221,33,0,64
  24564 DEFB 223,94,92,0,62,31,118,27
  24572 DEFB 3,19,0,62
 
-; Data block at #R24576
-@label=ShipMapData
+; Data block at 24576
 b24576 DEFB 0,0,0,0,0,0,0,0
  24584 DEFB 0,0,0,0,0,0,0,0
  24592 DEFB 0,0,0,0,0,85,80,80
@@ -1309,8 +1283,7 @@ b24576 DEFB 0,0,0,0,0,0,0,0
  26560 DEFB 12,3,14,15,14,9,1,2
  26568 DEFB 5
 
-; Data block at #R26569
-@label=CrewSpriteBitmaps
+; Data block at 26569
 b26569 DEFB 138,64,170,72,77,64,73,64
  26577 DEFB 9,72,201,72,1,72,47,72
  26585 DEFB 4,78,8,73,141,70,77,72
@@ -1515,7 +1488,6 @@ b26817 DEFB 0,8,0               ; row  0: head
 ; another, producing a two-frame walk cycle at rate 10 (10 frames/step).
 ; Used by AnimateCrewA (#R34967) to XOR-blit crew sprites onto the screen.
 ;
-@label=CrewWalkAnimA
 w26853 DEFW 26781,26781,26817,26817
 
 ; AnimCrewBFrames
@@ -1524,20 +1496,18 @@ w26853 DEFW 26781,26781,26817,26817
 ; rate 5). Used by AnimateCrewB (#R35016) to XOR-blit the animated room
 ; cursor that highlights the current room on the corridor map.
 ;
-@label=CrewWalkAnimB
 w26861 DEFW 26637,26673,26709,26745
 
 ; CharTileBitmaps
 ;
 ; Master 8×8 pixel tileset used by DrawSpriteRow (#R31369) for all corridor
 ; and room graphics. 169 tiles × 8 bytes each (one byte per pixel row).
-; Tile N starts at #R26869 + N×8. Referenced by DrawSprite (#R31634) which
-; looks up 10 tile indices per sprite from the sprite table at #R28221 (#R28221).
+; Tile N starts at $68F5 + N×8. Referenced by DrawSprite (#R31634) which
+; looks up 10 tile indices per sprite from the sprite table at $6E3D (#R28221).
 ;
 ; Sprite sheet — 16 tiles per row, 2× scale:
 ;
-; #HTML(#UDGARRAY16,56,2(#R26869-28213-8)(char_tiles))
-@label=CharBitmaps
+; #HTML(#UDGARRAY16,56,2(26869-28213-8)(char_tiles))
 b26869 DEFB 0,0,0,0,0,0,0,0
  26877 DEFB 0,0,255,0,0,255,0,0
  26885 DEFB 36,36,36,36,36,36,36,36
@@ -1708,8 +1678,7 @@ b26869 DEFB 0,0,0,0,0,0,0,0
  28205 DEFB 0,0,0,0,1,1,3,7
  28213 DEFB 252,252,240,240,224,224,192,192
 
-; Data block at #R28221
-@label=RoomNameTable
+; Data block at 28221
 b28221 DEFB 65,105,114,108,111,99,107,32
  28229 DEFB 35,49,65,105,114,108,111,99
  28237 DEFB 107,32,35,50,65,114,109,111
@@ -1873,8 +1842,7 @@ b28221 DEFB 65,105,114,108,111,99,107,32
  29501 DEFB 13,13,31,1,31,33,33,16
  29509 DEFB 32,32,33,3,3,32,32
 
-; Data block at #R29516
-@label=CrewNameTable
+; Data block at 29516
 b29516 DEFB 65,76,73,69,78,255,68,97
  29524 DEFB 108,108,97,115,255,75,97,110
  29532 DEFB 101,255,82,105,112,108,101,121
@@ -1883,31 +1851,24 @@ b29516 DEFB 65,76,73,69,78,255,68,97
  29556 DEFB 107,101,114,255,66,114,101,116
  29564 DEFB 116,255
 
-; Data block at #R29566
-@label=CrewData
+; Data block at 29566
 b29566 DEFB 0,0,0,0,0,0,0
 
-; Data block at #R29573
-@label=CrewStateTable
+; Data block at 29573
 b29573 DEFB 0,64,12,0,0,2,2,2
-@label=Auto_738D
  29581 DEFB 0,64,22,0,0,4,4,4
  29589 DEFB 0,64,75,0,0,4,2,2
  29597 DEFB 0,64,9,0,0,4,4,4
  29605 DEFB 0,64,27,0,0,3,4,4
  29613 DEFB 0,64,11,0,0,3
 
-; Data block at #R29619
-@label=CrewStateExtra
+; Data block at 29619
 b29619 DEFB 4,4,0,34,19,0,0,4
  29627 DEFB 2,2,0
 
-; Data block at #R29630
-@label=CorridorPosTable
+; Data block at 29630
 b29630 DEFB 73,255,255,255,255,255,255,74
-@label=Auto_73C6
  29638 DEFB 255,255,255,255,75,255,255,255
-@label=Auto_73CE
  29646 DEFB 255,255,255,0,0,0,0,0
  29654 DEFB 0,0,0,0,0,0,0,0
  29662 DEFB 0,0,0,0,0,0,0,0
@@ -1953,11 +1914,9 @@ b29630 DEFB 73,255,255,255,255,255,255,74
  29982 DEFB 0,0,1,1,1,2,2,2
  29990 DEFB 0,0,1,1,1,1,2,2
  29998 DEFB 2,2,0,0,1,1,1,1
-@label=Auto_7536
  30006 DEFB 48,48,48
 
-; Data block at #R30009
-@label=SpriteScanData
+; Data block at 30009
 b30009 DEFB 48,48,48,48,48,48,48,48
  30017 DEFB 48,48,48,48,48,48,48,48
  30025 DEFB 48,48,48,48,48,48,48,48
@@ -1983,10 +1942,8 @@ b30009 DEFB 48,48,48,48,48,48,48,48
  30185 DEFB 87,255,255,255,255,88,255,255
  30193 DEFB 255,255,61,255
 
-; Data block at #R30197
-@label=CorridorTemplates
+; Data block at 30197
 b30197 DEFB 83,52,52,52,52,52,52,52
-@label=Auto_75FD
  30205 DEFB 79,80,84,85,44,45,46,255
  30213 DEFB 255,255,255,0,0,0,1,1
  30221 DEFB 3,3,3,125,255,255,223,191
@@ -2024,8 +1981,7 @@ b30197 DEFB 83,52,52,52,52,52,52,52
  30477 DEFB 192,128,224,8,240,16,19,28
  30485 DEFB 0,0,0,132,73,33,210
 
-; Data block at #R30492
-@label=SpriteTileSetA
+; Data block at 30492
 b30492 DEFB 12,0,0,0,144,15,4,252
  30500 DEFB 0,0,0,0,0,1,3,7
  30508 DEFB 7,7,7,7,127,255,255,231
@@ -2044,8 +2000,7 @@ b30492 DEFB 12,0,0,0,144,15,4,252
  30612 DEFB 251,241,127,191,96,224,192,192
  30620 DEFB 192,128,128,112,126,130
 
-; Data block at #R30626
-@label=SpriteTileSetB
+; Data block at 30626
 b30626 DEFB 2,1,1,0,0,0,223,96
  30634 DEFB 127,127,62,0,0,0,79,144
  30642 DEFB 144,32,64,0,0,0,0,0
@@ -2123,33 +2078,17 @@ b30626 DEFB 2,1,1,0,0,0,223,96
  31218 DEFB 9,45,45,45,45,45,9,9
  31226 DEFB 9,9,9,9,9,45
 
-; Data block at #R31232
-@label=GameStateBase
+; Data block at 31232
 b31232 DEFB 9,9,9,9,9,9,9,45
- 31240 DEFB 45
-@label=ScreenDrawPtr
- 31241 DEFB 5,6
-@label=RoomTypeByte
- 31243 DEFB 1,0,0,0,0
-@label=GameState_7A10
- 31248 DEFB 255,255,255,255
-@label=RoomModeByte
- 31252 DEFB 0,0,0,0
- 31256 DEFB 88,0,64,0,96
-@label=CorridorTilePtr
- 31261 DEFB 0,0
-@label=CrewAnimFlags
- 31263 DEFB 128
-@label=AnimFramePhase
- 31264 DEFB 128
-@label=ScriptPointer
- 31265 DEFB 0,0,17,12,0,33,0
+ 31240 DEFB 45,5,6,1,0,0,0,0
+ 31248 DEFB 255,255,255,255,0,0,0,0
+ 31256 DEFB 88,0,64,0,96,0,0,128
+ 31264 DEFB 128,0,0,17,12,0,33,0
  31272 DEFB 88,14,19,6,20,54,4,35
  31280 DEFB 16,251,25,13,32,245,17,124
  31288 DEFB 1,33,0,96,58,11,122,254
  31296 DEFB 3,202,108,131,254,4,202,7
  31304 DEFB 155,167,40,4,25,61,32,252
-@label=GameState_7A30
 *31312 DEFB 34,27,122,33,0,64,34,25
  31320 DEFB 122,14,19,6,20,197,237,91
  31328 DEFB 27,122,205,137,122,33,25,122
@@ -2160,16 +2099,15 @@ b31232 DEFB 9,9,9,9,9,9,9,45
  31368 DEFB 201
 
 ; DrawSpriteRow
-@ignoreua
 ;
 ; Draws one 8-pixel-tall column of a sprite tile onto the screen. Reads a
 ; tile index byte from (DE), multiplies by 8 to get an offset into the
-; 8-byte-per-row character bitmap table at $6935 ($#R26869 + index×8), then
+; 8-byte-per-row character bitmap table at $6935 ($26869 + index×8), then
 ; writes all 8 bytes vertically downward from the current draw pointer at
-; #R31241 (INC H steps through ZX Spectrum display rows within the same
+; $7A09 (INC H steps through ZX Spectrum display rows within the same
 ; character cell column).
 ;
-; Input:  (DE) = tile/character index; (#R31241) = screen destination address
+; Input:  (DE) = tile/character index; ($7A09) = screen destination address
 ; Output: screen updated; DE advanced; H incremented 8 times
 ;
 ; Used by the routines at #R31634, #R37018, #R38379, #R42581 and #R44313.
@@ -2181,12 +2119,10 @@ c31369 LD A,(DE)     ; read tile index from source pointer
  31373 ADD HL,HL     ; HL = index × 2
  31374 ADD HL,HL     ; HL = index × 4
  31375 ADD HL,HL     ; HL = index × 8
-@ignoreua
  31376 LD BC,26869   ; BC = $6935 (character bitmap base)
  31379 ADD HL,BC     ; HL = address of first row of tile bitmap
  31380 EX DE,HL      ; DE = bitmap source; HL = old DE (tile index ptr)
-@ignoreua
- 31381 LD HL,(31257) ; HL = screen destination (#R31241)
+ 31381 LD HL,(31257) ; HL = screen destination ($7A09)
  31384 LD B,8        ; 8 pixel rows per character
 *31386 LD A,(DE)     ; read bitmap byte for this pixel row
  31387 LD (HL),A     ; write to display file
@@ -2214,48 +2150,37 @@ c31369 LD A,(DE)     ; read tile index from source pointer
 ; InitGameView
 ;
 ; Initialises the corridor view for the current room. Clears the room mode
-; byte, freezes both crew animation channels (sets bit 7 of #R31263/#R31264),
+; byte, freezes both crew animation channels (sets bit 7 of $7A1F/$7A20),
 ; resets the corridor cursor to segment 8, copies the 19-byte corridor
-; position template from #R30197 to #R29630, then draws the room's attribute
+; position template from $75F5 to $73BE, then draws the room's attribute
 ; colours and initial crew sprites.
 ;
 ; Used by the routines at #R35163, #R35338, #R35382, #R36457, #R37490, #R38379,
 ; #R40826 and #R45401.
 @label=InitGameView
 c31417 XOR A         ; A = 0
-@ignoreua
- 31418 LD (31252),A  ; clear room mode byte at #R31252
-@ignoreua
- 31421 LD HL,31263   ; HL = #R31263 (crew animation flags)
+ 31418 LD (31252),A  ; clear room mode byte at $7A14
+ 31421 LD HL,31263   ; HL = $7A1F (crew animation flags)
  31424 SET 7,(HL)    ; freeze animation channel A (bit 7 = freeze)
  31426 INC HL        ;
  31427 SET 7,(HL)    ; freeze animation channel B
  31429 LD A,128      ; $80
-@nowarn=39741
-@ssub=LD (Auto_9B3D),A
- 31431 LD (39741),A  ; set alien pixel X sentinel (#R39741)
-@nowarn=39753
-@ssub=LD (Auto_9B49),A
- 31434 LD (39753),A  ; set alien pixel Y sentinel (#R39753)
+ 31431 LD (39741),A  ; set alien pixel X sentinel ($9B3D)
+ 31434 LD (39753),A  ; set alien pixel Y sentinel ($9B49)
  31437 LD A,8        ; segment 8 = centre of 19-segment corridor
-@nowarn=33683
-@ssub=LD (CorridorCursor),A
-@ignoreua
- 31439 LD (33683),A  ; store as current corridor cursor (#R33643)
+ 31439 LD (33683),A  ; store as current corridor cursor ($836B)
  31442 LD A,32       ; space char
  31444 CALL 33479    ; draw blank room border / clear game window
-@ignoreua
- 31447 LD A,(31243)  ; read room-type byte (#R31243)
+ 31447 LD A,(31243)  ; read room-type byte ($7A0B)
  31450 CP 4          ; room type 4 = special (engine room)
  31452 JR NZ,31459   ;
  31454 LD A,1        ; remap type 4 → type 1
  31456 LD (31243),A  ;
 *31459 CALL 31267    ; draw room background (walls, doors, floor tiles)
- 31462 LD DE,29630   ; DE = #R29630 (corridor position table, 19 bytes)
- 31465 LD HL,30197   ; HL = #R30197 (corridor position templates)
+ 31462 LD DE,29630   ; DE = $73BE (corridor position table, 19 bytes)
+ 31465 LD HL,30197   ; HL = $75F5 (corridor position templates)
  31468 LD BC,19      ; copy 19 entries
  31471 LDIR          ; initialise position table from template
-@ignoreua
  31473 LD HL,22550   ; HL = $5816 (attribute row for top of game window)
  31476 LD A,7        ; white ink on black paper
  31478 LD C,1        ; 1 column wide
@@ -2297,7 +2222,7 @@ c31417 XOR A         ; A = 0
 *31559 EX AF,AF'     ;
  31560 LD HL,(31257) ;
 
-; Routine at #R31562
+; Routine at 31562
 @label=DrawSpriteFromTable
 @label=NextCorridorEntry
 c31562 LD A,D        ;
@@ -2353,13 +2278,12 @@ c31577 LD DE,1824    ; stride to next character row in attribute area
 
 ; DrawNextCorridorTile
 ;
-; Reads the next tile index from the corridor position pointer at #R31261, draws
+; Reads the next tile index from the corridor position pointer at $7A1D, draws
 ; it by falling through into #R31634 (DrawSprite), and advances the pointer.
 ;
 ; Used by the routines at #R31417, #R31577, #R31634, #R35290 and #R35578.
 @label=DrawNextCorridorTile
-@ignoreua
-c31626 LD HL,(31261) ; HL = corridor tile-source pointer (#R31261)
+c31626 LD HL,(31261) ; HL = corridor tile-source pointer ($7A1D)
  31629 LD A,(HL)     ; A = next tile index
  31630 INC HL        ; advance pointer
  31631 LD (31261),HL ; save updated pointer; fall through to DrawSprite
@@ -2367,14 +2291,14 @@ c31626 LD HL,(31261) ; HL = corridor tile-source pointer (#R31261)
 ; DrawSprite
 ;
 ; Draws a 10-column × 8-row (80px wide) sprite at the current draw position
-; (#R31241). Each column is one 8-pixel-tall tile drawn by #R31369. The sprite
+; ($7A09). Each column is one 8-pixel-tall tile drawn by #R31369. The sprite
 ; data is a table of 10 tile indices (each 10 bytes wide) looked up from the
-; 10-byte-per-sprite character table at #R28221 ($#R28221). After drawing 10
-; columns, advances #R31241 to the next character row accounting for the ZX
+; 10-byte-per-sprite character table at $6E3D ($28221). After drawing 10
+; columns, advances $7A09 to the next character row accounting for the ZX
 ; Spectrum display-file row wrapping.
 ;
 ; Input:  A = sprite index (255 → use default/blank sprite index 92)
-;         (#R31241) = screen destination address
+;         ($7A09) = screen destination address
 ;
 ; Used by the routines at #R31417, #R33610, #R35290, #R35451, #R35578, #R36457,
 ; #R36859, #R37018, #R37490, #R38379, #R40826, #R44880 and #R45401.
@@ -2390,7 +2314,7 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31646 ADD HL,HL     ; HL = index × 8
  31647 POP DE        ; DE = index × 2
  31648 ADD HL,DE     ; HL = index × 10 (sprite record size)
- 31649 LD DE,28221   ; DE = #R28221 (character sprite table base)
+ 31649 LD DE,28221   ; DE = $6E3D (character sprite table base)
  31652 ADD HL,DE     ; HL = address of sprite's 10 tile-index bytes
  31653 EX DE,HL      ; DE = sprite data source
  31654 LD B,10       ; 10 tile columns per sprite
@@ -2399,8 +2323,7 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31658 CALL 31369    ; DrawSpriteRow: draw one tile column (8px tall)
  31661 POP DE        ; restore sprite data pointer
  31662 INC DE        ; advance to next tile index byte
-@ignoreua
- 31663 LD HL,31257   ; HL → draw pointer (#R31241)
+ 31663 LD HL,31257   ; HL → draw pointer ($7A09)
  31666 INC (HL)      ; move draw pointer right by 1 character column
  31667 POP BC        ;
  31668 DJNZ 31656    ; repeat for all 10 columns
@@ -2583,13 +2506,9 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31960 LD A,48       ;
  31962 LD (HL),A     ;
  31963 RET           ;
-@nowarn=33703
-@ssub=LD A,(AlienTargetID)
 *31964 LD A,(33703)  ;
  31967 CP 8          ;
  31969 JR NC,31988   ;
-@nowarn=33704
-@ssub=LD A,(AlienActiveFlag)
  31971 LD A,(33704)  ;
  31974 AND A         ;
  31975 JR Z,31988    ;
@@ -2599,8 +2518,6 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31984 CP (HL)       ;
  31985 CALL Z,32134  ;
 *31988 LD A,(31242)  ;
-@nowarn=33706
-@ssub=LD HL,AlienEventTimer
  31991 LD HL,33706   ;
  31994 CP (HL)       ;
  31995 CALL Z,32109  ;
@@ -2684,8 +2601,6 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
 *32125 LD A,52       ;
  32127 LD (DE),A     ;
  32128 XOR A         ;
-@nowarn=39741
-@ssub=LD (Auto_9B3D),A
  32129 LD (39741),A  ;
 ; This entry point is used by the routine at #R44880.
 *32132 POP AF        ;
@@ -2734,7 +2649,6 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  32213 LD A,135      ;
  32215 CALL 31370    ;
  32218 RET           ;
-@label=Auto_7DDB
  32219 LD C,C        ;
  32220 LD (HL),H     ;
  32221 LD H,L        ;
@@ -2747,14 +2661,12 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  32229 LD H,L        ;
  32230 LD L,(HL)     ;
  32231 LD (HL),H     ;
-@label=Auto_7DE8
  32232 LD B,A        ;
  32233 LD (HL),D     ;
  32234 LD L,C        ;
  32235 LD L,H        ;
  32236 LD L,H        ;
  32237 LD H,L        ;
-@label=Auto_7DEE
  32238 JR NZ,32345   ;
  32240 LD (HL),E     ;
  32241 JR NZ,32123   ;
@@ -2794,8 +2706,6 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  32286 JR Z,32313    ;
  32288 LD HL,20608   ;
  32291 LD (31257),HL ;
-@nowarn=32219
-@ssub=LD DE,Auto_7DDB
  32294 LD DE,32219   ;
  32297 LD B,13       ;
 *32299 PUSH BC       ;
@@ -2810,8 +2720,6 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
 *32313 LD A,(31242)  ;
  32316 CP 34         ;
  32318 RET Z         ;
-@nowarn=32232
-@ssub=LD DE,Auto_7DE8
  32319 LD DE,32232   ;
  32322 LD HL,20624   ;
  32325 LD (31257),HL ;
@@ -2852,8 +2760,6 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  32388 LD HL,20640   ;
  32391 LD (31257),HL ;
  32394 CALL 31690    ;
-@nowarn=32238
-@ssub=LD DE,Auto_7DEE
  32397 LD DE,32238   ;
  32400 LD B,4        ;
 *32402 PUSH BC       ;
@@ -3018,16 +2924,10 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
 ; This entry point is used by the routines at #R35163, #R35578, #R35973,
 ; #R38379 and #R44815.
 *32719 CALL 32684    ;
-@nowarn=32896
-@ssub=LD HL,Auto_8080
  32722 LD HL,32896   ;
  32725 LD (31263),HL ;
  32728 LD A,128      ;
-@nowarn=39753
-@ssub=LD (Auto_9B49),A
  32730 LD (39753),A  ;
-@nowarn=39741
-@ssub=LD (Auto_9B3D),A
  32733 LD (39741),A  ;
  32736 CALL 31721    ;
  32739 LD A,(31242)  ;
@@ -3095,10 +2995,7 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  32888 CALL 31612    ;
  32891 LD A,61       ;
  32893 LD (33685),A  ;
-@label=Auto_8080
  32896 LD A,17       ;
-@nowarn=33683
-@ssub=LD (CorridorCursor),A
  32898 LD (33683),A  ;
  32901 LD A,1        ;
  32903 LD (31252),A  ;
@@ -3114,7 +3011,6 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  32927 CALL 34882    ;
  32930 CALL 39572    ;
  32933 RET           ;
-@label=Auto_80A6
  32934 LD A,L        ;
  32935 LD L,H        ;
  32936 ADD A,D       ;
@@ -3270,8 +3166,6 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  33222 RET           ;
 *33223 LD HL,(31259) ;
  33226 LD A,(HL)     ;
-@nowarn=32934
-@ssub=LD HL,Auto_80A6
  33227 LD HL,32934   ;
 *33230 CP (HL)       ;
  33231 JR Z,33238    ;
@@ -3457,10 +3351,9 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  33588 RET           ;
 
 ; AdvanceScriptPtr
-@ignoreua
 ;
 ; Steps the ROM-traversal script pointer forward by one byte and returns the
-; low nibble (0-15) of the new byte in A. The pointer lives at #R31265 and
+; low nibble (0-15) of the new byte in A. The pointer lives at $7A21 and
 ; walks through ZX Spectrum ROM bytes starting at $1041 (SEED $9041 with H
 ; masked to $10). Each nibble encodes one game command for the AI scheduler.
 ;
@@ -3469,8 +3362,7 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
 ; Used by the routines at #R35578, #R36457, #R36859, #R37018, #R37490, #R38379
 ; and #R41264.
 @label=AdvanceScriptPtr
-@ignoreua
-c33589 LD HL,(31265) ; HL = current script pointer (#R31265)
+c33589 LD HL,(31265) ; HL = current script pointer ($7A21)
  33592 INC HL        ; advance to next ROM byte
  33593 LD (31265),HL ; save updated pointer
  33596 LD A,(HL)     ; read ROM byte at new address
@@ -3478,22 +3370,20 @@ c33589 LD HL,(31265) ; HL = current script pointer (#R31265)
  33599 RET           ;
 
 ; ResetScriptPtr
-@ignoreua
 ;
 ; Resets the ROM-traversal script pointer to its starting address. Reads the
-; SEED value from #R23672 (ZX Spectrum system variable SEED, updated by RAND),
+; SEED value from $5C78 (ZX Spectrum system variable SEED, updated by RAND),
 ; calls the address-masking helper at #R45290 to compute $1041 (ROM address
-; $9041 with H masked to $10), and stores the result at #R31265.
+; $9041 with H masked to $10), and stores the result at $7A21.
 ;
 ; Used by the routines at #R36457 and #R44880.
 @label=ResetScriptPtr
-c33600 LD HL,(23672) ; HL = SEED (#R23672): ZX ROM random seed value
+c33600 LD HL,(23672) ; HL = SEED ($5C78): ZX ROM random seed value
  33603 CALL 45290    ; mask H to $10: HL → ROM address in range $1000-$1FFF
-@ignoreua
- 33606 LD (31265),HL ; store as script pointer at #R31265
+ 33606 LD (31265),HL ; store as script pointer at $7A21
  33609 RET           ;
 
-; Routine at #R33610
+; Routine at 33610
 ;
 ; Used by the routine at #R31634.
 @label=DrawCrewStatusHalf
@@ -3514,10 +3404,8 @@ c33610 PUSH AF       ;
  33635 LD DE,8       ;
  33638 ADD HL,DE     ;
  33639 LD (31257),HL ;
-@label=KeyInputByte
 *33642 POP AF        ;
-@label=DifficultyByte
-*33643 RET           ;
+ 33643 RET           ;
  33644 LD HL,30720   ;
  33647 CALL 33153    ;
  33650 LD DE,30861   ;
@@ -3538,60 +3426,36 @@ c33610 PUSH AF       ;
  33675 LD HL,26121   ;
  33678 CALL 31312    ;
  33681 RET           ;
-@label=AlienFlags
  33682 NOP           ;
-@label=CorridorCursor
  33683 LD DE,0       ;
-@label=SprDestA
  33686 NOP           ;
  33687 LD B,B        ;
-@label=SpriteDestAddr
  33688 NOP           ;
  33689 LD B,B        ;
-@label=FrameCounterB
  33690 ADD HL,DE     ;
-@label=Auto_839B
  33691 ADD HL,DE     ;
-@label=Auto_839C
  33692 RST 56        ;
  33693 RST 56        ;
  33694 RST 56        ;
-@label=Auto_839F
  33695 RST 56        ;
-@label=Auto_83A0
  33696 RST 56        ;
-@label=Auto_83A1
  33697 RST 56        ;
-@label=Auto_83A2
  33698 NOP           ;
-@label=SoundRequest
  33699 NOP           ;
-@label=CrewIndex
  33700 LD BC,29574   ;
-@label=AlienTargetID
  33703 ADD HL,BC     ;
-@label=AlienActiveFlag
  33704 NOP           ;
-@label=Auto_83A9
  33705 NOP           ;
-@label=AlienEventTimer
  33706 LD B,255      ;
-@label=Auto_83AC
  33708 NOP           ;
-@label=Auto_83AD
  33709 NOP           ;
-@label=Auto_83AE
  33710 RET PO        ;
  33711 LD E,D        ;
-@label=Auto_83B0
  33712 RST 56        ;
-@label=Auto_83B1
  33713 RST 56        ;
-@label=Auto_83B2
  33714 NOP           ;
  33715 NOP           ;
  33716 NOP           ;
-@label=Auto_83B5
  33717 NOP           ;
  33718 NOP           ;
  33719 NOP           ;
@@ -3606,33 +3470,24 @@ c33610 PUSH AF       ;
  33728 NOP           ;
  33729 NOP           ;
  33730 NOP           ;
-@label=SoundReqFlag
  33731 NOP           ;
  33732 NOP           ;
  33733 NOP           ;
-@label=SprScreenAddrA
  33734 NOP           ;
  33735 NOP           ;
-@label=SprScreenAddrB
  33736 NOP           ;
-@label=MusicActiveFlag
  33737 NOP           ;
  33738 RST 56        ;
-@label=AnimFrameCnt
  33739 RST 56        ;
 
-; Routine at #R33740
+; Routine at 33740
 @label=DrawCorridorSegment
 c33740 RST 56        ;
-@label=Auto_83CD
  33741 OR D          ;
  33742 ADD A,E       ;
-@label=Auto_83CF
  33743 RST 56        ;
  33744 RST 56        ;
-@label=Auto_83D1
  33745 RRCA          ;
-@label=Auto_83D2
  33746 NOP           ;
  33747 NOP           ;
  33748 NOP           ;
@@ -3647,7 +3502,6 @@ c33740 RST 56        ;
  33757 INC BC        ;
  33758 LD BC,2056    ;
  33761 EX AF,AF'     ;
-@label=Auto_83E2
  33762 NOP           ;
  33763 LD C,14       ;
  33765 DEC C         ;
@@ -3662,7 +3516,6 @@ c33740 RST 56        ;
  33775 OR H          ;
  33776 LD D,B        ;
  33777 LD D,B        ;
-@label=Auto_83F2
  33778 NOP           ;
  33779 NOP           ;
  33780 JR NC,33798   ;
@@ -3670,7 +3523,6 @@ c33740 RST 56        ;
  33783 NOP           ;
  33784 NOP           ;
  33785 NOP           ;
-@label=Auto_83FA
  33786 NOP           ;
  33787 RLCA          ;
  33788 DEC B         ;
@@ -3678,8 +3530,7 @@ c33740 RST 56        ;
  33790 RLCA          ;
  33791 INC BC        ;
 
-; Data block at #R33792
-@label=TileTableBounds
+; Data block at 33792
 b33792 DEFB 10,5
 
 ; RoomDispatchTable
@@ -3696,7 +3547,6 @@ b33792 DEFB 10,5
 ;  24: #R35560  25-29: #R35382  30-31: #R35448  32: #R35449
 ;  33: #R35451
 ;
-@label=RoomDispatchTable
 w33794 DEFW 35314,35314,35338,35338
  33802 DEFW 35578,35448,35163,35163
  33810 DEFW 35163,35163,35163,35163
@@ -3707,7 +3557,7 @@ w33794 DEFW 35314,35314,35338,35338
  33850 DEFW 35382,35382,35448,35449
  33858 DEFW 35451,35638
 
-; Routine at #R33862
+; Routine at 33862
 @label=GetCorridorTableEntry
 c33862 ADC A,L       ;
  33863 ADC A,E       ;
@@ -3720,7 +3570,6 @@ c33862 ADC A,L       ;
  33872 CP 149        ;
  33874 LD (HL),B     ;
  33875 ADC A,D       ;
-@label=Auto_8454
  33876 LD A,B        ;
  33877 ADC A,D       ;
  33878 JP NZ,1420    ;
@@ -3734,7 +3583,6 @@ c33862 ADC A,L       ;
  33889 SUB A         ;
  33890 DEC (HL)      ;
  33891 SBC A,A       ;
-@label=Auto_8464
  33892 CP 32         ;
  33894 LD D,E        ;
  33895 LD H,L        ;
@@ -4386,8 +4234,6 @@ c33862 ADC A,L       ;
 ; This entry point is used by the routine at #R34684.
 *34636 CALL 34640    ;
  34639 RET           ;
-@nowarn=33682
-@ssub=LD HL,AlienFlags
 *34640 LD HL,33682   ;
  34643 LD (HL),0     ;
  34645 LD BC,63486   ;
@@ -4410,12 +4256,11 @@ c33862 ADC A,L       ;
  34680 RET NZ        ;
  34681 SET 4,(HL)    ;
  34683 RET           ;
-@ignoreua
 
 ; HandleInput
 ;
 ; Reads the keyboard and moves the selected crew member. Calls the key-scanner
-; at #R34636 which packs five keys into #R33642: bit 4 = fire/action, bit 3 =
+; at #R34636 which packs five keys into $836A: bit 4 = fire/action, bit 3 =
 ; move right (key 8), bit 2 = move left (key 5), bits 1-0 = up/down (keys
 ; 6/7). If the action key (bit 4) is held, enters a beeper loop toggling port
 ; $FE until released. Otherwise dispatches movement: right → #R34743 (move
@@ -4424,12 +4269,8 @@ c33862 ADC A,L       ;
 ;
 ; Used by the routine at #R36457.
 @label=HandleInput
-@ignoreua
-c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
-@nowarn=33682
-@ssub=LD A,(AlienFlags)
-@ignoreua
- 34687 LD A,(33682)  ; A = key bitmask (#R33642)
+c34684 CALL 34636    ; scan keyboard → $836A bitmask
+ 34687 LD A,(33682)  ; A = key bitmask ($836A)
  34690 AND A         ; any key pressed?
  34691 RET Z         ; no: return immediately
  34692 BIT 4,A       ; action/fire key held?
@@ -4437,8 +4278,6 @@ c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
  34696 XOR A         ; A = 0 (border black)
 *34697 EX AF,AF'     ; save border colour to A'
  34698 CALL 34636    ; re-scan keyboard (wait for release)
-@nowarn=33682
-@ssub=LD A,(AlienFlags)
  34701 LD A,(33682)  ; read updated key state
  34704 BIT 4,A       ; action key still held?
  34706 JP Z,34840    ; released: return to caller
@@ -4455,12 +4294,10 @@ c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
  34724 AND 3         ; up (bit 1) or down (bit 0) key?
 ; This entry point is used by the routine at #R33862.
 *34726 RET Z         ; no directional key: return
-@ignoreua
- 34727 LD A,(31252)  ; A = room mode (#R31252)
+ 34727 LD A,(31252)  ; A = room mode ($7A14)
  34730 AND A         ; mode 0 = single-row corridor (no up/down)
  34731 RET Z         ; in single-row mode: up/down keys ignored
 ; This entry point is used by the routine at #R33862.
-@ignoreua
 *34732 LD A,(33685)  ; A = crew column position ($836D)
  34735 CP 61         ; column 61 = leftmost valid position
  34737 RET Z         ; at left wall: cannot move
@@ -4468,15 +4305,11 @@ c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
  34741 JR 34732      ; keep moving while at edge
 ; This entry point is used by the routines at #R35578, #R36859 and #R37490.
 *34743 CALL 34859    ;
-@nowarn=33683
-@ssub=LD HL,CorridorCursor
  34746 LD HL,33683   ;
  34749 LD A,(33685)  ;
  34752 CP 70         ;
  34754 JR C,34757    ;
  34756 INC (HL)      ;
-@nowarn=33683
-@ssub=LD HL,CorridorCursor
 *34757 LD HL,33683   ;
  34760 LD A,(HL)     ;
  34761 CP 18         ;
@@ -4495,15 +4328,11 @@ c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
  34784 CALL 34933    ;
  34787 RET           ;
 *34788 CALL 34859    ;
-@nowarn=33683
-@ssub=LD A,(CorridorCursor)
 *34791 LD A,(33683)  ;
  34794 AND A         ;
  34795 JR NZ,34799   ;
  34797 LD A,19       ;
 *34799 DEC A         ;
-@nowarn=33683
-@ssub=LD (CorridorCursor),A
  34800 LD (33683),A  ;
  34803 LD D,0        ;
  34805 LD E,A        ;
@@ -4520,8 +4349,6 @@ c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
  34823 JR C,34833    ;
  34825 CP 82         ;
  34827 JR NC,34833   ;
-@nowarn=33683
-@ssub=LD HL,CorridorCursor
  34829 LD HL,33683   ;
  34832 DEC (HL)      ;
 *34833 CALL 34882    ;
@@ -4540,8 +4367,6 @@ c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
  34856 LD H,(HL)     ;
  34857 LD L,A        ;
  34858 JP (HL)       ;
-@nowarn=33683
-@ssub=LD A,(CorridorCursor)
 *34859 LD A,(33683)  ;
  34862 CALL 34920    ;
  34865 LD A,(33685)  ;
@@ -4554,8 +4379,6 @@ c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
  34881 RET           ;
 ; This entry point is used by the routines at #R31577, #R31634, #R35290 and
 ; #R35578.
-@nowarn=33683
-@ssub=LD A,(CorridorCursor)
 *34882 LD A,(33683)  ;
  34885 PUSH AF       ;
  34886 LD E,A        ;
@@ -4606,23 +4429,19 @@ c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
 ; AnimateCrewA
 ;
 ; Animates crew sprite set A. Skips if bit 7 of the animation-freeze flag at
-; #R31263 is set. Decrements the frame counter at #R33739; when it reaches zero,
+; $7A1F is set. Decrements the frame counter at $83CB; when it reaches zero,
 ; resets the counter to 10 and XOR-blits two consecutive 3×12-byte sprite
-; frames from the animation table at #R26853 (indexed by the frame phase in
-; #R31263 bits 0-1) onto the display at the address stored in #R33734. Calling
+; frames from the animation table at $68E5 (indexed by the frame phase in
+; $7A1F bits 0-1) onto the display at the address stored in $83C6. Calling
 ; this routine twice per frame (once to erase, once to draw the next frame)
 ; produces flicker-free sprite animation via double-buffered XOR.
 ;
 ; Used by the routines at #R36457, #R38379 and #R42821.
 @label=AnimateCrewA
-@ignoreua
-c34967 LD A,(31263)  ; A = animation-freeze / frame-phase byte (#R31263)
+c34967 LD A,(31263)  ; A = animation-freeze / frame-phase byte ($7A1F)
  34970 BIT 7,A       ; bit 7 = freeze flag
  34972 RET NZ        ; frozen: skip animation this frame
-@nowarn=33691
-@ssub=LD HL,Auto_839B
-@ignoreua
- 34973 LD HL,33691   ; HL = frame counter A (#R33739)
+ 34973 LD HL,33691   ; HL = frame counter A ($83CB)
  34976 DEC (HL)      ; tick down counter
  34977 RET NZ        ; not expired: nothing to do
  34978 LD (HL),10    ; reset counter to 10 frames per phase
@@ -4631,7 +4450,7 @@ c34967 LD A,(31263)  ; A = animation-freeze / frame-phase byte (#R31263)
 *34982 PUSH BC       ; save row counter
  34983 LD E,A        ; E = frame phase (0-3)
  34984 LD D,0        ;
- 34986 LD HL,26853   ; HL = base of crew-A animation table (#R26853)
+ 34986 LD HL,26853   ; HL = base of crew-A animation table ($68E5)
  34989 ADD HL,DE     ; index by phase × 2
  34990 ADD HL,DE     ;
  34991 LD A,(HL)     ; read 16-bit sprite bitmap pointer
@@ -4639,10 +4458,7 @@ c34967 LD A,(31263)  ; A = animation-freeze / frame-phase byte (#R31263)
  34993 LD H,(HL)     ;
  34994 LD L,A        ; HL = pointer to 3-byte sprite row data
  34995 EX DE,HL      ; DE = sprite data source
-@nowarn=33686
-@ssub=LD HL,(SprDestA)
-@ignoreua
- 34996 LD HL,(33686) ; HL = screen destination address (#R33734)
+ 34996 LD HL,(33686) ; HL = screen destination address ($83C6)
  34999 CALL 35065    ; XOR-blit 3 bytes × 12 rows onto screen
  35002 POP BC        ; restore row counter
  35003 DEC B         ;
@@ -4652,24 +4468,20 @@ c34967 LD A,(31263)  ; A = animation-freeze / frame-phase byte (#R31263)
  35009 AND 3         ; wrap phase 0-3
  35011 LD (31263),A  ; store updated phase
  35014 JR 34982      ; blit second sprite row
-@ignoreua
 
 ; AnimateCrewB
 ;
 ; Animates the room indicator cursor (B channel). Identical logic to
 ; #R34967 (AnimateCrewA) but uses a faster frame rate (counter resets to 5
-; rather than 10), the B-set animation table at #R26861 (#R26861), and the
-; B-channel screen address at #R33736. Cycles through four cursor shapes
+; rather than 10), the B-set animation table at $68ED (#R26861), and the
+; B-channel screen address at $83C8. Cycles through four cursor shapes
 ; (RoomCursor0-3) at twice the speed of the crew walk animation.
 ;
 ; Used by the routines at #R36457, #R38379 and #R42821.
 @label=AnimateCrewB
-c35016 LD A,(31264)  ; A = animation-freeze / frame-phase byte (#R31264)
+c35016 LD A,(31264)  ; A = animation-freeze / frame-phase byte ($7A20)
  35019 BIT 7,A       ; bit 7 = freeze flag
  35021 RET NZ        ; frozen: skip
-@nowarn=33690
-@ssub=LD HL,FrameCounterB
-@ignoreua
  35022 LD HL,33690   ; HL = frame counter B ($83CA)
  35025 DEC (HL)      ; tick down counter
  35026 RET NZ        ; not expired
@@ -4679,7 +4491,7 @@ c35016 LD A,(31264)  ; A = animation-freeze / frame-phase byte (#R31264)
 *35031 PUSH BC       ;
  35032 LD E,A        ; E = frame phase (0-3)
  35033 LD D,0        ;
- 35035 LD HL,26861   ; base of crew-B animation table (#R26861)
+ 35035 LD HL,26861   ; base of crew-B animation table ($68ED)
  35038 ADD HL,DE     ; index by phase × 2
  35039 ADD HL,DE     ;
  35040 LD A,(HL)     ; read 16-bit sprite bitmap pointer
@@ -4687,10 +4499,7 @@ c35016 LD A,(31264)  ; A = animation-freeze / frame-phase byte (#R31264)
  35042 LD H,(HL)     ;
  35043 LD L,A        ; HL = pointer to sprite row data
  35044 EX DE,HL      ; DE = sprite data source
-@nowarn=33688
-@ssub=LD HL,(SpriteDestAddr)
-@ignoreua
- 35045 LD HL,(33688) ; HL = screen destination address (#R33736)
+ 35045 LD HL,(33688) ; HL = screen destination address ($83C8)
  35048 CALL 35065    ; XOR-blit 3 bytes × 12 rows onto screen
  35051 POP BC        ;
  35052 DEC B         ;
@@ -4734,8 +4543,6 @@ c35016 LD A,(31264)  ; A = animation-freeze / frame-phase byte (#R31264)
  35106 RET NC        ;
  35107 LD A,(31242)  ;
  35110 CALL 35088    ;
-@nowarn=33686
-@ssub=LD (SprDestA),HL
  35113 LD (33686),HL ;
  35116 LD HL,31263   ;
  35119 RES 7,(HL)    ;
@@ -4745,8 +4552,6 @@ c35016 LD A,(31264)  ; A = animation-freeze / frame-phase byte (#R31264)
  35127 RET           ;
 ; This entry point is used by the routines at #R34684 and #R35338.
 *35128 CALL 35088    ;
-@nowarn=33688
-@ssub=LD (SpriteDestAddr),HL
  35131 LD (33688),HL ;
  35134 LD HL,31264   ;
  35137 RES 7,(HL)    ;
@@ -4769,40 +4574,27 @@ c35016 LD A,(31264)  ; A = animation-freeze / frame-phase byte (#R31264)
 ; RoomHandlerCommon
 ;
 ; Standard corridor room handler for rooms 6-12. Saves the current corridor
-; cursor (#R33643) to #R31241, sets up 17 corridor segments (positions 0-16)
+; cursor ($836B) to $7A09, sets up 17 corridor segments (positions 0-16)
 ; starting at position 61, draws the corridor using #R31721, then checks
 ; IX+7 (alive flag of the crew member assigned to this room). If the crew
 ; member is dead (IX+7=0), jumps to #R31417 to redraw the view. If the alien
-; is active (#R33736 non-zero) and its target corridor matches the saved cursor,
+; is active ($83C8 non-zero) and its target corridor matches the saved cursor,
 ; calls the alien-in-room handler #R32719.
 ;
-@nowarn=33683
 @label=RoomHandlerCommon
-@ssub=LD A,(CorridorCursor)
-@ignoreua
-c35163 LD A,(33683)  ; A = corridor cursor (#R33643)
-@ignoreua
- 35166 LD (31241),A  ; save as room-entry position (#R31241)
+c35163 LD A,(33683)  ; A = corridor cursor ($836B)
+ 35166 LD (31241),A  ; save as room-entry position ($7A09)
  35169 LD A,17       ; 17 segments in a standard corridor
-@nowarn=33683
-@ssub=LD (CorridorCursor),A
  35171 LD (33683),A  ; set segment counter
  35174 LD A,61       ; starting position = 61 (leftmost)
-@ignoreua
  35176 LD (33685),A  ; store starting corridor position ($836D)
  35179 CALL 31721    ; draw all corridor segments
  35182 XOR A         ; A = 0
  35183 CP (IX+7)     ; is crew member alive? (IX+7 = alive flag)
  35186 JP NZ,31417   ; crew dead: reinit view
-@nowarn=33704
-@ssub=LD A,(AlienActiveFlag)
-@ignoreua
- 35189 LD A,(33704)  ; A = alien active flag (#R33736)
+ 35189 LD A,(33704)  ; A = alien active flag ($83C8)
  35192 AND A         ; alien present?
  35193 JP Z,32719    ; no alien: draw room contents
-@nowarn=33703
-@ssub=LD HL,AlienTargetID
-@ignoreua
  35196 LD HL,33703   ; HL = alien target corridor ($83C7)
  35199 LD A,(31241)  ; A = saved entry cursor
  35202 CP (HL)       ; alien on this room's corridor?
@@ -4810,32 +4602,24 @@ c35163 LD A,(33683)  ; A = corridor cursor (#R33643)
  35206 CALL 32719    ; draw room contents (crew sprites etc.)
  35209 RET           ;
 
-; Routine at #R35210
-@nowarn=33683
-@label=RoomHandler_17
-@ssub=LD A,(CorridorCursor)
+; Routine at 35210
 c35210 LD A,(33683)  ;
  35213 SUB 12        ;
  35215 LD (31243),A  ;
  35218 CALL 31267    ;
  35221 RET           ;
 
-; Routine at #R35222
+; Routine at 35222
 ;
 ; Used by the routine at #R35338.
-@label=RoomHandler_13
 c35222 LD A,2        ;
  35224 LD E,0        ;
  35226 JR 35232      ;
 ; This entry point is used by the routine at #R35338.
-@label=Auto_899C
 *35228 LD A,3        ;
  35230 LD E,17       ;
-@label=Auto_89A0
 *35232 LD (31252),A  ;
  35235 LD A,18       ;
-@nowarn=33683
-@ssub=LD (CorridorCursor),A
  35237 LD (33683),A  ;
  35240 LD A,61       ;
  35242 LD (33685),A  ;
@@ -4843,7 +4627,6 @@ c35222 LD A,2        ;
  35248 LD (HL),62    ;
  35250 INC HL        ;
  35251 LD B,17       ;
-@label=Auto_89B5
 *35253 LD (HL),E     ;
  35254 INC HL        ;
  35255 INC E         ;
@@ -4862,14 +4645,12 @@ c35222 LD A,2        ;
  35284 LD HL,16406   ;
  35287 LD (31257),HL ;
 
-; Routine at #R35290
-@label=DrawRoomCorridor
+; Routine at 35290
 c35290 LD A,80       ;
  35292 CALL 31634    ;
  35295 LD HL,29630   ;
  35298 LD (31261),HL ;
  35301 LD B,19       ;
-@label=Auto_89E7
 *35303 PUSH BC       ;
  35304 CALL 31626    ;
  35307 POP BC        ;
@@ -4877,17 +4658,13 @@ c35290 LD A,80       ;
  35310 CALL 34882    ;
  35313 RET           ;
 
-; Routine at #R35314
-@label=RoomModeDispatch
+; Routine at 35314
 c35314 CALL 45753    ;
  35317 LD HL,33804   ;
  35320 LD DE,36      ;
  35323 AND A         ;
  35324 JR Z,35327    ;
  35326 ADD HL,DE     ;
-@nowarn=33683
-@label=Auto_89FF
-@ssub=LD A,(CorridorCursor)
 *35327 LD A,(33683)  ;
  35330 LD E,A        ;
  35331 ADD HL,DE     ;
@@ -4898,8 +4675,7 @@ c35314 CALL 45753    ;
  35336 LD L,A        ;
  35337 JP (HL)       ;
 
-; Routine at #R35338
-@label=RoomHandler_2
+; Routine at 35338
 c35338 LD A,(33685)  ;
  35341 CP 61         ;
  35343 JP Z,31417    ;
@@ -4909,7 +4685,6 @@ c35338 LD A,(33685)  ;
  35353 CP 2          ;
  35355 JP Z,35228    ;
  35358 JP 35222      ;
-@label=Auto_8A21
 *35361 LD E,A        ;
  35362 LD D,0        ;
  35364 LD HL,29905   ;
@@ -4921,8 +4696,7 @@ c35338 LD A,(33685)  ;
  35378 CALL 35128    ;
  35381 RET           ;
 
-; Routine at #R35382
-@label=RoomHandler_25
+; Routine at 35382
 c35382 LD A,64       ;
  35384 CALL 35814    ;
  35387 LD (IX+3),1   ;
@@ -4932,9 +4706,6 @@ c35382 LD A,64       ;
  35398 LD A,(33685)  ;
  35401 LD (IX+2),A   ;
  35404 RET           ;
-@nowarn=33683
-@label=Auto_8A4D
-@ssub=LD A,(CorridorCursor)
 *35405 LD A,(33683)  ;
  35408 SUB 2         ;
  35410 PUSH AF       ;
@@ -4961,17 +4732,14 @@ c35382 LD A,64       ;
  35443 SET 7,(HL)    ;
  35445 JP 31417      ;
 
-; Routine at #R35448
-@label=RoomHandlerNop
+; Routine at 35448
 c35448 RET           ;
 
-; Routine at #R35449
-@label=RoomHandlerNop2
+; Routine at 35449
 c35449 RET           ;
  35450 RET           ;
 
-; Routine at #R35451
-@label=RoomHandler_33
+; Routine at 35451
 c35451 CALL 31820    ;
  35454 LD (IX+0),0   ;
  35458 LD DE,(31248) ;
@@ -4991,7 +4759,6 @@ c35451 CALL 31820    ;
  35480 CP 127        ;
  35482 JR C,35485    ;
  35484 XOR A         ;
-@label=Auto_8A9D
 *35485 LD (IX+5),A   ;
  35488 LD A,(IX+6)   ;
  35491 SUB E         ;
@@ -4999,7 +4766,6 @@ c35451 CALL 31820    ;
  35493 CP 127        ;
  35495 JR C,35498    ;
  35497 XOR A         ;
-@label=Auto_8AAA
 *35498 LD (IX+6),A   ;
  35501 LD BC,(31248) ;
  35505 LD L,B        ;
@@ -5031,10 +4797,9 @@ c35451 CALL 31820    ;
  35556 CALL 36793    ;
  35559 RET           ;
 
-; Routine at #R35560
+; Routine at 35560
 ;
 ; Used by the routine at #R36457.
-@label=RoomHandler_24
 c35560 LD A,64       ;
  35562 CALL 35814    ;
  35565 LD (IX+3),2   ;
@@ -5043,13 +4808,10 @@ c35560 LD A,64       ;
  35574 LD (IX+2),A   ;
  35577 RET           ;
 
-; Routine at #R35578
-@label=RoomHandler_4
+; Routine at 35578
 c35578 LD A,(33685)  ;
  35581 CP 61         ;
  35583 JP Z,32719    ;
-@nowarn=33683
-@ssub=LD A,(CorridorCursor)
  35586 LD A,(33683)  ;
  35589 LD E,A        ;
  35590 LD D,0        ;
@@ -5069,7 +4831,6 @@ c35578 LD A,(33685)  ;
  35620 ADD A,(HL)    ;
  35621 LD (IX+6),A   ;
  35624 LD C,160      ;
-@label=Auto_8B2A
 *35626 LD A,(31241)  ;
  35629 ADD A,C       ;
  35630 LD HL,29940   ;
@@ -5080,14 +4841,12 @@ c35578 LD A,(33685)  ;
  35642 LD DE,29630   ;
  35645 LD HL,29962   ;
  35648 LD B,17       ;
-@label=Auto_8B42
 *35650 LD A,(HL)     ;
  35651 CP 255        ;
  35653 JR Z,35660    ;
  35655 PUSH DE       ;
  35656 CALL 31857    ;
  35659 POP DE        ;
-@label=Auto_8B4C
 *35660 LD (DE),A     ;
  35661 INC HL        ;
  35662 INC DE        ;
@@ -5096,8 +4855,6 @@ c35578 LD A,(33685)  ;
  35667 LD (29647),A  ;
  35670 LD (33685),A  ;
  35673 LD A,17       ;
-@nowarn=33683
-@ssub=LD (CorridorCursor),A
  35675 LD (33683),A  ;
  35678 LD HL,22582   ;
  35681 LD A,15       ;
@@ -5111,7 +4868,6 @@ c35578 LD A,(33685)  ;
  35701 LD HL,16438   ;
  35704 LD (31257),HL ;
  35707 LD B,19       ;
-@label=Auto_8B7D
 *35709 PUSH BC       ;
  35710 CALL 31626    ;
  35713 POP BC        ;
@@ -5134,33 +4890,27 @@ c35578 LD A,(33685)  ;
  35750 CP 127        ;
  35752 JR C,35755    ;
  35754 XOR A         ;
-@label=Auto_8BAB
 *35755 LD (IX+5),A   ;
  35758 LD A,(IX+6)   ;
  35761 SUB (HL)      ;
  35762 CP 127        ;
  35764 JR C,35767    ;
  35766 XOR A         ;
-@label=Auto_8BB7
 *35767 LD (IX+6),A   ;
-@label=Auto_8BBA
 *35770 LD HL,29940   ;
  35773 ADD HL,DE     ;
  35774 LD A,(31242)  ;
  35777 LD (HL),A     ;
  35778 CALL 32719    ;
  35781 RET           ;
-@label=Auto_8BC6
 *35782 LD E,A        ;
  35783 LD D,0        ;
  35785 JR 35770      ;
  35787 JP 45830      ;
 ; This entry point is used by the routine at #R45401.
-@label=Auto_8BCE
 *35790 CP 52         ;
  35792 JP Z,37493    ;
 ; This entry point is used by the routine at #R45401.
-@label=Auto_8BD3
 *35795 LD A,(31241)  ;
  35798 LD E,A        ;
  35799 LD D,0        ;
@@ -5172,10 +4922,7 @@ c35578 LD A,(33685)  ;
  35813 RET           ;
 ; This entry point is used by the routines at #R35382, #R35560, #R36457 and
 ; #R37490.
-@label=Auto_8BE6
 *35814 PUSH AF       ;
-@nowarn=33786
-@ssub=LD HL,Auto_83FA
  35815 LD HL,33786   ;
  35818 LD A,(31241)  ;
  35821 LD D,0        ;
@@ -5185,8 +4932,6 @@ c35578 LD A,(33685)  ;
  35826 LD A,(IX+4)   ;
  35829 AND 7         ;
  35831 LD E,A        ;
-@nowarn=33778
-@ssub=LD HL,Auto_83F2
  35832 LD HL,33778   ;
  35835 ADD HL,DE     ;
  35836 LD A,(HL)     ;
@@ -5202,12 +4947,9 @@ c35578 LD A,(33685)  ;
  35854 JR Z,35859    ;
  35856 CP 16         ;
  35858 RET NZ        ;
-@label=Auto_8C13
 *35859 LD A,(31241)  ;
  35862 LD E,A        ;
  35863 LD D,0        ;
-@nowarn=33762
-@ssub=LD HL,Auto_83E2
  35865 LD HL,33762   ;
  35868 ADD HL,DE     ;
  35869 LD E,(HL)     ;
@@ -5217,7 +4959,6 @@ c35578 LD A,(33685)  ;
  35877 LD A,E        ;
  35878 SUB 4         ;
  35880 LD E,A        ;
-@label=Auto_8C29
 *35881 CALL 33589    ;
  35884 CP E          ;
  35885 JR NC,35896   ;
@@ -5225,7 +4966,6 @@ c35578 LD A,(33685)  ;
  35890 LD (HL),1     ;
  35892 CALL 36859    ;
  35895 RET           ;
-@label=Auto_8C38
 *35896 LD A,(31248)  ;
  35899 LD HL,29940   ;
  35902 LD E,A        ;
@@ -5259,18 +4999,14 @@ c35578 LD A,(33685)  ;
  35969 CALL 37176    ;
  35972 RET           ;
 
-; Routine at #R35973
+; Routine at 35973
 ;
 ; Used by the routine at #R36457.
-@label=ResetCrewTimers
 c35973 PUSH IX       ;
  35975 XOR A         ;
-@nowarn=33700
-@ssub=LD (CrewIndex),A
  35976 LD (33700),A  ;
  35979 LD IX,29566   ;
  35983 LD B,8        ;
-@label=Auto_8C91
 *35985 PUSH BC       ;
  35986 LD A,(IX+0)   ;
  35989 AND A         ;
@@ -5278,11 +5014,8 @@ c35973 PUSH IX       ;
  35992 DEC A         ;
  35993 LD (IX+0),A   ;
  35996 CALL 45232    ;
-@label=Auto_8C9F
 *35999 LD DE,8       ;
  36002 ADD IX,DE     ;
-@nowarn=33700
-@ssub=LD HL,CrewIndex
  36004 LD HL,33700   ;
  36007 INC (HL)      ;
  36008 POP BC        ;
@@ -5290,14 +5023,11 @@ c35973 PUSH IX       ;
  36011 POP IX        ;
  36013 RET           ;
 ; This entry point is used by the routine at #R44880.
-@label=Auto_8CAE
 *36014 CALL 36579    ;
  36017 AND A         ;
  36018 RET Z         ;
  36019 LD E,(IX+3)   ;
  36022 LD D,0        ;
-@nowarn=33876
-@ssub=LD HL,Auto_8454
  36024 LD HL,33876   ;
  36027 ADD HL,DE     ;
  36028 ADD HL,DE     ;
@@ -5307,7 +5037,6 @@ c35973 PUSH IX       ;
  36032 LD L,A        ;
  36033 JP (HL)       ;
 ; This entry point is used by the routine at #R37490.
-@label=Auto_8CC2
 *36034 LD A,(IX+2)   ;
  36037 CP (IX+1)     ;
  36040 RET Z         ;
@@ -5315,10 +5044,7 @@ c35973 PUSH IX       ;
  36044 BIT 6,A       ;
  36046 JR NZ,36053   ;
  36048 LD A,1        ;
-@nowarn=33699
-@ssub=LD (SoundRequest),A
  36050 LD (33699),A  ;
-@label=Auto_8CD5
 *36053 CALL 36187    ;
  36056 LD A,(IX+1)   ;
  36059 LD E,2        ;
@@ -5327,18 +5053,14 @@ c35973 PUSH IX       ;
  36064 CP 1          ;
  36066 JR NZ,36081   ;
  36068 LD E,4        ;
-@label=Auto_8CE6
 *36070 LD A,E        ;
  36071 LD HL,31253   ;
  36074 AND (HL)      ;
  36075 JR Z,36081    ;
  36077 LD (IX+1),13  ;
-@label=Auto_8CF1
 *36081 LD A,(31252)  ;
  36084 CP 1          ;
  36086 RET NZ        ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  36087 LD A,(33700)  ;
  36090 LD HL,31241   ;
  36093 CP (HL)       ;
@@ -5351,12 +5073,10 @@ c35973 PUSH IX       ;
  36109 JR NZ,36113   ;
  36111 DEC A         ;
  36112 DEC A         ;
-@label=Auto_8D11
 *36113 INC A         ;
  36114 CP 127        ;
  36116 JR C,36119    ;
  36118 XOR A         ;
-@label=Auto_8D17
 *36119 LD (IX+5),A   ;
  36122 LD A,E        ;
  36123 XOR 64        ;
@@ -5365,18 +5085,13 @@ c35973 PUSH IX       ;
  36131 LD A,(31252)  ;
  36134 CP 1          ;
  36136 RET NZ        ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  36137 LD A,(33700)  ;
  36140 LD HL,31241   ;
  36143 CP (HL)       ;
  36144 JP Z,32719    ;
  36147 JP 45338      ;
 ; This entry point is used by the routine at #R36457.
-@label=Auto_8D36
 *36150 LD A,1        ;
-@nowarn=33705
-@ssub=LD (Auto_83A9),A
  36152 LD (33705),A  ;
  36155 LD A,(IX+1)   ;
  36158 AND 63        ;
@@ -5393,13 +5108,10 @@ c35973 PUSH IX       ;
  36180 CP E          ;
  36181 JP Z,32719    ;
  36184 JP 36793      ;
-@label=Auto_8D5B
 *36187 LD HL,65535   ;
  36190 LD (31250),HL ;
  36193 LD HL,29575   ;
  36196 LD C,1        ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  36198 LD A,(33700)  ;
  36201 AND A         ;
  36202 RET Z         ;
@@ -5407,7 +5119,6 @@ c35973 PUSH IX       ;
  36204 LD DE,31250   ;
  36207 LD A,(IX+1)   ;
  36210 LD B,7        ;
-@label=Auto_8D74
 *36212 CP (HL)       ;
  36213 JR NZ,36224   ;
  36215 EX AF,AF'     ;
@@ -5417,9 +5128,7 @@ c35973 PUSH IX       ;
  36220 LD (HL),C     ;
  36221 EX DE,HL      ;
  36222 INC DE        ;
-@label=Auto_8D7F
 *36223 EX AF,AF'     ;
-@label=Auto_8D80
 *36224 PUSH DE       ;
  36225 LD DE,8       ;
  36228 ADD HL,DE     ;
@@ -5427,59 +5136,31 @@ c35973 PUSH IX       ;
  36230 INC C         ;
  36231 DJNZ 36212    ;
  36233 PUSH IX       ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  36235 LD A,(33700)  ;
-@nowarn=33695
-@ssub=LD (Auto_839F),A
  36238 LD (33695),A  ;
  36241 LD HL,(31250) ;
-@nowarn=33696
-@ssub=LD (Auto_83A0),HL
  36244 LD (33696),HL ;
  36247 CALL 36283    ;
-@nowarn=33696
-@ssub=LD HL,(Auto_83A0)
  36250 LD HL,(33696) ;
-@nowarn=33695
-@ssub=LD A,(Auto_839F)
  36253 LD A,(33695)  ;
-@nowarn=33697
-@ssub=LD (Auto_83A1),A
  36256 LD (33697),A  ;
-@nowarn=33695
-@ssub=LD (Auto_839F),HL
  36259 LD (33695),HL ;
  36262 CALL 36283    ;
-@nowarn=33696
-@ssub=LD HL,(Auto_83A0)
  36265 LD HL,(33696) ;
-@nowarn=33695
-@ssub=LD A,(Auto_839F)
  36268 LD A,(33695)  ;
-@nowarn=33697
-@ssub=LD (Auto_83A1),A
  36271 LD (33697),A  ;
-@nowarn=33695
-@ssub=LD (Auto_839F),HL
  36274 LD (33695),HL ;
  36277 CALL 36283    ;
  36280 POP IX        ;
  36282 RET           ;
-@label=Auto_8DBB
 *36283 XOR A         ;
-@nowarn=33698
-@ssub=LD (Auto_83A2),A
  36284 LD (33698),A  ;
-@nowarn=33695
-@ssub=LD A,(Auto_839F)
  36287 LD A,(33695)  ;
  36290 CP 255        ;
  36292 RET Z         ;
  36293 LD B,A        ;
  36294 LD IX,29566   ;
  36298 LD DE,8       ;
-@label=Auto_8DCD
 *36301 ADD IX,DE     ;
  36303 DJNZ 36301    ;
  36305 XOR A         ;
@@ -5487,10 +5168,7 @@ c35973 PUSH IX       ;
  36309 RET NZ        ;
  36310 PUSH IX       ;
  36312 LD B,2        ;
-@nowarn=33696
-@ssub=LD DE,Auto_83A0
  36314 LD DE,33696   ;
-@label=Auto_8DDD
 *36317 PUSH BC       ;
  36318 PUSH DE       ;
  36319 LD A,(DE)     ;
@@ -5498,7 +5176,6 @@ c35973 PUSH IX       ;
  36322 JR Z,36385    ;
  36324 LD IX,29566   ;
  36328 LD DE,8       ;
-@label=Auto_8DEB
 *36331 ADD IX,DE     ;
  36333 DEC A         ;
  36334 JR NZ,36331   ;
@@ -5512,84 +5189,58 @@ c35973 PUSH IX       ;
  36351 PUSH DE       ;
  36352 LD A,(DE)     ;
  36353 LD H,A        ;
-@nowarn=33695
-@ssub=LD A,(Auto_839F)
  36354 LD A,(33695)  ;
  36357 LD L,A        ;
  36358 LD A,20       ;
  36360 CALL 37176    ;
  36363 INC (IX+7)    ;
-@nowarn=33698
-@label=Auto_8E0E
-@ssub=LD HL,Auto_83A2
 *36366 LD HL,33698   ;
  36369 DEC (HL)      ;
  36370 JR 36385      ;
-@label=Auto_8E14
 *36372 LD A,(IX+5)   ;
  36375 SUB 2         ;
  36377 LD E,A        ;
-@nowarn=33698
-@ssub=LD A,(Auto_83A2)
  36378 LD A,(33698)  ;
  36381 ADD A,E       ;
-@nowarn=33698
-@ssub=LD (Auto_83A2),A
  36382 LD (33698),A  ;
-@label=Auto_8E21
 *36385 POP DE        ;
  36386 INC DE        ;
  36387 POP BC        ;
  36388 DJNZ 36317    ;
  36390 POP IX        ;
  36392 LD B,3        ;
-@nowarn=33692
-@ssub=LD HL,Auto_839C
  36394 LD HL,33692   ;
  36397 LD A,(IX+1)   ;
-@label=Auto_8E30
 *36400 CP (HL)       ;
  36401 JR Z,36408    ;
  36403 INC HL        ;
  36404 DJNZ 36400    ;
  36406 JR 36412      ;
-@nowarn=33698
-@label=Auto_8E38
-@ssub=LD HL,Auto_83A2
 *36408 LD HL,33698   ;
  36411 INC (HL)      ;
-@nowarn=33698
-@label=Auto_8E3C
-@ssub=LD HL,Auto_83A2
 *36412 LD HL,33698   ;
  36415 LD A,(IX+5)   ;
  36418 ADD A,(HL)    ;
  36419 CP 127        ;
  36421 JR C,36424    ;
  36423 XOR A         ;
-@label=Auto_8E48
 *36424 LD (IX+6),A   ;
  36427 RET           ;
 ; This entry point is used by the routine at #R45401.
-@label=Auto_8E4C
 *36428 LD HL,29579   ;
  36431 LD DE,8       ;
  36434 LD B,7        ;
 ; This entry point is used by the routine at #R45401.
-@label=Auto_8E54
 *36436 DEC (HL)      ;
  36437 LD A,127      ;
  36439 CP (HL)       ;
  36440 JR NC,36444   ;
  36442 LD (HL),0     ;
-@label=Auto_8E5C
 *36444 JP 45539      ;
  36447 RET           ;
 ; This entry point is used by the routines at #R37490, #R40319, #R42821,
 ; #R44561 and #R44880.
-@label=Auto_8E60
 *36448 LD BC,4863    ;
-@label=Auto_8E63
 *36451 DEC BC        ;
  36452 LD A,C        ;
  36453 OR B          ;
@@ -5650,8 +5301,6 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
  36576 RET NC        ;
  36577 JR 36611      ;
 ; This entry point is used by the routine at #R35973.
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
 *36579 LD A,(33700)  ;
  36582 AND A         ;
  36583 CPL           ;
@@ -5659,11 +5308,7 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
  36585 XOR A         ;
  36586 CP (IX+3)     ;
  36589 RET Z         ;
-@nowarn=33703
-@ssub=LD A,(AlienTargetID)
  36590 LD A,(33703)  ;
-@nowarn=33700
-@ssub=LD HL,CrewIndex
  36593 LD HL,33700   ;
  36596 CP (HL)       ;
  36597 JR Z,36554    ;
@@ -5712,8 +5357,6 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
  36682 XOR A         ;
  36683 RET           ;
 *36684 LD HL,29940   ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  36687 LD A,(33700)  ;
  36690 ADD A,128     ;
  36692 LD E,A        ;
@@ -5784,8 +5427,6 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
  36808 CP (HL)       ;
  36809 JR Z,36830    ;
  36811 CALL 39695    ;
-@nowarn=33704
-@ssub=LD A,(AlienActiveFlag)
  36814 LD A,(33704)  ;
  36817 AND A         ;
  36818 RET Z         ;
@@ -5796,8 +5437,6 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
  36827 JP 45080      ;
 *36830 JP 45019      ;
 ; This entry point is used by the routine at #R44880.
-@nowarn=32896
-@ssub=LD HL,Auto_8080
 *36833 LD HL,32896   ;
  36836 LD (31263),HL ;
  36839 LD A,4        ;
@@ -5810,12 +5449,9 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
  36855 CALL 31634    ;
  36858 RET           ;
 
-; Routine at #R36859
+; Routine at 36859
 ;
 ; Used by the routines at #R35578 and #R36457.
-@nowarn=33706
-@label=UpdateAlienEventTimer
-@ssub=LD A,(AlienEventTimer)
 c36859 LD A,(33706)  ;
  36862 CP 255        ;
  36864 RET Z         ;
@@ -5824,15 +5460,11 @@ c36859 LD A,(33706)  ;
  36869 RET NZ        ;
  36870 LD (HL),255   ;
  36872 EX AF,AF'     ;
-@nowarn=33706
-@label=Auto_9009
-@ssub=LD A,(AlienEventTimer)
 *36873 LD A,(33706)  ;
  36876 LD HL,29171   ;
  36879 LD E,A        ;
  36880 LD D,0        ;
  36882 LD B,5        ;
-@label=Auto_9014
 *36884 ADD HL,DE     ;
  36885 DJNZ 36884    ;
  36887 PUSH HL       ;
@@ -5842,8 +5474,6 @@ c36859 LD A,(33706)  ;
  36895 POP HL        ;
  36896 ADD HL,DE     ;
  36897 LD A,(HL)     ;
-@nowarn=33706
-@ssub=LD HL,AlienEventTimer
  36898 LD HL,33706   ;
  36901 LD (HL),A     ;
  36902 LD A,(31252)  ;
@@ -5858,28 +5488,20 @@ c36859 LD A,(33706)  ;
  36921 LD HL,18678   ;
  36924 LD (31257),HL ;
  36927 CALL 31634    ;
-@nowarn=33683
-@ssub=LD A,(CorridorCursor)
  36930 LD A,(33683)  ;
  36933 CP 14         ;
  36935 CALL Z,34743  ;
  36938 CALL 39670    ;
-@nowarn=33706
-@label=Auto_904D
-@ssub=LD A,(AlienEventTimer)
 *36941 LD A,(33706)  ;
  36944 LD HL,29567   ;
  36947 LD BC,2048    ;
  36950 LD DE,8       ;
-@label=Auto_9059
 *36953 CP (HL)       ;
  36954 JR Z,36961    ;
-@label=Auto_905C
 *36956 INC C         ;
  36957 ADD HL,DE     ;
  36958 DJNZ 36953    ;
  36960 RET           ;
-@label=Auto_9061
 *36961 LD A,C        ;
  36962 AND A         ;
  36963 JR Z,36873    ;
@@ -5891,8 +5513,6 @@ c36859 LD A,(33706)  ;
  36971 CP (HL)       ;
  36972 POP DE        ;
  36973 POP HL        ;
-@nowarn=33706
-@ssub=LD A,(AlienEventTimer)
  36974 LD A,(33706)  ;
  36977 JR NZ,36956   ;
  36979 XOR A         ;
@@ -5902,8 +5522,6 @@ c36859 LD A,(33706)  ;
  36986 LD A,(31252)  ;
  36989 CP 1          ;
  36991 RET NZ        ;
-@nowarn=33706
-@ssub=LD A,(AlienEventTimer)
  36992 LD A,(33706)  ;
  36995 LD HL,31242   ;
  36998 CP (HL)       ;
@@ -5917,7 +5535,6 @@ c36859 LD A,(33706)  ;
  37017 RET           ;
 
 ; UpdateCrewAI
-@ignoreua
 ;
 ; Assigns a new action to the first idle crew member. Scans the 7-entry crew
 ; data table at $7236 (IX+0 = action counter). If a crew member's counter is
@@ -5929,7 +5546,6 @@ c36859 LD A,(33706)  ;
 ; Used by the routine at #R36457.
 @label=UpdateCrewAI
 c37018 PUSH IX       ; save caller's IX
-@ignoreua
  37020 LD IX,29566   ; IX = crew data base ($7236, first 7-entry crew table)
  37024 XOR A         ; A = 0
  37025 CP (IX+0)     ; is crew member 0's action counter zero (idle)?
@@ -5939,11 +5555,7 @@ c37018 PUSH IX       ; save caller's IX
 *37033 JP 45721      ; tail-call: assign action from script byte
 ; This entry point is used by the routine at #R45401.
 *37036 LD HL,65535   ;
-@nowarn=33695
-@ssub=LD (Auto_839F),HL
  37039 LD (33695),HL ;
-@nowarn=33695
-@ssub=LD DE,Auto_839F
  37042 LD DE,33695   ;
  37045 LD HL,29575   ;
  37048 LD BC,1793    ;
@@ -5959,8 +5571,6 @@ c37018 PUSH IX       ; save caller's IX
  37063 ADD HL,DE     ;
  37064 POP DE        ;
  37065 DJNZ 37051    ;
-@nowarn=33695
-@ssub=LD A,(Auto_839F)
  37067 LD A,(33695)  ;
  37070 CP 255        ;
  37072 JR Z,37085    ;
@@ -6009,8 +5619,6 @@ c37018 PUSH IX       ; save caller's IX
 ; This entry point is used by the routines at #R35578, #R35973, #R36859,
 ; #R37490, #R38379, #R40439, #R40826, #R41264 and #R45401.
 *37176 EX DE,HL      ;
-@nowarn=33743
-@ssub=LD HL,(Auto_83CF)
  37177 LD HL,(33743) ;
  37180 CP L          ;
  37181 JR NZ,37187   ;
@@ -6019,8 +5627,6 @@ c37018 PUSH IX       ; save caller's IX
  37185 RET Z         ;
  37186 LD A,L        ;
 *37187 EX AF,AF'     ;
-@nowarn=33741
-@ssub=LD HL,(Auto_83CD)
  37188 LD HL,(33741) ;
  37191 LD A,(HL)     ;
  37192 CP 255        ;
@@ -6032,29 +5638,19 @@ c37018 PUSH IX       ; save caller's IX
  37199 INC HL        ;
  37200 LD (HL),D     ;
  37201 INC HL        ;
-@nowarn=33741
-@ssub=LD (Auto_83CD),HL
  37202 LD (33741),HL ;
  37205 LD L,A        ;
  37206 LD H,E        ;
-@nowarn=33743
-@ssub=LD (Auto_83CF),HL
  37207 LD (33743),HL ;
-@nowarn=33709
-@ssub=LD A,(Auto_83AD)
  37210 LD A,(33709)  ;
  37213 AND A         ;
  37214 RET Z         ;
  37215 LD A,1        ;
-@nowarn=33709
-@ssub=LD (Auto_83AD),A
  37217 LD (33709),A  ;
  37220 RET           ;
 ; This entry point is used by the routine at #R37363.
 *37221 LD HL,20704   ;
  37224 LD (31257),HL ;
-@nowarn=33892
-@ssub=LD DE,Auto_8464
  37227 LD DE,33892   ;
  37230 AND A         ;
  37231 JR Z,37242    ;
@@ -6080,12 +5676,8 @@ c37018 PUSH IX       ; save caller's IX
  37265 LD HL,31257   ;
  37268 INC (HL)      ;
  37269 JR 37242      ;
-@nowarn=33712
-@ssub=LD A,(Auto_83B0)
 *37271 LD A,(33712)  ;
  37274 JR 37279      ;
-@nowarn=33713
-@ssub=LD A,(Auto_83B1)
 *37276 LD A,(33713)  ;
 *37279 INC DE        ;
  37280 PUSH DE       ;
@@ -6094,8 +5686,6 @@ c37018 PUSH IX       ; save caller's IX
  37285 JR 37242      ;
 *37287 INC DE        ;
  37288 PUSH DE       ;
-@nowarn=33712
-@ssub=LD A,(Auto_83B0)
  37289 LD A,(33712)  ;
  37292 LD HL,(31257) ;
  37295 PUSH HL       ;
@@ -6110,8 +5700,6 @@ c37018 PUSH IX       ; save caller's IX
  37313 LD A,L        ;
  37314 AND 31        ;
  37316 OR 128        ;
-@nowarn=33708
-@ssub=LD (Auto_83AC),A
  37318 LD (33708),A  ;
  37321 RET           ;
 ; This entry point is used by the routine at #R45401.
@@ -6127,146 +5715,89 @@ c37018 PUSH IX       ; save caller's IX
  37340 DJNZ 37330    ;
  37342 LD HL,23264   ;
  37345 LD (HL),18    ;
-@nowarn=33710
-@ssub=LD (Auto_83AE),HL
  37347 LD (33710),HL ;
  37350 INC HL        ;
  37351 LD B,31       ;
 *37353 LD (HL),0     ;
  37355 INC HL        ;
  37356 DJNZ 37353    ;
-@nowarn=33709
-@ssub=LD HL,Auto_83AD
  37358 LD HL,33709   ;
  37361 LD (HL),B     ;
  37362 RET           ;
 
-; Routine at #R37363
+; Routine at 37363
 ;
 ; Used by the routine at #R36457.
-@nowarn=33709
-@label=Auto_91F3
-@ssub=LD A,(Auto_83AD)
 c37363 LD A,(33709)  ;
  37366 AND A         ;
  37367 JR Z,37383    ;
  37369 DEC A         ;
-@nowarn=33709
-@ssub=LD (Auto_83AD),A
  37370 LD (33709),A  ;
  37373 RET NZ        ;
-@nowarn=33710
-@ssub=LD A,(Auto_83AE)
  37374 LD A,(33710)  ;
  37377 AND 31        ;
-@nowarn=33708
-@ssub=LD (Auto_83AC),A
  37379 LD (33708),A  ;
  37382 RET           ;
-@nowarn=33708
-@label=Auto_9207
-@ssub=LD A,(Auto_83AC)
 *37383 LD A,(33708)  ;
  37386 AND A         ;
  37387 JR NZ,37432   ;
-@nowarn=33741
-@ssub=LD A,(Auto_83CD)
  37389 LD A,(33741)  ;
-@nowarn=33714
-@ssub=LD HL,Auto_83B2
  37392 LD HL,33714   ;
  37395 CP L          ;
  37396 JR NZ,37399   ;
  37398 RET           ;
-@label=Auto_9217
 *37399 LD A,(HL)     ;
  37400 INC HL        ;
  37401 LD E,(HL)     ;
  37402 INC HL        ;
  37403 LD D,(HL)     ;
-@nowarn=33712
-@ssub=LD (Auto_83B0),DE
  37404 LD (33712),DE ;
  37408 LD BC,21      ;
-@nowarn=33714
-@ssub=LD DE,Auto_83B2
  37411 LD DE,33714   ;
-@nowarn=33717
-@ssub=LD HL,Auto_83B5
  37414 LD HL,33717   ;
  37417 LDIR          ;
-@nowarn=33741
-@ssub=LD HL,(Auto_83CD)
  37419 LD HL,(33741) ;
  37422 DEC HL        ;
  37423 DEC HL        ;
  37424 DEC HL        ;
-@nowarn=33741
-@ssub=LD (Auto_83CD),HL
  37425 LD (33741),HL ;
  37428 CALL 37221    ;
  37431 RET           ;
-@label=Auto_9238
 *37432 BIT 7,A       ;
  37434 JR Z,37477    ;
-@nowarn=33710
-@ssub=LD HL,(Auto_83AE)
  37436 LD HL,(33710) ;
  37439 LD (HL),40    ;
  37441 INC HL        ;
  37442 LD (HL),82    ;
-@nowarn=33710
-@ssub=LD (Auto_83AE),HL
  37444 LD (33710),HL ;
  37447 DEC A         ;
  37448 CP 128        ;
  37450 JR Z,37456    ;
-@nowarn=33708
-@ssub=LD (Auto_83AC),A
  37452 LD (33708),A  ;
  37455 RET           ;
-@label=Auto_9250
 *37456 XOR A         ;
-@nowarn=33708
-@ssub=LD (Auto_83AC),A
  37457 LD (33708),A  ;
-@nowarn=33741
-@ssub=LD A,(Auto_83CD)
  37460 LD A,(33741)  ;
-@nowarn=33714
-@ssub=LD HL,Auto_83B2
  37463 LD HL,33714   ;
  37466 CP L          ;
  37467 LD A,50       ;
  37469 JR Z,37473    ;
  37471 LD A,2        ;
-@nowarn=33709
-@label=Auto_9261
-@ssub=LD (Auto_83AD),A
 *37473 LD (33709),A  ;
  37476 RET           ;
-@nowarn=33710
-@label=Auto_9265
-@ssub=LD HL,(Auto_83AE)
 *37477 LD HL,(33710) ;
  37480 LD (HL),0     ;
  37482 DEC HL        ;
  37483 LD (HL),82    ;
-@nowarn=33710
-@ssub=LD (Auto_83AE),HL
  37485 LD (33710),HL ;
  37488 DEC A         ;
-@nowarn=33708
-@ssub=LD (Auto_83AC),A
  37489 LD (33708),A  ;
 
-; Routine at #R37490
-@label=XorHAddE
+; Routine at 37490
 c37490 XOR H         ;
  37491 ADD A,E       ;
  37492 RET           ;
 ; This entry point is used by the routine at #R35578.
-@label=Auto_9275
 *37493 LD A,40       ;
  37495 CALL 35814    ;
  37498 LD (IX+3),4   ;
@@ -6280,8 +5811,6 @@ c37490 XOR H         ;
  37520 LD A,(29567)  ;
  37523 CP (IX+1)     ;
  37526 JR Z,37547    ;
-@nowarn=33704
-@ssub=LD A,(AlienActiveFlag)
  37528 LD A,(33704)  ;
  37531 AND A         ;
  37532 RET Z         ;
@@ -6292,19 +5821,14 @@ c37490 XOR H         ;
  37541 RET NZ        ;
  37542 CALL 40941    ;
  37545 JR 37550      ;
-@label=Auto_92AB
 *37547 CALL 37584    ;
-@label=Auto_92AE
 *37550 CALL 44924    ;
  37553 NOP           ;
  37554 RET           ;
-@label=Auto_92B3
 *37555 LD A,(31252)  ;
  37558 CP 1          ;
  37560 RET NZ        ;
  37561 LD A,(31241)  ;
-@nowarn=33700
-@ssub=LD HL,CrewIndex
  37564 LD HL,33700   ;
  37567 CP (HL)       ;
  37568 RET NZ        ;
@@ -6314,7 +5838,6 @@ c37490 XOR H         ;
  37577 LD (31257),HL ;
  37580 CALL 31634    ;
  37583 RET           ;
-@label=Auto_92D0
 *37584 LD A,(29567)  ;
  37587 CP (IX+1)     ;
  37590 RET NZ        ;
@@ -6336,17 +5859,12 @@ c37490 XOR H         ;
  37626 LD HL,29566   ;
  37629 LD (HL),255   ;
  37631 CALL 37924    ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  37634 LD A,(33700)  ;
  37637 LD L,A        ;
  37638 LD A,3        ;
  37640 CALL 37176    ;
  37643 JP 37555      ;
-@label=Auto_930E
 *37646 PUSH AF       ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  37647 LD A,(33700)  ;
  37650 LD L,A        ;
  37651 LD A,4        ;
@@ -6358,30 +5876,21 @@ c37490 XOR H         ;
  37663 JR Z,37669    ;
  37665 CP 19         ;
  37667 JR NZ,37683   ;
-@label=Auto_9325
 *37669 LD HL,29570   ;
  37672 INC (HL)      ;
-@nowarn=33745
-@ssub=LD A,(Auto_83D1)
  37673 LD A,(33745)  ;
  37676 CP (HL)       ;
  37677 JP Z,44125    ;
  37680 JP 37992      ;
-@label=Auto_9333
 *37683 CP 8          ;
  37685 JR NC,37700   ;
  37687 CALL 37924    ;
-@nowarn=33700
-@ssub=LD HL,(CrewIndex)
  37690 LD HL,(33700) ;
  37693 LD A,5        ;
  37695 CALL 37176    ;
  37698 JR 37669      ;
-@label=Auto_9344
 *37700 CP 12         ;
  37702 JR NC,37730   ;
-@nowarn=33746
-@ssub=LD HL,Auto_83D2
  37704 LD HL,33746   ;
  37707 LD E,A        ;
  37708 LD D,0        ;
@@ -6391,21 +5900,14 @@ c37490 XOR H         ;
  37713 JR Z,37719    ;
  37715 DEC (HL)      ;
  37716 JP 37992      ;
-@nowarn=33700
-@label=Auto_9357
-@ssub=LD HL,(CrewIndex)
 *37719 LD HL,(33700) ;
  37722 LD A,6        ;
  37724 CALL 37176    ;
  37727 JP 37555      ;
-@label=Auto_9362
 *37730 JP NZ,37831   ;
  37733 CALL 37876    ;
-@nowarn=33695
-@ssub=LD DE,Auto_839F
  37736 LD DE,33695   ;
  37739 LD B,3        ;
-@label=Auto_936D
 *37741 PUSH BC       ;
  37742 PUSH DE       ;
  37743 LD A,(DE)     ;
@@ -6419,7 +5921,6 @@ c37490 XOR H         ;
  37755 LD C,(IX+1)   ;
  37758 LD HL,29940   ;
  37761 LD B,22       ;
-@label=Auto_9383
 *37763 LD A,(HL)     ;
  37764 CP E          ;
  37765 JR Z,37773    ;
@@ -6427,9 +5928,7 @@ c37490 XOR H         ;
  37768 JR Z,37773    ;
  37770 CP C          ;
  37771 JR NZ,37775   ;
-@label=Auto_938D
 *37773 LD (HL),255   ;
-@label=Auto_938F
 *37775 INC HL        ;
  37776 DJNZ 37763    ;
  37778 POP AF        ;
@@ -6449,7 +5948,6 @@ c37490 XOR H         ;
  37798 DEC HL        ;
  37799 DEC HL        ;
  37800 LD (HL),A     ;
-@label=Auto_93A9
 *37801 POP DE        ;
  37802 INC DE        ;
  37803 POP BC        ;
@@ -6460,18 +5958,13 @@ c37490 XOR H         ;
  37814 LD A,(HL)     ;
  37815 ADD A,5       ;
  37817 LD (HL),A     ;
-@nowarn=33745
-@ssub=LD HL,Auto_83D1
  37818 LD HL,33745   ;
  37821 CP (HL)       ;
  37822 JP NC,44125   ;
  37825 CALL 31417    ;
  37828 JP 37992      ;
-@label=Auto_93C7
 *37831 LD E,A        ;
  37832 LD D,0        ;
-@nowarn=33746
-@ssub=LD HL,Auto_83D2
  37834 LD HL,33746   ;
  37837 ADD HL,DE     ;
  37838 XOR A         ;
@@ -6484,42 +5977,26 @@ c37490 XOR H         ;
  37851 LD A,(HL)     ;
  37852 ADD A,2       ;
  37854 LD (HL),A     ;
-@nowarn=33745
-@ssub=LD HL,Auto_83D1
  37855 LD HL,33745   ;
  37858 CP (HL)       ;
  37859 JP NC,44125   ;
  37862 JP 37992      ;
-@nowarn=33700
-@label=Auto_93E9
-@ssub=LD HL,(CrewIndex)
 *37865 LD HL,(33700) ;
  37868 LD A,7        ;
  37870 CALL 37176    ;
  37873 JP 37555      ;
 ; This entry point is used by the routines at #R40439 and #R40826.
-@label=Auto_93F4
 *37876 LD HL,65535   ;
-@nowarn=33696
-@ssub=LD (Auto_83A0),HL
  37879 LD (33696),HL ;
-@nowarn=33696
-@ssub=LD DE,Auto_83A0
  37882 LD DE,33696   ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  37885 LD A,(33700)  ;
-@nowarn=33695
-@ssub=LD (Auto_839F),A
  37888 LD (33695),A  ;
 ; This entry point is used by the routine at #R38379.
-@label=Auto_9403
 *37891 LD HL,29575   ;
  37894 LD C,1        ;
  37896 EX AF,AF'     ;
  37897 LD A,(IX+1)   ;
  37900 LD B,7        ;
-@label=Auto_940E
 *37902 CP (HL)       ;
  37903 JR NZ,37914   ;
  37905 EX AF,AF'     ;
@@ -6529,9 +6006,7 @@ c37490 XOR H         ;
  37910 LD (HL),C     ;
  37911 EX DE,HL      ;
  37912 INC DE        ;
-@label=Auto_9419
 *37913 EX AF,AF'     ;
-@label=Auto_941A
 *37914 PUSH DE       ;
  37915 LD DE,8       ;
  37918 ADD HL,DE     ;
@@ -6540,7 +6015,6 @@ c37490 XOR H         ;
  37921 DJNZ 37902    ;
  37923 RET           ;
 ; This entry point is used by the routine at #R40826.
-@label=Auto_9424
 *37924 LD HL,18486   ;
  37927 LD (31257),HL ;
  37930 LD BC,(31248) ;
@@ -6550,13 +6024,11 @@ c37490 XOR H         ;
  37940 ADD HL,DE     ;
  37941 JP 44938      ;
 ; This entry point is used by the routine at #R44880.
-@label=Auto_9438
 *37944 CP B          ;
  37945 JR NZ,37954   ;
  37947 LD (29638),A  ;
  37950 CALL 44974    ;
  37953 RET           ;
-@label=Auto_9442
 *37954 LD L,B        ;
  37955 LD H,A        ;
  37956 LD (31248),HL ;
@@ -6569,7 +6041,6 @@ c37490 XOR H         ;
  37974 CALL 31634    ;
  37977 LD A,(31248)  ;
 ; This entry point is used by the routine at #R44880.
-@label=Auto_945C
 *37980 LD HL,29940   ;
  37983 LD E,A        ;
  37984 LD D,0        ;
@@ -6577,18 +6048,12 @@ c37490 XOR H         ;
  37987 LD A,(HL)     ;
  37988 JP 45295      ;
  37991 RET           ;
-@label=Auto_9468
 *37992 CALL 37876    ;
  37995 XOR A         ;
-@nowarn=33698
-@ssub=LD (Auto_83A2),A
  37996 LD (33698),A  ;
  37999 PUSH IX       ;
-@nowarn=33695
-@ssub=LD DE,Auto_839F
  38001 LD DE,33695   ;
  38004 LD B,3        ;
-@label=Auto_9476
 *38006 PUSH BC       ;
  38007 PUSH DE       ;
  38008 LD A,(DE)     ;
@@ -6608,18 +6073,13 @@ c37490 XOR H         ;
  38033 LD A,4        ;
  38035 CP (IX+3)     ;
  38038 JR NZ,38083   ;
-@nowarn=33698
-@ssub=LD HL,Auto_83A2
  38040 LD HL,33698   ;
  38043 DEC A         ;
  38044 CP (IX+6)     ;
  38047 JR NC,38050   ;
  38049 INC (HL)      ;
-@label=Auto_94A2
 *38050 POP AF        ;
  38051 CALL 31823    ;
-@nowarn=33698
-@ssub=LD HL,Auto_83A2
  38054 LD HL,33698   ;
  38057 LD A,(31248)  ;
  38060 CP 13         ;
@@ -6629,16 +6089,13 @@ c37490 XOR H         ;
  38068 CP 7          ;
  38070 JR NZ,38073   ;
  38072 INC (HL)      ;
-@label=Auto_94B9
 *38073 LD A,(29570)  ;
  38076 SRA A         ;
  38078 SRA A         ;
  38080 ADD A,(HL)    ;
  38081 LD (HL),A     ;
  38082 PUSH AF       ;
-@label=Auto_94C3
 *38083 POP AF        ;
-@label=Auto_94C4
 *38084 POP DE        ;
  38085 INC DE        ;
  38086 POP BC        ;
@@ -6646,37 +6103,25 @@ c37490 XOR H         ;
  38089 CALL 33589    ;
  38092 CP 15         ;
  38094 JR Z,38177    ;
-@nowarn=33698
-@ssub=LD HL,Auto_83A2
  38096 LD HL,33698   ;
  38099 CP (HL)       ;
  38100 JR NC,38177   ;
  38102 LD IX,29566   ;
-@label=Auto_94DA
 *38106 CALL 36717    ;
  38109 LD A,(IX+1)   ;
  38112 CP (IX+2)     ;
  38115 JR Z,38106    ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  38117 LD A,(33700)  ;
  38120 PUSH AF       ;
  38121 XOR A         ;
-@nowarn=33700
-@ssub=LD (CrewIndex),A
  38122 LD (33700),A  ;
  38125 CALL 36034    ;
  38128 POP AF        ;
-@nowarn=33700
-@ssub=LD (CrewIndex),A
  38129 LD (33700),A  ;
  38132 CALL 39695    ;
  38135 LD (IX+0),0   ;
-@nowarn=33695
-@ssub=LD DE,Auto_839F
  38139 LD DE,33695   ;
  38142 LD B,3        ;
-@label=Auto_9500
 *38144 PUSH BC       ;
  38145 PUSH DE       ;
  38146 LD A,(DE)     ;
@@ -6692,21 +6137,17 @@ c37490 XOR H         ;
  38163 CP 9          ;
  38165 JR C,38169    ;
  38167 LD (HL),8     ;
-@label=Auto_9519
 *38169 POP DE        ;
  38170 INC DE        ;
  38171 POP BC        ;
  38172 DJNZ 38144    ;
  38174 JP 45373      ;
-@label=Auto_9521
 *38177 POP IX        ;
  38179 JP 37555      ;
 ; This entry point is used by the routine at #R37018.
-@label=Auto_9526
 *38182 LD HL,29567   ;
  38185 LD E,(HL)     ;
 ; This entry point is used by the routines at #R38379 and #R40826.
-@label=Auto_952A
 *38186 BIT 6,E       ;
  38188 RET NZ        ;
  38189 LD HL,30006   ;
@@ -6715,7 +6156,6 @@ c37490 XOR H         ;
  38195 ADD HL,DE     ;
  38196 INC HL        ;
  38197 LD B,A        ;
-@label=Auto_9536
 *38198 PUSH BC       ;
  38199 PUSH HL       ;
  38200 PUSH DE       ;
@@ -6724,7 +6164,6 @@ c37490 XOR H         ;
  38204 JR Z,38210    ;
  38206 LD (HL),53    ;
  38208 JR 38298      ;
-@label=Auto_9542
 *38210 LD (HL),48    ;
  38212 DEC HL        ;
  38213 INC (HL)      ;
@@ -6736,22 +6175,18 @@ c37490 XOR H         ;
  38222 JR NZ,38228   ;
  38224 LD A,22       ;
  38226 JR 38288      ;
-@label=Auto_9554
 *38228 CP 7          ;
  38230 JR NZ,38236   ;
  38232 LD A,23       ;
  38234 JR 38288      ;
-@label=Auto_955C
 *38236 CP 25         ;
  38238 JR NZ,38244   ;
  38240 LD A,24       ;
  38242 JR 38288      ;
-@label=Auto_9564
 *38244 CP 34         ;
  38246 JR NZ,38252   ;
  38248 LD A,25       ;
  38250 JR 38288      ;
-@label=Auto_956C
 *38252 CP 17         ;
  38254 JR C,38298    ;
  38256 CP 20         ;
@@ -6759,7 +6194,6 @@ c37490 XOR H         ;
  38260 AND 3         ;
  38262 LD B,A        ;
  38263 LD A,4        ;
-@label=Auto_9579
 *38265 ADD A,A       ;
  38266 DJNZ 38265    ;
  38268 LD HL,31253   ;
@@ -6769,18 +6203,14 @@ c37490 XOR H         ;
  38274 LD A,9        ;
  38276 CALL 37176    ;
  38279 JR 38298      ;
-@label=Auto_9589
 *38281 CP 55         ;
  38283 JR NZ,38293   ;
  38285 LD L,E        ;
  38286 LD A,8        ;
-@label=Auto_9590
 *38288 CALL 37176    ;
  38291 JR 38298      ;
-@label=Auto_9595
 *38293 CP 58         ;
  38295 CALL Z,38317  ;
-@label=Auto_959A
 *38298 POP DE        ;
  38299 POP HL        ;
  38300 POP BC        ;
@@ -6793,11 +6223,9 @@ c37490 XOR H         ;
  38313 CALL Z,32143  ;
  38316 RET           ;
 ; This entry point is used by the routine at #R38379.
-@label=Auto_95AD
 *38317 PUSH BC       ;
  38318 PUSH AF       ;
  38319 LD B,100      ;
-@label=Auto_95B1
 *38321 PUSH BC       ;
  38322 CALL 36448    ;
  38325 LD A,7        ;
@@ -6813,37 +6241,29 @@ c37490 XOR H         ;
  38346 POP AF        ;
  38347 POP BC        ;
  38348 JP 44524      ;
-@label=Auto_95CF
  38351 NOP           ;
  38352 NOP           ;
  38353 NOP           ;
-@label=Auto_95D2
  38354 LD (3),A      ;
-@label=Auto_95D5
  38357 LD A,(BC)     ;
-@label=Auto_95D6
  38358 LD D,H        ;
  38359 LD C,C        ;
  38360 LD C,L        ;
  38361 LD B,L        ;
  38362 LD A,(32)     ;
  38365 LD A,(0)      ;
-@label=Auto_95E0
  38368 LD D,H        ;
  38369 LD C,A        ;
  38370 LD C,A        ;
  38371 LD C,B        ;
  38372 LD A,(14112)  ;
  38375 DEC (HL)      ;
-@label=Auto_95E8
  38376 JR NC,38426   ;
-@label=Auto_95EA
  38378 NOP           ;
 
-; Routine at #R38379
+; Routine at 38379
 ;
 ; Used by the routine at #R36457.
-@label=UpdateRoomActors
 c38379 CALL 38846    ;
  38382 CALL 38903    ;
  38385 CALL 39531    ;
@@ -6866,7 +6286,6 @@ c38379 CALL 38846    ;
  38422 JR Z,38529    ;
  38424 CP 76         ;
 ; This entry point is used by the routine at #R37490.
-@label=Auto_961A
 *38426 JR Z,38546    ;
  38428 CP 78         ;
  38430 JP Z,40212    ;
@@ -6879,7 +6298,6 @@ c38379 CALL 38846    ;
  38448 CP 56         ;
  38450 JP Z,38588    ;
  38453 RET           ;
-@label=Auto_9636
 *38454 LD A,13       ;
  38456 CALL 37176    ;
  38459 LD A,72       ;
@@ -6891,7 +6309,6 @@ c38379 CALL 38846    ;
  38475 LD (29646),A  ;
  38478 CALL 31634    ;
  38481 JR 38510      ;
-@label=Auto_9653
 *38483 LD A,14       ;
  38485 CALL 37176    ;
  38488 LD A,70       ;
@@ -6902,7 +6319,6 @@ c38379 CALL 38846    ;
  38502 LD A,71       ;
  38504 LD (29646),A  ;
  38507 CALL 31634    ;
-@label=Auto_966E
 *38510 LD HL,12336   ;
  38513 LD (38366),HL ;
  38516 LD HL,38364   ;
@@ -6912,14 +6328,12 @@ c38379 CALL 38846    ;
  38525 XOR 1         ;
  38527 LD (HL),A     ;
  38528 RET           ;
-@label=Auto_9681
 *38529 LD (IX+3),6   ;
  38533 LD (IX+0),255 ;
  38537 LD A,11       ;
  38539 LD HL,(31241) ;
  38542 CALL 37176    ;
  38545 RET           ;
-@label=Auto_9692
 *38546 LD A,(31248)  ;
  38549 CP 8          ;
  38551 RET C         ;
@@ -6927,8 +6341,6 @@ c38379 CALL 38846    ;
  38554 RET NC        ;
  38555 LD E,A        ;
  38556 LD D,0        ;
-@nowarn=33746
-@ssub=LD HL,Auto_83D2
  38558 LD HL,33746   ;
  38561 ADD HL,DE     ;
  38562 XOR A         ;
@@ -6938,21 +6350,15 @@ c38379 CALL 38846    ;
  38569 LD A,6        ;
  38571 CALL 37176    ;
  38574 RET           ;
-@label=Auto_96AF
 *38575 DEC (HL)      ;
  38576 LD A,(31242)  ;
  38579 SUB 17        ;
  38581 LD E,A        ;
-@nowarn=38351
-@ssub=LD HL,Auto_95CF
  38582 LD HL,38351   ;
  38585 ADD HL,DE     ;
  38586 INC (HL)      ;
  38587 RET           ;
-@label=Auto_96BC
 *38588 LD HL,31253   ;
-@nowarn=33683
-@ssub=LD A,(CorridorCursor)
  38591 LD A,(33683)  ;
  38594 SUB 15        ;
  38596 AND A         ;
@@ -6964,26 +6370,19 @@ c38379 CALL 38846    ;
  38609 LD (31257),HL ;
  38612 CALL 31634    ;
  38615 JR 38633      ;
-@label=Auto_96D9
 *38617 RES 1,(HL)    ;
  38619 LD A,53       ;
  38621 LD (29645),A  ;
  38624 LD HL,20502   ;
  38627 LD (31257),HL ;
  38630 CALL 31634    ;
-@nowarn=33683
-@label=Auto_96E9
-@ssub=LD A,(CorridorCursor)
 *38633 LD A,(33683)  ;
  38636 SUB 15        ;
  38638 LD L,A        ;
  38639 LD A,17       ;
  38641 CALL 37176    ;
  38644 RET           ;
-@label=Auto_96F5
 *38645 LD HL,31253   ;
-@nowarn=33683
-@ssub=LD A,(CorridorCursor)
  38648 LD A,(33683)  ;
  38651 SUB 15        ;
  38653 AND A         ;
@@ -6995,38 +6394,30 @@ c38379 CALL 38846    ;
  38666 LD (31257),HL ;
  38669 CALL 31634    ;
  38672 JR 38690      ;
-@label=Auto_9712
 *38674 LD A,55       ;
  38676 SET 1,(HL)    ;
  38678 LD (29645),A  ;
  38681 LD HL,20502   ;
  38684 LD (31257),HL ;
  38687 CALL 31634    ;
-@nowarn=33683
-@label=Auto_9722
-@ssub=LD A,(CorridorCursor)
 *38690 LD A,(33683)  ;
  38693 SUB 15        ;
  38695 PUSH IX       ;
  38697 LD B,8        ;
  38699 LD IX,29566   ;
  38703 LD DE,8       ;
-@label=Auto_9732
 *38706 CP (IX+1)     ;
  38709 JR NZ,38719   ;
  38711 LD (IX+1),255 ;
  38715 LD (IX+7),1   ;
-@label=Auto_973F
 *38719 ADD IX,DE     ;
  38721 DJNZ 38706    ;
  38723 POP IX        ;
  38725 LD HL,29940   ;
  38728 LD B,22       ;
-@label=Auto_974A
 *38730 CP (HL)       ;
  38731 JR NZ,38735   ;
  38733 LD (HL),255   ;
-@label=Auto_974F
 *38735 INC HL        ;
  38736 DJNZ 38730    ;
  38738 LD L,A        ;
@@ -7050,16 +6441,12 @@ c38379 CALL 38846    ;
  38778 LD HL,29566   ;
  38781 LD (HL),0     ;
  38783 RET           ;
-@nowarn=33700
-@ssub=LD HL,(CrewIndex)
  38784 LD HL,(33700) ;
  38787 LD A,12       ;
  38789 CALL 37176    ;
  38792 LD (IX+7),255 ;
  38796 LD (IX+1),255 ;
  38800 LD HL,29940   ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  38803 LD A,(33700)  ;
  38806 ADD A,128     ;
  38808 LD E,A        ;
@@ -7067,28 +6454,22 @@ c38379 CALL 38846    ;
  38811 LD D,A        ;
  38812 LD C,(IX+1)   ;
  38815 LD B,22       ;
-@label=Auto_97A1
 *38817 LD A,(HL)     ;
  38818 CP E          ;
  38819 JR Z,38824    ;
  38821 CP D          ;
  38822 JR NZ,38826   ;
-@label=Auto_97A8
 *38824 LD (HL),15    ;
-@label=Auto_97AA
 *38826 INC HL        ;
  38827 DJNZ 38817    ;
  38829 LD A,(31252)  ;
  38832 CP 1          ;
  38834 RET NZ        ;
  38835 LD A,(31241)  ;
-@nowarn=33700
-@ssub=LD HL,CrewIndex
  38838 LD HL,33700   ;
  38841 JP 45676      ;
  38844 NOP           ;
  38845 NOP           ;
-@label=Auto_97BE
 *38846 LD HL,31253   ;
  38849 BIT 0,(HL)    ;
  38851 RET Z         ;
@@ -7115,12 +6496,8 @@ c38379 CALL 38846    ;
  38890 CP (HL)       ;
  38891 JP Z,38317    ;
  38894 JP 39572      ;
-@label=Auto_97F1
 *38897 LD (38366),HL ;
  38900 JP 39572      ;
-@nowarn=33692
-@label=Auto_97F7
-@ssub=LD HL,Auto_839C
 *38903 LD HL,33692   ;
  38906 LD A,(29946)  ;
  38909 CP 160        ;
@@ -7137,7 +6514,6 @@ c38379 CALL 38846    ;
  38935 CP 160        ;
  38937 CALL NC,38941 ;
  38940 RET           ;
-@label=Auto_981D
 *38941 CP 255        ;
  38943 RET Z         ;
  38944 PUSH HL       ;
@@ -7155,7 +6531,6 @@ c38379 CALL 38846    ;
  38964 BIT 6,A       ;
  38966 JR Z,38971    ;
  38968 CALL 45683    ;
-@label=Auto_983B
 *38971 LD L,A        ;
  38972 LD H,0        ;
  38974 PUSH HL       ;
@@ -7166,22 +6541,17 @@ c38379 CALL 38846    ;
  38979 ADD HL,BC     ;
  38980 LD DE,8       ;
  38983 LD B,5        ;
-@label=Auto_9849
 *38985 PUSH BC       ;
  38986 PUSH HL       ;
  38987 LD C,(HL)     ;
  38988 LD A,(38356)  ;
  38991 CP C          ;
  38992 JR Z,39023    ;
-@nowarn=33706
-@ssub=LD A,(AlienEventTimer)
  38994 LD A,(33706)  ;
  38997 JP 45705      ;
 ; This entry point is used by the routine at #R45401.
-@label=Auto_9858
 *39000 LD B,8        ;
  39002 LD HL,29567   ;
-@label=Auto_985D
 *39005 LD A,(HL)     ;
  39006 AND 63        ;
  39008 CP C          ;
@@ -7194,10 +6564,8 @@ c38379 CALL 38846    ;
  39016 CP (HL)       ;
  39017 JR Z,39034    ;
  39019 POP HL        ;
-@label=Auto_986C
 *39020 ADD HL,DE     ;
  39021 DJNZ 39005    ;
-@label=Auto_986F
 *39023 POP HL        ;
  39024 INC HL        ;
  39025 POP BC        ;
@@ -7206,16 +6574,13 @@ c38379 CALL 38846    ;
  39029 LD A,(38356)  ;
  39032 LD (HL),A     ;
  39033 RET           ;
-@label=Auto_987A
 *39034 POP HL        ;
 ; This entry point is used by the routine at #R45401.
-@label=Auto_987B
 *39035 POP HL        ;
  39036 POP BC        ;
  39037 POP HL        ;
  39038 LD (HL),255   ;
  39040 RET           ;
-@label=Auto_9881
 *39041 LD D,8        ;
  39043 LD A,(31253)  ;
  39046 LD E,17       ;
@@ -7229,14 +6594,11 @@ c38379 CALL 38846    ;
  39063 INC E         ;
  39064 BIT 5,A       ;
  39066 CALL NZ,39077 ;
-@nowarn=38354
-@ssub=LD HL,Auto_95D2
  39069 LD HL,38354   ;
  39072 DEC (HL)      ;
  39073 RET NZ        ;
  39074 LD (HL),100   ;
  39076 RET           ;
-@label=Auto_98A5
 *39077 PUSH AF       ;
  39078 PUSH DE       ;
  39079 LD C,1        ;
@@ -7252,7 +6614,6 @@ c38379 CALL 38846    ;
  39095 CP 56         ;
  39097 JR C,39100    ;
  39099 INC C         ;
-@label=Auto_98BC
 *39100 LD HL,38334   ;
  39103 ADD HL,DE     ;
  39104 LD A,(HL)     ;
@@ -7275,7 +6636,6 @@ c38379 CALL 38846    ;
  39141 CALL 31634    ;
  39144 LD A,255      ;
  39146 CALL 31634    ;
-@label=Auto_98ED
 *39149 POP HL        ;
  39150 PUSH HL       ;
  39151 LD A,15       ;
@@ -7283,9 +6643,6 @@ c38379 CALL 38846    ;
  39156 POP DE        ;
  39157 POP AF        ;
  39158 RET           ;
-@nowarn=38354
-@label=Auto_98F7
-@ssub=LD A,(Auto_95D2)
 *39159 LD A,(38354)  ;
  39162 DEC A         ;
  39163 LD A,1        ;
@@ -7293,15 +6650,12 @@ c38379 CALL 38846    ;
  39168 POP DE        ;
  39169 POP AF        ;
  39170 RET           ;
-@label=Auto_9903
 *39171 LD A,(31252)  ;
  39174 CP 1          ;
  39176 RET NZ        ;
  39177 LD A,(31241)  ;
  39180 ADD A,160     ;
  39182 LD C,A        ;
-@nowarn=33692
-@ssub=LD HL,Auto_839C
  39183 LD HL,33692   ;
  39186 LD A,(29946)  ;
  39189 CP C          ;
@@ -7318,19 +6672,15 @@ c38379 CALL 38846    ;
  39209 CP C          ;
  39210 JR Z,39228    ;
  39212 RET           ;
-@label=Auto_992D
 *39213 LD A,(HL)     ;
  39214 CP 255        ;
  39216 RET NZ        ;
-@nowarn=38378
-@ssub=LD HL,Auto_95EA
  39217 LD HL,38378   ;
  39220 INC (HL)      ;
  39221 LD A,(HL)     ;
  39222 AND 7         ;
  39224 CALL Z,39242  ;
  39227 RET           ;
-@label=Auto_993C
 *39228 LD A,(HL)     ;
  39229 CP 255        ;
  39231 RET NZ        ;
@@ -7340,7 +6690,6 @@ c38379 CALL 38846    ;
  39238 CALL 37176    ;
  39241 RET           ;
 ; This entry point is used by the routine at #R42821.
-@label=Auto_994A
 *39242 PUSH IX       ;
  39244 LD DE,5       ;
  39247 LD HL,549     ;
@@ -7348,27 +6697,19 @@ c38379 CALL 38846    ;
  39253 POP IX        ;
  39255 RET           ;
  39256 LD HL,65535   ;
-@nowarn=33696
-@ssub=LD (Auto_83A0),HL
  39259 LD (33696),HL ;
-@nowarn=33695
-@ssub=LD DE,Auto_839F
  39262 LD DE,33695   ;
  39265 LD A,255      ;
  39267 LD (DE),A     ;
  39268 XOR A         ;
  39269 CALL 37891    ;
  39272 LD C,0        ;
-@nowarn=33695
-@ssub=LD HL,Auto_839F
  39274 LD HL,33695   ;
  39277 LD A,255      ;
  39279 LD B,3        ;
-@label=Auto_9971
 *39281 CP (HL)       ;
  39282 JR Z,39285    ;
  39284 INC C         ;
-@label=Auto_9975
 *39285 INC HL        ;
  39286 DJNZ 39281    ;
  39288 LD A,C        ;
@@ -7378,27 +6719,21 @@ c38379 CALL 38846    ;
  39293 JR NZ,39298   ;
  39295 XOR A         ;
  39296 JR 39317      ;
-@label=Auto_9982
 *39298 CP 2          ;
  39300 JR NZ,39309   ;
  39302 CALL 33589    ;
  39305 AND 1         ;
  39307 JR 39317      ;
-@label=Auto_998D
 *39309 CALL 33589    ;
  39312 AND 7         ;
  39314 CALL 36763    ;
-@label=Auto_9995
 *39317 LD E,A        ;
  39318 LD D,0        ;
-@nowarn=33695
-@ssub=LD HL,Auto_839F
  39320 LD HL,33695   ;
  39323 ADD HL,DE     ;
  39324 LD C,(HL)     ;
  39325 LD (HL),255   ;
  39327 LD A,C        ;
-@label=Auto_99A0
 *39328 ADD A,A       ;
  39329 ADD A,A       ;
  39330 ADD A,A       ;
@@ -7423,7 +6758,6 @@ c38379 CALL 38846    ;
  39359 LD A,1        ;
  39361 CALL 37176    ;
  39364 RET           ;
-@label=Auto_99C5
 *39365 LD L,C        ;
  39366 LD A,10       ;
  39368 CALL 37176    ;
@@ -7443,7 +6777,6 @@ c38379 CALL 38846    ;
  39397 POP IX        ;
  39399 RET           ;
 ; This entry point is used by the routine at #R40439.
-@label=Auto_99E8
 *39400 INC HL        ;
  39401 INC HL        ;
  39402 CALL 45476    ;
@@ -7459,15 +6792,12 @@ c38379 CALL 38846    ;
  39419 LD C,(IX+1)   ;
  39422 LD B,22       ;
  39424 LD HL,29940   ;
-@label=Auto_9A03
 *39427 LD A,(HL)     ;
  39428 CP E          ;
  39429 JR Z,39434    ;
  39431 CP D          ;
  39432 JR NZ,39435   ;
-@label=Auto_9A0A
 *39434 LD (HL),C     ;
-@label=Auto_9A0B
 *39435 INC HL        ;
  39436 DJNZ 39427    ;
  39438 POP AF        ;
@@ -7481,7 +6811,6 @@ c38379 CALL 38846    ;
  39451 LD A,21       ;
  39453 CALL 37176    ;
  39456 JP 31417      ;
-@label=Auto_9A23
 *39459 XOR A         ;
  39460 CP (IX+5)     ;
  39463 JR NZ,39484   ;
@@ -7495,20 +6824,13 @@ c38379 CALL 38846    ;
  39478 LD (HL),255   ;
  39480 CALL 45533    ;
  39483 RET           ;
-@label=Auto_9A3C
 *39484 LD DE,1       ;
-@nowarn=33695
-@ssub=LD HL,Auto_839F
  39487 LD HL,33695   ;
  39490 CP 7          ;
  39492 JR C,39500    ;
  39494 LD DE,65535   ;
-@nowarn=33697
-@ssub=LD HL,Auto_83A1
  39497 LD HL,33697   ;
-@label=Auto_9A4C
 *39500 LD B,3        ;
-@label=Auto_9A4E
 *39502 LD A,(HL)     ;
  39503 CP 255        ;
  39505 JR Z,39516    ;
@@ -7517,16 +6839,12 @@ c38379 CALL 38846    ;
  39510 LD (HL),255   ;
  39512 LD C,A        ;
  39513 JP 39328      ;
-@label=Auto_9A5C
 *39516 ADD HL,DE     ;
  39517 DJNZ 39502    ;
  39519 CALL 36717    ;
  39522 LD (IX+0),40  ;
  39526 LD (IX+3),1   ;
  39530 RET           ;
-@nowarn=38357
-@label=Auto_9A6B
-@ssub=LD HL,Auto_95D5
 *39531 LD HL,38357   ;
  39534 DEC (HL)      ;
  39535 RET NZ        ;
@@ -7534,21 +6852,16 @@ c38379 CALL 38846    ;
  39539 LD DE,8       ;
  39542 LD BC,2048    ;
  39545 XOR A         ;
-@label=Auto_9A7A
 *39546 CP (HL)       ;
  39547 JR Z,39550    ;
  39549 INC C         ;
-@label=Auto_9A7E
 *39550 ADD HL,DE     ;
  39551 DJNZ 39546    ;
  39553 LD A,C        ;
  39554 ADD A,A       ;
-@nowarn=38357
-@ssub=LD (Auto_95D5),A
  39555 LD (38357),A  ;
  39558 LD A,47       ;
  39560 LD HL,38377   ;
-@label=Auto_9A8B
 *39563 DEC (HL)      ;
  39564 CP (HL)       ;
  39565 JR NZ,39572   ;
@@ -7556,7 +6869,6 @@ c38379 CALL 38846    ;
  39569 DEC HL        ;
  39570 JR 39563      ;
 ; This entry point is used by the routines at #R31577 and #R31634.
-@label=Auto_9A94
 *39572 LD HL,(38374) ;
  39575 LD A,L        ;
  39576 CP 48         ;
@@ -7564,8 +6876,6 @@ c38379 CALL 38846    ;
  39580 LD A,H        ;
  39581 CP 53         ;
  39583 JR NZ,39601   ;
-@nowarn=38376
-@ssub=LD HL,(Auto_95E8)
  39585 LD HL,(38376) ;
  39588 LD A,48       ;
  39590 CP L          ;
@@ -7574,7 +6884,6 @@ c38379 CALL 38846    ;
  39594 JR NZ,39601   ;
  39596 LD A,26       ;
  39598 CALL 37176    ;
-@label=Auto_9AB1
 *39601 LD A,(38373)  ;
  39604 CP 32         ;
  39606 JP NZ,44277   ;
@@ -7585,18 +6894,12 @@ c38379 CALL 38846    ;
  39617 RET Z         ;
  39618 LD HL,20598   ;
  39621 LD (31257),HL ;
-@nowarn=38368
-@ssub=LD DE,Auto_95E0
  39624 LD DE,38368   ;
  39627 LD HL,31253   ;
  39630 BIT 0,(HL)    ;
  39632 JR Z,39637    ;
-@nowarn=38358
-@ssub=LD DE,Auto_95D6
  39634 LD DE,38358   ;
-@label=Auto_9AD5
 *39637 LD B,10       ;
-@label=Auto_9AD7
 *39639 PUSH BC       ;
  39640 PUSH DE       ;
  39641 CALL 31369    ;
@@ -7609,10 +6912,7 @@ c38379 CALL 38846    ;
  39653 RET           ;
  39654 RET           ;
 ; This entry point is used by the routines at #R31634 and #R36859.
-@label=Auto_9AE7
 *39655 XOR A         ;
-@nowarn=39753
-@ssub=LD (Auto_9B49),A
  39656 LD (39753),A  ;
  39659 LD A,8        ;
  39661 LD (39750),A  ;
@@ -7620,68 +6920,47 @@ c38379 CALL 38846    ;
  39666 CALL 39832    ;
  39669 RET           ;
 ; This entry point is used by the routines at #R35578 and #R36859.
-@label=Auto_9AF6
 *39670 LD B,1        ;
-@nowarn=39753
-@ssub=LD A,(Auto_9B49)
  39672 LD A,(39753)  ;
  39675 AND 128       ;
  39677 RET NZ        ;
  39678 CALL 39832    ;
  39681 LD A,128      ;
-@nowarn=39753
-@ssub=LD (Auto_9B49),A
  39683 LD (39753),A  ;
  39686 RET           ;
 ; This entry point is used by the routines at #R31634 and #R44880.
-@label=Auto_9B07
 *39687 CALL 40149    ;
  39690 XOR A         ;
-@nowarn=39741
-@ssub=LD (Auto_9B3D),A
  39691 LD (39741),A  ;
  39694 RET           ;
 ; This entry point is used by the routines at #R36457 and #R37490.
-@nowarn=39741
-@label=Auto_9B0F
-@ssub=LD A,(Auto_9B3D)
 *39695 LD A,(39741)  ;
  39698 AND 128       ;
  39700 RET NZ        ;
  39701 LD A,128      ;
-@nowarn=39741
-@ssub=LD (Auto_9B3D),A
  39703 LD (39741),A  ;
  39706 LD A,(31252)  ;
  39709 CP 1          ;
  39711 JP Z,32719    ;
  39714 CALL 40149    ;
  39717 RET           ;
-@label=Auto_9B26
 *39718 CALL 34967    ;
  39721 CALL 35016    ;
-@nowarn=39753
-@ssub=LD A,(Auto_9B49)
  39724 LD A,(39753)  ;
  39727 AND 128       ;
  39729 CALL Z,39830  ;
-@nowarn=39741
-@ssub=LD A,(Auto_9B3D)
  39732 LD A,(39741)  ;
  39735 AND 128       ;
  39737 CALL Z,39764  ;
  39740 RET           ;
-@label=Auto_9B3D
  39741 NOP           ;
  39742 LD H,B        ;
  39743 JP PE,60378   ;
  39746 LD D,H        ;
  39747 DEFB 237,206  ;
  39749 XOR 0         ;
-@label=Auto_9B47
  39751 NOP           ;
  39752 LD C,B        ;
-@label=Auto_9B49
  39753 NOP           ;
  39754 LD C,B        ;
  39755 RET P         ;
@@ -7693,9 +6972,6 @@ c38379 CALL 38846    ;
  39761 POP AF        ;
  39762 LD C,B        ;
  39763 POP AF        ;
-@nowarn=39741
-@label=Auto_9B54
-@ssub=LD HL,Auto_9B3D
 *39764 LD HL,39741   ;
  39767 LD A,(HL)     ;
  39768 INC A         ;
@@ -7713,7 +6989,6 @@ c38379 CALL 38846    ;
  39784 EX DE,HL      ;
  39785 LD B,63       ;
  39787 LD C,0        ;
-@label=Auto_9B6D
 *39789 PUSH BC       ;
  39790 LD B,C        ;
  39791 LD C,6        ;
@@ -7725,26 +7000,21 @@ c38379 CALL 38846    ;
  39801 JR Z,39806    ;
  39803 INC H         ;
  39804 JR 39821      ;
-@label=Auto_9B7E
 *39806 LD A,L        ;
  39807 CP 224        ;
  39809 JR NC,39817   ;
  39811 LD BC,63776   ;
  39814 ADD HL,BC     ;
  39815 JR 39821      ;
-@label=Auto_9B89
 *39817 LD BC,32      ;
  39820 ADD HL,BC     ;
-@label=Auto_9B8D
 *39821 LD BC,65530   ;
  39824 ADD HL,BC     ;
  39825 EX DE,HL      ;
  39826 POP BC        ;
  39827 DJNZ 39789    ;
  39829 RET           ;
-@label=Auto_9B96
 *39830 LD B,2        ;
-@label=Auto_9B98
 *39832 PUSH BC       ;
  39833 LD A,(22528)  ;
  39836 CPL           ;
@@ -7759,16 +7029,12 @@ c38379 CALL 38846    ;
  39851 LD D,0        ;
  39853 LD HL,19488   ;
  39856 ADD HL,DE     ;
-@nowarn=39751
-@ssub=LD (Auto_9B47),HL
  39857 LD (39751),HL ;
  39860 LD HL,22848   ;
  39863 ADD HL,DE     ;
  39864 LD DE,29      ;
  39867 LD C,2        ;
-@label=Auto_9BBD
 *39869 LD B,4        ;
-@label=Auto_9BBF
 *39871 LD A,(HL)     ;
  39872 XOR 7         ;
  39874 LD (HL),A     ;
@@ -7777,8 +7043,6 @@ c38379 CALL 38846    ;
  39878 ADD HL,DE     ;
  39879 DEC C         ;
  39880 JR NZ,39869   ;
-@nowarn=39753
-@ssub=LD HL,Auto_9B49
  39882 LD HL,39753   ;
  39885 LD E,(HL)     ;
  39886 LD D,0        ;
@@ -7801,7 +7065,6 @@ c38379 CALL 38846    ;
  39911 SUB L         ;
  39912 LD (39932),A  ;
  39915 LD B,21       ;
-@label=Auto_9BED
 *39917 PUSH BC       ;
  39918 EX DE,HL      ;
  39919 LD B,(HL)     ;
@@ -7811,12 +7074,9 @@ c38379 CALL 38846    ;
  39923 LD E,(HL)     ;
  39924 INC HL        ;
  39925 PUSH HL       ;
-@nowarn=39751
-@ssub=LD HL,(Auto_9B47)
  39926 LD HL,(39751) ;
  39929 PUSH HL       ;
  39930 XOR A         ;
-@label=Auto_9BFB
 *39931 JR 39931      ;
  39933 SRL B         ;
  39935 RR C          ;
@@ -7853,19 +7113,14 @@ c38379 CALL 38846    ;
  39976 JR Z,39981    ;
  39978 INC H         ;
  39979 JR 39996      ;
-@label=Auto_9C2D
 *39981 LD A,L        ;
  39982 CP 224        ;
  39984 JR NC,39992   ;
  39986 LD BC,63776   ;
  39989 ADD HL,BC     ;
  39990 JR 39996      ;
-@label=Auto_9C38
 *39992 LD BC,32      ;
  39995 ADD HL,BC     ;
-@nowarn=39751
-@label=Auto_9C3C
-@ssub=LD (Auto_9B47),HL
 *39996 LD (39751),HL ;
  39999 POP DE        ;
  40000 POP BC        ;
@@ -7873,31 +7128,21 @@ c38379 CALL 38846    ;
  40003 POP BC        ;
  40004 DJNZ 40007    ;
  40006 RET           ;
-@label=Auto_9C47
 *40007 LD A,(39750)  ;
  40010 ADD A,4       ;
  40012 CP 136        ;
  40014 JR C,40022    ;
  40016 LD A,128      ;
-@nowarn=39753
-@ssub=LD (Auto_9B49),A
  40018 LD (39753),A  ;
  40021 RET           ;
-@label=Auto_9C56
 *40022 LD (39750),A  ;
-@nowarn=39753
-@ssub=LD A,(Auto_9B49)
  40025 LD A,(39753)  ;
  40028 INC A         ;
  40029 CP 5          ;
  40031 JR C,40034    ;
  40033 XOR A         ;
-@nowarn=39753
-@label=Auto_9C62
-@ssub=LD (Auto_9B49),A
 *40034 LD (39753),A  ;
  40037 JP 39832      ;
-@label=Auto_9C68
 *40040 SUB 4         ;
  40042 LD L,A        ;
  40043 RLCA          ;
@@ -7906,7 +7151,6 @@ c38379 CALL 38846    ;
  40046 SUB L         ;
  40047 LD (40067),A  ;
  40050 LD B,21       ;
-@label=Auto_9C74
 *40052 PUSH BC       ;
  40053 EX DE,HL      ;
  40054 LD B,(HL)     ;
@@ -7916,12 +7160,9 @@ c38379 CALL 38846    ;
  40058 LD E,(HL)     ;
  40059 INC HL        ;
  40060 PUSH HL       ;
-@nowarn=39751
-@ssub=LD HL,(Auto_9B47)
  40061 LD HL,(39751) ;
  40064 PUSH HL       ;
  40065 XOR A         ;
-@label=Auto_9C82
 *40066 JR 40066      ;
  40068 SLA E         ;
  40070 RL C          ;
@@ -7960,19 +7201,14 @@ c38379 CALL 38846    ;
  40116 JR Z,40121    ;
  40118 INC H         ;
  40119 JR 40136      ;
-@label=Auto_9CB9
 *40121 LD A,L        ;
  40122 CP 224        ;
  40124 JR NC,40132   ;
  40126 LD BC,63776   ;
  40129 ADD HL,BC     ;
  40130 JR 40136      ;
-@label=Auto_9CC4
 *40132 LD BC,32      ;
  40135 ADD HL,BC     ;
-@nowarn=39751
-@label=Auto_9CC8
-@ssub=LD (Auto_9B47),HL
 *40136 LD (39751),HL ;
  40139 POP DE        ;
  40140 POP BC        ;
@@ -7981,13 +7217,10 @@ c38379 CALL 38846    ;
  40144 DEC B         ;
  40145 JP NZ,40007   ;
  40148 RET           ;
-@label=Auto_9CD5
 *40149 LD HL,16384   ;
  40152 LD (31257),HL ;
  40155 LD C,19       ;
-@label=Auto_9CDD
 *40157 LD B,20       ;
-@label=Auto_9CDF
 *40159 PUSH BC       ;
  40160 XOR A         ;
  40161 CALL 31370    ;
@@ -8001,7 +7234,6 @@ c38379 CALL 38846    ;
  40178 CP 224        ;
  40180 JR C,40185    ;
  40182 LD DE,1804    ;
-@label=Auto_9CF9
 *40185 ADD HL,DE     ;
  40186 LD (31257),HL ;
  40189 DEC C         ;
@@ -8009,9 +7241,7 @@ c38379 CALL 38846    ;
  40192 LD DE,12      ;
  40195 LD HL,22528   ;
  40198 LD C,19       ;
-@label=Auto_9D08
 *40200 LD B,20       ;
-@label=Auto_9D0A
 *40202 LD (HL),4     ;
  40204 INC HL        ;
  40205 DJNZ 40202    ;
@@ -8019,11 +7249,9 @@ c38379 CALL 38846    ;
  40208 DEC C         ;
  40209 JR NZ,40200   ;
  40211 RET           ;
-@label=Auto_9D14
 *40212 LD HL,29581   ;
  40215 LD DE,8       ;
  40218 LD B,7        ;
-@label=Auto_9D1C
 *40220 XOR A         ;
  40221 CP (HL)       ;
  40222 JR NZ,40235   ;
@@ -8034,11 +7262,8 @@ c38379 CALL 38846    ;
  40230 LD A,(HL)     ;
  40231 CP 34         ;
  40233 JR NZ,40275   ;
-@label=Auto_9D2B
 *40235 ADD HL,DE     ;
  40236 DJNZ 40220    ;
-@nowarn=33706
-@ssub=LD A,(AlienEventTimer)
  40238 LD A,(33706)  ;
  40241 CP 34         ;
  40243 JR Z,40281    ;
@@ -8046,7 +7271,6 @@ c38379 CALL 38846    ;
  40247 JR NZ,40270   ;
  40249 LD HL,29960   ;
  40252 LD B,2        ;
-@label=Auto_9D3E
 *40254 LD A,(HL)     ;
  40255 CP 255        ;
  40257 JR Z,40267    ;
@@ -8054,31 +7278,22 @@ c38379 CALL 38846    ;
  40261 JR Z,40281    ;
  40263 CP 128        ;
  40265 JR NC,40281   ;
-@label=Auto_9D4B
 *40267 INC HL        ;
  40268 DJNZ 40254    ;
-@label=Auto_9D4E
 *40270 LD A,27       ;
  40272 CALL 37176    ;
-@label=Auto_9D53
 *40275 LD A,28       ;
  40277 CALL 37176    ;
  40280 RET           ;
-@label=Auto_9D59
 *40281 LD B,75       ;
-@label=Auto_9D5B
 *40283 PUSH BC       ;
  40284 LD A,1        ;
-@nowarn=33699
-@ssub=LD (SoundRequest),A
  40286 LD (33699),A  ;
  40289 CALL 40319    ;
  40292 LD DE,12      ;
  40295 LD HL,22528   ;
  40298 LD C,19       ;
-@label=Auto_9D6C
 *40300 LD B,20       ;
-@label=Auto_9D6E
 *40302 LD A,(HL)     ;
  40303 XOR 64        ;
  40305 LD (HL),A     ;
@@ -8094,7 +7309,7 @@ c38379 CALL 38846    ;
 ; FrameTiming
 ;
 ; Controls frame timing and plays a queued sound effect. Reads the sound-
-; request flag at #R33731. If zero, calls the standard one-frame wait at
+; request flag at $83C3. If zero, calls the standard one-frame wait at
 ; #R36448 (approx 1/50s on a 48K Spectrum) and returns. If non-zero, plays a
 ; beeper tone by reading 1-KB ROM bytes starting at $0200 and toggling bit 4
 ; of port $FE for each byte; the outer loop runs 255 × 4 iterations with a
@@ -8102,11 +7317,8 @@ c38379 CALL 38846    ;
 ; sound-request flag.
 ;
 ; Used by the routines at #R36457, #R38379 and #R42821.
-@nowarn=33699
 @label=FrameTiming
-@ssub=LD A,(SoundRequest)
-@ignoreua
-c40319 LD A,(33699)  ; A = sound-request flag (#R33731)
+c40319 LD A,(33699)  ; A = sound-request flag ($83C3)
  40322 AND A         ; any sound queued?
  40323 JR NZ,40329   ; yes: play beeper effect
  40325 CALL 36448    ; no: standard one-frame timing wait (~1/50s)
@@ -8130,11 +7342,8 @@ c40319 LD A,(33699)  ; A = sound-request flag (#R33731)
  40354 POP BC        ;
  40355 DJNZ 40336    ; repeat 255 outer iterations
  40357 XOR A         ;
-@nowarn=33699
-@ssub=LD (SoundRequest),A
  40358 LD (33699),A  ; clear sound-request flag
  40361 RET           ;
-@label=Auto_9DAA
  40362 DEC C         ;
  40363 NOP           ;
  40364 XOR D         ;
@@ -8166,7 +7375,6 @@ c40319 LD A,(33699)  ; A = sound-request flag (#R33731)
  40394 LD C,0        ;
  40396 ADC A,A       ;
  40397 DEC B         ;
-@label=Auto_9DCE
  40398 NOP           ;
  40399 DEC B         ;
  40400 NOP           ;
@@ -8180,20 +7388,16 @@ c40319 LD A,(33699)  ; A = sound-request flag (#R33731)
  40411 EX AF,AF'     ;
  40412 INC B         ;
  40413 LD BC,0       ;
-@label=Auto_9DE0
  40416 NOP           ;
  40417 NOP           ;
 
-; Routine at #R40418
+; Routine at 40418
 ;
 ; Used by the routine at #R40439.
-@label=Auto_9DE2
 c40418 ADD A,A       ;
  40419 ADD A,A       ;
  40420 LD E,A        ;
  40421 LD D,0        ;
-@nowarn=40362
-@ssub=LD HL,Auto_9DAA
  40423 LD HL,40362   ;
  40426 ADD HL,DE     ;
  40427 LD E,(HL)     ;
@@ -8207,39 +7411,27 @@ c40418 ADD A,A       ;
  40435 CALL 949      ;
  40438 RET           ;
 
-; Routine at #R40439
+; Routine at 40439
 ;
 ; Used by the routine at #R42581.
-@nowarn=40398
-@label=PlayMusicPhrase
-@ssub=LD HL,Auto_9DCE
 c40439 LD HL,40398   ;
-@nowarn=40416
-@ssub=LD (Auto_9DE0),HL
  40442 LD (40416),HL ;
  40445 LD B,8        ;
-@label=Auto_9DFF
 *40447 PUSH BC       ;
-@nowarn=40416
-@ssub=LD HL,(Auto_9DE0)
  40448 LD HL,(40416) ;
  40451 LD E,(HL)     ;
  40452 INC HL        ;
  40453 LD D,(HL)     ;
  40454 INC HL        ;
-@nowarn=40416
-@ssub=LD (Auto_9DE0),HL
  40455 LD (40416),HL ;
  40458 LD (40414),DE ;
  40462 LD B,8        ;
-@label=Auto_9E10
 *40464 PUSH BC       ;
  40465 LD A,(40414)  ;
  40468 CALL 40418    ;
  40471 LD A,(40415)  ;
  40474 CALL 40418    ;
  40477 LD BC,65278   ;
-@label=Auto_9E20
 *40480 IN A,(C)      ;
  40482 AND 31        ;
  40484 XOR 31        ;
@@ -8251,15 +7443,11 @@ c40439 LD HL,40398   ;
  40495 POP BC        ;
  40496 DJNZ 40447    ;
  40498 RET           ;
-@label=Auto_9E33
 *40499 POP BC        ;
  40500 POP BC        ;
  40501 RET           ;
-@label=Auto_9E36
  40502 NOP           ;
-@label=Auto_9E37
  40503 NOP           ;
-@label=Auto_9E38
  40504 NOP           ;
  40505 NOP           ;
  40506 NOP           ;
@@ -8307,7 +7495,6 @@ c40439 LD HL,40398   ;
  40554 NOP           ;
  40555 NOP           ;
  40556 JR 40583      ;
-@label=Auto_9E6E
 *40558 NOP           ;
  40559 LD A,(DE)     ;
  40560 DEC DE        ;
@@ -8360,7 +7547,6 @@ c40439 LD HL,40398   ;
  40624 NOP           ;
  40625 NOP           ;
  40626 LD C,L        ;
-@label=Auto_9EB3
 *40627 LD C,(HL)     ;
  40628 LD C,A        ;
  40629 LD D,B        ;
@@ -8380,7 +7566,6 @@ c40439 LD HL,40398   ;
  40643 LD E,H        ;
  40644 LD E,L        ;
  40645 NOP           ;
-@label=Auto_9EC6
 *40646 NOP           ;
  40647 NOP           ;
  40648 LD E,(HL)     ;
@@ -8397,7 +7582,6 @@ c40439 LD HL,40398   ;
  40659 NOP           ;
  40660 NOP           ;
  40661 LD H,L        ;
-@label=Auto_9ED6
 *40662 LD H,(HL)     ;
  40663 LD H,A        ;
  40664 LD L,B        ;
@@ -8405,7 +7589,6 @@ c40439 LD HL,40398   ;
  40666 NOP           ;
  40667 NOP           ;
  40668 NOP           ;
-@label=Auto_9EDD
  40669 RLCA          ;
  40670 RLCA          ;
  40671 RLCA          ;
@@ -8424,7 +7607,6 @@ c40439 LD HL,40398   ;
  40685 INC B         ;
  40686 RLCA          ;
  40687 INC B         ;
-@label=Auto_9EF0
 *40688 INC B         ;
  40689 RLCA          ;
  40690 RLCA          ;
@@ -8435,7 +7617,6 @@ c40439 LD HL,40398   ;
  40696 RLCA          ;
  40697 INC B         ;
  40698 RLCA          ;
-@label=Auto_9EFB
 *40699 RLCA          ;
  40700 RLCA          ;
  40701 RLCA          ;
@@ -8495,8 +7676,6 @@ c40439 LD HL,40398   ;
  40755 RLCA          ;
  40756 RLCA          ;
  40757 CALL 37876    ;
-@nowarn=33696
-@ssub=LD A,(Auto_83A0)
  40760 LD A,(33696)  ;
  40763 CP 255        ;
  40765 JR Z,40782    ;
@@ -8511,9 +7690,6 @@ c40439 LD HL,40398   ;
  40778 XOR A         ;
  40779 CP (HL)       ;
  40780 JR Z,40802    ;
-@nowarn=33697
-@label=Auto_9F4E
-@ssub=LD A,(Auto_83A1)
 *40782 LD A,(33697)  ;
  40785 CP 255        ;
  40787 RET Z         ;
@@ -8528,7 +7704,6 @@ c40439 LD HL,40398   ;
  40799 XOR A         ;
  40800 CP (HL)       ;
  40801 RET NZ        ;
-@label=Auto_9F62
 *40802 DEC HL        ;
  40803 DEC HL        ;
  40804 DEC HL        ;
@@ -8539,8 +7714,6 @@ c40439 LD HL,40398   ;
  40812 CP 4          ;
  40814 RET NC        ;
  40815 LD L,C        ;
-@nowarn=33703
-@ssub=LD A,(AlienTargetID)
  40816 LD A,(33703)  ;
  40819 LD H,A        ;
  40820 LD A,29       ;
@@ -8548,27 +7721,22 @@ c40439 LD HL,40398   ;
  40825 RET           ;
 
 ; UpdateAlien
-@ignoreua
 ;
 ; Moves the alien and attacks reachable crew. Returns immediately if the alien
-; is inactive (flag at #R33736 = 0) or if the alien's current target crew
+; is inactive (flag at $83C8 = 0) or if the alien's current target crew
 ; record (pointer at $83A5) shows the crew member is already dead (byte 0 of
 ; record non-zero means busy/alive). Otherwise checks whether the crew members
-; stored at #R33696 and #R33697 (nearest crew IDs) are still alive by looking up
+; stored at $83A0 and $83A1 (nearest crew IDs) are still alive by looking up
 ; their alive flags in the crew table at $73BD. If neither is alive, calls
 ; #R36717 (alien wander) and sets the alien to idle state. If at least one is
 ; reachable, calls #R37176 to move the alien toward the target and sets
 ; IX+3=7 (attack state), IX+0 to attack timer.
 ;
 ; Used by the routine at #R36457.
-@nowarn=33704
 @label=UpdateAlien
-@ssub=LD A,(AlienActiveFlag)
-@ignoreua
-c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
+c40826 LD A,(33704)  ; A = alien-active flag ($83C8)
  40829 AND A         ; alien present on ship?
  40830 RET Z         ; no: nothing to do
-@ignoreua
  40831 LD HL,(33701) ; HL = pointer to alien's target crew record ($83A5)
  40834 LD A,(HL)     ; read byte 0 of crew record (action state)
  40835 AND A         ; 0 = crew idle/available
@@ -8580,16 +7748,10 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  40843 PUSH IX       ; save caller's IX
  40845 LD IX,(33701) ; IX = alien's current target crew record
  40849 LD (IX+0),80  ; set alien action state = 80 (attack)
-@nowarn=33703
-@ssub=LD A,(AlienTargetID)
- 40853 LD A,(33703)  ; A = alien target corridor ID (#R33703)
-@nowarn=33700
-@ssub=LD (CrewIndex),A
- 40856 LD (33700),A  ; store as alien current corridor (#R33700)
+ 40853 LD A,(33703)  ; A = alien target corridor ID ($83A7)
+ 40856 LD (33700),A  ; store as alien current corridor ($83A4)
  40859 CALL 37876    ; update alien sprite position on screen
-@nowarn=33696
-@ssub=LD A,(Auto_83A0)
- 40862 LD A,(33696)  ; A = nearest crew ID 1 (#R33696)
+ 40862 LD A,(33696)  ; A = nearest crew ID 1 ($83A0)
  40865 CP 255        ; $FF = no crew in range
  40867 JR Z,40906    ; no primary target: wander
  40869 LD C,A        ; C = crew ID
@@ -8598,15 +7760,12 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  40872 ADD A,A       ;
  40873 LD E,A        ;
  40874 LD D,0        ;
-@ignoreua
  40876 LD HL,29573   ; HL = crew table base ($73BD)
  40879 ADD HL,DE     ; index to crew record's alive flag
  40880 XOR A         ;
  40881 CP (HL)       ; alive = 0 → dead
  40882 JR Z,40920    ; crew 1 alive: attack it
-@nowarn=33697
-@ssub=LD A,(Auto_83A1)
- 40884 LD A,(33697)  ; A = nearest crew ID 2 (#R33697)
+ 40884 LD A,(33697)  ; A = nearest crew ID 2 ($83A1)
  40887 CP 255        ;
  40889 JR Z,40906    ; no secondary target either: wander
  40891 LD C,A        ;
@@ -8626,8 +7785,6 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  40917 POP IX        ;
  40919 RET           ;
 *40920 LD H,C        ; H = target crew ID
-@nowarn=33703
-@ssub=LD A,(AlienTargetID)
  40921 LD A,(33703)  ; A = alien corridor
  40924 LD L,A        ; L = alien corridor position
  40925 LD A,30       ; move distance = 30
@@ -8643,8 +7800,6 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  40947 LD A,(IX+6)   ;
  40950 CP 2          ;
  40952 RET C         ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  40953 LD A,(33700)  ;
  40956 CALL 31823    ;
  40959 LD A,(31248)  ;
@@ -8657,8 +7812,6 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  40976 LD HL,(33701) ;
  40979 LD (HL),255   ;
  40981 CALL 37924    ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  40984 LD A,(33700)  ;
  40987 LD HL,(33702) ;
  40990 LD L,A        ;
@@ -8666,8 +7819,6 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  40993 CALL 37176    ;
  40996 JP 41229      ;
 *40999 PUSH AF       ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  41000 LD A,(33700)  ;
  41003 LD L,A        ;
  41004 LD A,32       ;
@@ -8693,8 +7844,6 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  41041 LD DE,65529   ;
  41044 ADD HL,DE     ;
  41045 LD (HL),0     ;
-@nowarn=33703
-@ssub=LD A,(AlienTargetID)
  41047 LD A,(33703)  ;
  41050 LD L,A        ;
  41051 LD A,21       ;
@@ -8706,15 +7855,11 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  41064 JR NC,41079   ;
  41066 CALL 37924    ;
  41069 LD A,5        ;
-@nowarn=33700
-@ssub=LD HL,(CrewIndex)
  41071 LD HL,(33700) ;
  41074 CALL 37176    ;
  41077 JR 41022      ;
 *41079 CP 12         ;
  41081 JR NC,41109   ;
-@nowarn=33746
-@ssub=LD HL,Auto_83D2
  41083 LD HL,33746   ;
  41086 LD E,A        ;
  41087 LD D,0        ;
@@ -8724,16 +7869,12 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  41092 JR Z,41098    ;
  41094 DEC (HL)      ;
  41095 JP 41229      ;
-@nowarn=33700
-@ssub=LD HL,(CrewIndex)
 *41098 LD HL,(33700) ;
  41101 LD A,6        ;
  41103 CALL 37176    ;
  41106 JP 41229      ;
 *41109 JP NZ,41195   ;
  41112 CALL 37876    ;
-@nowarn=33695
-@ssub=LD DE,Auto_839F
  41115 LD DE,33695   ;
  41118 LD B,3        ;
 *41120 PUSH BC       ;
@@ -8784,8 +7925,6 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  41192 JP 31417      ;
 *41195 LD E,A        ;
  41196 LD D,0        ;
-@nowarn=33746
-@ssub=LD HL,Auto_83D2
  41198 LD HL,33746   ;
  41201 ADD HL,DE     ;
  41202 XOR A         ;
@@ -8796,8 +7935,6 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  41209 LD E,(IX+1)   ;
  41212 CALL 38186    ;
  41215 JP 41022      ;
-@nowarn=33700
-@ssub=LD HL,(CrewIndex)
 *41218 LD HL,(33700) ;
  41221 LD A,7        ;
  41223 CALL 37176    ;
@@ -8806,13 +7943,9 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  41232 CP 1          ;
  41234 RET NZ        ;
  41235 LD A,(31241)  ;
-@nowarn=33700
-@ssub=LD HL,CrewIndex
  41238 LD HL,33700   ;
  41241 CP (HL)       ;
  41242 RET NZ        ;
-@nowarn=33704
-@ssub=LD A,(AlienActiveFlag)
  41243 LD A,(33704)  ;
  41246 AND A         ;
  41247 LD A,(HL)     ;
@@ -8824,16 +7957,13 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  41260 CALL 31634    ;
  41263 RET           ;
 
-; Routine at #R41264
+; Routine at 41264
 ;
 ; Used by the routine at #R36457.
-@label=TriggerAlienEvent
 c41264 LD HL,29570   ;
  41267 LD A,(HL)     ;
  41268 CP 6          ;
  41270 RET C         ;
-@nowarn=33703
-@ssub=LD A,(AlienTargetID)
  41271 LD A,(33703)  ;
  41274 CP 8          ;
  41276 RET NC        ;
@@ -8846,8 +7976,6 @@ c41264 LD HL,29570   ;
  41287 LD A,255      ;
  41289 JP 45732      ;
  41292 RET           ;
-@nowarn=33682
-@ssub=LD HL,AlienFlags
  41293 LD HL,33682   ;
  41296 LD (HL),0     ;
  41298 LD BC,31      ;
@@ -8855,17 +7983,13 @@ c41264 LD HL,29570   ;
  41303 BIT 2,A       ;
  41305 JR Z,41309    ;
  41307 SET 3,(HL)    ;
-@label=Auto_A15D
 *41309 BIT 3,A       ;
  41311 JR Z,41315    ;
  41313 SET 2,(HL)    ;
-@label=Auto_A163
 *41315 AND 19        ;
  41317 OR (HL)       ;
  41318 LD (HL),A     ;
  41319 RET           ;
-@nowarn=33682
-@ssub=LD HL,AlienFlags
  41320 LD HL,33682   ;
  41323 LD (HL),0     ;
  41325 LD BC,61438   ;
@@ -8875,24 +7999,19 @@ c41264 LD HL,29570   ;
  41332 RRCA          ;
  41333 JR NC,41337   ;
  41335 SET 2,(HL)    ;
-@label=Auto_A179
 *41337 RRCA          ;
  41338 JR NC,41342   ;
  41340 SET 3,(HL)    ;
-@label=Auto_A17E
 *41342 RRCA          ;
  41343 JR NC,41347   ;
  41345 SET 0,(HL)    ;
-@label=Auto_A183
 *41347 RRCA          ;
  41348 JR NC,41352   ;
  41350 SET 1,(HL)    ;
-@label=Auto_A188
 *41352 AND 8         ;
  41354 RET Z         ;
  41355 SET 4,(HL)    ;
  41357 RET           ;
-@label=Auto_A18E
  41358 INC BC        ;
  41359 INC B         ;
  41360 DEC B         ;
@@ -8914,7 +8033,6 @@ c41264 LD HL,29570   ;
  41383 LD BC,1282    ;
  41386 LD BC,1282    ;
  41389 LD (BC),A     ;
-@label=Auto_A1AE
  41390 LD BC,1026    ;
  41393 LD B,1        ;
  41395 LD (BC),A     ;
@@ -8935,13 +8053,11 @@ c41264 LD HL,29570   ;
  41418 JR NZ,41422   ;
  41420 LD (BC),A     ;
  41421 LD (BC),A     ;
-@label=Auto_A1CE
 *41422 JR 41447      ;
  41424 RRA           ;
  41425 INC D         ;
  41426 RST 56        ;
  41427 RST 56        ;
-@label=Auto_A1D4
  41428 NOP           ;
  41429 NOP           ;
  41430 NOP           ;
@@ -8956,11 +8072,9 @@ c41264 LD HL,29570   ;
  41439 INC BC        ;
  41440 LD BC,2056    ;
  41443 EX AF,AF'     ;
-@label=Auto_A1E4
  41444 NOP           ;
  41445 NOP           ;
  41446 NOP           ;
-@label=Auto_A1E7
 *41447 NOP           ;
  41448 NOP           ;
  41449 NOP           ;
@@ -9016,7 +8130,6 @@ c41264 LD HL,29570   ;
  41505 INC BC        ;
  41506 INC BC        ;
  41507 NOP           ;
-@label=Auto_A224
  41508 NOP           ;
  41509 NOP           ;
  41510 NOP           ;
@@ -9077,7 +8190,6 @@ c41264 LD HL,29570   ;
  41569 NOP           ;
  41570 NOP           ;
  41571 RST 56        ;
-@label=Auto_A264
  41572 LD C,L        ;
  41573 LD B,C        ;
  41574 LD D,B        ;
@@ -9092,7 +8204,6 @@ c41264 LD HL,29570   ;
  41584 LD C,A        ;
  41585 LD C,H        ;
  41586 LD D,E        ;
-@label=Auto_A273
  41587 LD BC,271     ;
  41590 JR NZ,41650   ;
  41592 JR NZ,41661   ;
@@ -9109,7 +8220,6 @@ c41264 LD HL,29570   ;
  41605 LD L,A        ;
  41606 LD L,A        ;
  41607 LD (HL),D     ;
-@label=Auto_A288
  41608 LD A,E        ;
  41609 JR NZ,41643   ;
  41611 LD A,(19488)  ;
@@ -9129,7 +8239,6 @@ c41264 LD HL,29570   ;
  41630 LD L,A        ;
  41631 HALT          ;
  41632 LD H,L        ;
-@label=Auto_A2A1
  41633 LD A,H        ;
  41634 JR NZ,41668   ;
  41636 LD A,(18464)  ;
@@ -9137,7 +8246,6 @@ c41264 LD HL,29570   ;
  41640 LD (HL),H     ;
  41641 LD H,E        ;
  41642 LD L,B        ;
-@label=Auto_A2AB
 *41643 LD (HL),A     ;
  41644 LD H,C        ;
  41645 LD A,C        ;
@@ -9152,27 +8260,22 @@ c41264 LD HL,29570   ;
  41657 LD L,H        ;
  41658 LD L,A        ;
  41659 LD (HL),A     ;
-@label=Auto_A2BC
  41660 LD A,(21280)  ;
  41663 LD (HL),L     ;
-@label=Auto_A2C0
 *41664 LD H,D        ;
  41665 LD L,D        ;
  41666 LD H,L        ;
  41667 LD H,E        ;
-@label=Auto_A2C4
 *41668 LD (HL),H     ;
  41669 JR NZ,41744   ;
  41671 LD L,(HL)     ;
  41672 LD H,H        ;
-@label=Auto_A2C9
 *41673 LD L,C        ;
  41674 LD H,E        ;
  41675 LD H,C        ;
  41676 LD (HL),H     ;
  41677 LD L,A        ;
  41678 LD (HL),D     ;
-@label=Auto_A2CF
  41679 LD A,(21024)  ;
  41682 LD L,A        ;
  41683 LD L,A        ;
@@ -9183,12 +8286,9 @@ c41264 LD HL,29570   ;
  41689 LD L,C        ;
  41690 LD H,E        ;
  41691 LD H,C        ;
-@label=Auto_A2DC
 *41692 LD (HL),H     ;
  41693 LD L,A        ;
-@label=Auto_A2DE
 *41694 LD (HL),D     ;
-@label=Auto_A2DF
  41695 LD A,L        ;
  41696 JR NZ,41730   ;
  41698 LD A,(18208)  ;
@@ -9206,14 +8306,11 @@ c41264 LD HL,29570   ;
  41714 LD L,C        ;
  41715 LD L,(HL)     ;
  41716 LD H,A        ;
-@label=Auto_A2F5
  41717 LD D,E        ;
  41718 LD H,L        ;
-@label=Auto_A2F7
 *41719 LD L,H        ;
  41720 LD H,L        ;
  41721 LD H,E        ;
-@label=Auto_A2FA
 *41722 LD (HL),H     ;
  41723 JR NZ,41800   ;
  41725 LD H,L        ;
@@ -9221,13 +8318,11 @@ c41264 LD HL,29570   ;
  41727 LD H,D        ;
  41728 LD L,A        ;
  41729 LD H,C        ;
-@label=Auto_A302
 *41730 LD (HL),D     ;
  41731 LD H,H        ;
  41732 JR NZ,41845   ;
  41734 LD (HL),D     ;
  41735 JR NZ,41843   ;
-@label=Auto_A309
 *41737 LD L,A        ;
  41738 LD A,C        ;
  41739 LD (HL),E     ;
@@ -9235,7 +8330,6 @@ c41264 LD HL,29570   ;
  41741 LD L,C        ;
  41742 LD H,E        ;
  41743 LD L,E        ;
-@label=Auto_A310
 *41744 LD SP,14880   ;
  41747 JR NZ,41824   ;
  41749 LD B,L        ;
@@ -9245,20 +8339,17 @@ c41264 LD HL,29570   ;
  41753 LD D,H        ;
  41754 LD C,A        ;
  41755 LD C,(HL)     ;
-@label=Auto_A31C
  41756 LD (14880),A  ;
  41759 JR NZ,41826   ;
  41761 LD B,A        ;
  41762 LD B,(HL)     ;
  41763 SUB B         ;
-@label=Auto_A324
 *41764 LD D,B        ;
  41765 LD D,D        ;
  41766 LD C,A        ;
  41767 LD D,H        ;
  41768 LD B,L        ;
  41769 LD C,E        ;
-@label=Auto_A32A
  41770 INC SP        ;
  41771 JR NZ,41831   ;
  41773 JR NZ,41858   ;
@@ -9266,11 +8357,9 @@ c41264 LD HL,29570   ;
  41776 LD C,(HL)     ;
  41777 LD B,E        ;
  41778 LD C,H        ;
-@label=Auto_A333
 *41779 LD B,C        ;
  41780 LD C,C        ;
  41781 LD D,D        ;
-@label=Auto_A336
  41782 INC (HL)      ;
  41783 JR NZ,41843   ;
  41785 JR NZ,41862   ;
@@ -9281,17 +8370,14 @@ c41264 LD HL,29570   ;
  41791 LD B,C        ;
  41792 LD D,D        ;
  41793 LD B,H        ;
-@label=Auto_A342
  41794 DEC (HL)      ;
  41795 JR NZ,41855   ;
  41797 JR NZ,41882   ;
  41799 LD B,L        ;
-@label=Auto_A348
 *41800 LD C,H        ;
  41801 LD B,L        ;
  41802 LD B,E        ;
  41803 LD D,H        ;
-@label=Auto_A34C
  41804 LD D,B        ;
  41805 LD D,D        ;
  41806 LD B,L        ;
@@ -9310,17 +8396,13 @@ c41264 LD HL,29570   ;
  41820 LD B,L        ;
  41821 JR NZ,41898   ;
  41823 LD B,L        ;
-@label=Auto_A360
 *41824 LD E,C        ;
-@label=Auto_A361
  41825 LD B,H        ;
-@label=Auto_A362
 *41826 LD (HL),L     ;
  41827 LD (HL),D     ;
  41828 LD L,C        ;
  41829 LD L,(HL)     ;
  41830 LD H,A        ;
-@label=Auto_A367
 *41831 JR NZ,41904   ;
  41833 LD H,C        ;
  41834 LD L,L        ;
@@ -9338,18 +8420,14 @@ c41264 LD HL,29570   ;
  41850 LD (HL),L     ;
  41851 LD (HL),E     ;
  41852 LD H,L        ;
-@label=Auto_A37D
  41853 LD D,H        ;
  41854 LD L,B        ;
-@label=Auto_A37F
 *41855 LD H,L        ;
  41856 JR NZ,41965   ;
-@label=Auto_A382
 *41858 LD H,L        ;
  41859 LD A,C        ;
  41860 LD H,D        ;
  41861 LD L,A        ;
-@label=Auto_A386
 *41862 LD H,C        ;
  41863 LD (HL),D     ;
  41864 LD H,H        ;
@@ -9361,16 +8439,13 @@ c41264 LD HL,29570   ;
  41872 LD (HL),D     ;
  41873 JR NZ,41975   ;
  41875 LD H,L        ;
-@label=Auto_A394
 *41876 LD H,(HL)     ;
  41877 LD L,C        ;
  41878 LD L,(HL)     ;
  41879 LD H,C        ;
  41880 LD H,D        ;
  41881 LD L,H        ;
-@label=Auto_A39A
 *41882 LD H,L        ;
-@label=Auto_A39B
  41883 LD D,B        ;
  41884 LD (HL),D     ;
  41885 LD H,L        ;
@@ -9379,22 +8454,18 @@ c41264 LD HL,29570   ;
  41888 JR NZ,41979   ;
  41890 JR NZ,42008   ;
  41892 LD L,A        ;
-@label=Auto_A3A5
 *41893 JR NZ,42009   ;
  41895 LD H,L        ;
  41896 LD H,H        ;
  41897 LD H,L        ;
-@label=Auto_A3AA
 *41898 LD H,(HL)     ;
  41899 LD L,C        ;
  41900 LD L,(HL)     ;
  41901 LD H,L        ;
  41902 JR NZ,42011   ;
-@label=Auto_A3B0
 *41904 LD H,L        ;
  41905 LD A,C        ;
  41906 LD (HL),E     ;
-@label=Auto_A3B3
  41907 LD B,C        ;
  41908 LD L,(HL)     ;
  41909 LD A,C        ;
@@ -9404,7 +8475,6 @@ c41264 LD HL,29570   ;
  41914 LD H,L        ;
  41915 LD (HL),D     ;
  41916 JR NZ,42025   ;
-@label=Auto_A3BE
 *41918 LD H,L        ;
  41919 LD A,C        ;
  41920 JR NZ,42038   ;
@@ -9414,11 +8484,9 @@ c41264 LD HL,29570   ;
  41926 LD L,(HL)     ;
  41927 LD (HL),H     ;
  41928 LD L,C        ;
-@label=Auto_A3C9
 *41929 LD L,(HL)     ;
  41930 LD (HL),L     ;
  41931 LD H,L        ;
-@label=Auto_A3CC
  41932 LD D,A        ;
  41933 LD L,B        ;
  41934 LD L,C        ;
@@ -9431,7 +8499,6 @@ c41264 LD HL,29570   ;
  41943 LD L,A        ;
  41944 JR NZ,42067   ;
  41946 LD L,A        ;
-@label=Auto_A3DB
 *41947 LD (HL),L     ;
  41948 JR NZ,42069   ;
  41950 LD L,C        ;
@@ -9439,43 +8506,34 @@ c41264 LD HL,29570   ;
  41952 LD L,B        ;
  41953 JR NZ,42071   ;
  41955 LD L,A        ;
-@label=Auto_A3E4
  41956 LD (HL),L     ;
  41957 LD (HL),E     ;
  41958 LD H,L        ;
  41959 JR NZ,42063   ;
  41961 LD L,A        ;
-@label=Auto_A3EA
 *41962 LD (HL),D     ;
  41963 LD A,(21792)  ;
  41966 LD D,B        ;
-@label=Auto_A3EF
  41967 LD B,H        ;
  41968 LD C,A        ;
  41969 LD D,A        ;
  41970 LD C,(HL)     ;
-@label=Auto_A3F3
  41971 LD B,(HL)     ;
-@label=Auto_A3F4
 *41972 LD C,C        ;
  41973 LD D,D        ;
  41974 LD B,L        ;
-@label=Auto_A3F7
 *41975 LD D,D        ;
  41976 LD H,L        ;
  41977 LD (HL),H     ;
  41978 LD (HL),L     ;
-@label=Auto_A3FB
 *41979 LD (HL),D     ;
  41980 LD L,(HL)     ;
  41981 JR NZ,42099   ;
  41983 LD L,A        ;
  41984 JR NZ,42067   ;
  41986 LD D,L        ;
-@label=Auto_A403
 *41987 LD C,C        ;
  41988 LD D,H        ;
-@label=Auto_A405
  41989 LD C,L        ;
  41990 AND C         ;
  41991 LD D,B        ;
@@ -9484,7 +8542,6 @@ c41264 LD HL,29570   ;
  41994 AND C         ;
  41995 ADD HL,BC     ;
  41996 XOR H         ;
-@label=Auto_A40D
  41997 LD D,H        ;
  41998 LD L,B        ;
  41999 LD H,L        ;
@@ -9494,9 +8551,7 @@ c41264 LD HL,29570   ;
  42004 LD H,L        ;
  42005 LD L,(HL)     ;
  42006 JR NZ,42112   ;
-@label=Auto_A418
 *42008 LD H,C        ;
-@label=Auto_A419
 *42009 LD (HL),E     ;
  42010 JR NZ,42110   ;
  42012 LD H,L        ;
@@ -9508,32 +8563,25 @@ c41264 LD HL,29570   ;
  42019 LD L,H        ;
  42020 LD H,L        ;
  42021 LD H,H        ;
-@label=Auto_A426
  42022 JR NZ,42129   ;
-@label=Auto_A428
 *42024 LD (HL),E     ;
-@label=Auto_A429
 *42025 JR NZ,42127   ;
  42027 LD H,L        ;
  42028 LD H,C        ;
  42029 LD H,H        ;
-@label=Auto_A42E
  42030 JR NZ,42151   ;
  42032 LD H,C        ;
  42033 LD (HL),E     ;
  42034 JR NZ,42152   ;
  42036 LD L,B        ;
  42037 LD H,L        ;
-@label=Auto_A436
 *42038 JR NZ,42105   ;
  42040 LD L,(HL)     ;
  42041 LD H,H        ;
  42042 LD (HL),D     ;
-@label=Auto_A43B
 *42043 LD L,A        ;
  42044 LD L,C        ;
  42045 LD H,H        ;
-@label=Auto_A43E
 *42046 LD B,E        ;
  42047 LD L,A        ;
  42048 LD L,L        ;
@@ -9550,16 +8598,11 @@ c41264 LD HL,29570   ;
  42060 LD L,C        ;
  42061 LD L,(HL)     ;
  42062 LD H,A        ;
-@label=Auto_A44F
 *42063 LD A,(12320)  ;
-@label=Auto_A452
  42066 JR NC,41947   ;
-@label=Auto_A454
  42068 LD D,H        ;
-@label=Auto_A455
 *42069 LD L,B        ;
  42070 LD H,L        ;
-@label=Auto_A457
 *42071 JR NZ,42151   ;
  42073 LD H,C        ;
  42074 LD (HL),D     ;
@@ -9579,27 +8622,22 @@ c41264 LD HL,29570   ;
  42090 LD L,B        ;
  42091 LD H,L        ;
  42092 LD H,H        ;
-@label=Auto_A46D
  42093 LD D,H        ;
  42094 LD L,B        ;
  42095 LD H,L        ;
  42096 JR NZ,42176   ;
  42098 LD L,A        ;
-@label=Auto_A473
 *42099 LD (HL),E     ;
  42100 LD (HL),H     ;
  42101 LD (HL),D     ;
  42102 LD L,A        ;
  42103 LD L,L        ;
  42104 LD L,A        ;
-@label=Auto_A479
 *42105 JR NZ,42226   ;
  42107 LD L,C        ;
  42108 LD L,H        ;
  42109 LD L,H        ;
-@label=Auto_A47E
 *42110 JR NZ,42213   ;
-@label=Auto_A480
 *42112 LD A,B        ;
  42113 LD (HL),B     ;
  42114 LD L,H        ;
@@ -9612,10 +8650,8 @@ c41264 LD HL,29570   ;
  42123 JR NZ,42234   ;
  42125 LD L,C        ;
  42126 LD L,(HL)     ;
-@label=Auto_A48F
 *42127 LD (HL),L     ;
  42128 LD (HL),H     ;
-@label=Auto_A491
 *42129 LD H,L        ;
  42130 LD (HL),E     ;
  42131 JR NZ,42165   ;
@@ -9625,10 +8661,8 @@ c41264 LD HL,29570   ;
  42137 LD H,E        ;
  42138 LD L,A        ;
  42139 LD L,(HL)     ;
-@label=Auto_A49C
 *42140 LD H,H        ;
  42141 LD (HL),E     ;
-@label=Auto_A49E
  42142 LD D,H        ;
  42143 LD L,B        ;
  42144 LD H,L        ;
@@ -9637,11 +8671,9 @@ c41264 LD HL,29570   ;
  42148 LD L,C        ;
  42149 LD H,L        ;
  42150 LD L,(HL)     ;
-@label=Auto_A4A7
 *42151 JR NZ,42272   ;
  42153 LD L,C        ;
  42154 LD L,H        ;
-@label=Auto_A4AB
 *42155 LD L,H        ;
  42156 JR NZ,42256   ;
  42158 LD H,L        ;
@@ -9650,39 +8682,32 @@ c41264 LD HL,29570   ;
  42162 LD L,H        ;
  42163 LD H,L        ;
  42164 LD H,C        ;
-@label=Auto_A4B5
 *42165 LD (HL),E     ;
  42166 LD L,B        ;
-@label=Auto_A4B7
 *42167 LD H,L        ;
  42168 LD H,H        ;
-@label=Auto_A4B9
  42169 LD (HL),L     ;
  42170 LD (HL),B     ;
  42171 LD L,A        ;
  42172 LD L,(HL)     ;
  42173 JR NZ,42291   ;
  42175 LD L,B        ;
-@label=Auto_A4C0
 *42176 LD H,L        ;
  42177 JR NZ,42248   ;
  42179 LD H,C        ;
  42180 LD (HL),D     ;
  42181 LD (HL),H     ;
  42182 LD L,B        ;
-@label=Auto_A4C7
  42183 LD C,(HL)     ;
  42184 LD L,A        ;
  42185 LD (HL),E     ;
  42186 LD (HL),H     ;
  42187 LD (HL),D     ;
-@label=Auto_A4CC
 *42188 LD L,A        ;
  42189 LD L,L        ;
  42190 LD L,A        ;
  42191 JR NZ,42297   ;
  42193 LD H,C        ;
-@label=Auto_A4D2
 *42194 LD (HL),E     ;
  42195 JR NZ,42298   ;
  42197 LD A,B        ;
@@ -9692,7 +8717,6 @@ c41264 LD HL,29570   ;
  42201 LD H,H        ;
  42202 LD H,L        ;
  42203 LD H,H        ;
-@label=Auto_A4DC
  42204 LD C,H        ;
  42205 LD L,C        ;
  42206 LD H,(HL)     ;
@@ -9700,9 +8724,7 @@ c41264 LD HL,29570   ;
  42208 JR NZ,42293   ;
  42210 LD (HL),L     ;
  42211 LD (HL),B     ;
-@label=Auto_A4E4
 *42212 LD (HL),B     ;
-@label=Auto_A4E5
 *42213 LD L,A        ;
  42214 LD (HL),D     ;
  42215 LD (HL),H     ;
@@ -9714,7 +8736,6 @@ c41264 LD HL,29570   ;
  42222 LD L,L        ;
  42223 LD (HL),E     ;
  42224 JR NZ,42327   ;
-@label=Auto_A4F2
 *42226 LD A,B        ;
  42227 LD L,B        ;
  42228 LD H,C        ;
@@ -9723,7 +8744,6 @@ c41264 LD HL,29570   ;
  42231 LD (HL),H     ;
  42232 LD H,L        ;
  42233 LD H,H        ;
-@label=Auto_A4FA
 *42234 LD C,B        ;
  42235 LD (HL),L     ;
  42236 LD L,L        ;
@@ -9743,7 +8763,6 @@ c41264 LD HL,29570   ;
  42252 LD L,H        ;
  42253 LD (HL),E     ;
  42254 JR NZ,42365   ;
-@label=Auto_A510
 *42256 LD L,C        ;
  42257 LD L,(HL)     ;
  42258 LD L,C        ;
@@ -9758,32 +8777,19 @@ c41264 LD HL,29570   ;
  42268 JR NZ,42335   ;
  42270 LD C,(HL)     ;
  42271 LD E,C        ;
-@label=Auto_A520
 *42272 JR NZ,42349   ;
  42274 LD B,L        ;
  42275 LD E,C        ;
-@nowarn=33714
 @label=LongGameInit
-@ssub=LD HL,Auto_83B2
 *42276 LD HL,33714   ;
-@nowarn=33741
-@ssub=LD (Auto_83CD),HL
  42279 LD (33741),HL ;
  42282 XOR A         ;
-@nowarn=33709
-@ssub=LD (Auto_83AD),A
  42283 LD (33709),A  ;
-@nowarn=33708
-@ssub=LD (Auto_83AC),A
  42286 LD (33708),A  ;
  42289 CALL 45222    ;
-@nowarn=41444
-@ssub=LD HL,Auto_A1E4
  42292 LD HL,41444   ;
  42295 LD DE,29566   ;
-@label=Auto_A53A
 *42298 LD BC,64      ;
-@label=Auto_A53D
 *42301 LDIR          ;
  42303 CALL 33589    ;
  42306 LD E,A        ;
@@ -9805,10 +8811,7 @@ c41264 LD HL,29570   ;
  42330 LD DE,6       ;
  42333 ADD HL,DE     ;
  42334 LD (HL),255   ;
-@label=Auto_A560
 *42336 CALL 33589    ;
-@nowarn=41390
-@ssub=LD HL,Auto_A1AE
  42339 LD HL,41390   ;
  42342 LD E,A        ;
  42343 LD D,0        ;
@@ -9816,22 +8819,15 @@ c41264 LD HL,29570   ;
  42346 LD C,(HL)     ;
  42347 POP AF        ;
  42348 CP C          ;
-@label=Auto_A56D
 *42349 JR NZ,42354   ;
  42351 PUSH AF       ;
-@label=Auto_A570
 *42352 JR 42336      ;
-@nowarn=33703
-@label=Auto_A572
-@ssub=LD HL,AlienTargetID
 *42354 LD HL,33703   ;
-@label=Auto_A575
 *42357 LD (HL),C     ;
  42358 PUSH BC       ;
  42359 LD L,A        ;
  42360 LD A,33       ;
  42362 CALL 37176    ;
-@label=Auto_A57D
 *42365 POP BC        ;
  42366 LD A,C        ;
  42367 ADD A,A       ;
@@ -9843,21 +8839,12 @@ c41264 LD HL,29570   ;
  42376 ADD HL,DE     ;
  42377 LD (33701),HL ;
 ; This entry point is used by the routine at #R44561.
-@label=Auto_A58C
 *42380 XOR A         ;
-@nowarn=33704
-@ssub=LD (AlienActiveFlag),A
  42381 LD (33704),A  ;
-@nowarn=32896
-@ssub=LD HL,Auto_8080
  42384 LD HL,32896   ;
  42387 LD (31263),HL ;
  42390 LD A,L        ;
-@nowarn=39741
-@ssub=LD (Auto_9B3D),A
  42391 LD (39741),A  ;
-@nowarn=39753
-@ssub=LD (Auto_9B49),A
  42394 LD (39753),A  ;
  42397 LD HL,41406   ;
  42400 LD DE,29940   ;
@@ -9866,7 +8853,6 @@ c41264 LD HL,29570   ;
  42408 LD B,33       ;
  42410 LD HL,30076   ;
  42413 LD A,255      ;
-@label=Auto_A5AF
 *42415 LD (HL),A     ;
  42416 INC HL        ;
  42417 DJNZ 42415    ;
@@ -9878,24 +8864,16 @@ c41264 LD HL,29570   ;
  42428 LD HL,31253   ;
  42431 LD (HL),D     ;
  42432 CALL 33589    ;
-@nowarn=33706
-@ssub=LD (AlienEventTimer),A
  42435 LD (33706),A  ;
  42438 CALL 33589    ;
  42441 LD E,A        ;
  42442 LD D,0        ;
-@nowarn=41358
-@ssub=LD HL,Auto_A18E
  42444 LD HL,41358   ;
  42447 ADD HL,DE     ;
  42448 LD A,(HL)     ;
  42449 OR 64         ;
  42451 LD (29567),A  ;
-@nowarn=41428
-@ssub=LD HL,Auto_A1D4
  42454 LD HL,41428   ;
-@nowarn=33746
-@ssub=LD DE,Auto_83D2
  42457 LD DE,33746   ;
  42460 LD BC,16      ;
  42463 LDIR          ;
@@ -9905,8 +8883,6 @@ c41264 LD HL,29570   ;
  42473 LD BC,67      ;
  42476 LDIR          ;
  42478 LD HL,12336   ;
-@nowarn=38376
-@ssub=LD (Auto_95E8),HL
  42481 LD (38376),HL ;
  42484 LD HL,13623   ;
  42487 LD (38374),HL ;
@@ -9917,16 +8893,14 @@ c41264 LD HL,29570   ;
  42500 RET           ;
 
 ; ClearDisplay
-@ignoreua
 ;
 ; Fills the entire ZX Spectrum display file with zero bytes, blanking all
-; pixel data. The display file occupies #R16384-$57FF (6144 bytes). Uses a
-; single LDIR from #R16384 into $4001 after priming the first byte to 0.
+; pixel data. The display file occupies $4000-$57FF (6144 bytes). Uses a
+; single LDIR from $4000 into $4001 after priming the first byte to 0.
 ;
 ; Used by the routines at #R42581, #R42821, #R43610 and #R44561.
 @label=ClearDisplay
-c42501 LD HL,16384   ; HL = #R16384 (start of display file)
-@ignoreua
+c42501 LD HL,16384   ; HL = $4000 (start of display file)
  42504 LD DE,16385   ; DE = $4001 (destination = source+1)
  42507 LD BC,6143    ; BC = 6143 bytes to copy
  42510 LD (HL),0     ; prime first byte = 0
@@ -9936,7 +8910,7 @@ c42501 LD HL,16384   ; HL = #R16384 (start of display file)
 ; FillAttributes
 ;
 ; Fills the entire ZX Spectrum attribute file with the value in A. The
-; attribute file occupies #R22528-$5AFF (768 bytes). Uses a single LDIR after
+; attribute file occupies $5800-$5AFF (768 bytes). Uses a single LDIR after
 ; priming the first byte. Common attribute values: 0=black on black (hidden),
 ; 7=white ink on black paper, 32=green ink on black paper.
 ;
@@ -9944,14 +8918,12 @@ c42501 LD HL,16384   ; HL = #R16384 (start of display file)
 ;
 ; Used by the routines at #R37490, #R42581, #R42821, #R43610 and #R44561.
 @label=FillAttributes
-c42515 LD HL,22528   ; HL = #R22528 (start of attribute file)
-@ignoreua
+c42515 LD HL,22528   ; HL = $5800 (start of attribute file)
  42518 LD DE,22529   ; DE = $5801
  42521 LD (HL),A     ; prime first attribute byte
  42522 LD BC,767     ; BC = 767 remaining bytes
  42525 LDIR          ; propagate across entire attribute file
  42527 RET           ;
-@label=Auto_A620
  42528 LD B,C        ;
  42529 LD C,H        ;
  42530 LD C,C        ;
@@ -9961,29 +8933,24 @@ c42515 LD HL,22528   ; HL = #R22528 (start of attribute file)
  42535 JR NZ,42569   ;
  42537 JR NZ,42571   ;
  42539 JR NZ,42573   ;
-@label=Auto_A62D
  42541 LD C,D        ;
  42542 LD L,A        ;
  42543 LD L,B        ;
  42544 LD L,(HL)     ;
-@label=Auto_A631
  42545 LD C,B        ;
  42546 LD H,L        ;
  42547 LD H,C        ;
  42548 LD (HL),B     ;
-@label=Auto_A635
  42549 LD B,C        ;
  42550 LD (HL),D     ;
  42551 LD H,A        ;
  42552 LD (HL),L     ;
  42553 LD (HL),E     ;
-@label=Auto_A63A
  42554 LD D,B        ;
  42555 LD (HL),D     ;
  42556 LD H,L        ;
  42557 LD (HL),E     ;
  42558 LD (HL),E     ;
-@label=Auto_A63F
  42559 LD D,E        ;
  42560 LD L,A        ;
  42561 LD H,(HL)     ;
@@ -10006,13 +8973,12 @@ c42515 LD HL,22528   ; HL = #R22528 (start of attribute file)
  42579 JR C,42633    ;
 
 ; DrawIntroScreen
-@ignoreua
 ;
 ; Draws and animates the Alien title screen. Clears the display, sets border
 ; to black, fills attributes (0 = black on black = hidden). Renders a 15×11
-; tile grid: each byte of the tile map at #R40504 is a tile index; multiplied
-; by 8 gives an offset into the 8-byte-per-tile bitmap array at #R62000
-; (actually at #R62000 = #R62000 decimal, in the extra-data area loaded at #R60000).
+; tile grid: each byte of the tile map at $9E38 is a tile index; multiplied
+; by 8 gives an offset into the 8-byte-per-tile bitmap array at $F230
+; (actually at $F230 = 62000 decimal, in the extra-data area loaded at $EA60).
 ; Tile rows are blitted column by column down into the display file. After
 ; drawing, loops animating colours until any key on row $F7FE is pressed.
 ;
@@ -10022,13 +8988,9 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
  42584 XOR A         ; A = 0 (black border, black attributes)
  42585 OUT (254),A   ; set border colour = black
  42587 CALL 42515    ; FillAttributes(0): all black-on-black (invisible)
-@nowarn=40504
-@ssub=LD DE,Auto_9E38
- 42590 LD DE,40504   ; DE = #R40504 (intro tile-map data)
-@ignoreua
+ 42590 LD DE,40504   ; DE = $9E38 (intro tile-map data)
  42593 LD HL,16522   ; HL = $408A (screen address: top-left of tile area)
-@ignoreua
- 42596 LD (31257),HL ; store as current draw pointer (#R31241)
+ 42596 LD (31257),HL ; store as current draw pointer ($7A09)
  42599 LD B,15       ; 15 tile columns
 *42601 PUSH BC       ;
  42602 LD B,11       ;
@@ -10070,8 +9032,6 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
  42659 LD A,7        ;
  42661 CALL 42515    ;
  42664 LD HL,22890   ;
-@nowarn=40669
-@ssub=LD DE,Auto_9EDD
  42667 LD DE,40669   ;
  42670 LD B,8        ;
 *42672 PUSH BC       ;
@@ -10087,8 +9047,6 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
  42686 DJNZ 42672    ;
  42688 LD HL,16425   ;
  42691 LD (31257),HL ;
-@nowarn=42528
-@ssub=LD DE,Auto_A620
  42694 LD DE,42528   ;
  42697 LD B,5        ;
 *42699 PUSH BC       ;
@@ -10106,43 +9064,31 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
  42718 LD HL,20612   ;
  42721 LD (31257),HL ;
  42724 LD B,4        ;
-@nowarn=42541
-@ssub=LD DE,Auto_A62D
  42726 LD DE,42541   ;
  42729 CALL 44509    ;
  42732 LD HL,20644   ;
  42735 LD (31257),HL ;
  42738 LD B,4        ;
-@nowarn=42545
-@ssub=LD DE,Auto_A631
  42740 LD DE,42545   ;
  42743 CALL 44509    ;
  42746 LD HL,20630   ;
  42749 LD (31257),HL ;
  42752 LD B,5        ;
-@nowarn=42549
-@ssub=LD DE,Auto_A635
  42754 LD DE,42549   ;
  42757 CALL 44509    ;
  42760 LD HL,20662   ;
  42763 LD (31257),HL ;
  42766 LD B,5        ;
-@nowarn=42554
-@ssub=LD DE,Auto_A63A
  42768 LD DE,42554   ;
  42771 CALL 44509    ;
  42774 LD HL,20694   ;
  42777 LD (31257),HL ;
  42780 LD B,8        ;
-@nowarn=42559
-@ssub=LD DE,Auto_A63F
  42782 LD DE,42559   ;
  42785 CALL 44509    ;
  42788 LD HL,20712   ;
  42791 LD (31257),HL ;
  42794 LD B,14       ;
-@nowarn=42567
-@ssub=LD DE,FillAttributes_0
  42796 LD DE,42567   ;
  42799 CALL 44509    ;
 *42802 CALL 40439    ;
@@ -10156,21 +9102,19 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
  42819 JR 42802      ;
 
 ; DrawShipMap
-@ignoreua
 ;
 ; Draws the Nostromo ship overview map and handles game-mode selection.
 ; Sets border green, fills attributes (32), clears display, then blits the
 ; deck plan as tile blocks at fixed screen positions. After drawing, prints
 ; the crew names via #R31690 (one name per corridor segment) and the
 ; four-line menu ("1: Short Game", "2: Long Game", "3: Introduction",
-; "4: Select") from the text table at #R43141 (#R43141).
-@ignoreua
+; "4: Select") from the text table at $A885 (#R43141).
 ;
 ; Key input loop reads port $F7FE:
 ;   Key 1 — highlight "Short Game"   (selection 0)
 ;   Key 2 — highlight "Long Game"    (selection 1)
 ;   Key 3 — highlight "Introduction" (selection 2)
-;   Key 4 — confirm: dispatch through 3-word table at #R43135 (#R43135)
+;   Key 4 — confirm: dispatch through 3-word table at $A87F (#R43135)
 ;            to the handler for the highlighted mode, then return
 ;
 ; "4: Select" is a confirm key, not a fourth game mode.
@@ -10272,8 +9216,6 @@ c42821 LD A,4        ; A = 4 (green border)
  43026 LD A,4        ;
  43028 CALL 31693    ;
  43031 XOR A         ;
-@nowarn=33683
-@ssub=LD (CorridorCursor),A
  43032 LD (33683),A  ;
  43035 CALL 43216    ;
 *43038 LD BC,63486   ;
@@ -10287,44 +9229,30 @@ c42821 LD A,4        ; A = 4 (green border)
  43055 BIT 3,A       ;
  43057 JR Z,43119    ;
  43059 JR 43038      ;
-@nowarn=33683
-@ssub=LD A,(CorridorCursor)
 *43061 LD A,(33683)  ;
  43064 AND A         ;
  43065 JR Z,43038    ;
  43067 CALL 43216    ;
  43070 XOR A         ;
-@nowarn=33683
-@ssub=LD (CorridorCursor),A
  43071 LD (33683),A  ;
  43074 CALL 43216    ;
  43077 JR 43038      ;
-@nowarn=33683
-@ssub=LD A,(CorridorCursor)
 *43079 LD A,(33683)  ;
  43082 CP 1          ;
  43084 JR Z,43038    ;
  43086 CALL 43216    ;
  43089 LD A,1        ;
-@nowarn=33683
-@ssub=LD (CorridorCursor),A
  43091 LD (33683),A  ;
  43094 CALL 43216    ;
  43097 JR 43038      ;
-@nowarn=33683
-@ssub=LD A,(CorridorCursor)
 *43099 LD A,(33683)  ;
  43102 CP 2          ;
  43104 JR Z,43038    ;
  43106 CALL 43216    ;
  43109 LD A,2        ;
-@nowarn=33683
-@ssub=LD (CorridorCursor),A
  43111 LD (33683),A  ;
  43114 CALL 43216    ;
  43117 JR 43038      ;
-@nowarn=33683
-@ssub=LD A,(CorridorCursor)
 *43119 LD A,(33683)  ;
  43122 ADD A,A       ;
  43123 LD HL,43135   ;
@@ -10335,13 +9263,12 @@ c42821 LD A,4        ; A = 4 (green border)
  43131 INC HL        ;
  43132 LD H,(HL)     ;
  43133 LD L,A        ;
-@label=GameModeJump
  43134 JP (HL)       ;
 
 ; GameModeDispatchTable
 ;
 ; 3-word jump table indexed by the highlighted game mode (0-2).
-; JP (HL) at #R43134 lands here; the word for the current selection
+; JP (HL) at 43134 lands here; the word for the current selection
 ; is loaded into HL and jumped to.
 ;
 ;   Mode 0 — Short Game   → #R44738
@@ -10358,14 +9285,11 @@ w43135 DEFW 44738,42276,43242
 @label=GameModeText
 b43141 DEFB 49,58,32,83,104,111,114,116,32,71,97,109,101,255     ; "1: Short Game"
  43155 DEFB 50,58,32,76,111,110,103,32,71,97,109,101,255          ; "2: Long Game"
- 43168 DEFB 51,58,32,73,110,116,114,111  ; "3: Intro
- 43176 DEFB 100,117,99,116,105,111,110,255  ; duction"
+ 43168 DEFB 51,58,32,73,110,116,114,111,100,117,99,116,105,111,110,255  ; "3: Introduction"
  43184 DEFB 52,58,32,83,101,108,101,99,116,255                    ; "4: Select"
- 43194 DEFB 80,114,101,115,115,32,65,112,112,114,111  ; "Press Appro
- 43205 DEFB 112,114,105,97,116,101,32,75,101,121,255  ; priate Key"
+ 43194 DEFB 80,114,101,115,115,32,65,112,112,114,111,112,114,105,97,116,101,32,75,101,121,255  ; "Press Appropriate Key"
 
 ; HighlightGameMode
-@ignoreua
 ;
 ; XOR-toggles the attribute colour of the currently selected menu
 ; row, used by DrawShipMap (#R42821) to highlight or erase the
@@ -10376,8 +9300,6 @@ b43141 DEFB 49,58,32,83,104,111,114,116,32,71,97,109,101,255     ; "1: Short Gam
 c43216 LD HL,23017   ;
 ; This entry point is used by the routine at #R43610.
 *43219 LD DE,64      ;
-@nowarn=33683
-@ssub=LD A,(CorridorCursor)
 *43222 LD A,(33683)  ;
  43225 AND A         ;
  43226 JR Z,43232    ;
@@ -10405,62 +9327,44 @@ c43242 CALL 42501    ;
  43250 CALL 42515    ;
  43253 LD HL,16424   ;
  43256 LD (31257),HL ;
-@nowarn=41572
-@ssub=LD DE,Auto_A264
  43259 LD DE,41572   ;
  43262 LD B,15       ;
  43264 CALL 44509    ;
  43267 LD HL,16548   ;
  43270 LD (31257),HL ;
-@nowarn=41587
-@ssub=LD DE,Auto_A273
  43273 LD DE,41587   ;
  43276 LD B,21       ;
  43278 CALL 44509    ;
  43281 LD HL,16613   ;
  43284 LD (31257),HL ;
-@nowarn=41608
-@ssub=LD DE,Auto_A288
  43287 LD DE,41608   ;
  43290 LD B,25       ;
  43292 CALL 44509    ;
  43295 LD HL,18469   ;
  43298 LD (31257),HL ;
-@nowarn=41633
-@ssub=LD DE,Auto_A2A1
  43301 LD DE,41633   ;
  43304 LD B,27       ;
  43306 CALL 44509    ;
  43309 LD HL,18568   ;
  43312 LD (31257),HL ;
-@nowarn=41660
-@ssub=LD DE,Auto_A2BC
  43315 LD DE,41660   ;
  43318 LD B,19       ;
  43320 CALL 44509    ;
  43323 LD HL,18664   ;
  43326 LD (31257),HL ;
-@nowarn=41679
-@ssub=LD DE,Auto_A2CF
  43329 LD DE,41679   ;
  43332 LD B,16       ;
  43334 CALL 44509    ;
  43337 LD HL,20517   ;
  43340 LD (31257),HL ;
-@nowarn=41695
-@ssub=LD DE,Auto_A2DF
  43343 LD DE,41695   ;
  43346 LD B,22       ;
  43348 CALL 44509    ;
  43351 LD HL,0       ;
  43354 LD (31263),HL ;
  43357 LD HL,18532   ;
-@nowarn=33686
-@ssub=LD (SprDestA),HL
  43360 LD (33686),HL ;
  43363 LD HL,18628   ;
-@nowarn=33688
-@ssub=LD (SpriteDestAddr),HL
  43366 LD (33688),HL ;
  43369 XOR A         ;
  43370 LD B,1        ;
@@ -10470,23 +9374,17 @@ c43242 CALL 42501    ;
  43378 CALL 34982    ;
  43381 LD HL,20613   ;
  43384 LD (31257),HL ;
-@nowarn=43527
-@ssub=LD DE,Auto_AA07
  43387 LD DE,43527   ;
  43390 LD B,22       ;
  43392 CALL 44509    ;
  43395 LD HL,20677   ;
  43398 LD (31257),HL ;
-@nowarn=43549
-@ssub=LD DE,Auto_AA1D
  43401 LD DE,43549   ;
  43404 LD B,17       ;
  43406 CALL 44509    ;
  43409 LD B,5        ;
 *43411 PUSH BC       ;
  43412 LD A,1        ;
-@nowarn=33699
-@ssub=LD (SoundRequest),A
  43414 LD (33699),A  ;
  43417 CALL 40319    ;
  43420 CALL 43505    ;
@@ -10494,16 +9392,12 @@ c43242 CALL 42501    ;
  43424 DJNZ 43411    ;
  43426 LD HL,20677   ;
  43429 LD (31257),HL ;
-@nowarn=43566
-@ssub=LD DE,Auto_AA2E
  43432 LD DE,43566   ;
  43435 LD B,20       ;
  43437 CALL 44509    ;
  43440 LD B,5        ;
 *43442 PUSH BC       ;
  43443 LD A,1        ;
-@nowarn=33705
-@ssub=LD (Auto_83A9),A
  43445 LD (33705),A  ;
  43448 CALL 44880    ;
  43451 CALL 43505    ;
@@ -10511,8 +9405,6 @@ c43242 CALL 42501    ;
  43455 DJNZ 43442    ;
  43457 LD HL,20677   ;
  43460 LD (31257),HL ;
-@nowarn=43586
-@ssub=LD DE,Auto_AA42
  43463 LD DE,43586   ;
  43466 LD B,24       ;
  43468 CALL 44509    ;
@@ -10541,7 +9433,6 @@ c43242 CALL 42501    ;
  43523 POP BC        ;
  43524 DJNZ 43507    ;
  43526 RET           ;
-@label=Auto_AA07
  43527 LD D,H        ;
  43528 LD L,B        ;
  43529 LD L,C        ;
@@ -10559,7 +9450,6 @@ c43242 CALL 42501    ;
  43544 JR NZ,43657   ;
  43546 LD H,(HL)     ;
  43547 JR NZ,43646   ;
-@label=Auto_AA1D
  43549 LD B,H        ;
  43550 LD L,A        ;
  43551 LD L,A        ;
@@ -10575,7 +9465,6 @@ c43242 CALL 42501    ;
  43563 LD L,(HL)     ;
  43564 LD H,L        ;
  43565 LD H,H        ;
-@label=Auto_AA2E
  43566 LD B,A        ;
  43567 LD (HL),D     ;
  43568 LD L,C        ;
@@ -10594,7 +9483,6 @@ c43242 CALL 42501    ;
  43583 HALT          ;
  43584 LD H,L        ;
  43585 LD H,H        ;
-@label=Auto_AA42
  43586 LD D,B        ;
  43587 LD L,A        ;
  43588 LD (HL),E     ;
@@ -10619,14 +9507,13 @@ c43242 CALL 42501    ;
  43609 LD H,A        ;
 
 ; OptionsScreen
-@ignoreua
 ;
 ; Draws the difficulty-selection screen and waits for a key. Clears display,
 ; fills attributes green (32), then draws the game title and five option lines
 ; using the tile-blit helper #R44509. Reads port $F7FE in a loop: keys 1-4
-; (bits 0-3) set #R33643 (difficulty, 0-3) and redraw the highlighted option;
+; (bits 0-3) set $836B (difficulty, 0-3) and redraw the highlighted option;
 ; key 5 (bit 4) confirms the selection and returns. The selected difficulty
-; level is stored at #R33643 and used throughout the game to scale alien speed
+; level is stored at $836B and used throughout the game to scale alien speed
 ; and crew health.
 ;
 ; Used by the routine at #R36457.
@@ -10634,19 +9521,14 @@ c43242 CALL 42501    ;
 c43610 CALL 42501    ; ClearDisplay
  43613 LD A,32       ; green ink on black
  43615 CALL 42515    ; FillAttributes(32)
-@ignoreua
  43618 LD HL,16450   ; HL = $4042 (screen row for title)
  43621 LD (31257),HL ; set draw pointer
-@nowarn=41717
-@ssub=LD DE,Auto_A2F5
- 43624 LD DE,41717   ; DE = #R41717 (title tile data)
+ 43624 LD DE,41717   ; DE = $A2F5 (title tile data)
  43627 LD B,27       ; 27 characters wide
  43629 CALL 44509    ; blit title text
  43632 LD HL,16619   ;
  43635 LD (31257),HL ;
 ; This entry point is used by the routine at #R42821.
-@nowarn=41744
-@ssub=LD DE,Auto_A310
 *43638 LD DE,41744   ;
  43641 LD B,12       ;
  43643 CALL 44509    ;
@@ -10654,8 +9536,6 @@ c43610 CALL 42501    ; ClearDisplay
 *43646 LD HL,18475   ;
  43649 LD (31257),HL ;
 ; This entry point is used by the routine at #R42821.
-@nowarn=41756
-@ssub=LD DE,Auto_A31C
 *43652 LD DE,41756   ;
 ; This entry point is used by the routine at #R42821.
 *43655 LD B,14       ;
@@ -10663,48 +9543,34 @@ c43610 CALL 42501    ; ClearDisplay
 *43657 CALL 44509    ;
  43660 LD HL,18539   ;
  43663 LD (31257),HL ;
-@nowarn=41770
-@ssub=LD DE,Auto_A32A
  43666 LD DE,41770   ;
  43669 LD B,12       ;
  43671 CALL 44509    ;
  43674 LD HL,18603   ;
  43677 LD (31257),HL ;
 ; This entry point is used by the routine at #R42821.
-@nowarn=41782
-@ssub=LD DE,Auto_A336
 *43680 LD DE,41782   ;
  43683 LD B,12       ;
  43685 CALL 44509    ;
  43688 LD HL,18667   ;
  43691 LD (31257),HL ;
 ; This entry point is used by the routine at #R42821.
-@nowarn=41794
-@ssub=LD DE,Auto_A342
 *43694 LD DE,41794   ;
  43697 LD B,10       ;
  43699 CALL 44509    ;
  43702 LD HL,20582   ;
  43705 LD (31257),HL ;
-@nowarn=41804
-@ssub=LD DE,Auto_A34C
  43708 LD DE,41804   ;
  43711 LD B,21       ;
  43713 CALL 44509    ;
  43716 LD HL,20674   ;
  43719 LD (31257),HL ;
-@nowarn=41825
-@ssub=LD DE,Auto_A361
  43722 LD DE,41825   ;
  43725 LD B,28       ;
  43727 CALL 44509    ;
  43730 XOR A         ;
-@nowarn=33683
-@ssub=LD (CorridorCursor),A
  43731 LD (33683),A  ;
 *43734 CALL 44032    ;
-@nowarn=33683
-@ssub=LD HL,CorridorCursor
 *43737 LD HL,33683   ;
  43740 LD BC,63486   ;
  43743 IN A,(C)      ;
@@ -10747,8 +9613,6 @@ c43610 CALL 42501    ; ClearDisplay
  43810 ADD A,A       ;
  43811 LD E,A        ;
  43812 LD D,0        ;
-@nowarn=41989
-@ssub=LD HL,Auto_A405
  43814 LD HL,41989   ;
  43817 ADD HL,DE     ;
  43818 LD A,(HL)     ;
@@ -10756,8 +9620,6 @@ c43610 CALL 42501    ; ClearDisplay
  43820 LD H,(HL)     ;
  43821 LD L,A        ;
  43822 LD (34637),HL ;
-@nowarn=33683
-@ssub=LD A,(CorridorCursor)
  43825 LD A,(33683)  ;
  43828 CP 3          ;
  43830 RET NZ        ;
@@ -10767,33 +9629,23 @@ c43610 CALL 42501    ; ClearDisplay
  43839 CALL 44109    ;
  43842 LD HL,16449   ;
  43845 LD (31257),HL ;
-@nowarn=41853
-@ssub=LD DE,Auto_A37D
  43848 LD DE,41853   ;
  43851 LD B,30       ;
  43853 CALL 44509    ;
-@nowarn=40502
-@ssub=LD A,(Auto_9E36)
  43856 LD A,(40502)  ;
  43859 AND A         ;
  43860 JR Z,43904    ;
  43862 LD HL,16516   ;
  43865 LD (31257),HL ;
-@nowarn=41883
-@ssub=LD DE,Auto_A39B
  43868 LD DE,41883   ;
  43871 LD B,24       ;
  43873 CALL 44509    ;
  43876 LD HL,16548   ;
  43879 LD (31257),HL ;
-@nowarn=41907
-@ssub=LD DE,Auto_A3B3
  43882 LD DE,41907   ;
  43885 LD B,25       ;
  43887 CALL 44509    ;
  43890 CALL 44093    ;
-@nowarn=57342
-@ssub=LD BC,Auto_DFFE
  43893 LD BC,57342   ;
  43896 IN A,(C)      ;
  43898 AND 16        ;
@@ -10801,15 +9653,11 @@ c43610 CALL 42501    ; ClearDisplay
  43901 CALL 44109    ;
 *43904 LD HL,18436   ;
  43907 LD (31257),HL ;
-@nowarn=41932
-@ssub=LD DE,Auto_A3CC
  43910 LD DE,41932   ;
  43913 LD B,24       ;
  43915 CALL 44509    ;
  43918 LD HL,18500   ;
  43921 LD (31257),HL ;
-@nowarn=41956
-@ssub=LD DE,Auto_A3E4
  43924 LD DE,41956   ;
  43927 LD B,11       ;
  43929 CALL 44509    ;
@@ -10819,8 +9667,6 @@ c43610 CALL 42501    ; ClearDisplay
  43942 CALL 44109    ;
  43945 LD HL,18509   ;
  43948 LD (31257),HL ;
-@nowarn=41967
-@ssub=LD DE,Auto_A3EF
  43951 LD DE,41967   ;
  43954 LD B,4        ;
  43956 CALL 44509    ;
@@ -10830,8 +9676,6 @@ c43610 CALL 42501    ; ClearDisplay
  43969 CALL 44109    ;
  43972 LD HL,18509   ;
  43975 LD (31257),HL ;
-@nowarn=41971
-@ssub=LD DE,Auto_A3F3
  43978 LD DE,41971   ;
  43981 LD B,4        ;
  43983 CALL 44509    ;
@@ -10841,8 +9685,6 @@ c43610 CALL 42501    ; ClearDisplay
  43996 CALL 44109    ;
  43999 LD HL,18509   ;
  44002 LD (31257),HL ;
-@nowarn=41975
-@ssub=LD DE,Auto_A3F7
  44005 LD DE,41975   ;
  44008 LD B,14       ;
  44010 CALL 44509    ;
@@ -10851,8 +9693,6 @@ c43610 CALL 42501    ; ClearDisplay
  44020 LD (44088),A  ;
  44023 CALL 44109    ;
  44026 LD A,255      ;
-@nowarn=40502
-@ssub=LD (Auto_9E36),A
  44028 LD (40502),A  ;
  44031 RET           ;
 *44032 PUSH HL       ;
@@ -10860,8 +9700,6 @@ c43610 CALL 42501    ; ClearDisplay
  44036 CALL 43219    ;
  44039 POP HL        ;
  44040 RET           ;
-@nowarn=33682
-@ssub=LD HL,AlienFlags
  44041 LD HL,33682   ;
  44044 LD (HL),0     ;
  44046 LD BC,32766   ;
@@ -10909,8 +9747,6 @@ c43610 CALL 42501    ; ClearDisplay
 ; This entry point is used by the routines at #R37490 and #R38379.
 *44125 CALL 44561    ;
  44128 XOR A         ;
-@nowarn=40503
-@ssub=LD (Auto_9E37),A
  44129 LD (40503),A  ;
  44132 CALL 44651    ;
  44135 CALL 44698    ;
@@ -10925,11 +9761,7 @@ c43610 CALL 42501    ; ClearDisplay
 ; This entry point is used by the routine at #R38379.
 *44159 CALL 44561    ;
  44162 XOR A         ;
-@nowarn=40503
-@ssub=LD (Auto_9E37),A
  44163 LD (40503),A  ;
-@nowarn=42068
-@ssub=LD DE,Auto_A454
  44166 LD DE,42068   ;
  44169 LD B,25       ;
  44171 LD HL,16387   ;
@@ -10947,8 +9779,6 @@ c43610 CALL 42501    ; ClearDisplay
  44205 LD HL,16451   ;
  44208 LD (31257),HL ;
  44211 LD B,25       ;
-@nowarn=42093
-@ssub=LD DE,Auto_A46D
  44213 LD DE,42093   ;
  44216 CALL 44509    ;
  44219 LD HL,16483   ;
@@ -10962,13 +9792,9 @@ c43610 CALL 42501    ; ClearDisplay
 ; This entry point is used by the routine at #R44313.
 *44242 CALL 44561    ;
  44245 XOR A         ;
-@nowarn=40503
-@ssub=LD (Auto_9E37),A
  44246 LD (40503),A  ;
  44249 LD HL,16386   ;
  44252 LD (31257),HL ;
-@nowarn=42234
-@ssub=LD DE,Auto_A4FA
  44255 LD DE,42234   ;
  44258 LD B,28       ;
  44260 CALL 44509    ;
@@ -10981,14 +9807,10 @@ c43610 CALL 42501    ; ClearDisplay
 *44277 CALL 44561    ;
  44280 LD HL,16385   ;
  44283 LD (31257),HL ;
-@nowarn=42204
-@ssub=LD DE,Auto_A4DC
  44286 LD DE,42204   ;
  44289 LD B,30       ;
  44291 CALL 44509    ;
  44294 XOR A         ;
-@nowarn=40503
-@ssub=LD (Auto_9E37),A
  44295 LD (40503),A  ;
  44298 LD HL,29581   ;
  44301 LD DE,8       ;
@@ -10999,24 +9821,21 @@ c43610 CALL 42501    ; ClearDisplay
  44311 JR 44263      ;
 
 ; DrawStatusPanel
-@ignoreua
 ;
 ; Refreshes the crew-status display at the right side of the game window.
-; Scans all 7 crew records starting at the alive-flag byte (#R29581 = $7386+7).
+; Scans all 7 crew records starting at the alive-flag byte ($738D = $7386+7).
 ; For each crew member: if its crew-ID matches the alien's current target
-; (#R33703) it is highlighted; if its alive flag is 0 (dead) the scan stops
+; ($83A7) it is highlighted; if its alive flag is 0 (dead) the scan stops
 ; early (crew records are kept in alive-descending order). Live crew members
 ; get their portrait sprite drawn at the status panel position ($40A4 column).
 ;
 ; Used by the routine at #R36457.
 @label=DrawStatusPanel
-c44313 LD HL,29581   ; HL = #R29581 (alive-flag byte of first crew record)
+c44313 LD HL,29581   ; HL = $738D (alive-flag byte of first crew record)
  44316 XOR A         ; A = 0
  44317 LD BC,1793    ; B=7 (7 crew members), C=1 (crew index, 1-based)
  44320 LD DE,8       ; DE = 8 (crew record stride)
-@nowarn=33703
-@ssub=LD A,(AlienTargetID)
-*44323 LD A,(33703)  ; A = alien's target crew ID (#R33703)
+*44323 LD A,(33703)  ; A = alien's target crew ID ($83A7)
  44326 CP C          ; is this crew member the alien's current target?
  44327 JR Z,44332    ; yes: always include (even if at door)
  44329 XOR A         ; A = 0
@@ -11030,8 +9849,6 @@ c44313 LD HL,29581   ; HL = #R29581 (alive-flag byte of first crew record)
 *44339 LD HL,16452   ;
  44342 LD (31257),HL ;
  44345 LD B,25       ;
-@nowarn=41997
-@ssub=LD DE,Auto_A40D
  44347 LD DE,41997   ;
  44350 CALL 44509    ;
  44353 RET           ;
@@ -11043,8 +9860,6 @@ c44313 LD HL,29581   ; HL = #R29581 (alive-flag byte of first crew record)
  44367 LD DE,8       ;
 *44370 PUSH BC       ;
  44371 PUSH DE       ;
-@nowarn=33703
-@ssub=LD A,(AlienTargetID)
  44372 LD A,(33703)  ;
  44375 CP C          ;
  44376 JR Z,44420    ;
@@ -11057,8 +9872,6 @@ c44313 LD HL,29581   ; HL = #R29581 (alive-flag byte of first crew record)
  44391 PUSH HL       ;
  44392 LD A,C        ;
  44393 CALL 31690    ;
-@nowarn=42022
-@ssub=LD DE,Auto_A426
  44396 LD DE,42022   ;
  44399 LD B,8        ;
  44401 CALL 44509    ;
@@ -11079,21 +9892,15 @@ c44313 LD HL,29581   ; HL = #R29581 (alive-flag byte of first crew record)
 ; This entry point is used by the routine at #R43610.
 *44428 LD HL,20516   ;
  44431 LD (31257),HL ;
-@nowarn=33703
-@ssub=LD A,(AlienTargetID)
  44434 LD A,(33703)  ;
  44437 CP 8          ;
  44439 RET NC        ;
  44440 CALL 31690    ;
-@nowarn=42030
-@ssub=LD DE,Auto_A42E
  44443 LD DE,42030   ;
  44446 LD B,16       ;
  44448 CALL 44509    ;
  44451 RET           ;
 ; This entry point is used by the routine at #R43610.
-@nowarn=40503
-@ssub=LD A,(Auto_9E37)
 *44452 LD A,(40503)  ;
  44455 CP 100        ;
  44457 JR C,44461    ;
@@ -11103,8 +9910,6 @@ c44313 LD HL,29581   ; HL = #R29581 (alive-flag byte of first crew record)
  44467 AND A         ;
  44468 JR Z,44494    ;
  44470 LD B,A        ;
-@nowarn=42066
-@ssub=LD HL,Auto_A452
  44471 LD HL,42066   ;
  44474 LD A,58       ;
 *44476 INC (HL)      ;
@@ -11121,8 +9926,6 @@ c44313 LD HL,29581   ; HL = #R29581 (alive-flag byte of first crew record)
 *44492 DJNZ 44476    ;
 *44494 LD HL,20612   ;
  44497 LD (31257),HL ;
-@nowarn=42046
-@ssub=LD DE,Auto_A43E
  44500 LD DE,42046   ;
  44503 LD B,22       ;
  44505 CALL 44509    ;
@@ -11149,14 +9952,10 @@ c44313 LD HL,29581   ; HL = #R29581 (alive-flag byte of first crew record)
  44538 DJNZ 44535    ;
  44540 LD HL,16389   ;
  44543 LD (31257),HL ;
-@nowarn=42183
-@ssub=LD DE,Auto_A4C7
  44546 LD DE,42183   ;
  44549 LD B,21       ;
  44551 CALL 44509    ;
  44554 XOR A         ;
-@nowarn=40503
-@ssub=LD (Auto_9E37),A
  44555 LD (40503),A  ;
  44558 JP 44138      ;
 
@@ -11170,7 +9969,7 @@ c44313 LD HL,29581   ; HL = #R29581 (alive-flag byte of first crew record)
 ;
 ; Used by the routines at #R36457, #R43610 and #R44313.
 @label=ScreenTransition
-c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
+c44561 LD HL,22528   ; HL = $5800 (start of attribute file)
  44564 XOR A         ; A = 0 (black-on-black attribute)
  44565 LD B,24       ; 24 character rows to wipe
 *44567 PUSH BC       ; save row counter
@@ -11202,15 +10001,11 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
  44619 JR Z,44615    ;
  44621 RET           ;
 ; This entry point is used by the routine at #R43610.
-@nowarn=42142
-@ssub=LD DE,Auto_A49E
 *44622 LD DE,42142   ;
  44625 LD HL,16451   ;
  44628 LD (31257),HL ;
  44631 LD B,27       ;
  44633 CALL 44509    ;
-@nowarn=42169
-@ssub=LD DE,Auto_A4B9
  44636 LD DE,42169   ;
  44639 LD HL,16489   ;
  44642 LD (31257),HL ;
@@ -11223,8 +10018,6 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
  44658 XOR A         ;
  44659 EX AF,AF'     ;
  44660 LD BC,1793    ;
-@nowarn=33703
-@ssub=LD A,(AlienTargetID)
 *44663 LD A,(33703)  ;
  44666 CP C          ;
  44667 JR Z,44683    ;
@@ -11241,12 +10034,8 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
  44686 DJNZ 44663    ;
  44688 EX AF,AF'     ;
  44689 LD C,A        ;
-@nowarn=40503
-@ssub=LD A,(Auto_9E37)
  44690 LD A,(40503)  ;
  44693 ADD A,C       ;
-@nowarn=40503
-@ssub=LD (Auto_9E37),A
  44694 LD (40503),A  ;
  44697 RET           ;
 ; This entry point is used by the routine at #R43610.
@@ -11259,12 +10048,8 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
 *44710 INC HL        ;
  44711 INC HL        ;
  44712 DJNZ 44704    ;
-@nowarn=40503
-@ssub=LD A,(Auto_9E37)
  44714 LD A,(40503)  ;
  44717 ADD A,C       ;
-@nowarn=40503
-@ssub=LD (Auto_9E37),A
  44718 LD (40503),A  ;
  44721 RET           ;
 ; This entry point is used by the routine at #R43610.
@@ -11272,40 +10057,23 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
  44725 SUB 48        ;
  44727 SLA A         ;
  44729 LD C,A        ;
-@nowarn=40503
-@ssub=LD A,(Auto_9E37)
  44730 LD A,(40503)  ;
  44733 ADD A,C       ;
-@nowarn=40503
-@ssub=LD (Auto_9E37),A
  44734 LD (40503),A  ;
  44737 RET           ;
 @label=ShortGameInit
 *44738 XOR A         ;
-@nowarn=33708
-@ssub=LD (Auto_83AC),A
  44739 LD (33708),A  ;
-@nowarn=33709
-@ssub=LD (Auto_83AD),A
  44742 LD (33709),A  ;
-@nowarn=33714
-@ssub=LD HL,Auto_83B2
  44745 LD HL,33714   ;
-@nowarn=33741
-@ssub=LD (Auto_83CD),HL
  44748 LD (33741),HL ;
  44751 LD A,9        ;
-@nowarn=33703
-@ssub=LD (AlienTargetID),A
  44753 LD (33703),A  ;
-@nowarn=41508
-@ssub=LD HL,Auto_A224
  44756 LD HL,41508   ;
  44759 LD DE,29566   ;
  44762 LD BC,64      ;
  44765 LDIR          ;
  44767 JP 42380      ;
-@label=Auto_AEE2
  44770 LD D,B        ;
  44771 LD D,D        ;
  44772 LD B,L        ;
@@ -11322,7 +10090,6 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
  44787 LD B,C        ;
  44788 LD C,L        ;
  44789 LD B,L        ;
-@label=Auto_AEF6
  44790 LD B,C        ;
  44791 LD C,(HL)     ;
  44792 LD E,C        ;
@@ -11358,20 +10125,15 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
 ; Used by the routine at #R36457.
 @label=PauseMenu
 c44815 CALL 33479    ; draw game-window border
-@ignoreua
  44818 LD HL,20614   ; HL = $5086 (mid-screen attribute row)
  44821 LD (31257),HL ; set draw pointer
  44824 LD B,20       ; 20-character message line
 ; This entry point is used by the routine at #R44561.
-@nowarn=44770
-@ssub=LD DE,Auto_AEE2
 *44826 LD DE,44770   ; DE = text data for pause message line 1
  44829 CALL 44509    ; blit text
  44832 LD HL,20675   ; next screen row
  44835 LD (31257),HL ;
  44838 LD B,25       ; 25-character second line
-@nowarn=44790
-@ssub=LD DE,Auto_AEF6
  44840 LD DE,44790   ; text data for "PRESS 1 TO RESTART" line
  44843 CALL 44509    ; blit text
  44846 CALL 44109    ; short wait (debounce key release)
@@ -11379,7 +10141,6 @@ c44815 CALL 33479    ; draw game-window border
 *44849 LD A,6        ; 6 = yellow border
  44851 OUT (254),A   ; flash border yellow (indicates pause)
  44853 CALL 44093    ; wait loop (keyboard debounce / delay)
-@ignoreua
  44856 LD BC,63486   ; BC = $F7FE: keyboard row for keys 1-5
  44859 IN A,(C)      ; read keyboard
 ; This entry point is used by the routine at #R44561.
@@ -11388,8 +10149,7 @@ c44815 CALL 33479    ; draw game-window border
  44865 XOR A         ; A = 0
  44866 OUT (254),A   ; restore border to black
  44868 CALL 33479    ; redraw game-window frame
-@ignoreua
- 44871 LD A,(31252)  ; A = room mode (#R31252)
+ 44871 LD A,(31252)  ; A = room mode ($7A14)
 ; This entry point is used by the routine at #R44561.
 *44874 CP 1          ; mode 1 = corridor view active
 ; This entry point is used by the routine at #R44561.
@@ -11399,7 +10159,7 @@ c44815 CALL 33479    ; draw game-window border
 ; PlayMusic
 ;
 ; Plays a background music phrase through the ZX Spectrum beeper. Reads the
-; music-active flag at #R33737. If zero, falls through to the standard frame-
+; music-active flag at $83C9. If zero, falls through to the standard frame-
 ; timing wait at #R36448 and returns. Otherwise plays a descending sequence of
 ; tones: reads 32 consecutive ROM bytes from $0200 and for each byte toggles
 ; bit 4 of port $FE (beeper output), with a delay of C counts between
@@ -11408,11 +10168,8 @@ c44815 CALL 33479    ; draw game-window border
 ; exhausted), then returns.
 ;
 ; Used by the routines at #R36457 and #R42821.
-@nowarn=33705
 @label=PlayMusic
-@ssub=LD A,(Auto_83A9)
-@ignoreua
-c44880 LD A,(33705)  ; A = music-active flag (#R33737)
+c44880 LD A,(33705)  ; A = music-active flag ($83C9)
  44883 AND A         ; music enabled?
  44884 JP Z,36448    ; no: standard frame-timing wait and return
  44887 LD HL,512     ; HL = $0200 (ROM data used as tone source)
@@ -11435,8 +10192,6 @@ c44880 LD A,(33705)  ; A = music-active flag (#R33737)
  44916 LD C,A        ; store updated delay
  44917 DJNZ 44893    ;
  44919 XOR A         ;
-@nowarn=33705
-@ssub=LD (Auto_83A9),A
  44920 LD (33705),A  ;
  44923 RET           ;
 ; This entry point is used by the routine at #R37490.
@@ -11452,8 +10207,6 @@ c44880 LD A,(33705)  ; A = music-active flag (#R33737)
  44944 CP 1          ;
  44946 JR NZ,44964   ;
  44948 PUSH HL       ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  44949 LD A,(33700)  ;
  44952 LD HL,31241   ;
  44955 CP (HL)       ;
@@ -11475,8 +10228,6 @@ c44880 LD A,(33705)  ; A = music-active flag (#R33737)
 ; This entry point is used by the routine at #R37490.
 *44986 LD HL,65535   ;
  44989 LD (31248),HL ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  44992 LD A,(33700)  ;
  44995 RET           ;
 ; This entry point is used by the routine at #R31634.
@@ -11514,8 +10265,6 @@ c44880 LD A,(33705)  ; A = music-active flag (#R33737)
 *45062 POP DE        ;
  45063 POP IX        ;
  45065 CALL 39687    ;
-@nowarn=32896
-@ssub=LD HL,Auto_8080
  45068 LD HL,32896   ;
  45071 LD (31263),HL ;
  45074 LD A,4        ;
@@ -11583,8 +10332,6 @@ c44880 LD A,(33705)  ; A = music-active flag (#R33737)
 *45195 LD A,49       ;
  45197 LD (29643),A  ;
  45200 CALL 32816    ;
-@nowarn=33704
-@ssub=LD HL,AlienActiveFlag
 *45203 LD HL,33704   ;
  45206 RET           ;
 ; This entry point is used by the routine at #R44313.
@@ -11599,8 +10346,6 @@ c44880 LD A,(33705)  ; A = music-active flag (#R33737)
  45221 RET           ;
 ; This entry point is used by the routine at #R41264.
 *45222 LD HL,65535   ;
-@nowarn=33743
-@ssub=LD (Auto_83CF),HL
  45225 LD (33743),HL ;
  45228 CALL 33600    ;
  45231 RET           ;
@@ -11637,16 +10382,14 @@ c44880 LD A,(33705)  ; A = music-active flag (#R33737)
  45286 LD (33685),A  ;
  45289 RET           ;
 
-; Routine at #R45290
+; Routine at 45290
 ;
 ; Used by the routine at #R33600.
-@label=WrapScreenAddr
 c45290 LD A,H        ;
  45291 AND 31        ;
  45293 LD H,A        ;
  45294 RET           ;
 ; This entry point is used by the routine at #R37490.
-@label=Auto_B0EF
 *45295 ADD A,32      ;
  45297 LD (HL),A     ;
  45298 LD C,E        ;
@@ -11663,8 +10406,6 @@ c45290 LD A,H        ;
  45320 LD A,(31252)  ;
  45323 CP 1          ;
  45325 RET NZ        ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  45326 LD A,(33700)  ;
  45329 LD HL,31241   ;
  45332 CP (HL)       ;
@@ -11672,10 +10413,7 @@ c45290 LD A,H        ;
  45334 CALL 32385    ;
  45337 RET           ;
 ; This entry point is used by the routine at #R35973.
-@label=Auto_B11A
 *45338 CALL 36793    ;
-@nowarn=33700
-@ssub=LD A,(CrewIndex)
  45341 LD A,(33700)  ;
  45344 CP 0          ;
  45346 RET Z         ;
@@ -11683,13 +10421,11 @@ c45290 LD A,H        ;
  45350 LD B,A        ;
  45351 LD IX,29566   ;
  45355 LD DE,8       ;
-@label=Auto_B12E
 *45358 ADD IX,DE     ;
  45360 DJNZ 45358    ;
  45362 CALL 32385    ;
  45365 RET           ;
 ; This entry point is used by the routine at #R37490.
-@label=Auto_B136
 *45366 ADD HL,DE     ;
  45367 INC (HL)      ;
  45368 INC HL        ;
@@ -11698,7 +10434,6 @@ c45290 LD A,H        ;
  45371 LD A,(HL)     ;
  45372 RET           ;
 ; This entry point is used by the routine at #R37490.
-@label=Auto_B13D
 *45373 LD A,(31252)  ;
  45376 CP 1          ;
  45378 JR NZ,45398   ;
@@ -11706,31 +10441,25 @@ c45290 LD A,H        ;
  45383 LD B,A        ;
  45384 LD IX,29566   ;
  45388 LD DE,8       ;
-@label=Auto_B14F
 *45391 ADD IX,DE     ;
  45393 DJNZ 45391    ;
  45395 CALL 32385    ;
-@label=Auto_B156
 *45398 POP IX        ;
  45400 RET           ;
 
-; Routine at #R45401
+; Routine at 45401
 ;
 ; Used by the routine at #R36457.
-@label=UpdateAllCrew
 c45401 LD IX,29574   ;
  45405 LD C,6        ;
-@label=Auto_B15F
 *45407 LD H,(IX+1)   ;
  45410 LD L,(IX+5)   ;
  45413 LD B,C        ;
  45414 PUSH IX       ;
-@label=Auto_B168
 *45416 CALL 45470    ;
  45419 LD A,H        ;
  45420 CP (IX+1)     ;
  45423 JR Z,45444    ;
-@label=Auto_B171
 *45425 DJNZ 45416    ;
  45427 POP IX        ;
  45429 DEC C         ;
@@ -11741,7 +10470,6 @@ c45401 LD IX,29574   ;
  45439 CALL 37322    ;
  45442 RET           ;
  45443 NOP           ;
-@label=Auto_B184
 *45444 LD A,L        ;
  45445 SUB 2         ;
  45447 ADD A,(IX+6)  ;
@@ -11759,21 +10487,17 @@ c45401 LD IX,29574   ;
  45465 SUB 2         ;
  45467 LD (DE),A     ;
  45468 JR 45425      ;
-@label=Auto_B19E
 *45470 LD DE,8       ;
  45473 ADD IX,DE     ;
  45475 RET           ;
 ; This entry point is used by the routine at #R38379.
-@label=Auto_B1A4
 *45476 CALL 45585    ;
-@label=Auto_B1A7
 *45479 LD A,(31252)  ;
  45482 CP 1          ;
  45484 RET NZ        ;
  45485 LD A,(31241)  ;
  45488 CP C          ;
  45489 RET Z         ;
-@label=Auto_B1B2
 *45490 PUSH BC       ;
  45491 PUSH DE       ;
  45492 PUSH HL       ;
@@ -11787,7 +10511,6 @@ c45401 LD IX,29574   ;
  45508 POP BC        ;
  45509 RET           ;
 ; This entry point is used by the routine at #R35578.
-@label=Auto_B1C6
 *45510 LD A,(IX+5)   ;
  45513 ADD A,1       ;
  45515 LD (IX+5),A   ;
@@ -11795,23 +10518,18 @@ c45401 LD IX,29574   ;
  45521 ADD A,1       ;
  45523 LD (IX+6),A   ;
  45526 CALL 32385    ;
-@nowarn=33706
-@ssub=LD HL,AlienEventTimer
  45529 LD HL,33706   ;
  45532 RET           ;
 ; This entry point is used by the routine at #R38379.
-@label=Auto_B1DD
 *45533 LD (IX+5),C   ;
  45536 JP 45479      ;
 ; This entry point is used by the routine at #R35973.
-@label=Auto_B1E3
 *45539 INC HL        ;
  45540 DEC (HL)      ;
  45541 LD A,127      ;
  45543 CP (HL)       ;
  45544 JR NC,45548   ;
  45546 LD (HL),0     ;
-@label=Auto_B1EC
 *45548 DEC HL        ;
  45549 ADD HL,DE     ;
  45550 DEC B         ;
@@ -11825,32 +10543,24 @@ c45401 LD IX,29574   ;
  45566 LD B,A        ;
  45567 LD IX,29566   ;
  45571 LD DE,8       ;
-@label=Auto_B206
 *45574 ADD IX,DE     ;
  45576 DJNZ 45574    ;
  45578 CALL 32385    ;
  45581 POP IX        ;
  45583 POP BC        ;
  45584 RET           ;
-@label=Auto_B211
 *45585 INC HL        ;
  45586 LD (HL),1     ;
  45588 PUSH BC       ;
  45589 PUSH IX       ;
  45591 PUSH HL       ;
  45592 LD H,0        ;
-@nowarn=33695
-@ssub=LD A,(Auto_839F)
  45594 LD A,(33695)  ;
  45597 CP 255        ;
  45599 CALL NZ,45642 ;
-@nowarn=33696
-@ssub=LD A,(Auto_83A0)
  45602 LD A,(33696)  ;
  45605 CP 255        ;
  45607 CALL NZ,45642 ;
-@nowarn=33697
-@ssub=LD A,(Auto_83A1)
  45610 LD A,(33697)  ;
  45613 CP 255        ;
  45615 CALL NZ,45642 ;
@@ -11865,16 +10575,13 @@ c45401 LD IX,29574   ;
  45629 LD A,20       ;
  45631 CALL 37176    ;
  45634 CALL 36428    ;
-@label=Auto_B245
 *45637 POP HL        ;
  45638 POP IX        ;
  45640 POP BC        ;
  45641 RET           ;
-@label=Auto_B24A
 *45642 LD B,A        ;
  45643 LD IX,29566   ;
  45647 LD DE,8       ;
-@label=Auto_B252
 *45650 ADD IX,DE     ;
  45652 DJNZ 45650    ;
  45654 LD B,A        ;
@@ -11886,32 +10593,26 @@ c45401 LD IX,29574   ;
  45665 CP (IX+6)     ;
  45668 JR NC,45674   ;
  45670 LD (IX+6),0   ;
-@label=Auto_B26A
 *45674 LD H,B        ;
  45675 RET           ;
 ; This entry point is used by the routine at #R38379.
-@label=Auto_B26C
 *45676 CP (HL)       ;
  45677 JP Z,31417    ;
  45680 JP 45490      ;
 ; This entry point is used by the routine at #R38379.
-@label=Auto_B273
 *45683 LD BC,29346   ;
  45686 AND 63        ;
  45688 LD (38356),A  ;
  45691 RET           ;
 ; This entry point is used by the routine at #R31634.
-@label=Auto_B27C
 *45692 CALL 31690    ;
 ; This entry point is used by the routine at #R31634.
-@label=Auto_B27F
 *45695 LD HL,31257   ;
  45698 LD A,(HL)     ;
  45699 AND 31        ;
  45701 RET Z         ;
  45702 JP 32670      ;
 ; This entry point is used by the routine at #R38379.
-@label=Auto_B289
 *45705 CP C          ;
  45706 JP Z,39035    ;
  45709 LD A,(29567)  ;
@@ -11920,21 +10621,15 @@ c45401 LD IX,29574   ;
  45715 JP Z,39035    ;
  45718 JP 39000      ;
 ; This entry point is used by the routine at #R37018.
-@label=Auto_B299
 *45721 LD A,(IX+1)   ;
  45724 CP 98         ;
  45726 JP Z,37132    ;
  45729 JP 37036      ;
 ; This entry point is used by the routine at #R41264.
-@nowarn=33704
-@label=Auto_B2A4
-@ssub=LD (AlienActiveFlag),A
 *45732 LD (33704),A  ;
  45735 LD A,(31252)  ;
  45738 CP 1          ;
  45740 RET NZ        ;
-@nowarn=33703
-@ssub=LD A,(AlienTargetID)
  45741 LD A,(33703)  ;
  45744 LD D,A        ;
  45745 LD A,(31241)  ;
@@ -11942,28 +10637,21 @@ c45401 LD IX,29574   ;
  45749 RET NZ        ;
  45750 JP 31417      ;
 ; This entry point is used by the routine at #R35314.
-@label=Auto_B2B9
 *45753 CALL 45760    ;
  45756 LD A,(31252)  ;
  45759 RET           ;
-@label=Auto_B2C0
 *45760 LD A,(31252)  ;
  45763 CP 1          ;
  45765 RET NZ        ;
-@nowarn=33683
-@ssub=LD A,(CorridorCursor)
  45766 LD A,(33683)  ;
  45769 CP 17         ;
  45771 RET Z         ;
  45772 CP 8          ;
  45774 JR NZ,45780   ;
  45776 LD (IX+0),0   ;
-@label=Auto_B2D4
 *45780 LD A,(29567)  ;
  45783 CP (IX+1)     ;
  45786 JR Z,45803    ;
-@nowarn=33704
-@ssub=LD A,(AlienActiveFlag)
  45788 LD A,(33704)  ;
  45791 CP 255        ;
  45793 RET NZ        ;
@@ -11972,13 +10660,11 @@ c45401 LD IX,29574   ;
  45798 LD A,(HL)     ;
  45799 CP (IX+1)     ;
  45802 RET NZ        ;
-@label=Auto_B2EB
 *45803 LD A,(33685)  ;
  45806 CP 49         ;
  45808 JR NZ,45815   ;
  45810 LD A,238      ;
  45812 LD (33685),A  ;
-@label=Auto_B2F7
 *45815 LD A,52       ;
  45817 LD (29643),A  ;
  45820 LD HL,18646   ;
@@ -11986,7 +10672,6 @@ c45401 LD IX,29574   ;
  45826 CALL 31634    ;
  45829 RET           ;
 ; This entry point is used by the routine at #R35578.
-@label=Auto_B306
 *45830 LD A,(33685)  ;
  45833 CP 238        ;
  45835 JP NZ,35790   ;
@@ -11994,9 +10679,6 @@ c45401 LD IX,29574   ;
  45840 LD (33685),A  ;
  45843 JP 35795      ;
 ; This entry point is used by the routine at #R38379.
-@nowarn=33683
-@label=Auto_B316
-@ssub=LD A,(CorridorCursor)
 *45846 LD A,(33683)  ;
  45849 LD (IX+0),0   ;
  45853 RET           ;
@@ -23488,7 +22170,6 @@ c45401 LD IX,29574   ;
  57339 NOP           ;
  57340 NOP           ;
  57341 NOP           ;
-@label=Auto_DFFE
  57342 NOP           ;
  57343 NOP           ;
  57344 NOP           ;
@@ -26147,10 +24828,8 @@ c45401 LD IX,29574   ;
  59997 NOP           ;
  59998 NOP           ;
  59999 NOP           ;
-@ignoreua
 
-; Data block at #R60000
-@label=ExtraDataArea
+; Data block at 60000
 b60000 DEFB 0,0,0,15,128,0,0,0
  60008 DEFB 0,63,192,0,0,0,0,127
  60016 DEFB 224,0,2,0,56,255,224,0
@@ -26395,19 +25074,17 @@ b60000 DEFB 0,0,0,15,128,0,0,0
  61928 DEFB 0,0,0,0,0,0,0,0
 
 ; IntroTileData
-@ignoreua
 ;
-; 8×8 pixel tile bitmaps for the game's extra-data area (#R60000-$F5FF).
+; 8×8 pixel tile bitmaps for the game's extra-data area ($EA60-$F5FF).
 ; The first 8 tiles ($F1B0-$F22F, addresses 61936-61999) are blank padding.
-; Tile graphics used by DrawIntroScreen (#R42581) start at #R62000 (#R62000):
-; tile index N maps to address #R62000 + N×8. The tile map at #R40504 indexes
+; Tile graphics used by DrawIntroScreen (#R42581) start at $F230 (62000):
+; tile index N maps to address 62000 + N×8. The tile map at $9E38 indexes
 ; into this set to build the 15×11 title-screen graphic. Subsequent tiles
 ; (beyond the intro set) are used by other game screens and the ship map.
 ;
-; Intro tile sheet — tiles starting at #R62000, 16 per row, 2× scale:
+; Intro tile sheet — tiles starting at $F230, 16 per row, 2× scale:
 ;
-; #HTML(#UDGARRAY16,56,2(#R62000-62728-8)(intro_tiles))
-@label=IntroTileData
+; #HTML(#UDGARRAY16,56,2(62000-62728-8)(intro_tiles))
 b61936 DEFB 0,0,0,0,0,0,0,0
  61944 DEFB 0,0,0,0,0,0,0,0
  61952 DEFB 0,0,0,0,0,0,0,0
@@ -26416,7 +25093,6 @@ b61936 DEFB 0,0,0,0,0,0,0,0
  61976 DEFB 0,0,0,0,0,0,0,0
  61984 DEFB 0,0,0,0,0,0,0,0
  61992 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_F230
  62000 DEFB 0,0,0,0,0,0,0,0
  62008 DEFB 0,0,0,0,0,1,3,7
  62016 DEFB 1,15,31,61,198,238,246,237
@@ -26639,7 +25315,6 @@ b61936 DEFB 0,0,0,0,0,0,0,0
  63752 DEFB 0,0,0,0,0,0,0,0
  63760 DEFB 0,0,0,0,0,0,0,0
  63768 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_F920
  63776 DEFB 0,0,0,0,0,0,0,0
  63784 DEFB 0,0,0,0,0,0,0,0
  63792 DEFB 0,0,0,0,0,0,0,0
@@ -26856,7 +25531,6 @@ b61936 DEFB 0,0,0,0,0,0,0,0
  65480 DEFB 0,60,66,66,66,66,60,0
  65488 DEFB 0,124,66,66,124,64,64,0
  65496 DEFB 0,60,66,66,82,74,60,0
-@label=Auto_FFE0
  65504 DEFB 0,124,66,66,124,68,66,0
  65512 DEFB 0,60,64,60,2,66,60,0
  65520 DEFB 0,254,16,16,16,16,16,0
