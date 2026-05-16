@@ -2262,10 +2262,10 @@ c31417 XOR A         ; A = 0
  31427 SET 7,(HL)    ; freeze animation channel B
  31429 LD A,128      ; $80
 @nowarn=39741
-@ssub=LD (Auto_9B3D),A
+@ssub=LD (AlienXPhase),A
  31431 LD (39741),A  ; set alien pixel X sentinel (#R39741)
 @nowarn=39753
-@ssub=LD (Auto_9B49),A
+@ssub=LD (AlienYPhase),A
  31434 LD (39753),A  ; set alien pixel Y sentinel (#R39753)
  31437 LD A,8        ; segment 8 = centre of 19-segment corridor
 @nowarn=33683
@@ -2715,7 +2715,7 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  32127 LD (DE),A     ;
  32128 XOR A         ;
 @nowarn=39741
-@ssub=LD (Auto_9B3D),A
+@ssub=LD (AlienXPhase),A
  32129 LD (39741),A  ;
 ; This entry point is used by the routine at #R44880.
 *32132 POP AF        ;
@@ -3054,10 +3054,10 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  32725 LD (31263),HL ;
  32728 LD A,128      ;
 @nowarn=39753
-@ssub=LD (Auto_9B49),A
+@ssub=LD (AlienYPhase),A
  32730 LD (39753),A  ;
 @nowarn=39741
-@ssub=LD (Auto_9B3D),A
+@ssub=LD (AlienXPhase),A
  32733 LD (39741),A  ;
  32736 CALL 31721    ;
  32739 LD A,(31242)  ;
@@ -7638,112 +7638,131 @@ c38379 CALL 38846    ;
  39651 DJNZ 39639    ;
  39653 RET           ;
  39654 RET           ;
+
+; Resets alien Y (tail) animation and blits the first frame. Sets Y position to 8,
+; clears the Y phase freeze flag, then calls #R39832 with B=1 to draw frame 0.
 ; This entry point is used by the routines at #R31634 and #R36859.
-@label=Auto_9AE7
-*39655 XOR A         ;
+@label=InitAlienYAnim
+c39655 XOR A         ; A = 0: clear freeze flag
 @nowarn=39753
-@ssub=LD (Auto_9B49),A
- 39656 LD (39753),A  ;
+@ssub=LD (AlienYPhase),A
+ 39656 LD (39753),A  ; AlienYPhase = 0
  39659 LD A,8        ;
- 39661 LD (39750),A  ;
- 39664 LD B,1        ;
- 39666 CALL 39832    ;
+ 39661 LD (39750),A  ; AlienYPos = 8 (initial Y pixel offset)
+ 39664 LD B,1        ; B = 1 iteration
+ 39666 CALL 39832    ; draw first tail frame
  39669 RET           ;
+
+; Advances the alien Y (tail) animation by one frame if not frozen. Sets the freeze
+; flag (bit 7 of AlienYPhase) after blitting so the animation runs exactly once.
 ; This entry point is used by the routines at #R35578 and #R36859.
-@label=Auto_9AF6
-*39670 LD B,1        ;
+@label=TriggerAlienYAnim
+c39670 LD B,1        ; B = 1 iteration
 @nowarn=39753
-@ssub=LD A,(Auto_9B49)
- 39672 LD A,(39753)  ;
- 39675 AND 128       ;
- 39677 RET NZ        ;
- 39678 CALL 39832    ;
+@ssub=LD A,(AlienYPhase)
+ 39672 LD A,(39753)  ; A = AlienYPhase
+ 39675 AND 128       ; test freeze flag (bit 7)
+ 39677 RET NZ        ; already frozen: do nothing
+ 39678 CALL 39832    ; blit one tail frame
  39681 LD A,128      ;
 @nowarn=39753
-@ssub=LD (Auto_9B49),A
- 39683 LD (39753),A  ;
+@ssub=LD (AlienYPhase),A
+ 39683 LD (39753),A  ; freeze: AlienYPhase |= 128
  39686 RET           ;
+
+; Clears the alien body animation area from the screen, then resets the X phase
+; counter so the next trigger starts from frame 0.
 ; This entry point is used by the routines at #R31634 and #R44880.
-@label=Auto_9B07
-*39687 CALL 40149    ;
- 39690 XOR A         ;
+@label=ResetAlienXAnim
+c39687 CALL 40149    ; clear 19x20-cell screen area (ClearAlienArea)
+ 39690 XOR A         ; A = 0
 @nowarn=39741
-@ssub=LD (Auto_9B3D),A
- 39691 LD (39741),A  ;
+@ssub=LD (AlienXPhase),A
+ 39691 LD (39741),A  ; AlienXPhase = 0 (unfreeze, frame 0)
  39694 RET           ;
+
+; Arms the alien body animation (sets freeze flag so a single blit occurs next frame),
+; or ends the encounter sequence. If (31252)=1 the crew member was killed: jump to
+; #R32719 to handle that. Otherwise clears the screen area and returns.
 ; This entry point is used by the routines at #R36457 and #R37490.
 @nowarn=39741
-@label=Auto_9B0F
-@ssub=LD A,(Auto_9B3D)
-*39695 LD A,(39741)  ;
- 39698 AND 128       ;
- 39700 RET NZ        ;
+@label=TriggerAlienXAnim
+@ssub=LD A,(AlienXPhase)
+c39695 LD A,(39741)  ; A = AlienXPhase
+ 39698 AND 128       ; test freeze flag
+ 39700 RET NZ        ; already frozen: do nothing
  39701 LD A,128      ;
 @nowarn=39741
-@ssub=LD (Auto_9B3D),A
- 39703 LD (39741),A  ;
- 39706 LD A,(31252)  ;
- 39709 CP 1          ;
- 39711 JP Z,32719    ;
- 39714 CALL 40149    ;
+@ssub=LD (AlienXPhase),A
+ 39703 LD (39741),A  ; freeze: AlienXPhase |= 128
+ 39706 LD A,(31252)  ; A = encounter outcome byte
+ 39709 CP 1          ; crew member killed?
+ 39711 JP Z,32719    ; yes: handle death sequence
+ 39714 CALL 40149    ; no: clear alien screen area
  39717 RET           ;
-@label=Auto_9B26
-*39718 CALL 34967    ;
- 39721 CALL 35016    ;
+
+; Per-frame alien encounter update: refreshes the map view, then advances both
+; animation layers. Y layer (tail sweep) if not frozen, X layer (body) if not frozen.
+@label=UpdateAlienAnim
+c39718 CALL 34967    ; redraw room background
+ 39721 CALL 35016    ; redraw room actors
 @nowarn=39753
-@ssub=LD A,(Auto_9B49)
- 39724 LD A,(39753)  ;
- 39727 AND 128       ;
- 39729 CALL Z,39830  ;
+@ssub=LD A,(AlienYPhase)
+ 39724 LD A,(39753)  ; A = AlienYPhase
+ 39727 AND 128       ; test freeze flag
+ 39729 CALL Z,39830  ; not frozen: advance Y (tail) animation
 @nowarn=39741
-@ssub=LD A,(Auto_9B3D)
- 39732 LD A,(39741)  ;
- 39735 AND 128       ;
- 39737 CALL Z,39764  ;
+@ssub=LD A,(AlienXPhase)
+ 39732 LD A,(39741)  ; A = AlienXPhase
+ 39735 AND 128       ; test freeze flag
+ 39737 CALL Z,39764  ; not frozen: blit next alien body frame
  39740 RET           ;
-@label=Auto_9B3D
- 39741 NOP           ;
- 39742 LD H,B        ;
- 39743 JP PE,60378   ;
- 39746 LD D,H        ;
- 39747 DEFB 237,206  ;
- 39749 XOR 0         ;
-@label=Auto_9B47
- 39751 NOP           ;
- 39752 LD C,B        ;
-@label=Auto_9B49
- 39753 NOP           ;
- 39754 LD C,B        ;
- 39755 RET P         ;
- 39756 ADC A,B       ;
- 39757 RET P         ;
- 39758 RET Z         ;
- 39759 RET P         ;
- 39760 EX AF,AF'     ;
- 39761 POP AF        ;
- 39762 LD C,B        ;
- 39763 POP AF        ;
+
+;
+; Inline state variables for the alien encounter animation. Addresses are
+; self-modified at runtime; pointer table entries are fixed in ROM.
+@label=AlienXPhase
+b39741 DEFB 0          ; body frame index 0-3 (bit 7 = freeze flag)
+ 39742 DEFW 60000      ; #R60000 (AlienFrame0 sprite ptr)
+ 39744 DEFW 60378      ; #R60378 (AlienFrame1 sprite ptr)
+ 39746 DEFW 60756      ; #R60756 (AlienFrame2 sprite ptr)
+ 39748 DEFW 61134      ; #R61134 (AlienFrame3 sprite ptr)
+ 39750 DEFB 0          ; AlienYPos: pixel Y offset 0-135
+@label=AlienScreenPtr
+ 39751 DEFW 18432      ; current screen draw ptr (runtime, initially 0x4800)
+@label=AlienYPhase
+ 39753 DEFB 0          ; tail phase 0-4 (bit 7 = freeze flag)
+ 39754 DEFW 61512      ; #R61512 (JonesFrame0 sprite ptr)
+ 39756 DEFW 61576      ; #R61576 (JonesFrame1 sprite ptr)
+ 39758 DEFW 61640      ; #R61640 (JonesFrame2 sprite ptr)
+ 39760 DEFW 61704      ; #R61704 (JonesFrame3 sprite ptr)
+ 39762 DEFW 61768      ; #R61768 (JonesFrame4 sprite ptr)
+
+; Advances AlienXPhase (0->1->2->3->0), loads the corresponding sprite frame pointer
+; from the table at AlienXPhase+2, then LDIRs 6 bytes x 63 rows of sprite data to
+; the display file at 0x4807 (column 7, row 1, pixel-row 0), handling ZX Spectrum
+; interleaved scan-line addressing at each row boundary.
 @nowarn=39741
-@label=Auto_9B54
-@ssub=LD HL,Auto_9B3D
-*39764 LD HL,39741   ;
+@label=BlitAlienFrame
+@ssub=LD HL,AlienXPhase
+c39764 LD HL,39741   ; HL -> AlienXPhase
  39767 LD A,(HL)     ;
  39768 INC A         ;
- 39769 AND 3         ;
- 39771 LD (HL),A     ;
+ 39769 AND 3         ; cycle frame index 0->1->2->3->0
+ 39771 LD (HL),A     ; store new frame index
  39772 LD E,A        ;
  39773 LD D,0        ;
- 39775 INC HL        ;
+ 39775 INC HL        ; HL -> frame pointer table
  39776 ADD HL,DE     ;
- 39777 ADD HL,DE     ;
+ 39777 ADD HL,DE     ; HL -> table[frame] (2 bytes/entry)
  39778 LD E,(HL)     ;
  39779 INC HL        ;
- 39780 LD D,(HL)     ;
- 39781 LD HL,18439   ;
- 39784 EX DE,HL      ;
- 39785 LD B,63       ;
+ 39780 LD D,(HL)     ; DE = sprite frame data ptr
+ 39781 LD HL,18439   ; HL = 0x4807: display file col 7, char-row 1, pixel-row 0
+ 39784 EX DE,HL      ; DE = screen dst, HL = sprite src
+ 39785 LD B,63       ; 63 pixel rows per frame
  39787 LD C,0        ;
-@label=Auto_9B6D
+@label=BlitAlienFrameRow
 *39789 PUSH BC       ;
  39790 LD B,C        ;
  39791 LD C,6        ;
@@ -7755,83 +7774,98 @@ c38379 CALL 38846    ;
  39801 JR Z,39806    ;
  39803 INC H         ;
  39804 JR 39821      ;
-@label=Auto_9B7E
+; ZX Spectrum display-file scan-line bank wrap: H&7 = 7 means we finished a
+; character row. If L < 0xE0 (224) add 0xF920 (-1760) to jump to the next
+; screen third; otherwise add 32 to advance to the next character row within
+; the same third. Then subtract 6 from HL to step back past the LDIR'd bytes.
+@label=BlitAlienFrameBankCheck
 *39806 LD A,L        ;
- 39807 CP 224        ;
- 39809 JR NC,39817   ;
- 39811 LD BC,63776   ;
+ 39807 CP 224        ; L >= 0xE0: last char-row of this screen third?
+ 39809 JR NC,39817   ; yes: next third
+ 39811 LD BC,63776   ; BC = 0xF920 (-1760): wrap to next column in next third
  39814 ADD HL,BC     ;
  39815 JR 39821      ;
-@label=Auto_9B89
-*39817 LD BC,32      ;
+@label=BlitAlienFrameNextThird
+*39817 LD BC,32      ; BC = 32: advance to next character row
  39820 ADD HL,BC     ;
-@label=Auto_9B8D
-*39821 LD BC,65530   ;
+@label=BlitAlienFrameNextRow
+*39821 LD BC,65530   ; BC = -6: rewind HL past the 6 LDIR'd bytes
  39824 ADD HL,BC     ;
- 39825 EX DE,HL      ;
+ 39825 EX DE,HL      ; DE = screen dst, HL = sprite src
  39826 POP BC        ;
- 39827 DJNZ 39789    ;
+ 39827 DJNZ 39789    ; next row
  39829 RET           ;
-@label=Auto_9B96
-*39830 LD B,2        ;
-@label=Auto_9B98
-*39832 PUSH BC       ;
- 39833 LD A,(22528)  ;
+
+; Entry point called from UpdateAlienAnim with B=2 to advance the Y position counter
+; before blitting. Calls BlitJonesFrame with B=2, which will call AdvanceAlienYPos.
+@label=AnimAlienY
+c39830 LD B,2        ; B=2: advance position then blit
+
+; Blits the alien tail (Y channel) XOR sprite for the current phase and position.
+; First XORs ink colour bits of a 4x2 attribute block to produce a flash effect.
+; Then loads the current Y-phase sprite pointer (3 bytes/row, 21 rows) and chooses
+; between an unshifted XOR blit (AlienYPos&7 < 4) or a shifted one (>= 4). The
+; shift amount is encoded directly into the self-modifying JR at BlitAlienYShiftCode
+; (byte 39932 is patched to select how many SRL/RR passes execute). DJNZ at the end
+; re-uses B to call AdvanceAlienYPos when B=2.
+@label=BlitJonesFrame
+c39832 PUSH BC       ; save B (iteration count)
+ 39833 LD A,(22528)  ; A = attribute at top-left of screen (0x5800)
  39836 CPL           ;
- 39837 AND 7         ;
- 39839 LD (39873),A  ;
- 39842 LD A,(39750)  ;
+ 39837 AND 7         ; invert and mask ink colour bits
+ 39839 LD (39873),A  ; patch XOR 7 opcode operand for attribute flash
+ 39842 LD A,(39750)  ; A = AlienYPos (pixel Y offset 0-135)
  39845 RRA           ;
  39846 RRA           ;
- 39847 RRA           ;
+ 39847 RRA           ; A = AlienYPos >> 3 (character row 0-16)
  39848 AND 31        ;
  39850 LD E,A        ;
- 39851 LD D,0        ;
- 39853 LD HL,19488   ;
- 39856 ADD HL,DE     ;
+ 39851 LD D,0        ; DE = char row index
+ 39853 LD HL,19488   ; HL = 0x4C00+1 (display col 1, char-row 0)
+ 39856 ADD HL,DE     ; HL = screen row address for AlienYPos
 @nowarn=39751
-@ssub=LD (Auto_9B47),HL
- 39857 LD (39751),HL ;
- 39860 LD HL,22848   ;
- 39863 ADD HL,DE     ;
- 39864 LD DE,29      ;
- 39867 LD C,2        ;
-@label=Auto_9BBD
-*39869 LD B,4        ;
-@label=Auto_9BBF
+@ssub=LD (AlienScreenPtr),HL
+ 39857 LD (39751),HL ; AlienScreenPtr = screen row ptr
+ 39860 LD HL,22848   ; HL = 0x5940 (attr row, col 0, char-row 1)
+ 39863 ADD HL,DE     ; HL = attr address for AlienYPos char row
+ 39864 LD DE,29      ; DE = attr row stride - 4 (skip to next pair)
+ 39867 LD C,2        ; 2 attribute rows
+@label=BlitAlienYAttrRow
+*39869 LD B,4        ; 4 attribute columns per row
+@label=BlitAlienYAttrInner
 *39871 LD A,(HL)     ;
- 39872 XOR 7         ;
- 39874 LD (HL),A     ;
+ 39872 XOR 7         ; toggle ink colour (self-modifying operand at 39873)
+ 39874 LD (HL),A     ; write flashed attribute
  39875 INC HL        ;
- 39876 DJNZ 39871    ;
- 39878 ADD HL,DE     ;
+ 39876 DJNZ 39871    ; next column
+ 39878 ADD HL,DE     ; skip to next attribute row
  39879 DEC C         ;
- 39880 JR NZ,39869   ;
+ 39880 JR NZ,39869   ; next row
 @nowarn=39753
-@ssub=LD HL,Auto_9B49
- 39882 LD HL,39753   ;
- 39885 LD E,(HL)     ;
+@ssub=LD HL,AlienYPhase
+ 39882 LD HL,39753   ; HL -> AlienYPhase
+ 39885 LD E,(HL)     ; E = current Y phase (0-4)
  39886 LD D,0        ;
- 39888 INC HL        ;
+ 39888 INC HL        ; HL -> Y frame pointer table
  39889 ADD HL,DE     ;
- 39890 ADD HL,DE     ;
+ 39890 ADD HL,DE     ; HL -> table[phase] (2 bytes/entry)
  39891 LD E,(HL)     ;
  39892 INC HL        ;
- 39893 LD D,(HL)     ;
- 39894 LD A,(39750)  ;
- 39897 AND 7         ;
+ 39893 LD D,(HL)     ; DE = tail sprite data ptr for this phase
+ 39894 LD A,(39750)  ; A = AlienYPos
+ 39897 AND 7         ; A = sub-character Y pixel offset (0-7)
  39899 CP 4          ;
- 39901 JP NC,40040   ;
+ 39901 JP NC,40040   ; >= 4: shifted blit (BlitAlienYShifted)
  39904 CPL           ;
- 39905 AND 3         ;
+ 39905 AND 3         ; shift count = 3-(AlienYPos&7) in [0,3]
  39907 LD L,A        ;
  39908 RLCA          ;
  39909 RLCA          ;
- 39910 RLCA          ;
- 39911 SUB L         ;
- 39912 LD (39932),A  ;
- 39915 LD B,21       ;
-@label=Auto_9BED
+ 39910 RLCA          ; A = shift_count * 8
+ 39911 SUB L         ; A = shift_count * 7 (bytes to skip in shift chain)
+ 39912 LD (39932),A  ; patch JR offset: BlitAlienYShiftCode entry skips N SRL/RR pairs
+ 39915 LD B,21       ; 21 pixel rows per tail frame
+@label=BlitJonesFrameRow
 *39917 PUSH BC       ;
  39918 EX DE,HL      ;
  39919 LD B,(HL)     ;
@@ -7842,40 +7876,43 @@ c38379 CALL 38846    ;
  39924 INC HL        ;
  39925 PUSH HL       ;
 @nowarn=39751
-@ssub=LD HL,(Auto_9B47)
+@ssub=LD HL,(AlienScreenPtr)
  39926 LD HL,(39751) ;
  39929 PUSH HL       ;
  39930 XOR A         ;
-@label=Auto_9BFB
-*39931 JR 39931      ;
- 39933 SRL B         ;
+; Self-modifying right-shift chain. Byte 39932 (the JR e operand) is patched before
+; entry to skip 0-3 SRL/RR groups, giving a right-shift of 0-3 bits across the 3+1
+; sprite bytes in {B,C,E,A}. After shifting, the result is XOR-blitted to screen.
+@label=BlitAlienYShiftCode
+*39931 JR 39931      ; self-modifying: JR offset patched to skip N SRL/RR groups
+ 39933 SRL B         ; shift group 3 (shift 3 bits right)
  39935 RR C          ;
  39937 RR E          ;
  39939 RRA           ;
- 39940 SRL B         ;
+ 39940 SRL B         ; shift group 2
  39942 RR C          ;
  39944 RR E          ;
  39946 RRA           ;
- 39947 SRL B         ;
+ 39947 SRL B         ; shift group 1 (shift 1 bit right)
  39949 RR C          ;
  39951 RR E          ;
  39953 RRA           ;
- 39954 EX AF,AF'     ;
+ 39954 EX AF,AF'     ; swap: A' = carry spill byte
  39955 LD A,B        ;
  39956 XOR (HL)      ;
- 39957 LD (HL),A     ;
+ 39957 LD (HL),A     ; XOR-blit byte 0 to screen
  39958 INC HL        ;
  39959 LD A,C        ;
  39960 XOR (HL)      ;
- 39961 LD (HL),A     ;
+ 39961 LD (HL),A     ; XOR-blit byte 1
  39962 INC HL        ;
  39963 LD A,E        ;
  39964 XOR (HL)      ;
- 39965 LD (HL),A     ;
+ 39965 LD (HL),A     ; XOR-blit byte 2
  39966 INC HL        ;
  39967 EX AF,AF'     ;
  39968 XOR (HL)      ;
- 39969 LD (HL),A     ;
+ 39969 LD (HL),A     ; XOR-blit carry spill byte
  39970 POP HL        ;
  39971 LD A,H        ;
  39972 AND 7         ;
@@ -7883,19 +7920,19 @@ c38379 CALL 38846    ;
  39976 JR Z,39981    ;
  39978 INC H         ;
  39979 JR 39996      ;
-@label=Auto_9C2D
+@label=BlitJonesFrameBankCheck
 *39981 LD A,L        ;
  39982 CP 224        ;
  39984 JR NC,39992   ;
  39986 LD BC,63776   ;
  39989 ADD HL,BC     ;
  39990 JR 39996      ;
-@label=Auto_9C38
+@label=BlitJonesFrameNextThird
 *39992 LD BC,32      ;
  39995 ADD HL,BC     ;
 @nowarn=39751
-@label=Auto_9C3C
-@ssub=LD (Auto_9B47),HL
+@label=BlitJonesFrameNextRow
+@ssub=LD (AlienScreenPtr),HL
 *39996 LD (39751),HL ;
  39999 POP DE        ;
  40000 POP BC        ;
@@ -7903,40 +7940,50 @@ c38379 CALL 38846    ;
  40003 POP BC        ;
  40004 DJNZ 40007    ;
  40006 RET           ;
-@label=Auto_9C47
-*40007 LD A,(39750)  ;
- 40010 ADD A,4       ;
- 40012 CP 136        ;
- 40014 JR C,40022    ;
- 40016 LD A,128      ;
+
+; Increments AlienYPos by 4. If the new value >= 136 the tail sweep is complete:
+; freeze the Y animation (AlienYPhase |= 128) and return. Otherwise store the new
+; position, cycle the phase counter (0->1->2->3->4->0) and jump back to BlitJonesFrame.
+@label=AdvanceAlienYPos
+c40007 LD A,(39750)  ; A = AlienYPos
+ 40010 ADD A,4       ; advance by 4 pixels
+ 40012 CP 136        ; reached bottom of sweep area?
+ 40014 JR C,40022    ; no: update position
+ 40016 LD A,128      ; yes: A = freeze flag
 @nowarn=39753
-@ssub=LD (Auto_9B49),A
- 40018 LD (39753),A  ;
- 40021 RET           ;
-@label=Auto_9C56
-*40022 LD (39750),A  ;
+@ssub=LD (AlienYPhase),A
+ 40018 LD (39753),A  ; AlienYPhase = 128 (frozen)
+ 40021 RET           ; done
+@label=AdvanceAlienYPosUpdate
+*40022 LD (39750),A  ; AlienYPos = new value
 @nowarn=39753
-@ssub=LD A,(Auto_9B49)
- 40025 LD A,(39753)  ;
+@ssub=LD A,(AlienYPhase)
+ 40025 LD A,(39753)  ; A = current phase (0-4)
  40028 INC A         ;
- 40029 CP 5          ;
- 40031 JR C,40034    ;
- 40033 XOR A         ;
+ 40029 CP 5          ; wrapped past phase 4?
+ 40031 JR C,40034    ; no: keep incremented value
+ 40033 XOR A         ; yes: wrap to 0
 @nowarn=39753
-@label=Auto_9C62
-@ssub=LD (Auto_9B49),A
-*40034 LD (39753),A  ;
- 40037 JP 39832      ;
-@label=Auto_9C68
-*40040 SUB 4         ;
+@label=AdvanceAlienYPosSetPhase
+@ssub=LD (AlienYPhase),A
+*40034 LD (39753),A  ; AlienYPhase = new phase
+ 40037 JP 39832      ; blit next tail frame
+
+; Handles the alien tail XOR blit when AlienYPos&7 >= 4 (sprite straddles the next
+; character row). Uses SLA/RL chains for a left-shift instead of SRL/RR, mirroring
+; the logic of BlitJonesFrame's right-shift section. The shift amount (pixels left
+; past the half-character boundary) is patched into the self-modifying JR at
+; BlitAlienYShiftCode2 (byte 40067), then 21 rows of 4 bytes are XOR-blitted.
+@label=BlitAlienYShifted
+c40040 SUB 4         ; A = (AlienYPos&7) - 4, left-shift amount in [0,3]
  40042 LD L,A        ;
  40043 RLCA          ;
  40044 RLCA          ;
- 40045 RLCA          ;
- 40046 SUB L         ;
- 40047 LD (40067),A  ;
- 40050 LD B,21       ;
-@label=Auto_9C74
+ 40045 RLCA          ; A = shift_count * 8
+ 40046 SUB L         ; A = shift_count * 7 (JR offset into SLA/RL chain)
+ 40047 LD (40067),A  ; patch BlitAlienYShiftCode2 JR offset
+ 40050 LD B,21       ; 21 pixel rows
+@label=BlitAlienYShiftedRow
 *40052 PUSH BC       ;
  40053 EX DE,HL      ;
  40054 LD B,(HL)     ;
@@ -7947,11 +7994,11 @@ c38379 CALL 38846    ;
  40059 INC HL        ;
  40060 PUSH HL       ;
 @nowarn=39751
-@ssub=LD HL,(Auto_9B47)
+@ssub=LD HL,(AlienScreenPtr)
  40061 LD HL,(39751) ;
  40064 PUSH HL       ;
  40065 XOR A         ;
-@label=Auto_9C82
+@label=BlitAlienYShiftCode2
 *40066 JR 40066      ;
  40068 SLA E         ;
  40070 RL C          ;
@@ -7990,19 +8037,19 @@ c38379 CALL 38846    ;
  40116 JR Z,40121    ;
  40118 INC H         ;
  40119 JR 40136      ;
-@label=Auto_9CB9
+@label=BlitAlienYShiftedBankCheck
 *40121 LD A,L        ;
  40122 CP 224        ;
  40124 JR NC,40132   ;
  40126 LD BC,63776   ;
  40129 ADD HL,BC     ;
  40130 JR 40136      ;
-@label=Auto_9CC4
+@label=BlitAlienYShiftedNextThird
 *40132 LD BC,32      ;
  40135 ADD HL,BC     ;
 @nowarn=39751
-@label=Auto_9CC8
-@ssub=LD (Auto_9B47),HL
+@label=BlitAlienYShiftedNextRow
+@ssub=LD (AlienScreenPtr),HL
 *40136 LD (39751),HL ;
  40139 POP DE        ;
  40140 POP BC        ;
@@ -8011,13 +8058,17 @@ c38379 CALL 38846    ;
  40144 DEC B         ;
  40145 JP NZ,40007   ;
  40148 RET           ;
-@label=Auto_9CD5
-*40149 LD HL,16384   ;
- 40152 LD (31257),HL ;
- 40155 LD C,19       ;
-@label=Auto_9CDD
+
+; Clears the 19x20-character area of the ZX Spectrum display file and attribute RAM
+; used by the alien body animation. Iterates 19 rows of 20 columns from 0x4000,
+; calling #R31370 to zero each cell, then repeats for the attribute area at 0x5800.
+@label=ClearAlienArea
+c40149 LD HL,16384   ; HL = 0x4000: start of display file
+ 40152 LD (31257),HL ; store current screen cell address
+ 40155 LD C,19       ; 19 character rows
+@label=ClearAlienAreaCol
 *40157 LD B,20       ;
-@label=Auto_9CDF
+@label=ClearAlienAreaRow
 *40159 PUSH BC       ;
  40160 XOR A         ;
  40161 CALL 31370    ;
@@ -8031,7 +8082,7 @@ c38379 CALL 38846    ;
  40178 CP 224        ;
  40180 JR C,40185    ;
  40182 LD DE,1804    ;
-@label=Auto_9CF9
+@label=ClearAlienAreaNextRow
 *40185 ADD HL,DE     ;
  40186 LD (31257),HL ;
  40189 DEC C         ;
@@ -9884,10 +9935,10 @@ c41264 LD HL,29570   ;
  42387 LD (31263),HL ;
  42390 LD A,L        ;
 @nowarn=39741
-@ssub=LD (Auto_9B3D),A
+@ssub=LD (AlienXPhase),A
  42391 LD (39741),A  ;
 @nowarn=39753
-@ssub=LD (Auto_9B49),A
+@ssub=LD (AlienYPhase),A
  42394 LD (39753),A  ;
  42397 LD HL,41406   ;
  42400 LD DE,29940   ;
@@ -26179,237 +26230,421 @@ c45401 LD IX,29574   ;
  59999 NOP           ;
 @ignoreua
 
-; Data block at #R60000
+; Alien encounter animation data.
+; Body frames 0-3 (#R60000-61511): 6 bytes x 63 rows each (48 pixels wide,
+; 63 pixels tall). Blitted directly to the display file by #R39764.
+; Jones the cat frames 0-4 (#R61512-#R61831): 3 bytes x 21 rows each (24
+; pixels wide, 21 pixels tall) plus 1 byte padding. XOR-blitted by #R39832.
+;
+; #HTML(#UDGARRAY6,56,4,6(60000-60005-1;60048-60053-1;60096-60101-1;60144-60149-1;60192-60197-1;60240-60245-1;60288-60293-1;60336-60341-1)(AlienFrame0))
+; #HTML(#UDGARRAY6,56,4,6(60378-60383-1;60426-60431-1;60474-60479-1;60522-60527-1;60570-60575-1;60618-60623-1;60666-60671-1;60714-60719-1)(AlienFrame1))
+; #HTML(#UDGARRAY6,56,4,6(60756-60761-1;60804-60809-1;60852-60857-1;60900-60905-1;60948-60953-1;60996-61001-1;61044-61049-1;61092-61097-1)(AlienFrame2))
+; #HTML(#UDGARRAY6,56,4,6(61134-61139-1;61182-61187-1;61230-61235-1;61278-61283-1;61326-61331-1;61374-61379-1;61422-61427-1;61470-61475-1)(AlienFrame3))
+; #HTML(#UDGARRAY3,56,4,3(61512-61514-1;61536-61538-1;61560-61562-1)(JonesFrame0))
+; #HTML(#UDGARRAY3,56,4,3(61576-61578-1;61600-61602-1;61624-61626-1)(JonesFrame1))
+; #HTML(#UDGARRAY3,56,4,3(61640-61642-1;61664-61666-1;61688-61690-1)(JonesFrame2))
+; #HTML(#UDGARRAY3,56,4,3(61704-61706-1;61728-61730-1;61752-61754-1)(JonesFrame3))
+; #HTML(#UDGARRAY3,56,4,3(61768-61770-1;61792-61794-1;61816-61818-1)(JonesFrame4))
 @label=ExtraDataArea
-b60000 DEFB 0,0,0,15,128,0,0,0
- 60008 DEFB 0,63,192,0,0,0,0,127
- 60016 DEFB 224,0,2,0,56,255,224,0
- 60024 DEFB 4,0,125,255,96,0,15,255
- 60032 DEFB 233,253,224,0,15,255,99,251
- 60040 DEFB 220,0,15,255,99,247,62,0
- 60048 DEFB 5,255,99,254,62,0,6,7
- 60056 DEFB 103,248,118,0,7,128,47,190
- 60064 DEFB 98,0,7,0,31,210,236,0
- 60072 DEFB 7,128,31,209,222,0,7,0
- 60080 DEFB 31,211,185,0,7,128,31,167
- 60088 DEFB 119,0,7,0,15,78,239,128
- 60096 DEFB 7,128,16,204,31,128,7,120
- 60104 DEFB 15,92,111,192,7,126,0,151
- 60112 DEFB 199,224,7,191,143,120,67,224
- 60120 DEFB 3,223,238,239,195,244,2,239
- 60128 DEFB 248,48,129,244,2,183,245,239
- 60136 DEFB 0,248,3,151,251,48,128,112
- 60144 DEFB 3,167,252,159,1,240,3,191
- 60152 DEFB 252,192,28,224,1,93,255,45
- 60160 DEFB 251,224,1,94,255,243,249,192
- 60168 DEFB 0,174,127,255,247,208,0,30
- 60176 DEFB 63,255,247,176,0,62,15,255
- 60184 DEFB 231,112,0,62,1,255,222,240
- 60192 DEFB 0,62,24,62,6,240,0,62
- 60200 DEFB 56,0,53,240,0,30,247,0
- 60208 DEFB 249,240,0,30,204,1,217,224
- 60216 DEFB 0,30,52,2,179,224,0,94
- 60224 DEFB 208,2,243,192,0,222,64,1
- 60232 DEFB 83,192,1,193,0,1,87,192
- 60240 DEFB 3,175,0,0,167,192,14,79
- 60248 DEFB 0,0,71,192,13,138,128,0
- 60256 DEFB 7,192,26,11,128,0,3,128
- 60264 DEFB 27,11,128,0,4,128,52,15
- 60272 DEFB 0,0,15,0,54,31,0,0
- 60280 DEFB 15,0,60,27,0,0,5,0
- 60288 DEFB 52,54,0,0,13,0,56,126
- 60296 DEFB 0,0,15,128,60,214,0,0
- 60304 DEFB 5,192,56,180,0,0,6,224
- 60312 DEFB 62,0,0,0,7,224,28,0
- 60320 DEFB 0,0,6,160,31,0,0,0
- 60328 DEFB 2,192,15,192,0,0,0,0
- 60336 DEFB 7,248,0,0,0,0,3,254
- 60344 DEFB 0,0,0,0,0,127,128,0
- 60352 DEFB 0,0,0,3,128,0,0,0
- 60360 DEFB 0,1,192,0,0,0,0,0
- 60368 DEFB 192,0,0,0,0,0,192,0
- 60376 DEFB 0,0,0,0,0,62,0,0
- 60384 DEFB 0,0,0,127,0,0,0,0
- 60392 DEFB 0,255,128,0,2,0,57,254
- 60400 DEFB 128,0,4,0,125,255,128,0
- 60408 DEFB 15,255,235,251,128,0,15,255
- 60416 DEFB 99,247,28,0,15,255,103,244
- 60424 DEFB 62,0,5,255,103,248,62,0
- 60432 DEFB 6,7,103,176,118,0,7,128
- 60440 DEFB 55,220,98,0,7,0,47,242
- 60448 DEFB 236,0,7,128,15,233,222,0
- 60456 DEFB 7,0,15,235,185,0,7,128
- 60464 DEFB 15,215,119,0,7,0,7,174
- 60472 DEFB 239,128,7,128,8,108,31,128
- 60480 DEFB 7,120,7,172,111,192,7,126
- 60488 DEFB 0,87,199,224,7,191,135,184
- 60496 DEFB 67,224,3,223,231,111,195,244
- 60504 DEFB 2,239,248,176,129,244,2,183
- 60512 DEFB 245,239,0,248,3,151,251,48
- 60520 DEFB 128,112,3,167,252,159,1,240
- 60528 DEFB 3,191,252,192,28,224,1,93
- 60536 DEFB 255,45,251,224,1,94,255,45
- 60544 DEFB 251,224,0,174,127,243,249,192
- 60552 DEFB 0,30,63,255,247,208,0,62
- 60560 DEFB 15,255,247,176,0,62,1,255
- 60568 DEFB 231,112,0,62,24,255,222,240
- 60576 DEFB 0,62,56,62,6,240,0,30
- 60584 DEFB 247,0,53,240,0,30,204,0
- 60592 DEFB 249,240,0,30,52,3,89,224
- 60600 DEFB 0,94,208,5,179,224,0,222
- 60608 DEFB 64,2,227,192,1,193,0,5
- 60616 DEFB 99,192,3,175,0,10,167,192
- 60624 DEFB 14,79,0,5,39,192,13,138
- 60632 DEFB 128,0,7,192,26,11,128,0
- 60640 DEFB 3,128,27,11,128,0,4,128
- 60648 DEFB 52,15,0,0,15,0,54,31
- 60656 DEFB 0,0,15,0,60,27,0,0
- 60664 DEFB 5,0,52,54,0,0,13,0
- 60672 DEFB 56,126,0,0,15,128,60,214
- 60680 DEFB 0,0,5,192,56,180,0,0
- 60688 DEFB 6,224,62,0,0,0,7,224
- 60696 DEFB 28,0,0,0,6,160,31,0
- 60704 DEFB 0,0,2,192,15,192,0,0
- 60712 DEFB 0,0,7,248,0,0,0,0
- 60720 DEFB 3,255,128,0,0,0,0,127
- 60728 DEFB 224,0,0,0,0,1,240,0
- 60736 DEFB 0,0,0,0,56,0,0,0
- 60744 DEFB 0,0,24,0,0,0,0,0
- 60752 DEFB 0,0,0,0,0,0,0,124
- 60760 DEFB 0,0,0,0,1,254,0,0
- 60768 DEFB 0,0,3,255,0,0,2,0
- 60776 DEFB 59,253,0,0,4,0,123,251
- 60784 DEFB 0,0,15,255,231,247,0,0
- 60792 DEFB 15,255,103,246,28,0,15,255
- 60800 DEFB 103,248,62,0,5,255,103,240
- 60808 DEFB 62,0,6,7,103,240,118,0
- 60816 DEFB 7,128,55,220,98,0,7,0
- 60824 DEFB 47,226,236,0,7,128,15,241
- 60832 DEFB 222,0,7,0,15,243,185,0
- 60840 DEFB 7,128,15,231,119,0,7,0
- 60848 DEFB 7,214,239,128,7,128,8,52
- 60856 DEFB 31,128,7,120,7,236,111,192
- 60864 DEFB 7,126,3,167,199,224,7,191
- 60872 DEFB 132,88,67,224,3,223,227,175
- 60880 DEFB 195,244,2,239,251,176,129,244
- 60888 DEFB 2,183,244,111,0,248,3,151
- 60896 DEFB 251,48,128,112,3,167,252,159
- 60904 DEFB 1,240,3,191,252,192,28,224
- 60912 DEFB 1,93,255,45,251,224,1,94
- 60920 DEFB 255,243,249,192,0,174,127,255
- 60928 DEFB 247,208,0,30,63,255,247,176
- 60936 DEFB 0,62,15,255,239,112,0,62
- 60944 DEFB 1,255,150,240,0,62,24,62
- 60952 DEFB 121,240,0,62,56,1,249,240
- 60960 DEFB 0,30,247,6,177,240,0,30
- 60968 DEFB 204,11,97,224,0,30,52,5
- 60976 DEFB 195,224,0,94,208,10,195,192
- 60984 DEFB 0,222,64,21,67,192,1,193
- 60992 DEFB 0,10,71,192,3,175,0,0
- 61000 DEFB 7,192,14,79,0,0,7,192
- 61008 DEFB 13,138,128,0,7,192,26,11
- 61016 DEFB 128,0,3,128,27,11,128,0
- 61024 DEFB 4,128,52,15,0,0,15,0
- 61032 DEFB 54,31,0,0,15,0,60,27
- 61040 DEFB 0,0,5,0,52,54,0,0
- 61048 DEFB 13,0,56,126,0,0,15,128
- 61056 DEFB 60,214,0,0,5,192,56,180
- 61064 DEFB 0,0,6,224,62,0,0,0
- 61072 DEFB 7,224,28,0,0,0,6,160
- 61080 DEFB 31,0,8,0,2,192,15,128
- 61088 DEFB 24,0,0,0,7,248,248,0
- 61096 DEFB 0,0,3,255,240,0,0,0
- 61104 DEFB 0,255,192,0,0,0,0,0
- 61112 DEFB 0,0,0,0,0,0,0,0
- 61120 DEFB 0,0,0,0,0,0,0,0
- 61128 DEFB 0,0,0,0,0,0,0,0
- 61136 DEFB 0,124,0,0,0,0,1,254
- 61144 DEFB 0,0,0,0,3,255,0,0
- 61152 DEFB 2,0,59,255,0,0,4,0
- 61160 DEFB 123,255,0,0,15,255,231,249
- 61168 DEFB 0,0,15,255,103,246,28,0
- 61176 DEFB 15,255,103,244,62,0,5,255
- 61184 DEFB 103,248,62,0,6,7,103,144
- 61192 DEFB 118,0,7,128,47,236,98,0
- 61200 DEFB 7,0,47,242,236,0,7,128
- 61208 DEFB 15,241,222,0,7,0,15,227
- 61216 DEFB 185,0,7,128,7,215,119,0
- 61224 DEFB 7,0,8,22,239,128,7,128
- 61232 DEFB 7,236,31,128,7,120,3,204
- 61240 DEFB 111,192,7,126,4,39,199,224
- 61248 DEFB 7,191,133,168,67,224,3,223
- 61256 DEFB 229,175,195,244,2,239,250,80
- 61264 DEFB 129,244,2,183,243,207,0,248
- 61272 DEFB 3,151,248,48,128,112,3,167
- 61280 DEFB 255,159,1,240,3,191,252,192
- 61288 DEFB 24,224,1,93,255,45,247,192
- 61296 DEFB 1,94,255,243,243,160,0,174
- 61304 DEFB 127,255,239,112,0,30,63,255
- 61312 DEFB 206,240,0,62,15,255,29,240
- 61320 DEFB 0,62,1,252,203,240,0,62
- 61328 DEFB 24,35,224,240,0,62,56,29
- 61336 DEFB 97,240,0,30,247,6,193,240
- 61344 DEFB 0,30,204,27,193,224,0,30
- 61352 DEFB 52,37,67,224,0,94,208,9
- 61360 DEFB 67,192,0,222,64,18,67,192
- 61368 DEFB 1,193,0,2,7,192,3,175
- 61376 DEFB 0,0,7,192,14,79,0,0
- 61384 DEFB 7,192,13,138,128,0,7,192
- 61392 DEFB 26,11,128,0,3,128,27,11
- 61400 DEFB 128,0,4,128,52,15,0,0
- 61408 DEFB 15,0,54,31,0,0,15,0
- 61416 DEFB 60,27,0,0,5,0,52,54
- 61424 DEFB 0,0,13,0,56,126,16,0
- 61432 DEFB 15,128,60,214,48,0,5,192
- 61440 DEFB 56,180,48,0,6,224,62,0
- 61448 DEFB 96,0,7,224,30,0,224,0
- 61456 DEFB 6,160,31,131,192,0,2,192
- 61464 DEFB 15,255,128,0,0,0,7,255
- 61472 DEFB 0,0,0,0,1,252,0,0
- 61480 DEFB 0,0,0,0,0,0,0,0
- 61488 DEFB 0,0,0,0,0,0,0,0
- 61496 DEFB 0,0,0,0,0,0,0,0
- 61504 DEFB 0,0,0,0,0,0,0,0
- 61512 DEFB 0,0,0,0,0,0,0,0
- 61520 DEFB 0,0,0,0,0,0,0,0
- 61528 DEFB 0,0,48,0,0,24,0,0
- 61536 DEFB 12,0,0,6,0,64,3,224
- 61544 DEFB 224,3,255,240,3,255,240,3
- 61552 DEFB 255,192,7,191,192,31,15,232
- 61560 DEFB 52,0,116,32,0,24,0,0
- 61568 DEFB 12,0,0,0,0,0,0,0
- 61576 DEFB 0,0,0,0,0,0,0,0
- 61584 DEFB 0,0,0,0,0,0,0,0
- 61592 DEFB 0,0,0,0,0,0,0,0
- 61600 DEFB 96,0,0,60,0,16,7,248
- 61608 DEFB 56,1,254,252,0,255,252,1
- 61616 DEFB 255,240,1,255,224,1,231,192
- 61624 DEFB 1,128,192,1,128,192,0,192
- 61632 DEFB 192,0,192,224,0,0,96,0
- 61640 DEFB 0,0,0,0,0,0,0,0
- 61648 DEFB 0,0,0,0,0,0,0,0
- 61656 DEFB 0,0,0,0,0,0,0,0
- 61664 DEFB 0,0,0,0,0,16,128,0
- 61672 DEFB 56,225,224,252,63,255,252,7
- 61680 DEFB 255,240,3,255,224,1,255,224
- 61688 DEFB 0,246,192,0,240,192,0,96
- 61696 DEFB 192,0,49,128,0,29,128,0
- 61704 DEFB 0,0,0,0,0,0,0,0
- 61712 DEFB 0,0,0,0,0,0,0,0
- 61720 DEFB 0,0,0,0,0,0,0,4
- 61728 DEFB 0,0,14,0,0,127,0,15
- 61736 DEFB 255,32,255,240,31,255,240,14
- 61744 DEFB 127,248,0,255,60,0,248,20
- 61752 DEFB 1,224,24,1,128,24,1,128
- 61760 DEFB 48,1,128,0,0,192,0,0
- 61768 DEFB 0,0,0,0,0,0,0,0
- 61776 DEFB 0,0,0,0,0,0,0,0
- 61784 DEFB 0,0,0,0,0,0,0,0
- 61792 DEFB 56,0,8,14,0,28,3,255
- 61800 DEFB 254,0,255,254,0,255,224,0
- 61808 DEFB 255,224,3,247,240,3,224,124
- 61816 DEFB 3,0,54,6,0,48,4,0
- 61824 DEFB 24,4,0,8,0,0,0,0
+; Alien body frame 0 (phase 0). 63 rows x 6 bytes, blitted to display file
+; at 0x4807 (column 7, char-row 1).
+; #HTML(#UDGARRAY6,56,4,6(60000-60005-1;60048-60053-1;60096-60101-1;60144-60149-1;60192-60197-1;60240-60245-1;60288-60293-1;60336-60341-1)(AlienFrame0))
+@label=AlienFrame0
+b60000 DEFB 0,0,0,15,128,0
+ 60006 DEFB 0,0,0,63,192,0
+ 60012 DEFB 0,0,0,127,224,0
+ 60018 DEFB 2,0,56,255,224,0
+ 60024 DEFB 4,0,125,255,96,0
+ 60030 DEFB 15,255,233,253,224,0
+ 60036 DEFB 15,255,99,251,220,0
+ 60042 DEFB 15,255,99,247,62,0
+ 60048 DEFB 5,255,99,254,62,0
+ 60054 DEFB 6,7,103,248,118,0
+ 60060 DEFB 7,128,47,190,98,0
+ 60066 DEFB 7,0,31,210,236,0
+ 60072 DEFB 7,128,31,209,222,0
+ 60078 DEFB 7,0,31,211,185,0
+ 60084 DEFB 7,128,31,167,119,0
+ 60090 DEFB 7,0,15,78,239,128
+ 60096 DEFB 7,128,16,204,31,128
+ 60102 DEFB 7,120,15,92,111,192
+ 60108 DEFB 7,126,0,151,199,224
+ 60114 DEFB 7,191,143,120,67,224
+ 60120 DEFB 3,223,238,239,195,244
+ 60126 DEFB 2,239,248,48,129,244
+ 60132 DEFB 2,183,245,239,0,248
+ 60138 DEFB 3,151,251,48,128,112
+ 60144 DEFB 3,167,252,159,1,240
+ 60150 DEFB 3,191,252,192,28,224
+ 60156 DEFB 1,93,255,45,251,224
+ 60162 DEFB 1,94,255,243,249,192
+ 60168 DEFB 0,174,127,255,247,208
+ 60174 DEFB 0,30,63,255,247,176
+ 60180 DEFB 0,62,15,255,231,112
+ 60186 DEFB 0,62,1,255,222,240
+ 60192 DEFB 0,62,24,62,6,240
+ 60198 DEFB 0,62,56,0,53,240
+ 60204 DEFB 0,30,247,0,249,240
+ 60210 DEFB 0,30,204,1,217,224
+ 60216 DEFB 0,30,52,2,179,224
+ 60222 DEFB 0,94,208,2,243,192
+ 60228 DEFB 0,222,64,1,83,192
+ 60234 DEFB 1,193,0,1,87,192
+ 60240 DEFB 3,175,0,0,167,192
+ 60246 DEFB 14,79,0,0,71,192
+ 60252 DEFB 13,138,128,0,7,192
+ 60258 DEFB 26,11,128,0,3,128
+ 60264 DEFB 27,11,128,0,4,128
+ 60270 DEFB 52,15,0,0,15,0
+ 60276 DEFB 54,31,0,0,15,0
+ 60282 DEFB 60,27,0,0,5,0
+ 60288 DEFB 52,54,0,0,13,0
+ 60294 DEFB 56,126,0,0,15,128
+ 60300 DEFB 60,214,0,0,5,192
+ 60306 DEFB 56,180,0,0,6,224
+ 60312 DEFB 62,0,0,0,7,224
+ 60318 DEFB 28,0,0,0,6,160
+ 60324 DEFB 31,0,0,0,2,192
+ 60330 DEFB 15,192,0,0,0,0
+ 60336 DEFB 7,248,0,0,0,0
+ 60342 DEFB 3,254,0,0,0,0
+ 60348 DEFB 0,127,128,0,0,0
+ 60354 DEFB 0,3,128,0,0,0
+ 60360 DEFB 0,1,192,0,0,0
+ 60366 DEFB 0,0,192,0,0,0
+ 60372 DEFB 0,0,192,0,0,0
+
+; Alien body frame 1 (phase 1).
+; #HTML(#UDGARRAY6,56,4,6(60378-60383-1;60426-60431-1;60474-60479-1;60522-60527-1;60570-60575-1;60618-60623-1;60666-60671-1;60714-60719-1)(AlienFrame1))
+@label=AlienFrame1
+b60378 DEFB 0,0,0,62,0,0
+ 60384 DEFB 0,0,0,127,0,0
+ 60390 DEFB 0,0,0,255,128,0
+ 60396 DEFB 2,0,57,254,128,0
+ 60402 DEFB 4,0,125,255,128,0
+ 60408 DEFB 15,255,235,251,128,0
+ 60414 DEFB 15,255,99,247,28,0
+ 60420 DEFB 15,255,103,244,62,0
+ 60426 DEFB 5,255,103,248,62,0
+ 60432 DEFB 6,7,103,176,118,0
+ 60438 DEFB 7,128,55,220,98,0
+ 60444 DEFB 7,0,47,242,236,0
+ 60450 DEFB 7,128,15,233,222,0
+ 60456 DEFB 7,0,15,235,185,0
+ 60462 DEFB 7,128,15,215,119,0
+ 60468 DEFB 7,0,7,174,239,128
+ 60474 DEFB 7,128,8,108,31,128
+ 60480 DEFB 7,120,7,172,111,192
+ 60486 DEFB 7,126,0,87,199,224
+ 60492 DEFB 7,191,135,184,67,224
+ 60498 DEFB 3,223,231,111,195,244
+ 60504 DEFB 2,239,248,176,129,244
+ 60510 DEFB 2,183,245,239,0,248
+ 60516 DEFB 3,151,251,48,128,112
+ 60522 DEFB 3,167,252,159,1,240
+ 60528 DEFB 3,191,252,192,28,224
+ 60534 DEFB 1,93,255,45,251,224
+ 60540 DEFB 1,94,255,45,251,224
+ 60546 DEFB 0,174,127,243,249,192
+ 60552 DEFB 0,30,63,255,247,208
+ 60558 DEFB 0,62,15,255,247,176
+ 60564 DEFB 0,62,1,255,231,112
+ 60570 DEFB 0,62,24,255,222,240
+ 60576 DEFB 0,62,56,62,6,240
+ 60582 DEFB 0,30,247,0,53,240
+ 60588 DEFB 0,30,204,0,249,240
+ 60594 DEFB 0,30,52,3,89,224
+ 60600 DEFB 0,94,208,5,179,224
+ 60606 DEFB 0,222,64,2,227,192
+ 60612 DEFB 1,193,0,5,99,192
+ 60618 DEFB 3,175,0,10,167,192
+ 60624 DEFB 14,79,0,5,39,192
+ 60630 DEFB 13,138,128,0,7,192
+ 60636 DEFB 26,11,128,0,3,128
+ 60642 DEFB 27,11,128,0,4,128
+ 60648 DEFB 52,15,0,0,15,0
+ 60654 DEFB 54,31,0,0,15,0
+ 60660 DEFB 60,27,0,0,5,0
+ 60666 DEFB 52,54,0,0,13,0
+ 60672 DEFB 56,126,0,0,15,128
+ 60678 DEFB 60,214,0,0,5,192
+ 60684 DEFB 56,180,0,0,6,224
+ 60690 DEFB 62,0,0,0,7,224
+ 60696 DEFB 28,0,0,0,6,160
+ 60702 DEFB 31,0,0,0,2,192
+ 60708 DEFB 15,192,0,0,0,0
+ 60714 DEFB 7,248,0,0,0,0
+ 60720 DEFB 3,255,128,0,0,0
+ 60726 DEFB 0,127,224,0,0,0
+ 60732 DEFB 0,1,240,0,0,0
+ 60738 DEFB 0,0,56,0,0,0
+ 60744 DEFB 0,0,24,0,0,0
+ 60750 DEFB 0,0,0,0,0,0
+
+; Alien body frame 2 (phase 2).
+; #HTML(#UDGARRAY6,56,4,6(60756-60761-1;60804-60809-1;60852-60857-1;60900-60905-1;60948-60953-1;60996-61001-1;61044-61049-1;61092-61097-1)(AlienFrame2))
+@label=AlienFrame2
+b60756 DEFB 0,0,0,124,0,0
+ 60762 DEFB 0,0,1,254,0,0
+ 60768 DEFB 0,0,3,255,0,0
+ 60774 DEFB 2,0,59,253,0,0
+ 60780 DEFB 4,0,123,251,0,0
+ 60786 DEFB 15,255,231,247,0,0
+ 60792 DEFB 15,255,103,246,28,0
+ 60798 DEFB 15,255,103,248,62,0
+ 60804 DEFB 5,255,103,240,62,0
+ 60810 DEFB 6,7,103,240,118,0
+ 60816 DEFB 7,128,55,220,98,0
+ 60822 DEFB 7,0,47,226,236,0
+ 60828 DEFB 7,128,15,241,222,0
+ 60834 DEFB 7,0,15,243,185,0
+ 60840 DEFB 7,128,15,231,119,0
+ 60846 DEFB 7,0,7,214,239,128
+ 60852 DEFB 7,128,8,52,31,128
+ 60858 DEFB 7,120,7,236,111,192
+ 60864 DEFB 7,126,3,167,199,224
+ 60870 DEFB 7,191,132,88,67,224
+ 60876 DEFB 3,223,227,175,195,244
+ 60882 DEFB 2,239,251,176,129,244
+ 60888 DEFB 2,183,244,111,0,248
+ 60894 DEFB 3,151,251,48,128,112
+ 60900 DEFB 3,167,252,159,1,240
+ 60906 DEFB 3,191,252,192,28,224
+ 60912 DEFB 1,93,255,45,251,224
+ 60918 DEFB 1,94,255,243,249,192
+ 60924 DEFB 0,174,127,255,247,208
+ 60930 DEFB 0,30,63,255,247,176
+ 60936 DEFB 0,62,15,255,239,112
+ 60942 DEFB 0,62,1,255,150,240
+ 60948 DEFB 0,62,24,62,121,240
+ 60954 DEFB 0,62,56,1,249,240
+ 60960 DEFB 0,30,247,6,177,240
+ 60966 DEFB 0,30,204,11,97,224
+ 60972 DEFB 0,30,52,5,195,224
+ 60978 DEFB 0,94,208,10,195,192
+ 60984 DEFB 0,222,64,21,67,192
+ 60990 DEFB 1,193,0,10,71,192
+ 60996 DEFB 3,175,0,0,7,192
+ 61002 DEFB 14,79,0,0,7,192
+ 61008 DEFB 13,138,128,0,7,192
+ 61014 DEFB 26,11,128,0,3,128
+ 61020 DEFB 27,11,128,0,4,128
+ 61026 DEFB 52,15,0,0,15,0
+ 61032 DEFB 54,31,0,0,15,0
+ 61038 DEFB 60,27,0,0,5,0
+ 61044 DEFB 52,54,0,0,13,0
+ 61050 DEFB 56,126,0,0,15,128
+ 61056 DEFB 60,214,0,0,5,192
+ 61062 DEFB 56,180,0,0,6,224
+ 61068 DEFB 62,0,0,0,7,224
+ 61074 DEFB 28,0,0,0,6,160
+ 61080 DEFB 31,0,8,0,2,192
+ 61086 DEFB 15,128,24,0,0,0
+ 61092 DEFB 7,248,248,0,0,0
+ 61098 DEFB 3,255,240,0,0,0
+ 61104 DEFB 0,255,192,0,0,0
+ 61110 DEFB 0,0,0,0,0,0
+ 61116 DEFB 0,0,0,0,0,0
+ 61122 DEFB 0,0,0,0,0,0
+ 61128 DEFB 0,0,0,0,0,0
+
+; Alien body frame 3 (phase 3).
+; #HTML(#UDGARRAY6,56,4,6(61134-61139-1;61182-61187-1;61230-61235-1;61278-61283-1;61326-61331-1;61374-61379-1;61422-61427-1;61470-61475-1)(AlienFrame3))
+@label=AlienFrame3
+b61134 DEFB 0,0,0,124,0,0
+ 61140 DEFB 0,0,1,254,0,0
+ 61146 DEFB 0,0,3,255,0,0
+ 61152 DEFB 2,0,59,255,0,0
+ 61158 DEFB 4,0,123,255,0,0
+ 61164 DEFB 15,255,231,249,0,0
+ 61170 DEFB 15,255,103,246,28,0
+ 61176 DEFB 15,255,103,244,62,0
+ 61182 DEFB 5,255,103,248,62,0
+ 61188 DEFB 6,7,103,144,118,0
+ 61194 DEFB 7,128,47,236,98,0
+ 61200 DEFB 7,0,47,242,236,0
+ 61206 DEFB 7,128,15,241,222,0
+ 61212 DEFB 7,0,15,227,185,0
+ 61218 DEFB 7,128,7,215,119,0
+ 61224 DEFB 7,0,8,22,239,128
+ 61230 DEFB 7,128,7,236,31,128
+ 61236 DEFB 7,120,3,204,111,192
+ 61242 DEFB 7,126,4,39,199,224
+ 61248 DEFB 7,191,133,168,67,224
+ 61254 DEFB 3,223,229,175,195,244
+ 61260 DEFB 2,239,250,80,129,244
+ 61266 DEFB 2,183,243,207,0,248
+ 61272 DEFB 3,151,248,48,128,112
+ 61278 DEFB 3,167,255,159,1,240
+ 61284 DEFB 3,191,252,192,24,224
+ 61290 DEFB 1,93,255,45,247,192
+ 61296 DEFB 1,94,255,243,243,160
+ 61302 DEFB 0,174,127,255,239,112
+ 61308 DEFB 0,30,63,255,206,240
+ 61314 DEFB 0,62,15,255,29,240
+ 61320 DEFB 0,62,1,252,203,240
+ 61326 DEFB 0,62,24,35,224,240
+ 61332 DEFB 0,62,56,29,97,240
+ 61338 DEFB 0,30,247,6,193,240
+ 61344 DEFB 0,30,204,27,193,224
+ 61350 DEFB 0,30,52,37,67,224
+ 61356 DEFB 0,94,208,9,67,192
+ 61362 DEFB 0,222,64,18,67,192
+ 61368 DEFB 1,193,0,2,7,192
+ 61374 DEFB 3,175,0,0,7,192
+ 61380 DEFB 14,79,0,0,7,192
+ 61386 DEFB 13,138,128,0,7,192
+ 61392 DEFB 26,11,128,0,3,128
+ 61398 DEFB 27,11,128,0,4,128
+ 61404 DEFB 52,15,0,0,15,0
+ 61410 DEFB 54,31,0,0,15,0
+ 61416 DEFB 60,27,0,0,5,0
+ 61422 DEFB 52,54,0,0,13,0
+ 61428 DEFB 56,126,16,0,15,128
+ 61434 DEFB 60,214,48,0,5,192
+ 61440 DEFB 56,180,48,0,6,224
+ 61446 DEFB 62,0,96,0,7,224
+ 61452 DEFB 30,0,224,0,6,160
+ 61458 DEFB 31,131,192,0,2,192
+ 61464 DEFB 15,255,128,0,0,0
+ 61470 DEFB 7,255,0,0,0,0
+ 61476 DEFB 1,252,0,0,0,0
+ 61482 DEFB 0,0,0,0,0,0
+ 61488 DEFB 0,0,0,0,0,0
+ 61494 DEFB 0,0,0,0,0,0
+ 61500 DEFB 0,0,0,0,0,0
+ 61506 DEFB 0,0,0,0,0,0
+
+; Jones the cat frame 0 (phase 0). 21 rows x 3 bytes, XOR-blitted.
+; #HTML(#UDGARRAY3,56,4,3(61512-61514-1;61536-61538-1;61560-61562-1)(JonesFrame0))
+@label=JonesFrame0
+b61512 DEFB 0,0,0
+ 61515 DEFB 0,0,0
+ 61518 DEFB 0,0,0
+ 61521 DEFB 0,0,0
+ 61524 DEFB 0,0,0
+ 61527 DEFB 0,0,0
+ 61530 DEFB 48,0,0
+ 61533 DEFB 24,0,0
+ 61536 DEFB 12,0,0
+ 61539 DEFB 6,0,64
+ 61542 DEFB 3,224,224
+ 61545 DEFB 3,255,240
+ 61548 DEFB 3,255,240
+ 61551 DEFB 3,255,192
+ 61554 DEFB 7,191,192
+ 61557 DEFB 31,15,232
+ 61560 DEFB 52,0,116
+ 61563 DEFB 32,0,24
+ 61566 DEFB 0,0,12
+ 61569 DEFB 0,0,0
+ 61572 DEFB 0,0,0
+ 61575 DEFB 0
+
+; Jones the cat frame 1 (phase 1). 21 rows x 3 bytes, XOR-blitted.
+; #HTML(#UDGARRAY3,56,4,3(61576-61578-1;61600-61602-1;61624-61626-1)(JonesFrame1))
+@label=JonesFrame1
+b61576 DEFB 0,0,0
+ 61579 DEFB 0,0,0
+ 61582 DEFB 0,0,0
+ 61585 DEFB 0,0,0
+ 61588 DEFB 0,0,0
+ 61591 DEFB 0,0,0
+ 61594 DEFB 0,0,0
+ 61597 DEFB 0,0,0
+ 61600 DEFB 96,0,0
+ 61603 DEFB 60,0,16
+ 61606 DEFB 7,248,56
+ 61609 DEFB 1,254,252
+ 61612 DEFB 0,255,252
+ 61615 DEFB 1,255,240
+ 61618 DEFB 1,255,224
+ 61621 DEFB 1,231,192
+ 61624 DEFB 1,128,192
+ 61627 DEFB 1,128,192
+ 61630 DEFB 0,192,192
+ 61633 DEFB 0,192,224
+ 61636 DEFB 0,0,96
+ 61639 DEFB 0
+
+; Jones the cat frame 2 (phase 2). 21 rows x 3 bytes, XOR-blitted.
+; #HTML(#UDGARRAY3,56,4,3(61640-61642-1;61664-61666-1;61688-61690-1)(JonesFrame2))
+@label=JonesFrame2
+b61640 DEFB 0,0,0
+ 61643 DEFB 0,0,0
+ 61646 DEFB 0,0,0
+ 61649 DEFB 0,0,0
+ 61652 DEFB 0,0,0
+ 61655 DEFB 0,0,0
+ 61658 DEFB 0,0,0
+ 61661 DEFB 0,0,0
+ 61664 DEFB 0,0,0
+ 61667 DEFB 0,0,16
+ 61670 DEFB 128,0,56
+ 61673 DEFB 225,224,252
+ 61676 DEFB 63,255,252
+ 61679 DEFB 7,255,240
+ 61682 DEFB 3,255,224
+ 61685 DEFB 1,255,224
+ 61688 DEFB 0,246,192
+ 61691 DEFB 0,240,192
+ 61694 DEFB 0,96,192
+ 61697 DEFB 0,49,128
+ 61700 DEFB 0,29,128
+ 61703 DEFB 0
+
+; Jones the cat frame 3 (phase 3). 21 rows x 3 bytes, XOR-blitted.
+; #HTML(#UDGARRAY3,56,4,3(61704-61706-1;61728-61730-1;61752-61754-1)(JonesFrame3))
+@label=JonesFrame3
+b61704 DEFB 0,0,0
+ 61707 DEFB 0,0,0
+ 61710 DEFB 0,0,0
+ 61713 DEFB 0,0,0
+ 61716 DEFB 0,0,0
+ 61719 DEFB 0,0,0
+ 61722 DEFB 0,0,0
+ 61725 DEFB 0,0,4
+ 61728 DEFB 0,0,14
+ 61731 DEFB 0,0,127
+ 61734 DEFB 0,15,255
+ 61737 DEFB 32,255,240
+ 61740 DEFB 31,255,240
+ 61743 DEFB 14,127,248
+ 61746 DEFB 0,255,60
+ 61749 DEFB 0,248,20
+ 61752 DEFB 1,224,24
+ 61755 DEFB 1,128,24
+ 61758 DEFB 1,128,48
+ 61761 DEFB 1,128,0
+ 61764 DEFB 0,192,0
+ 61767 DEFB 0
+
+; Jones the cat frame 4 (phase 4). 21 rows x 3 bytes, XOR-blitted.
+; #HTML(#UDGARRAY3,56,4,3(61768-61770-1;61792-61794-1;61816-61818-1)(JonesFrame4))
+@label=JonesFrame4
+b61768 DEFB 0,0,0
+ 61771 DEFB 0,0,0
+ 61774 DEFB 0,0,0
+ 61777 DEFB 0,0,0
+ 61780 DEFB 0,0,0
+ 61783 DEFB 0,0,0
+ 61786 DEFB 0,0,0
+ 61789 DEFB 0,0,0
+ 61792 DEFB 56,0,8
+ 61795 DEFB 14,0,28
+ 61798 DEFB 3,255,254
+ 61801 DEFB 0,255,254
+ 61804 DEFB 0,255,224
+ 61807 DEFB 0,255,224
+ 61810 DEFB 3,247,240
+ 61813 DEFB 3,224,124
+ 61816 DEFB 3,0,54
+ 61819 DEFB 6,0,48
+ 61822 DEFB 4,0,24
+ 61825 DEFB 4,0,8
+ 61828 DEFB 0,0,0
+ 61831 DEFB 0
+; Padding / unused.
  61832 DEFB 0,0,0,0,0,0,0,0
  61840 DEFB 0,0,0,0,0,0,0,0
  61848 DEFB 0,0,0,0,0,0,0,0

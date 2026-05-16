@@ -2237,8 +2237,8 @@ InitGameView:
   INC HL
   SET 7,(HL)              ; freeze animation channel B
   LD A,$80                ; $80
-  LD (Auto_9B3D),A        ; set alien pixel X sentinel (Auto_9B3D)
-  LD (Auto_9B49),A        ; set alien pixel Y sentinel (Auto_9B49)
+  LD (AlienXPhase),A      ; set alien pixel X sentinel (AlienXPhase)
+  LD (AlienYPhase),A      ; set alien pixel Y sentinel (AlienYPhase)
   LD A,$08                ; segment 8 = centre of 19-segment corridor
   LD (CorridorCursor),A   ; store as current corridor cursor (DifficultyByte)
   LD A,$20                ; space char
@@ -2717,7 +2717,7 @@ DrawSprite_38:
   LD DE,$73CC
   LD A,$33
   LD (DE),A
-  CALL Auto_9AE7
+  CALL InitAlienYAnim
   POP AF
   RET
 DrawSprite_39:
@@ -2728,7 +2728,7 @@ DrawSprite_40:
   LD A,$34
   LD (DE),A
   XOR A
-  LD (Auto_9B3D),A
+  LD (AlienXPhase),A
 ; This entry point is used by the routine at PlayMusic.
 DrawSprite_41:
   POP AF
@@ -3092,8 +3092,8 @@ DrawSprite_75:
   LD HL,Auto_8080
   LD (CrewAnimFlags),HL
   LD A,$80
-  LD (Auto_9B49),A
-  LD (Auto_9B3D),A
+  LD (AlienYPhase),A
+  LD (AlienXPhase),A
   CALL DrawSprite_7
   LD A,($7A0A)
   LD HL,$737F
@@ -3218,7 +3218,7 @@ DrawSprite_82:
   LD A,(RoomTypeByte)
   CP $04
   JR NZ,DrawSprite_83
-  CALL Auto_9B07
+  CALL ResetAlienXAnim
   CALL DrawSprite_106
   RET
 DrawSprite_83:
@@ -5382,7 +5382,7 @@ Auto_8C38:
   LD ($73CC),A
   CALL DrawSprite
   CALL HandleInput_5
-  CALL Auto_9AF6
+  CALL TriggerAlienYAnim
   LD A,(ScreenDrawPtr)
   LD L,A
   LD A,$02
@@ -5875,7 +5875,7 @@ GameEntry_23:
   LD HL,$737F
   CP (HL)
   JR Z,GameEntry_24
-  CALL Auto_9B0F
+  CALL TriggerAlienXAnim
   LD A,(AlienActiveFlag)
   AND A
   RET Z
@@ -5946,7 +5946,7 @@ Auto_9014:
   LD A,(CorridorCursor)
   CP $0E
   CALL Z,HandleInput_5
-  CALL Auto_9AF6
+  CALL TriggerAlienYAnim
 Auto_904D:
   LD A,(AlienEventTimer)
   LD HL,$737F
@@ -5990,7 +5990,7 @@ Auto_9061:
   LD A,$33
   LD ($73CC),A
   CALL DrawSprite
-  CALL Auto_9AE7
+  CALL InitAlienYAnim
   RET
 
 ; UpdateCrewAI
@@ -6642,7 +6642,7 @@ Auto_94DA:
   CALL Auto_8CC2
   POP AF
   LD (CrewIndex),A
-  CALL Auto_9B0F
+  CALL TriggerAlienXAnim
   LD (IX+$00),$00
   LD DE,Auto_839F
   LD B,$03
@@ -6819,7 +6819,7 @@ UpdateRoomActors:
   CALL Auto_9A6B
   CALL Auto_9903
   CALL Auto_9881
-  CALL Auto_9B26
+  CALL UpdateAlienAnim
   RET
   CALL Auto_B316
   LD HL,CorridorPosTable
@@ -7527,96 +7527,124 @@ Auto_9AD7:
   DJNZ Auto_9AD7
   RET
   RET
-; This entry point is used by the routines at DrawSprite and
+; Resets alien Y (tail) animation and blits the first frame. Sets Y position to
+; 8, clears the Y phase freeze flag, then calls BlitAlienYFrame with B=1 to
+; draw frame 0. This entry point is used by the routines at DrawSprite and
 ; UpdateAlienEventTimer.
-Auto_9AE7:
-  XOR A
-  LD (Auto_9B49),A
+InitAlienYAnim:
+  XOR A                   ; A = 0: clear freeze flag
+  LD (AlienYPhase),A      ; AlienYPhase = 0
   LD A,$08
-  LD ($9B46),A
-  LD B,$01
-  CALL Auto_9B98
+  LD ($9B46),A            ; AlienYPos = 8 (initial Y pixel offset)
+  LD B,$01                ; B = 1 iteration
+  CALL BlitAlienYFrame    ; draw first tail frame
   RET
-; This entry point is used by the routines at RoomHandler_4 and
+; Advances the alien Y (tail) animation by one frame if not frozen. Sets the
+; freeze flag (bit 7 of AlienYPhase) after blitting so the animation runs
+; exactly once. This entry point is used by the routines at RoomHandler_4 and
 ; UpdateAlienEventTimer.
-Auto_9AF6:
-  LD B,$01
-  LD A,(Auto_9B49)
-  AND $80
-  RET NZ
-  CALL Auto_9B98
+TriggerAlienYAnim:
+  LD B,$01                ; B = 1 iteration
+  LD A,(AlienYPhase)      ; A = AlienYPhase
+  AND $80                 ; test freeze flag (bit 7)
+  RET NZ                  ; already frozen: do nothing
+  CALL BlitAlienYFrame    ; blit one tail frame
   LD A,$80
-  LD (Auto_9B49),A
+  LD (AlienYPhase),A      ; freeze: AlienYPhase |= 128
   RET
-; This entry point is used by the routines at DrawSprite and PlayMusic.
-Auto_9B07:
-  CALL Auto_9CD5
-  XOR A
-  LD (Auto_9B3D),A
+; Clears the alien body animation area from the screen, then resets the X phase
+; counter so the next trigger starts from frame 0. This entry point is used by
+; the routines at DrawSprite and PlayMusic.
+ResetAlienXAnim:
+  CALL ClearAlienArea     ; clear 19x20-cell screen area (ClearAlienArea)
+  XOR A                   ; A = 0
+  LD (AlienXPhase),A      ; AlienXPhase = 0 (unfreeze, frame 0)
   RET
-; This entry point is used by the routines at GameEntry and XorHAddE.
-Auto_9B0F:
-  LD A,(Auto_9B3D)
-  AND $80
-  RET NZ
+; Arms the alien body animation (sets freeze flag so a single blit occurs next
+; frame), or ends the encounter sequence. If (31252)=1 the crew member was
+; killed: jump to DrawSprite_75 to handle that. Otherwise clears the screen
+; area and returns. This entry point is used by the routines at GameEntry and
+; XorHAddE.
+TriggerAlienXAnim:
+  LD A,(AlienXPhase)      ; A = AlienXPhase
+  AND $80                 ; test freeze flag
+  RET NZ                  ; already frozen: do nothing
   LD A,$80
-  LD (Auto_9B3D),A
-  LD A,(RoomModeByte)
-  CP $01
-  JP Z,DrawSprite_75
-  CALL Auto_9CD5
+  LD (AlienXPhase),A      ; freeze: AlienXPhase |= 128
+  LD A,(RoomModeByte)     ; A = encounter outcome byte
+  CP $01                  ; crew member killed?
+  JP Z,DrawSprite_75      ; yes: handle death sequence
+  CALL ClearAlienArea     ; no: clear alien screen area
   RET
-Auto_9B26:
-  CALL AnimateCrewA
-  CALL AnimateCrewB
-  LD A,(Auto_9B49)
-  AND $80
-  CALL Z,Auto_9B96
-  LD A,(Auto_9B3D)
-  AND $80
-  CALL Z,Auto_9B54
+; Per-frame alien encounter update: refreshes the map view, then advances both
+; animation layers. Y layer (tail sweep) if not frozen, X layer (body) if not
+; frozen.
+UpdateAlienAnim:
+  CALL AnimateCrewA       ; redraw room background
+  CALL AnimateCrewB       ; redraw room actors
+  LD A,(AlienYPhase)      ; A = AlienYPhase
+  AND $80                 ; test freeze flag
+  CALL Z,AnimAlienY       ; not frozen: advance Y (tail) animation
+  LD A,(AlienXPhase)      ; A = AlienXPhase
+  AND $80                 ; test freeze flag
+  CALL Z,BlitAlienFrame   ; not frozen: blit next alien body frame
   RET
-Auto_9B3D:
-  NOP
-  LD H,B
-  JP PE,$EBDA
-  LD D,H
-  DEFB $ED,$CE
-  XOR $00
-Auto_9B47:
-  NOP
-  LD C,B
-Auto_9B49:
-  NOP
-  LD C,B
-  RET P
-  ADC A,B
-  RET P
-  RET Z
-  RET P
-  EX AF,AF'
-  POP AF
-  LD C,B
-  POP AF
-Auto_9B54:
-  LD HL,Auto_9B3D
+; Inline data: alien body animation state (read/written by the routines above).
+; Byte at AlienXPhase holds the current body frame index (0-3); bit 7 is the
+; freeze flag. The four word pointers immediately after it address the sprite
+; data for each frame in ExtraDataArea. AlienYPos holds the pixel Y offset of
+; the tail sweep (0-135). AlienScreenPtr is the current ZX Spectrum
+; display-file pointer used by the Y blit. AlienYPhase holds the current tail
+; animation phase (0-4); bit 7 is its freeze flag. Five word pointers follow
+; for the five Y-channel sprite frames.
+AlienXPhase:
+  NOP                     ; [byte] body frame index 0-3 (bit 7 = freeze)
+  LD H,B                  ; [word lo] AlienFrame0 ptr lo = 0x60
+  JP PE,$EBDA             ; [word hi+lo] AlienFrame0 ptr hi = 0xEA; AlienFrame1
+                          ; ptr lo = 0xDA
+  LD D,H                  ; [word hi] AlienFrame1 ptr hi = 0xEB
+  DEFB $ED,$CE            ; [word] AlienFrame2 ptr = 0xED54 (60756)
+  XOR $00                 ; [word lo+hi] AlienFrame3 ptr = 0xEECE (61134) --
+                          ; XOR 0 encodes 0xCE
+AlienScreenPtr:
+  NOP                     ; [word lo] screen draw ptr lo (runtime)
+  LD C,B                  ; [word hi] screen draw ptr hi (runtime)
+AlienYPhase:
+  NOP                     ; [byte] tail phase index 0-4 (bit 7 = freeze)
+  LD C,B                  ; [word lo] AlienYFrame0 ptr lo = 0x48
+  RET P                   ; [word hi] AlienYFrame0 ptr hi = 0xF0 (-> 61512)
+  ADC A,B                 ; [word lo] AlienYFrame1 ptr lo = 0x88
+  RET P                   ; [word hi] AlienYFrame1 ptr hi = 0xF0 (-> 61576)
+  RET Z                   ; [word lo] AlienYFrame2 ptr lo = 0xC8
+  RET P                   ; [word hi] AlienYFrame2 ptr hi = 0xF0 (-> 61640)
+  EX AF,AF'               ; [word lo] AlienYFrame3 ptr lo = 0x08
+  POP AF                  ; [word hi] AlienYFrame3 ptr hi = 0xF1 (-> 61704)
+  LD C,B                  ; [word lo] AlienYFrame4 ptr lo = 0x48
+  POP AF                  ; [word hi] AlienYFrame4 ptr hi = 0xF1 (-> 61768)
+; Advances AlienXPhase (0->1->2->3->0), loads the corresponding sprite frame
+; pointer from the table at AlienXPhase+2, then LDIRs 6 bytes x 63 rows of
+; sprite data to the display file at 0x4807 (column 7, row 1, pixel-row 0),
+; handling ZX Spectrum interleaved scan-line addressing at each row boundary.
+BlitAlienFrame:
+  LD HL,AlienXPhase       ; HL -> AlienXPhase
   LD A,(HL)
   INC A
-  AND $03
-  LD (HL),A
+  AND $03                 ; cycle frame index 0->1->2->3->0
+  LD (HL),A               ; store new frame index
   LD E,A
   LD D,$00
-  INC HL
+  INC HL                  ; HL -> frame pointer table
   ADD HL,DE
-  ADD HL,DE
+  ADD HL,DE               ; HL -> table[frame] (2 bytes/entry)
   LD E,(HL)
   INC HL
-  LD D,(HL)
-  LD HL,$4807
-  EX DE,HL
-  LD B,$3F
+  LD D,(HL)               ; DE = sprite frame data ptr
+  LD HL,$4807             ; HL = 0x4807: display file col 7, char-row 1,
+                          ; pixel-row 0
+  EX DE,HL                ; DE = screen dst, HL = sprite src
+  LD B,$3F                ; 63 pixel rows per frame
   LD C,$00
-Auto_9B6D:
+BlitAlienFrameRow:
   PUSH BC
   LD B,C
   LD C,$06
@@ -7625,82 +7653,99 @@ Auto_9B6D:
   LD A,H
   AND $07
   CP $07
-  JR Z,Auto_9B7E
+  JR Z,BlitAlienFrameBankCheck
   INC H
-  JR Auto_9B8D
-Auto_9B7E:
+  JR BlitAlienFrameNextRow
+; ZX Spectrum display-file scan-line bank wrap: H&7 = 7 means we finished a
+; character row. If L < 0xE0 (224) add 0xF920 (-1760) to jump to the next
+; screen third; otherwise add 32 to advance to the next character row within
+; the same third. Then subtract 6 from HL to step back past the LDIR'd bytes.
+BlitAlienFrameBankCheck:
   LD A,L
-  CP $E0
-  JR NC,Auto_9B89
-  LD BC,Auto_F920
+  CP $E0                  ; L >= 0xE0: last char-row of this screen third?
+  JR NC,BlitAlienFrameNextThird ; yes: next third
+  LD BC,Auto_F920         ; BC = 0xF920 (-1760): wrap to next column in next
+                          ; third
   ADD HL,BC
-  JR Auto_9B8D
-Auto_9B89:
-  LD BC,$0020
+  JR BlitAlienFrameNextRow
+BlitAlienFrameNextThird:
+  LD BC,$0020             ; BC = 32: advance to next character row
   ADD HL,BC
-Auto_9B8D:
-  LD BC,$FFFA
+BlitAlienFrameNextRow:
+  LD BC,$FFFA             ; BC = -6: rewind HL past the 6 LDIR'd bytes
   ADD HL,BC
-  EX DE,HL
+  EX DE,HL                ; DE = screen dst, HL = sprite src
   POP BC
-  DJNZ Auto_9B6D
+  DJNZ BlitAlienFrameRow  ; next row
   RET
-Auto_9B96:
-  LD B,$02
-Auto_9B98:
-  PUSH BC
-  LD A,(Auto_5800)
+; Entry point called from UpdateAlienAnim with B=2 to advance the Y position
+; counter before blitting. Calls BlitAlienYFrame with B=2, which will call
+; AdvanceAlienYPos.
+AnimAlienY:
+  LD B,$02                ; B=2: advance position then blit
+; Blits the alien tail (Y channel) XOR sprite for the current phase and
+; position. First XORs ink colour bits of a 4x2 attribute block to produce a
+; flash effect. Then loads the current Y-phase sprite pointer (3 bytes/row, 21
+; rows) and chooses between an unshifted XOR blit (AlienYPos&7 < 4) or a
+; shifted one (>= 4). The shift amount is encoded directly into the
+; self-modifying JR at BlitAlienYShiftCode (byte 39932 is patched to select how
+; many SRL/RR passes execute). DJNZ at the end re-uses B to call
+; AdvanceAlienYPos when B=2.
+BlitAlienYFrame:
+  PUSH BC                 ; save B (iteration count)
+  LD A,(Auto_5800)        ; A = attribute at top-left of screen (0x5800)
   CPL
-  AND $07
-  LD ($9BC1),A
-  LD A,($9B46)
+  AND $07                 ; invert and mask ink colour bits
+  LD ($9BC1),A            ; patch XOR 7 opcode operand for attribute flash
+  LD A,($9B46)            ; A = AlienYPos (pixel Y offset 0-135)
   RRA
   RRA
-  RRA
+  RRA                     ; A = AlienYPos >> 3 (character row 0-16)
   AND $1F
   LD E,A
-  LD D,$00
-  LD HL,Auto_4C20
-  ADD HL,DE
-  LD (Auto_9B47),HL
-  LD HL,Auto_5940
-  ADD HL,DE
-  LD DE,$001D
-  LD C,$02
-Auto_9BBD:
-  LD B,$04
-Auto_9BBF:
+  LD D,$00                ; DE = char row index
+  LD HL,Auto_4C20         ; HL = 0x4C00+1 (display col 1, char-row 0)
+  ADD HL,DE               ; HL = screen row address for AlienYPos
+  LD (AlienScreenPtr),HL  ; AlienScreenPtr = screen row ptr
+  LD HL,Auto_5940         ; HL = 0x5940 (attr row, col 0, char-row 1)
+  ADD HL,DE               ; HL = attr address for AlienYPos char row
+  LD DE,$001D             ; DE = attr row stride - 4 (skip to next pair)
+  LD C,$02                ; 2 attribute rows
+BlitAlienYAttrRow:
+  LD B,$04                ; 4 attribute columns per row
+BlitAlienYAttrInner:
   LD A,(HL)
-  XOR $07
-  LD (HL),A
+  XOR $07                 ; toggle ink colour (self-modifying operand at 39873)
+  LD (HL),A               ; write flashed attribute
   INC HL
-  DJNZ Auto_9BBF
-  ADD HL,DE
+  DJNZ BlitAlienYAttrInner ; next column
+  ADD HL,DE               ; skip to next attribute row
   DEC C
-  JR NZ,Auto_9BBD
-  LD HL,Auto_9B49
-  LD E,(HL)
+  JR NZ,BlitAlienYAttrRow ; next row
+  LD HL,AlienYPhase       ; HL -> AlienYPhase
+  LD E,(HL)               ; E = current Y phase (0-4)
   LD D,$00
-  INC HL
+  INC HL                  ; HL -> Y frame pointer table
   ADD HL,DE
-  ADD HL,DE
+  ADD HL,DE               ; HL -> table[phase] (2 bytes/entry)
   LD E,(HL)
   INC HL
-  LD D,(HL)
-  LD A,($9B46)
-  AND $07
+  LD D,(HL)               ; DE = tail sprite data ptr for this phase
+  LD A,($9B46)            ; A = AlienYPos
+  AND $07                 ; A = sub-character Y pixel offset (0-7)
   CP $04
-  JP NC,Auto_9C68
+  JP NC,BlitAlienYShifted ; >= 4: shifted blit (BlitAlienYShifted)
   CPL
-  AND $03
+  AND $03                 ; shift count = 3-(AlienYPos&7) in [0,3]
   LD L,A
   RLCA
   RLCA
-  RLCA
-  SUB L
-  LD ($9BFC),A
-  LD B,$15
-Auto_9BED:
+  RLCA                    ; A = shift_count * 8
+  SUB L                   ; A = shift_count * 7 (bytes to skip in shift chain)
+  LD ($9BFC),A            ; patch JR offset: BlitAlienYShiftCode entry skips N
+                          ; SRL/RR pairs
+  LD B,$15                ; 21 pixel rows per tail frame
+BlitAlienYFrameRow:
   PUSH BC
   EX DE,HL
   LD B,(HL)
@@ -7710,92 +7755,107 @@ Auto_9BED:
   LD E,(HL)
   INC HL
   PUSH HL
-  LD HL,(Auto_9B47)
+  LD HL,(AlienScreenPtr)
   PUSH HL
   XOR A
-Auto_9BFB:
-  JR Auto_9BFB
-  SRL B
+; Self-modifying right-shift chain. Byte 39932 (the JR e operand) is patched
+; before entry to skip 0-3 SRL/RR groups, giving a right-shift of 0-3 bits
+; across the 3+1 sprite bytes in {B,C,E,A}. After shifting, the result is
+; XOR-blitted to screen.
+BlitAlienYShiftCode:
+  JR BlitAlienYShiftCode  ; self-modifying: JR offset patched to skip N SRL/RR
+                          ; groups
+  SRL B                   ; shift group 3 (shift 3 bits right)
   RR C
   RR E
   RRA
-  SRL B
+  SRL B                   ; shift group 2
   RR C
   RR E
   RRA
-  SRL B
+  SRL B                   ; shift group 1 (shift 1 bit right)
   RR C
   RR E
   RRA
-  EX AF,AF'
+  EX AF,AF'               ; swap: A' = carry spill byte
   LD A,B
   XOR (HL)
-  LD (HL),A
+  LD (HL),A               ; XOR-blit byte 0 to screen
   INC HL
   LD A,C
   XOR (HL)
-  LD (HL),A
+  LD (HL),A               ; XOR-blit byte 1
   INC HL
   LD A,E
   XOR (HL)
-  LD (HL),A
+  LD (HL),A               ; XOR-blit byte 2
   INC HL
   EX AF,AF'
   XOR (HL)
-  LD (HL),A
+  LD (HL),A               ; XOR-blit carry spill byte
   POP HL
   LD A,H
   AND $07
   CP $07
-  JR Z,Auto_9C2D
+  JR Z,BlitAlienYFrameBankCheck
   INC H
-  JR Auto_9C3C
-Auto_9C2D:
+  JR BlitAlienYFrameNextRow
+BlitAlienYFrameBankCheck:
   LD A,L
   CP $E0
-  JR NC,Auto_9C38
+  JR NC,BlitAlienYFrameNextThird
   LD BC,Auto_F920
   ADD HL,BC
-  JR Auto_9C3C
-Auto_9C38:
+  JR BlitAlienYFrameNextRow
+BlitAlienYFrameNextThird:
   LD BC,$0020
   ADD HL,BC
-Auto_9C3C:
-  LD (Auto_9B47),HL
+BlitAlienYFrameNextRow:
+  LD (AlienScreenPtr),HL
   POP DE
   POP BC
-  DJNZ Auto_9BED
+  DJNZ BlitAlienYFrameRow
   POP BC
-  DJNZ Auto_9C47
+  DJNZ AdvanceAlienYPos
   RET
-Auto_9C47:
-  LD A,($9B46)
-  ADD A,$04
-  CP $88
-  JR C,Auto_9C56
-  LD A,$80
-  LD (Auto_9B49),A
-  RET
-Auto_9C56:
-  LD ($9B46),A
-  LD A,(Auto_9B49)
+; Increments AlienYPos by 4. If the new value >= 136 the tail sweep is
+; complete: freeze the Y animation (AlienYPhase |= 128) and return. Otherwise
+; store the new position, cycle the phase counter (0->1->2->3->4->0) and jump
+; back to BlitAlienYFrame.
+AdvanceAlienYPos:
+  LD A,($9B46)            ; A = AlienYPos
+  ADD A,$04               ; advance by 4 pixels
+  CP $88                  ; reached bottom of sweep area?
+  JR C,AdvanceAlienYPosUpdate ; no: update position
+  LD A,$80                ; yes: A = freeze flag
+  LD (AlienYPhase),A      ; AlienYPhase = 128 (frozen)
+  RET                     ; done
+AdvanceAlienYPosUpdate:
+  LD ($9B46),A            ; AlienYPos = new value
+  LD A,(AlienYPhase)      ; A = current phase (0-4)
   INC A
-  CP $05
-  JR C,Auto_9C62
-  XOR A
-Auto_9C62:
-  LD (Auto_9B49),A
-  JP Auto_9B98
-Auto_9C68:
-  SUB $04
+  CP $05                  ; wrapped past phase 4?
+  JR C,AdvanceAlienYPosSetPhase ; no: keep incremented value
+  XOR A                   ; yes: wrap to 0
+AdvanceAlienYPosSetPhase:
+  LD (AlienYPhase),A      ; AlienYPhase = new phase
+  JP BlitAlienYFrame      ; blit next tail frame
+; Handles the alien tail XOR blit when AlienYPos&7 >= 4 (sprite straddles the
+; next character row). Uses SLA/RL chains for a left-shift instead of SRL/RR,
+; mirroring the logic of BlitAlienYFrame's right-shift section. The shift
+; amount (pixels left past the half-character boundary) is patched into the
+; self-modifying JR at BlitAlienYShiftCode2 (byte 40067), then 21 rows of 4
+; bytes are XOR-blitted.
+BlitAlienYShifted:
+  SUB $04                 ; A = (AlienYPos&7) - 4, left-shift amount in [0,3]
   LD L,A
   RLCA
   RLCA
-  RLCA
-  SUB L
-  LD ($9C83),A
-  LD B,$15
-Auto_9C74:
+  RLCA                    ; A = shift_count * 8
+  SUB L                   ; A = shift_count * 7 (JR offset into SLA/RL chain)
+  LD ($9C83),A            ; patch BlitAlienYShiftCode2 JR offset
+  LD B,$15                ; 21 pixel rows
+BlitAlienYShiftedRow:
   PUSH BC
   EX DE,HL
   LD B,(HL)
@@ -7805,11 +7865,11 @@ Auto_9C74:
   LD E,(HL)
   INC HL
   PUSH HL
-  LD HL,(Auto_9B47)
+  LD HL,(AlienScreenPtr)
   PUSH HL
   XOR A
-Auto_9C82:
-  JR Auto_9C82
+BlitAlienYShiftCode2:
+  JR BlitAlienYShiftCode2
   SLA E
   RL C
   RL B
@@ -7844,53 +7904,57 @@ Auto_9C82:
   LD A,H
   AND $07
   CP $07
-  JR Z,Auto_9CB9
+  JR Z,BlitAlienYShiftedBankCheck
   INC H
-  JR Auto_9CC8
-Auto_9CB9:
+  JR BlitAlienYShiftedNextRow
+BlitAlienYShiftedBankCheck:
   LD A,L
   CP $E0
-  JR NC,Auto_9CC4
+  JR NC,BlitAlienYShiftedNextThird
   LD BC,Auto_F920
   ADD HL,BC
-  JR Auto_9CC8
-Auto_9CC4:
+  JR BlitAlienYShiftedNextRow
+BlitAlienYShiftedNextThird:
   LD BC,$0020
   ADD HL,BC
-Auto_9CC8:
-  LD (Auto_9B47),HL
+BlitAlienYShiftedNextRow:
+  LD (AlienScreenPtr),HL
   POP DE
   POP BC
-  DJNZ Auto_9C74
+  DJNZ BlitAlienYShiftedRow
   POP BC
   DEC B
-  JP NZ,Auto_9C47
+  JP NZ,AdvanceAlienYPos
   RET
-Auto_9CD5:
-  LD HL,DisplayFile
-  LD ($7A19),HL
-  LD C,$13
-Auto_9CDD:
+; Clears the 19x20-character area of the ZX Spectrum display file and attribute
+; RAM used by the alien body animation. Iterates 19 rows of 20 columns from
+; 0x4000, calling DrawSpriteRow_0 to zero each cell, then repeats for the
+; attribute area at 0x5800.
+ClearAlienArea:
+  LD HL,DisplayFile       ; HL = 0x4000: start of display file
+  LD ($7A19),HL           ; store current screen cell address
+  LD C,$13                ; 19 character rows
+ClearAlienAreaCol:
   LD B,$14
-Auto_9CDF:
+ClearAlienAreaRow:
   PUSH BC
   XOR A
   CALL DrawSpriteRow_0
   LD HL,$7A19
   INC (HL)
   POP BC
-  DJNZ Auto_9CDF
+  DJNZ ClearAlienAreaRow
   LD DE,$000C
   LD HL,($7A19)
   LD A,L
   CP $E0
-  JR C,Auto_9CF9
+  JR C,ClearAlienAreaNextRow
   LD DE,$070C
-Auto_9CF9:
+ClearAlienAreaNextRow:
   ADD HL,DE
   LD ($7A19),HL
   DEC C
-  JR NZ,Auto_9CDD
+  JR NZ,ClearAlienAreaCol
   LD DE,$000C
   LD HL,Auto_5800
   LD C,$13
@@ -9670,8 +9734,8 @@ Auto_A58C:
   LD HL,Auto_8080
   LD (CrewAnimFlags),HL
   LD A,L
-  LD (Auto_9B3D),A
-  LD (Auto_9B49),A
+  LD (AlienXPhase),A
+  LD (AlienYPhase),A
   LD HL,$A1BE
   LD DE,$74F4
   LD BC,$0016
@@ -9817,10 +9881,9 @@ FillAttributes_3:
 ; black, fills attributes (0 = black on black = hidden). Renders a 15×11 tile
 ; grid: each byte of the tile map at Auto_9E38 is a tile index; multiplied by 8
 ; gives an offset into the 8-byte-per-tile bitmap array at Auto_F230 (actually
-; at Auto_F230 = Auto_F230 decimal, in the extra-data area loaded at
-; ExtraDataArea). Tile rows are blitted column by column down into the display
-; file. After drawing, loops animating colours until any key on row $F7FE is
-; pressed.
+; at Auto_F230 = Auto_F230 decimal, in the extra-data area loaded at EA60).
+; Tile rows are blitted column by column down into the display file. After
+; drawing, loops animating colours until any key on row $F7FE is pressed.
 ;
 ; USED by the routine at GameEntry.
 DrawIntroScreen:
@@ -11221,12 +11284,12 @@ PlayMusic_12:
   POP DE
   POP IX
   CALL PlayMusic_29
-  CALL Auto_9B07
+  CALL ResetAlienXAnim
   JP GameEntry_25
 PlayMusic_13:
   POP DE
   POP IX
-  CALL Auto_9B07
+  CALL ResetAlienXAnim
   LD HL,Auto_8080
   LD (CrewAnimFlags),HL
   LD A,$04
@@ -25849,260 +25912,14 @@ Auto_DFFE:
   NOP
   NOP
 
-; Data block at ExtraDataArea
-ExtraDataArea:
-  DEFB $00,$00,$00,$0F,$80,$00,$00,$00
-  DEFB $00,$3F,$C0,$00,$00,$00,$00,$7F
-  DEFB $E0,$00,$02,$00,$38,$FF,$E0,$00
-  DEFB $04,$00,$7D,$FF,$60,$00,$0F,$FF
-  DEFB $E9,$FD,$E0,$00,$0F,$FF,$63,$FB
-  DEFB $DC,$00,$0F,$FF,$63,$F7,$3E,$00
-  DEFB $05,$FF,$63,$FE,$3E,$00,$06,$07
-  DEFB $67,$F8,$76,$00,$07,$80,$2F,$BE
-  DEFB $62,$00,$07,$00,$1F,$D2,$EC,$00
-  DEFB $07,$80,$1F,$D1,$DE,$00,$07,$00
-  DEFB $1F,$D3,$B9,$00,$07,$80,$1F,$A7
-  DEFB $77,$00,$07,$00,$0F,$4E,$EF,$80
-  DEFB $07,$80,$10,$CC,$1F,$80,$07,$78
-  DEFB $0F,$5C,$6F,$C0,$07,$7E,$00,$97
-  DEFB $C7,$E0,$07,$BF,$8F,$78,$43,$E0
-  DEFB $03,$DF,$EE,$EF,$C3,$F4,$02,$EF
-  DEFB $F8,$30,$81,$F4,$02,$B7,$F5,$EF
-  DEFB $00,$F8,$03,$97,$FB,$30,$80,$70
-  DEFB $03,$A7,$FC,$9F,$01,$F0,$03,$BF
-  DEFB $FC,$C0,$1C,$E0,$01,$5D,$FF,$2D
-  DEFB $FB,$E0,$01,$5E,$FF,$F3,$F9,$C0
-  DEFB $00,$AE,$7F,$FF,$F7,$D0,$00,$1E
-  DEFB $3F,$FF,$F7,$B0,$00,$3E,$0F,$FF
-  DEFB $E7,$70,$00,$3E,$01,$FF,$DE,$F0
-  DEFB $00,$3E,$18,$3E,$06,$F0,$00,$3E
-  DEFB $38,$00,$35,$F0,$00,$1E,$F7,$00
-  DEFB $F9,$F0,$00,$1E,$CC,$01,$D9,$E0
-  DEFB $00,$1E,$34,$02,$B3,$E0,$00,$5E
-  DEFB $D0,$02,$F3,$C0,$00,$DE,$40,$01
-  DEFB $53,$C0,$01,$C1,$00,$01,$57,$C0
-  DEFB $03,$AF,$00,$00,$A7,$C0,$0E,$4F
-  DEFB $00,$00,$47,$C0,$0D,$8A,$80,$00
-  DEFB $07,$C0,$1A,$0B,$80,$00,$03,$80
-  DEFB $1B,$0B,$80,$00,$04,$80,$34,$0F
-  DEFB $00,$00,$0F,$00,$36,$1F,$00,$00
-  DEFB $0F,$00,$3C,$1B,$00,$00,$05,$00
-  DEFB $34,$36,$00,$00,$0D,$00,$38,$7E
-  DEFB $00,$00,$0F,$80,$3C,$D6,$00,$00
-  DEFB $05,$C0,$38,$B4,$00,$00,$06,$E0
-  DEFB $3E,$00,$00,$00,$07,$E0,$1C,$00
-  DEFB $00,$00,$06,$A0,$1F,$00,$00,$00
-  DEFB $02,$C0,$0F,$C0,$00,$00,$00,$00
-  DEFB $07,$F8,$00,$00,$00,$00,$03,$FE
-  DEFB $00,$00,$00,$00,$00,$7F,$80,$00
-  DEFB $00,$00,$00,$03,$80,$00,$00,$00
-  DEFB $00,$01,$C0,$00,$00,$00,$00,$00
-  DEFB $C0,$00,$00,$00,$00,$00,$C0,$00
-  DEFB $00,$00,$00,$00,$00,$3E,$00,$00
-  DEFB $00,$00,$00,$7F,$00,$00,$00,$00
-  DEFB $00,$FF,$80,$00,$02,$00,$39,$FE
-  DEFB $80,$00,$04,$00,$7D,$FF,$80,$00
-  DEFB $0F,$FF,$EB,$FB,$80,$00,$0F,$FF
-  DEFB $63,$F7,$1C,$00,$0F,$FF,$67,$F4
-  DEFB $3E,$00,$05,$FF,$67,$F8,$3E,$00
-  DEFB $06,$07,$67,$B0,$76,$00,$07,$80
-  DEFB $37,$DC,$62,$00,$07,$00,$2F,$F2
-  DEFB $EC,$00,$07,$80,$0F,$E9,$DE,$00
-  DEFB $07,$00,$0F,$EB,$B9,$00,$07,$80
-  DEFB $0F,$D7,$77,$00,$07,$00,$07,$AE
-  DEFB $EF,$80,$07,$80,$08,$6C,$1F,$80
-  DEFB $07,$78,$07,$AC,$6F,$C0,$07,$7E
-  DEFB $00,$57,$C7,$E0,$07,$BF,$87,$B8
-  DEFB $43,$E0,$03,$DF,$E7,$6F,$C3,$F4
-  DEFB $02,$EF,$F8,$B0,$81,$F4,$02,$B7
-  DEFB $F5,$EF,$00,$F8,$03,$97,$FB,$30
-  DEFB $80,$70,$03,$A7,$FC,$9F,$01,$F0
-  DEFB $03,$BF,$FC,$C0,$1C,$E0,$01,$5D
-  DEFB $FF,$2D,$FB,$E0,$01,$5E,$FF,$2D
-  DEFB $FB,$E0,$00,$AE,$7F,$F3,$F9,$C0
-  DEFB $00,$1E,$3F,$FF,$F7,$D0,$00,$3E
-  DEFB $0F,$FF,$F7,$B0,$00,$3E,$01,$FF
-  DEFB $E7,$70,$00,$3E,$18,$FF,$DE,$F0
-  DEFB $00,$3E,$38,$3E,$06,$F0,$00,$1E
-  DEFB $F7,$00,$35,$F0,$00,$1E,$CC,$00
-  DEFB $F9,$F0,$00,$1E,$34,$03,$59,$E0
-  DEFB $00,$5E,$D0,$05,$B3,$E0,$00,$DE
-  DEFB $40,$02,$E3,$C0,$01,$C1,$00,$05
-  DEFB $63,$C0,$03,$AF,$00,$0A,$A7,$C0
-  DEFB $0E,$4F,$00,$05,$27,$C0,$0D,$8A
-  DEFB $80,$00,$07,$C0,$1A,$0B,$80,$00
-  DEFB $03,$80,$1B,$0B,$80,$00,$04,$80
-  DEFB $34,$0F,$00,$00,$0F,$00,$36,$1F
-  DEFB $00,$00,$0F,$00,$3C,$1B,$00,$00
-  DEFB $05,$00,$34,$36,$00,$00,$0D,$00
-  DEFB $38,$7E,$00,$00,$0F,$80,$3C,$D6
-  DEFB $00,$00,$05,$C0,$38,$B4,$00,$00
-  DEFB $06,$E0,$3E,$00,$00,$00,$07,$E0
-  DEFB $1C,$00,$00,$00,$06,$A0,$1F,$00
-  DEFB $00,$00,$02,$C0,$0F,$C0,$00,$00
-  DEFB $00,$00,$07,$F8,$00,$00,$00,$00
-  DEFB $03,$FF,$80,$00,$00,$00,$00,$7F
-  DEFB $E0,$00,$00,$00,$00,$01,$F0,$00
-  DEFB $00,$00,$00,$00,$38,$00,$00,$00
-  DEFB $00,$00,$18,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$7C
-  DEFB $00,$00,$00,$00,$01,$FE,$00,$00
-  DEFB $00,$00,$03,$FF,$00,$00,$02,$00
-  DEFB $3B,$FD,$00,$00,$04,$00,$7B,$FB
-  DEFB $00,$00,$0F,$FF,$E7,$F7,$00,$00
-  DEFB $0F,$FF,$67,$F6,$1C,$00,$0F,$FF
-  DEFB $67,$F8,$3E,$00,$05,$FF,$67,$F0
-  DEFB $3E,$00,$06,$07,$67,$F0,$76,$00
-  DEFB $07,$80,$37,$DC,$62,$00,$07,$00
-  DEFB $2F,$E2,$EC,$00,$07,$80,$0F,$F1
-  DEFB $DE,$00,$07,$00,$0F,$F3,$B9,$00
-  DEFB $07,$80,$0F,$E7,$77,$00,$07,$00
-  DEFB $07,$D6,$EF,$80,$07,$80,$08,$34
-  DEFB $1F,$80,$07,$78,$07,$EC,$6F,$C0
-  DEFB $07,$7E,$03,$A7,$C7,$E0,$07,$BF
-  DEFB $84,$58,$43,$E0,$03,$DF,$E3,$AF
-  DEFB $C3,$F4,$02,$EF,$FB,$B0,$81,$F4
-  DEFB $02,$B7,$F4,$6F,$00,$F8,$03,$97
-  DEFB $FB,$30,$80,$70,$03,$A7,$FC,$9F
-  DEFB $01,$F0,$03,$BF,$FC,$C0,$1C,$E0
-  DEFB $01,$5D,$FF,$2D,$FB,$E0,$01,$5E
-  DEFB $FF,$F3,$F9,$C0,$00,$AE,$7F,$FF
-  DEFB $F7,$D0,$00,$1E,$3F,$FF,$F7,$B0
-  DEFB $00,$3E,$0F,$FF,$EF,$70,$00,$3E
-  DEFB $01,$FF,$96,$F0,$00,$3E,$18,$3E
-  DEFB $79,$F0,$00,$3E,$38,$01,$F9,$F0
-  DEFB $00,$1E,$F7,$06,$B1,$F0,$00,$1E
-  DEFB $CC,$0B,$61,$E0,$00,$1E,$34,$05
-  DEFB $C3,$E0,$00,$5E,$D0,$0A,$C3,$C0
-  DEFB $00,$DE,$40,$15,$43,$C0,$01,$C1
-  DEFB $00,$0A,$47,$C0,$03,$AF,$00,$00
-  DEFB $07,$C0,$0E,$4F,$00,$00,$07,$C0
-  DEFB $0D,$8A,$80,$00,$07,$C0,$1A,$0B
-  DEFB $80,$00,$03,$80,$1B,$0B,$80,$00
-  DEFB $04,$80,$34,$0F,$00,$00,$0F,$00
-  DEFB $36,$1F,$00,$00,$0F,$00,$3C,$1B
-  DEFB $00,$00,$05,$00,$34,$36,$00,$00
-  DEFB $0D,$00,$38,$7E,$00,$00,$0F,$80
-  DEFB $3C,$D6,$00,$00,$05,$C0,$38,$B4
-  DEFB $00,$00,$06,$E0,$3E,$00,$00,$00
-  DEFB $07,$E0,$1C,$00,$00,$00,$06,$A0
-  DEFB $1F,$00,$08,$00,$02,$C0,$0F,$80
-  DEFB $18,$00,$00,$00,$07,$F8,$F8,$00
-  DEFB $00,$00,$03,$FF,$F0,$00,$00,$00
-  DEFB $00,$FF,$C0,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$7C,$00,$00,$00,$00,$01,$FE
-  DEFB $00,$00,$00,$00,$03,$FF,$00,$00
-  DEFB $02,$00,$3B,$FF,$00,$00,$04,$00
-  DEFB $7B,$FF,$00,$00,$0F,$FF,$E7,$F9
-  DEFB $00,$00,$0F,$FF,$67,$F6,$1C,$00
-  DEFB $0F,$FF,$67,$F4,$3E,$00,$05,$FF
-  DEFB $67,$F8,$3E,$00,$06,$07,$67,$90
-  DEFB $76,$00,$07,$80,$2F,$EC,$62,$00
-  DEFB $07,$00,$2F,$F2,$EC,$00,$07,$80
-  DEFB $0F,$F1,$DE,$00,$07,$00,$0F,$E3
-  DEFB $B9,$00,$07,$80,$07,$D7,$77,$00
-  DEFB $07,$00,$08,$16,$EF,$80,$07,$80
-  DEFB $07,$EC,$1F,$80,$07,$78,$03,$CC
-  DEFB $6F,$C0,$07,$7E,$04,$27,$C7,$E0
-  DEFB $07,$BF,$85,$A8,$43,$E0,$03,$DF
-  DEFB $E5,$AF,$C3,$F4,$02,$EF,$FA,$50
-  DEFB $81,$F4,$02,$B7,$F3,$CF,$00,$F8
-  DEFB $03,$97,$F8,$30,$80,$70,$03,$A7
-  DEFB $FF,$9F,$01,$F0,$03,$BF,$FC,$C0
-  DEFB $18,$E0,$01,$5D,$FF,$2D,$F7,$C0
-  DEFB $01,$5E,$FF,$F3,$F3,$A0,$00,$AE
-  DEFB $7F,$FF,$EF,$70,$00,$1E,$3F,$FF
-  DEFB $CE,$F0,$00,$3E,$0F,$FF,$1D,$F0
-  DEFB $00,$3E,$01,$FC,$CB,$F0,$00,$3E
-  DEFB $18,$23,$E0,$F0,$00,$3E,$38,$1D
-  DEFB $61,$F0,$00,$1E,$F7,$06,$C1,$F0
-  DEFB $00,$1E,$CC,$1B,$C1,$E0,$00,$1E
-  DEFB $34,$25,$43,$E0,$00,$5E,$D0,$09
-  DEFB $43,$C0,$00,$DE,$40,$12,$43,$C0
-  DEFB $01,$C1,$00,$02,$07,$C0,$03,$AF
-  DEFB $00,$00,$07,$C0,$0E,$4F,$00,$00
-  DEFB $07,$C0,$0D,$8A,$80,$00,$07,$C0
-  DEFB $1A,$0B,$80,$00,$03,$80,$1B,$0B
-  DEFB $80,$00,$04,$80,$34,$0F,$00,$00
-  DEFB $0F,$00,$36,$1F,$00,$00,$0F,$00
-  DEFB $3C,$1B,$00,$00,$05,$00,$34,$36
-  DEFB $00,$00,$0D,$00,$38,$7E,$10,$00
-  DEFB $0F,$80,$3C,$D6,$30,$00,$05,$C0
-  DEFB $38,$B4,$30,$00,$06,$E0,$3E,$00
-  DEFB $60,$00,$07,$E0,$1E,$00,$E0,$00
-  DEFB $06,$A0,$1F,$83,$C0,$00,$02,$C0
-  DEFB $0F,$FF,$80,$00,$00,$00,$07,$FF
-  DEFB $00,$00,$00,$00,$01,$FC,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$30,$00,$00,$18,$00,$00
-  DEFB $0C,$00,$00,$06,$00,$40,$03,$E0
-  DEFB $E0,$03,$FF,$F0,$03,$FF,$F0,$03
-  DEFB $FF,$C0,$07,$BF,$C0,$1F,$0F,$E8
-  DEFB $34,$00,$74,$20,$00,$18,$00,$00
-  DEFB $0C,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $60,$00,$00,$3C,$00,$10,$07,$F8
-  DEFB $38,$01,$FE,$FC,$00,$FF,$FC,$01
-  DEFB $FF,$F0,$01,$FF,$E0,$01,$E7,$C0
-  DEFB $01,$80,$C0,$01,$80,$C0,$00,$C0
-  DEFB $C0,$00,$C0,$E0,$00,$00,$60,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$10,$80,$00
-  DEFB $38,$E1,$E0,$FC,$3F,$FF,$FC,$07
-  DEFB $FF,$F0,$03,$FF,$E0,$01,$FF,$E0
-  DEFB $00,$F6,$C0,$00,$F0,$C0,$00,$60
-  DEFB $C0,$00,$31,$80,$00,$1D,$80,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$04
-  DEFB $00,$00,$0E,$00,$00,$7F,$00,$0F
-  DEFB $FF,$20,$FF,$F0,$1F,$FF,$F0,$0E
-  DEFB $7F,$F8,$00,$FF,$3C,$00,$F8,$14
-  DEFB $01,$E0,$18,$01,$80,$18,$01,$80
-  DEFB $30,$01,$80,$00,$00,$C0,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $38,$00,$08,$0E,$00,$1C,$03,$FF
-  DEFB $FE,$00,$FF,$FE,$00,$FF,$E0,$00
-  DEFB $FF,$E0,$03,$F7,$F0,$03,$E0,$7C
-  DEFB $03,$00,$36,$06,$00,$30,$04,$00
-  DEFB $18,$04,$00,$08,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-
 ; IntroTileData
 ;
-; 8×8 pixel tile bitmaps for the game's extra-data area (ExtraDataArea-$F5FF).
-; The first 8 tiles ($F1B0-$F22F, addresses 61936-61999) are blank padding.
-; Tile graphics used by DrawIntroScreen (DrawIntroScreen) start at Auto_F230
-; (Auto_F230): tile index N maps to address Auto_F230 + N×8. The tile map at
-; Auto_9E38 indexes into this set to build the 15×11 title-screen graphic.
-; Subsequent tiles (beyond the intro set) are used by other game screens and
-; the ship map.
+; 8×8 pixel tile bitmaps for the game's extra-data area (EA60-$F5FF). The first
+; 8 tiles ($F1B0-$F22F, addresses 61936-61999) are blank padding. Tile graphics
+; used by DrawIntroScreen (DrawIntroScreen) start at Auto_F230 (Auto_F230):
+; tile index N maps to address Auto_F230 + N×8. The tile map at Auto_9E38
+; indexes into this set to build the 15×11 title-screen graphic. Subsequent
+; tiles (beyond the intro set) are used by other game screens and the ship map.
 ;
 ; INTRO tile sheet — tiles starting at Auto_F230, 16 per row, 2× scale:
 ;
