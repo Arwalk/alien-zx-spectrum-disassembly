@@ -2047,7 +2047,9 @@ b30216 DEFB 0,0,0,1,1
  30477 DEFB 192,128,224,8,240,16,19,28
  30485 DEFB 0,0,0,132,73,33,210
 
-; Portrait data continuation (portraits 4 end, 5, 6 start)
+; CrewPortraitsCont
+;
+; Crew portrait bitmaps, continued (portraits 4 end, 5, 6 start).
 @label=CrewPortraitsCont
 b30492 DEFB 12,0,0,0,144,15,4,252
  30500 DEFB 0,0,0,0,0,1,3,7
@@ -2067,7 +2069,9 @@ b30492 DEFB 12,0,0,0,144,15,4,252
  30612 DEFB 251,241,127,191,96,224,192,192
  30620 DEFB 192,128,128,112,126,130
 
-; Portrait data continuation (portrait 6 end, portrait 7)
+; CrewPortraitsCont2
+;
+; Crew portrait bitmaps, continued (portrait 6 end, portrait 7).
 @label=CrewPortraitsCont2
 b30626 DEFB 2,1,1,0,0,0,223,96
  30634 DEFB 127,127,62,0,0,0,79,144
@@ -7639,6 +7643,8 @@ c38379 CALL 38846    ;
  39653 RET           ;
  39654 RET           ;
 
+; InitAlienYAnim
+;
 ; Resets alien Y (tail) animation and blits the first frame. Sets Y position to 8,
 ; clears the Y phase freeze flag, then calls #R39832 with B=1 to draw frame 0.
 ; This entry point is used by the routines at #R31634 and #R36859.
@@ -7653,6 +7659,8 @@ c39655 XOR A         ; A = 0: clear freeze flag
  39666 CALL 39832    ; draw first tail frame
  39669 RET           ;
 
+; TriggerAlienYAnim
+;
 ; Advances the alien Y (tail) animation by one frame if not frozen. Sets the freeze
 ; flag (bit 7 of AlienYPhase) after blitting so the animation runs exactly once.
 ; This entry point is used by the routines at #R35578 and #R36859.
@@ -7670,6 +7678,8 @@ c39670 LD B,1        ; B = 1 iteration
  39683 LD (39753),A  ; freeze: AlienYPhase |= 128
  39686 RET           ;
 
+; ResetAlienXAnim
+;
 ; Clears the alien body animation area from the screen, then resets the X phase
 ; counter so the next trigger starts from frame 0.
 ; This entry point is used by the routines at #R31634 and #R44880.
@@ -7681,6 +7691,8 @@ c39687 CALL 40149    ; clear 19x20-cell screen area (ClearAlienArea)
  39691 LD (39741),A  ; AlienXPhase = 0 (unfreeze, frame 0)
  39694 RET           ;
 
+; TriggerAlienXAnim
+;
 ; Arms the alien body animation (sets freeze flag so a single blit occurs next frame),
 ; or ends the encounter sequence. If (31252)=1 the crew member was killed: jump to
 ; #R32719 to handle that. Otherwise clears the screen area and returns.
@@ -7701,6 +7713,8 @@ c39695 LD A,(39741)  ; A = AlienXPhase
  39714 CALL 40149    ; no: clear alien screen area
  39717 RET           ;
 
+; UpdateAlienAnim
+;
 ; Per-frame alien encounter update: refreshes the map view, then advances both
 ; animation layers. Y layer (tail sweep) if not frozen, X layer (body) if not frozen.
 @label=UpdateAlienAnim
@@ -7718,6 +7732,7 @@ c39718 CALL 34967    ; redraw room background
  39737 CALL Z,39764  ; not frozen: blit next alien body frame
  39740 RET           ;
 
+; AlienAnimVars
 ;
 ; Inline state variables for the alien encounter animation. Addresses are
 ; self-modified at runtime; pointer table entries are fixed in ROM.
@@ -7738,6 +7753,8 @@ b39741 DEFB 0          ; body frame index 0-3 (bit 7 = freeze flag)
  39760 DEFW 61704      ; #R61704 (JonesFrame3 sprite ptr)
  39762 DEFW 61768      ; #R61768 (JonesFrame4 sprite ptr)
 
+; BlitAlienFrame
+;
 ; Advances AlienXPhase (0->1->2->3->0), loads the corresponding sprite frame pointer
 ; from the table at AlienXPhase+2, then LDIRs 6 bytes x 63 rows of sprite data to
 ; the display file at 0x4807 (column 7, row 1, pixel-row 0), handling ZX Spectrum
@@ -7796,11 +7813,15 @@ c39764 LD HL,39741   ; HL -> AlienXPhase
  39827 DJNZ 39789    ; next row
  39829 RET           ;
 
+; AnimAlienY
+;
 ; Entry point called from UpdateAlienAnim with B=2 to advance the Y position counter
 ; before blitting. Calls BlitJonesFrame with B=2, which will call AdvanceAlienYPos.
 @label=AnimAlienY
 c39830 LD B,2        ; B=2: advance position then blit
 
+; BlitJonesFrame
+;
 ; Blits the alien tail (Y channel) XOR sprite for the current phase and position.
 ; First XORs ink colour bits of a 4x2 attribute block to produce a flash effect.
 ; Then loads the current Y-phase sprite pointer (3 bytes/row, 21 rows) and chooses
@@ -7941,6 +7962,8 @@ c39832 PUSH BC       ; save B (iteration count)
  40004 DJNZ 40007    ;
  40006 RET           ;
 
+; AdvanceAlienYPos
+;
 ; Increments AlienYPos by 4. If the new value >= 136 the tail sweep is complete:
 ; freeze the Y animation (AlienYPhase |= 128) and return. Otherwise store the new
 ; position, cycle the phase counter (0->1->2->3->4->0) and jump back to BlitJonesFrame.
@@ -7969,6 +7992,8 @@ c40007 LD A,(39750)  ; A = AlienYPos
 *40034 LD (39753),A  ; AlienYPhase = new phase
  40037 JP 39832      ; blit next tail frame
 
+; BlitAlienYShifted
+;
 ; Handles the alien tail XOR blit when AlienYPos&7 >= 4 (sprite straddles the next
 ; character row). Uses SLA/RL chains for a left-shift instead of SRL/RR, mirroring
 ; the logic of BlitJonesFrame's right-shift section. The shift amount (pixels left
@@ -8059,6 +8084,8 @@ c40040 SUB 4         ; A = (AlienYPos&7) - 4, left-shift amount in [0,3]
  40145 JP NZ,40007   ;
  40148 RET           ;
 
+; ClearAlienArea
+;
 ; Clears the 19x20-character area of the ZX Spectrum display file and attribute RAM
 ; used by the alien body animation. Iterates 19 rows of 20 columns from 0x4000,
 ; calling #R31370 to zero each cell, then repeats for the attribute area at 0x5800.
@@ -26230,7 +26257,8 @@ c45401 LD IX,29574   ;
  59999 NOP           ;
 @ignoreua
 
-; Alien encounter animation data.
+; Alien encounter animation data
+;
 ; Body frames 0-3 (#R60000-61511): 6 bytes x 63 rows each (48 pixels wide,
 ; 63 pixels tall). Blitted directly to the display file by #R39764.
 ; Jones the cat frames 0-4 (#R61512-#R61831): 3 bytes x 21 rows each (24
@@ -26314,6 +26342,8 @@ b60000 DEFB 0,0,0,15,128,0
  60366 DEFB 0,0,192,0,0,0
  60372 DEFB 0,0,192,0,0,0
 
+; AlienFrame1
+;
 ; Alien body frame 1 (phase 1).
 ; #HTML(#UDGARRAY6,56,4,6(60378-60383-1;60426-60431-1;60474-60479-1;60522-60527-1;60570-60575-1;60618-60623-1;60666-60671-1;60714-60719-1)(AlienFrame1))
 @label=AlienFrame1
@@ -26381,6 +26411,8 @@ b60378 DEFB 0,0,0,62,0,0
  60744 DEFB 0,0,24,0,0,0
  60750 DEFB 0,0,0,0,0,0
 
+; AlienFrame2
+;
 ; Alien body frame 2 (phase 2).
 ; #HTML(#UDGARRAY6,56,4,6(60756-60761-1;60804-60809-1;60852-60857-1;60900-60905-1;60948-60953-1;60996-61001-1;61044-61049-1;61092-61097-1)(AlienFrame2))
 @label=AlienFrame2
@@ -26448,6 +26480,8 @@ b60756 DEFB 0,0,0,124,0,0
  61122 DEFB 0,0,0,0,0,0
  61128 DEFB 0,0,0,0,0,0
 
+; AlienFrame3
+;
 ; Alien body frame 3 (phase 3).
 ; #HTML(#UDGARRAY6,56,4,6(61134-61139-1;61182-61187-1;61230-61235-1;61278-61283-1;61326-61331-1;61374-61379-1;61422-61427-1;61470-61475-1)(AlienFrame3))
 @label=AlienFrame3
@@ -26515,6 +26549,8 @@ b61134 DEFB 0,0,0,124,0,0
  61500 DEFB 0,0,0,0,0,0
  61506 DEFB 0,0,0,0,0,0
 
+; JonesFrame0
+;
 ; Jones the cat frame 0 (phase 0). 21 rows x 3 bytes, XOR-blitted.
 ; #HTML(#UDGARRAY3,56,4,3(61512-61514-1;61536-61538-1;61560-61562-1)(JonesFrame0))
 @label=JonesFrame0
@@ -26541,6 +26577,8 @@ b61512 DEFB 0,0,0
  61572 DEFB 0,0,0
  61575 DEFB 0
 
+; JonesFrame1
+;
 ; Jones the cat frame 1 (phase 1). 21 rows x 3 bytes, XOR-blitted.
 ; #HTML(#UDGARRAY3,56,4,3(61576-61578-1;61600-61602-1;61624-61626-1)(JonesFrame1))
 @label=JonesFrame1
@@ -26567,6 +26605,8 @@ b61576 DEFB 0,0,0
  61636 DEFB 0,0,96
  61639 DEFB 0
 
+; JonesFrame2
+;
 ; Jones the cat frame 2 (phase 2). 21 rows x 3 bytes, XOR-blitted.
 ; #HTML(#UDGARRAY3,56,4,3(61640-61642-1;61664-61666-1;61688-61690-1)(JonesFrame2))
 @label=JonesFrame2
@@ -26593,6 +26633,8 @@ b61640 DEFB 0,0,0
  61700 DEFB 0,29,128
  61703 DEFB 0
 
+; JonesFrame3
+;
 ; Jones the cat frame 3 (phase 3). 21 rows x 3 bytes, XOR-blitted.
 ; #HTML(#UDGARRAY3,56,4,3(61704-61706-1;61728-61730-1;61752-61754-1)(JonesFrame3))
 @label=JonesFrame3
@@ -26619,6 +26661,8 @@ b61704 DEFB 0,0,0
  61764 DEFB 0,192,0
  61767 DEFB 0
 
+; JonesFrame4
+;
 ; Jones the cat frame 4 (phase 4). 21 rows x 3 bytes, XOR-blitted.
 ; #HTML(#UDGARRAY3,56,4,3(61768-61770-1;61792-61794-1;61816-61818-1)(JonesFrame4))
 @label=JonesFrame4
