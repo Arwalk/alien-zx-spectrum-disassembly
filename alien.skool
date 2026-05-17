@@ -1811,7 +1811,11 @@ b28221 DEFB 65,105,114,108,111,99,107,32
  29501 DEFB 13,13,31,1,31,33,33,16
  29509 DEFB 32,32,33,3,3,32,32
 
-; Data block at #R29516
+; CrewNameTable
+;
+; 7 crew/role names separated by 255 ($FF) terminators: ALIEN, Dallas, Kane,
+; Ripley, Ash, Lambert, Parker, Brett. Substituted into MessageTextTable
+; placeholders 253/254 by the message renderer at #R37221.
 @label=CrewNameTable
 b29516 DEFB 65,76,73,69,78,255,68,97
  29524 DEFB 108,108,97,115,255,75,97,110
@@ -1825,22 +1829,42 @@ b29516 DEFB 65,76,73,69,78,255,68,97
 @label=CrewData
 b29566 DEFB 0,0,0,0,0,0,0
 
-; Data block at #R29573
+; CrewStateTable
+;
+; 6 × 8-byte crew records (initial values for 6 active crew + 1 partial slot
+; for the alien). Per-record layout (read via IX-indexed accesses in the
+; per-frame routines):
+;     +0 = action timer countdown
+;     +1 = crew ID (low 6 bits) | direction flag (bit 6) | flags
+;     +2 = current corridor position (0..18)
+;     +3 = action state (0=dead/none, 1=idle, 2=move, 3=wait, 5=investigate,
+;                       6=move-long, 7=attack)
+;     +4 = unused / pad
+;     +5 = pixel X coordinate
+;     +6 = pixel Y coordinate
+;     +7 = alive flag (0 = dead, non-zero = alive)
 @label=CrewStateTable
-b29573 DEFB 0,64,12,0,0,2,2,2
+b29573 DEFB 0,64,12,0,0,2,2,2  ; crew 0
 @label=Auto_738D
- 29581 DEFB 0,64,22,0,0,4,4,4
- 29589 DEFB 0,64,75,0,0,4,2,2
- 29597 DEFB 0,64,9,0,0,4,4,4
- 29605 DEFB 0,64,27,0,0,3,4,4
- 29613 DEFB 0,64,11,0,0,3
+ 29581 DEFB 0,64,22,0,0,4,4,4  ; crew 1
+ 29589 DEFB 0,64,75,0,0,4,2,2  ; crew 2
+ 29597 DEFB 0,64,9,0,0,4,4,4   ; crew 3
+ 29605 DEFB 0,64,27,0,0,3,4,4  ; crew 4
+ 29613 DEFB 0,64,11,0,0,3       ; crew 5 (truncated, 7 bytes)
 
 ; Data block at #R29619
 @label=CrewStateExtra
 b29619 DEFB 4,4,0,34,19,0,0,4
  29627 DEFB 2,2,0
 
-; Data block at #R29630
+; CorridorPosTable
+;
+; 19-byte corridor segment table indexed by CorridorCursor (#R33683, range
+; 0..18). Each byte is the room/junction ID at that position along the
+; corridor; 255 marks an empty segment. Updated by room-init code (e.g.
+; RoomHandler_OverflowInit at #R35638 rebuilds it from a template). Read
+; by the movement helpers around HandleInput at #R34684.
+@ignoreua
 @label=CorridorPosTable
 b29630 DEFB 73,255,255,255,255,255,255,74
 @label=Auto_73C6
@@ -3657,16 +3681,28 @@ b33792 DEFB 10,5
 ; RoomDispatchTable
 ;
 ; 34 × 16-bit function pointers for the per-room game handler dispatch.
-; Indexed as table[room_mode × 2], accessed by the dispatcher at #R35314
-; via JP (HL). Room modes 0-33 each map to a handler routine. Pairs of
-; entries often share the same handler (modes 0-1, 4-5, etc.).
+; Indexed as table[room_mode × 2] where room_mode is the byte at #R31252.
+; Dispatched via JP (HL) from #R35314 (RoomModeDispatch). Pairs of
+; entries often share the same handler.
 ;
-; Room mode → handler mapping:
-;  0-1: #R35314  2-3: #R35338  4: #R35578  5: #R35448
-;  6-12: #R35163 (RoomHandlerCommon)        13: #R35222
-;  14-16: #R35448  17-19: #R35210  20-23: #R35448
-;  24: #R35560  25-29: #R35382  30-31: #R35448  32: #R35449
-;  33: #R35451
+; Room mode → handler:
+;    0-1  RoomModeDispatch (#R35314)   — self-call entry, restarts loop
+;    2-3  RoomHandler_2    (#R35338)   — corridor-edge handler
+;    4    RoomHandler_4    (#R35578)   — corridor positioning
+;    5    RoomHandlerNop   (#R35448)   — no-op (returns)
+;    6-12 RoomHandlerCommon(#R35163)   — standard corridor room
+;    13   RoomHandler_13   (#R35222)   — special corridor 13 logic
+;    14-16 RoomHandlerNop  (#R35448)
+;    17-19 RoomHandler_17  (#R35210)   — alt corridor-position handler
+;    20-23 RoomHandlerNop  (#R35448)
+;    24   RoomHandler_24   (#R35560)   — sets crew action state = 2
+;    25-29 RoomHandler_25  (#R35382)   — multi-step room state
+;    30-31 RoomHandlerNop  (#R35448)
+;    32   RoomHandlerNop2  (#R35449)   — second no-op variant
+;    33   RoomHandler_33   (#R35451)   — terminal room handler
+;
+; Bytes past the 34-entry table (at #R33862) form the RoomDispatchTailExtra
+; — likely an overflow continuation if room_mode is ever > 33.
 ;
 @label=RoomDispatchTable
 w33794 DEFW 35314,35314,35338,35338
@@ -3679,688 +3715,179 @@ w33794 DEFW 35314,35314,35338,35338
  33850 DEFW 35382,35382,35448,35449
  33858 DEFW 35451,35638
 
-; Routine at #R33862
-@label=GetCorridorTableEntry
-c33862 ADC A,L       ;
- 33863 ADC A,E       ;
- 33864 LD A,B        ;
- 33865 ADC A,D       ;
- 33866 RES 1,E       ;
- 33868 DEC B         ;
- 33869 ADC A,H       ;
- 33870 CP 149        ;
- 33872 CP 149        ;
- 33874 LD (HL),B     ;
- 33875 ADC A,D       ;
-@label=Auto_8454
- 33876 LD A,B        ;
- 33877 ADC A,D       ;
- 33878 JP NZ,1420    ;
- 33881 ADC A,L       ;
- 33882 LD (HL),141   ;
- 33884 SUB B         ;
- 33885 SUB D         ;
- 33886 LD E,B        ;
- 33887 SBC A,C       ;
- 33888 ADD A,B       ;
- 33889 SUB A         ;
- 33890 DEC (HL)      ;
- 33891 SBC A,A       ;
-@label=Auto_8464
- 33892 CP 32         ;
- 33894 LD D,E        ;
- 33895 LD H,L        ;
- 33896 LD H,L        ;
- 33897 LD (HL),E     ;
- 33898 JR NZ,33974   ;
- 33900 LD L,A        ;
- 33901 LD L,(HL)     ;
- 33902 LD H,L        ;
- 33903 LD (HL),E     ;
- 33904 JR NZ,34022   ;
- 33906 LD L,B        ;
- 33907 LD H,L        ;
- 33908 JR NZ,33977   ;
- 33910 LD H,C        ;
- 33911 LD (HL),H     ;
- 33912 RST 56        ;
- 33913 LD D,H        ;
- 33914 LD L,B        ;
- 33915 LD H,L        ;
- 33916 JR NZ,33983   ;
- 33918 LD C,H        ;
- 33919 LD C,C        ;
- 33920 LD B,L        ;
- 33921 LD C,(HL)     ;
- 33922 JR NZ,34029   ;
- 33924 LD (HL),E     ;
- 33925 JR NZ,34024   ;
- 33927 LD (HL),H     ;
- 33928 LD (HL),H     ;
- 33929 LD H,C        ;
- 33930 LD H,E        ;
- 33931 LD L,E        ;
- 33932 LD L,C        ;
- 33933 LD L,(HL)     ;
- 33934 LD H,A        ;
-*33935 JR NZ,33935   ;
- 33937 RST 56        ;
- 33938 CP 32         ;
- 33940 LD L,B        ;
- 33941 LD H,C        ;
- 33942 LD (HL),E     ;
- 33943 JR NZ,34044   ;
- 33945 LD H,C        ;
- 33946 LD (HL),B     ;
- 33947 LD (HL),H     ;
- 33948 LD (HL),L     ;
- 33949 LD (HL),D     ;
- 33950 LD H,L        ;
- 33951 LD H,H        ;
- 33952 JR NZ,34028   ;
- 33954 LD L,A        ;
- 33955 LD L,(HL)     ;
- 33956 LD H,L        ;
- 33957 LD (HL),E     ;
- 33958 RST 56        ;
- 33959 CP 32         ;
- 33961 LD L,(HL)     ;
- 33962 LD H,L        ;
- 33963 LD (HL),H     ;
- 33964 LD (HL),E     ;
- 33965 JR NZ,34083   ;
- 33967 LD L,B        ;
- 33968 LD H,L        ;
- 33969 JR NZ,34036   ;
- 33971 LD C,H        ;
- 33972 LD C,C        ;
- 33973 LD B,L        ;
-*33974 LD C,(HL)     ;
- 33975 RST 56        ;
- 33976 CP 32         ;
- 33978 LD L,B        ;
- 33979 LD L,C        ;
- 33980 LD (HL),H     ;
- 33981 LD (HL),E     ;
- 33982 JR NZ,34100   ;
- 33984 LD L,B        ;
- 33985 LD H,L        ;
- 33986 JR NZ,34053   ;
- 33988 LD C,H        ;
- 33989 LD C,C        ;
- 33990 LD B,L        ;
- 33991 LD C,(HL)     ;
- 33992 RST 56        ;
- 33993 CP 145        ;
- 33995 LD (HL),E     ;
- 33996 JR NZ,34082   ;
- 33998 LD (HL),D     ;
- 33999 LD H,C        ;
- 34000 LD H,E        ;
- 34001 LD L,E        ;
- 34002 LD H,L        ;
- 34003 LD (HL),D     ;
- 34004 JR NZ,34111   ;
- 34006 LD (HL),E     ;
- 34007 JR NZ,34107   ;
- 34009 LD (HL),D     ;
- 34010 LD L,A        ;
- 34011 LD L,E        ;
- 34012 LD H,L        ;
- 34013 LD L,(HL)     ;
- 34014 RST 56        ;
- 34015 CP 145        ;
- 34017 LD (HL),E     ;
- 34018 JR NZ,34121   ;
- 34020 LD A,B        ;
- 34021 LD (HL),H     ;
-*34022 LD L,C        ;
- 34023 LD L,(HL)     ;
-*34024 LD H,A        ;
- 34025 LD (HL),L     ;
- 34026 LD L,C        ;
- 34027 LD (HL),E     ;
-*34028 LD L,B        ;
-*34029 LD H,L        ;
- 34030 LD (HL),D     ;
- 34031 JR NZ,34138   ;
- 34033 LD (HL),E     ;
- 34034 JR NZ,34137   ;
-*34036 LD L,L        ;
- 34037 LD (HL),B     ;
- 34038 LD (HL),H     ;
- 34039 LD A,C        ;
- 34040 RST 56        ;
- 34041 CP 145        ;
- 34043 LD (HL),E     ;
-*34044 JR NZ,34122   ;
- 34046 LD H,C        ;
- 34047 LD (HL),E     ;
- 34048 LD H,L        ;
- 34049 LD (HL),D     ;
- 34050 JR NZ,34157   ;
- 34052 LD (HL),E     ;
-*34053 JR NZ,34156   ;
- 34055 LD A,B        ;
- 34056 LD L,B        ;
- 34057 LD H,C        ;
- 34058 LD (HL),L     ;
- 34059 LD (HL),E     ;
- 34060 LD (HL),H     ;
- 34061 LD H,L        ;
- 34062 LD H,H        ;
- 34063 RST 56        ;
- 34064 LD D,E        ;
- 34065 LD (HL),H     ;
- 34066 LD (HL),D     ;
- 34067 LD (HL),L     ;
- 34068 LD H,E        ;
- 34069 LD (HL),H     ;
- 34070 LD (HL),L     ;
- 34071 LD (HL),D     ;
- 34072 LD H,C        ;
- 34073 LD L,H        ;
- 34074 JR NZ,34144   ;
- 34076 LD H,C        ;
- 34077 LD L,L        ;
- 34078 LD H,C        ;
- 34079 LD H,A        ;
- 34080 LD H,L        ;
- 34081 JR NZ,34188   ;
-*34083 LD L,(HL)     ;
- 34084 JR NZ,34082   ;
- 34086 RST 56        ;
- 34087 LD D,A        ;
- 34088 LD B,C        ;
- 34089 LD D,D        ;
- 34090 LD C,(HL)     ;
- 34091 LD C,C        ;
- 34092 LD C,(HL)     ;
- 34093 LD B,A        ;
- 34094 LD A,(26950)  ;
- 34097 LD (HL),D     ;
- 34098 LD H,L        ;
- 34099 JR NZ,34206   ;
- 34101 LD L,(HL)     ;
- 34102 JR NZ,34100   ;
- 34104 RST 56        ;
- 34105 CP 32         ;
-*34107 LD L,C        ;
- 34108 LD (HL),E     ;
- 34109 JR NZ,34209   ;
-*34111 LD H,L        ;
- 34112 LD L,C        ;
- 34113 LD L,(HL)     ;
- 34114 LD H,A        ;
- 34115 JR NZ,34236   ;
- 34117 LD L,A        ;
- 34118 LD (HL),L     ;
- 34119 LD L,(HL)     ;
- 34120 LD H,H        ;
-*34121 LD H,L        ;
-*34122 LD H,H        ;
- 34123 RST 56        ;
- 34124 CP 32         ;
- 34126 LD (HL),B     ;
- 34127 LD (HL),D     ;
- 34128 LD H,L        ;
- 34129 LD (HL),B     ;
- 34130 LD H,C        ;
- 34131 LD (HL),D     ;
- 34132 LD H,L        ;
- 34133 LD (HL),E     ;
- 34134 JR NZ,34238   ;
- 34136 LD L,A        ;
-*34137 LD (HL),D     ;
-*34138 JR NZ,34244   ;
- 34140 LD A,C        ;
- 34141 LD (HL),B     ;
- 34142 LD H,L        ;
- 34143 LD (HL),D     ;
-*34144 LD (HL),E     ;
- 34145 LD L,H        ;
- 34146 LD H,L        ;
- 34147 LD H,L        ;
- 34148 LD (HL),B     ;
- 34149 RST 56        ;
- 34150 CP 32         ;
- 34152 LD H,L        ;
- 34153 LD L,(HL)     ;
- 34154 LD (HL),H     ;
- 34155 LD H,L        ;
-*34156 LD (HL),D     ;
-*34157 LD (HL),E     ;
- 34158 JR NZ,34264   ;
- 34160 LD A,C        ;
- 34161 LD (HL),B     ;
- 34162 LD H,L        ;
- 34163 LD (HL),D     ;
- 34164 LD (HL),E     ;
- 34165 LD L,H        ;
- 34166 LD H,L        ;
- 34167 LD H,L        ;
- 34168 LD (HL),B     ;
- 34169 RST 56        ;
- 34170 LD B,H        ;
- 34171 LD B,L        ;
- 34172 LD D,E        ;
- 34173 LD D,H        ;
- 34174 LD D,D        ;
- 34175 LD D,L        ;
- 34176 LD B,E        ;
- 34177 LD D,H        ;
- 34178 JR NZ,34263   ;
- 34180 LD B,L        ;
- 34181 LD D,C        ;
- 34182 LD D,L        ;
- 34183 LD B,L        ;
- 34184 LD C,(HL)     ;
- 34185 LD B,E        ;
- 34186 LD B,L        ;
- 34187 JR NZ,34262   ;
- 34189 LD C,(HL)     ;
- 34190 LD C,C        ;
- 34191 LD D,H        ;
- 34192 LD C,C        ;
- 34193 LD B,C        ;
- 34194 LD D,H        ;
- 34195 LD B,L        ;
- 34196 LD B,H        ;
- 34197 RST 56        ;
- 34198 LD B,H        ;
- 34199 LD B,L        ;
- 34200 LD D,E        ;
- 34201 LD D,H        ;
- 34202 LD D,D        ;
- 34203 LD D,L        ;
- 34204 LD B,E        ;
- 34205 LD D,H        ;
-*34206 JR NZ,34291   ;
- 34208 LD B,L        ;
-*34209 LD D,C        ;
- 34210 LD D,L        ;
- 34211 LD B,L        ;
- 34212 LD C,(HL)     ;
- 34213 LD B,E        ;
- 34214 LD B,L        ;
- 34215 JR NZ,34282   ;
- 34217 LD B,D        ;
- 34218 LD C,A        ;
- 34219 LD D,D        ;
- 34220 LD D,H        ;
- 34221 LD B,L        ;
- 34222 LD B,H        ;
- 34223 RST 56        ;
- 34224 LD B,(HL)     ;
- 34225 LD L,C        ;
- 34226 LD (HL),D     ;
- 34227 LD H,L        ;
- 34228 JR NZ,34331   ;
- 34230 LD A,B        ;
- 34231 LD (HL),H     ;
- 34232 LD L,C        ;
- 34233 LD L,(HL)     ;
- 34234 LD H,A        ;
- 34235 LD (HL),L     ;
-*34236 LD L,C        ;
- 34237 LD (HL),E     ;
-*34238 LD L,B        ;
- 34239 LD H,L        ;
- 34240 LD H,H        ;
- 34241 JR NZ,34348   ;
- 34243 LD L,(HL)     ;
-*34244 JR NZ,34242   ;
- 34246 RST 56        ;
- 34247 LD D,A        ;
- 34248 LD B,C        ;
- 34249 LD D,D        ;
- 34250 LD C,(HL)     ;
- 34251 LD C,C        ;
- 34252 LD C,(HL)     ;
- 34253 LD B,A        ;
- 34254 LD A,(17660)  ;
- 34257 LD B,L        ;
- 34258 LD D,B        ;
- 34259 LD D,D        ;
- 34260 LD B,L        ;
- 34261 LD D,E        ;
-*34262 LD D,E        ;
-*34263 LD D,L        ;
-*34264 LD D,D        ;
- 34265 LD C,C        ;
- 34266 LD D,E        ;
- 34267 LD B,L        ;
- 34268 LD B,H        ;
- 34269 RST 56        ;
- 34270 CALL M,20512  ;
- 34273 LD D,D        ;
- 34274 LD B,L        ;
- 34275 LD D,E        ;
- 34276 LD D,E        ;
- 34277 LD D,L        ;
- 34278 LD D,D        ;
- 34279 LD B,L        ;
- 34280 JR NZ,34364   ;
-*34282 LD B,L        ;
- 34283 LD D,E        ;
- 34284 LD D,H        ;
- 34285 LD C,A        ;
- 34286 LD D,D        ;
- 34287 LD B,L        ;
- 34288 LD B,H        ;
- 34289 RST 56        ;
- 34290 LD C,C        ;
-*34291 LD C,(HL)     ;
- 34292 LD D,H        ;
- 34293 LD D,D        ;
- 34294 LD D,L        ;
- 34295 LD B,H        ;
- 34296 LD B,L        ;
- 34297 LD D,D        ;
- 34298 JR NZ,34369   ;
- 34300 LD C,(HL)     ;
- 34301 LD D,H        ;
- 34302 LD B,L        ;
- 34303 LD D,D        ;
- 34304 LD C,C        ;
-*34305 LD C,(HL)     ;
- 34306 LD B,A        ;
- 34307 JR NZ,34305   ;
- 34309 RST 56        ;
- 34310 LD C,D        ;
- 34311 LD L,A        ;
- 34312 LD L,(HL)     ;
- 34313 LD H,L        ;
- 34314 LD (HL),E     ;
- 34315 JR NZ,34422   ;
- 34317 LD (HL),E     ;
- 34318 JR NZ,34428   ;
- 34320 LD L,A        ;
- 34321 LD L,A        ;
- 34322 LD L,E        ;
- 34323 LD L,C        ;
- 34324 LD L,(HL)     ;
- 34325 LD H,A        ;
- 34326 JR NZ,34445   ;
- 34328 LD L,(HL)     ;
- 34329 LD H,L        ;
- 34330 LD H,C        ;
-*34331 LD (HL),E     ;
- 34332 LD A,C        ;
- 34333 RST 56        ;
- 34334 CP 32         ;
- 34336 LD H,(HL)     ;
- 34337 LD L,C        ;
- 34338 LD L,(HL)     ;
- 34339 LD H,H        ;
-*34340 LD (HL),E     ;
- 34341 JR NZ,34340   ;
- 34343 SUB C         ;
- 34344 LD (HL),E     ;
- 34345 JR NZ,34445   ;
- 34347 LD L,A        ;
-*34348 LD H,H        ;
- 34349 LD A,C        ;
- 34350 RST 56        ;
- 34351 CP 32         ;
- 34353 LD L,B        ;
- 34354 LD H,C        ;
- 34355 LD (HL),E     ;
- 34356 JR NZ,34457   ;
- 34358 LD L,A        ;
- 34359 LD L,H        ;
- 34360 LD L,H        ;
- 34361 LD H,C        ;
- 34362 LD (HL),B     ;
- 34363 LD (HL),E     ;
-*34364 LD H,L        ;
- 34365 LD H,H        ;
- 34366 RST 56        ;
- 34367 LD D,B        ;
- 34368 LD H,C        ;
-*34369 LD (HL),D     ;
- 34370 LD (HL),H     ;
- 34371 LD L,C        ;
- 34372 LD H,C        ;
- 34373 LD L,H        ;
- 34374 JR NZ,34484   ;
- 34376 LD L,A        ;
- 34377 LD (HL),E     ;
- 34378 LD (HL),E     ;
- 34379 JR NZ,34492   ;
- 34381 LD H,(HL)     ;
- 34382 JR NZ,34483   ;
- 34384 LD L,A        ;
- 34385 LD L,(HL)     ;
- 34386 LD (HL),H     ;
- 34387 LD (HL),D     ;
- 34388 LD L,A        ;
- 34389 LD L,H        ;
- 34390 JR NZ,34507   ;
- 34392 LD A,C        ;
- 34393 LD (HL),E     ;
- 34394 LD (HL),H     ;
- 34395 LD H,L        ;
- 34396 LD L,L        ;
- 34397 LD (HL),E     ;
- 34398 RST 56        ;
- 34399 LD B,E        ;
- 34400 LD L,A        ;
- 34401 LD L,L        ;
- 34402 LD (HL),B     ;
- 34403 LD (HL),L     ;
- 34404 LD (HL),H     ;
- 34405 LD H,L        ;
- 34406 LD (HL),D     ;
- 34407 JR NZ,34486   ;
- 34409 LD H,C        ;
- 34410 LD L,H        ;
- 34411 LD H,(HL)     ;
- 34412 LD (HL),L     ;
- 34413 LD L,(HL)     ;
- 34414 LD H,E        ;
- 34415 LD (HL),H     ;
- 34416 LD L,C        ;
- 34417 LD L,A        ;
- 34418 LD L,(HL)     ;
- 34419 JR NZ,34521   ;
- 34421 LD H,L        ;
-*34422 LD (HL),H     ;
- 34423 LD H,L        ;
- 34424 LD H,E        ;
- 34425 LD (HL),H     ;
- 34426 LD H,L        ;
- 34427 LD H,H        ;
-*34428 RST 56        ;
- 34429 LD B,L        ;
- 34430 LD L,(HL)     ;
- 34431 HALT          ;
- 34432 LD L,C        ;
- 34433 LD (HL),D     ;
- 34434 LD L,A        ;
- 34435 LD L,(HL)     ;
- 34436 LD L,L        ;
- 34437 LD H,L        ;
- 34438 LD L,(HL)     ;
- 34439 LD (HL),H     ;
- 34440 LD H,C        ;
- 34441 LD L,H        ;
- 34442 JR NZ,34549   ;
- 34444 LD (HL),D     ;
-*34445 LD (HL),D     ;
- 34446 LD H,L        ;
- 34447 LD H,A        ;
- 34448 LD (HL),L     ;
- 34449 LD L,H        ;
- 34450 LD H,C        ;
- 34451 LD (HL),D     ;
- 34452 LD L,C        ;
- 34453 LD (HL),H     ;
- 34454 LD L,C        ;
- 34455 LD H,L        ;
- 34456 LD (HL),E     ;
-*34457 RST 56        ;
- 34458 LD C,(HL)     ;
- 34459 LD H,C        ;
- 34460 LD (HL),D     ;
- 34461 LD H,E        ;
- 34462 LD L,C        ;
- 34463 LD (HL),E     ;
- 34464 LD (HL),E     ;
- 34465 LD (HL),L     ;
- 34466 LD (HL),E     ;
- 34467 JR NZ,34584   ;
- 34469 LD (HL),H     ;
- 34470 LD H,C        ;
- 34471 LD (HL),H     ;
- 34472 LD (HL),L     ;
- 34473 LD (HL),E     ;
- 34474 JR NZ,34558   ;
- 34476 LD B,L        ;
- 34477 LD B,H        ;
- 34478 RST 56        ;
- 34479 LD C,A        ;
- 34480 LD A,B        ;
- 34481 LD A,C        ;
- 34482 LD H,A        ;
-*34483 LD H,L        ;
-*34484 LD L,(HL)     ;
- 34485 JR NZ,34602   ;
- 34487 LD (HL),H     ;
- 34488 LD H,C        ;
- 34489 LD (HL),H     ;
- 34490 LD (HL),L     ;
- 34491 LD (HL),E     ;
-*34492 JR NZ,34561   ;
- 34494 LD D,D        ;
- 34495 LD C,C        ;
- 34496 LD D,H        ;
- 34497 LD C,C        ;
- 34498 LD B,E        ;
- 34499 LD B,C        ;
- 34500 LD C,H        ;
- 34501 RST 56        ;
- 34502 LD B,D        ;
- 34503 LD L,C        ;
- 34504 LD L,A        ;
- 34505 LD D,L        ;
- 34506 LD L,(HL)     ;
-*34507 LD L,C        ;
- 34508 LD (HL),H     ;
- 34509 JR NZ,34585   ;
- 34511 LD L,A        ;
- 34512 LD L,(HL)     ;
- 34513 LD H,L        ;
- 34514 LD (HL),E     ;
- 34515 JR NZ,34627   ;
- 34517 LD L,A        ;
- 34518 LD (HL),H     ;
- 34519 JR NZ,34633   ;
-*34521 LD (HL),D     ;
- 34522 LD H,L        ;
- 34523 LD (HL),E     ;
- 34524 LD H,L        ;
- 34525 LD L,(HL)     ;
- 34526 LD (HL),H     ;
- 34527 RST 56        ;
- 34528 LD C,H        ;
- 34529 LD B,C        ;
- 34530 LD D,L        ;
- 34531 LD C,(HL)     ;
- 34532 LD B,E        ;
- 34533 LD C,B        ;
- 34534 JR NZ,34603   ;
- 34536 LD C,A        ;
- 34537 LD D,L        ;
- 34538 LD C,(HL)     ;
- 34539 LD D,H        ;
- 34540 LD B,L        ;
- 34541 LD D,D        ;
- 34542 LD C,L        ;
- 34543 LD B,C        ;
- 34544 LD C,(HL)     ;
- 34545 LD B,H        ;
- 34546 LD B,L        ;
- 34547 LD B,H        ;
- 34548 RST 56        ;
-*34549 DEFB 253      ;
- 34550 JR NZ,34657   ;
- 34552 LD (HL),E     ;
- 34553 JR NZ,34652   ;
- 34555 LD (HL),H     ;
- 34556 LD (HL),H     ;
- 34557 LD H,C        ;
-*34558 LD H,E        ;
- 34559 LD L,E        ;
- 34560 LD L,C        ;
-*34561 LD L,(HL)     ;
- 34562 LD H,A        ;
-*34563 JR NZ,34563   ;
- 34565 RST 56        ;
- 34566 CP 32         ;
- 34568 LD L,C        ;
- 34569 LD (HL),E     ;
- 34570 JR NZ,34669   ;
- 34572 LD (HL),H     ;
- 34573 LD (HL),H     ;
- 34574 LD H,C        ;
- 34575 LD H,E        ;
- 34576 LD L,E        ;
- 34577 LD L,C        ;
- 34578 LD L,(HL)     ;
-*34579 LD H,A        ;
- 34580 JR NZ,34579   ;
- 34582 RST 56        ;
- 34583 CP 32         ;
-*34585 LD L,(HL)     ;
- 34586 LD H,L        ;
- 34587 LD (HL),H     ;
-*34588 LD (HL),E     ;
- 34589 JR NZ,34588   ;
- 34591 RST 56        ;
- 34592 CP 32         ;
- 34594 LD L,B        ;
- 34595 LD L,C        ;
- 34596 LD (HL),H     ;
- 34597 LD (HL),E     ;
- 34598 JR NZ,34716   ;
- 34600 LD L,B        ;
- 34601 LD H,L        ;
-*34602 JR NZ,34669   ;
- 34604 LD L,(HL)     ;
- 34605 LD H,H        ;
- 34606 LD (HL),D     ;
- 34607 LD L,A        ;
- 34608 LD L,C        ;
- 34609 LD H,H        ;
- 34610 RST 56        ;
- 34611 LD B,C        ;
- 34612 LD L,H        ;
- 34613 LD L,C        ;
- 34614 LD H,L        ;
- 34615 LD L,(HL)     ;
- 34616 JR NZ,34722   ;
- 34618 LD H,C        ;
- 34619 LD (HL),E     ;
- 34620 JR NZ,34726   ;
- 34622 LD H,C        ;
- 34623 LD (HL),H     ;
- 34624 LD H,E        ;
- 34625 LD L,B        ;
- 34626 LD H,L        ;
-*34627 LD H,H        ;
- 34628 JR NZ,34732   ;
- 34630 LD (HL),D     ;
- 34631 LD L,A        ;
- 34632 LD L,L        ;
-*34633 JR NZ,34633   ;
- 34635 RST 56        ;
-; This entry point is used by the routine at #R34684.
-*34636 CALL 34640    ;
+; Data block at #R33862
+;
+; Previously misclassified as a code routine ("GetCorridorTableEntry"). This
+; range is actually three back-to-back data tables used by the rest of the
+; game:
+;
+;   #R33862..#R33875 (14 bytes, 7 × 16-bit pointers) — likely the tail of
+;       the RoomDispatchTable at #R33794 (extra entries for modes >33, all
+;       sharing the small handler pool used by RoomDispatchTable).
+;   #R33876..#R33891 (16 bytes, 8 × 16-bit pointers) — CrewActionDispatch,
+;       indexed by crew/alien action state in (IX+3). Action 0 returns
+;       early; actions 1-7 jump to the matching handler. Used by the
+;       routine at #R36014.
+;   #R33892..#R34635 (744 bytes) — MessageTextTable, 34 strings terminated
+;       by byte 255. Substitution codes inside the strings: 254 = actor
+;       name, 253 = target name, 252 = room name, 145 = apostrophe glyph.
+;       Walked and rendered by the routine at #R37221.
+;
+@ignoreua
+@label=RoomDispatchTailExtra
+b33862 DEFW 35725,35448,35787,35845  ; 7 × 16-bit pointers (room-handler tail)
+ 33870 DEFW 38398,38398,35440
+@label=CrewActionDispatch
+ 33876 DEFW 35448,36034,36101,36150
+ 33884 DEFW 37520,39256,38784,40757
+@label=MessageTextTable
+; #0: "{actor} Sees Jones the Cat"
+ 33892 DEFB 254
+ 33893 DEFM " Sees Jones the Cat"
+ 33912 DEFB 255
+; #1: "The ALIEN is attacking {actor}"
+ 33913 DEFM "The ALIEN is attacking "
+ 33936 DEFB 254
+ 33937 DEFB 255
+; #2: "{actor} has captured Jones"
+ 33938 DEFB 254
+ 33939 DEFM " has captured Jones"
+ 33958 DEFB 255
+; #3: "{actor} nets the ALIEN"
+ 33959 DEFB 254
+ 33960 DEFM " nets the ALIEN"
+ 33975 DEFB 255
+; #4: "{actor} hits the ALIEN"
+ 33976 DEFB 254
+ 33977 DEFM " hits the ALIEN"
+ 33992 DEFB 255
+; #5: "{actor}'s Tracker is broken"
+ 33993 DEFB 254,145
+ 33995 DEFM "s Tracker is broken"
+ 34014 DEFB 255
+; #6: "{actor}'s extinguisher is empty"
+ 34015 DEFB 254,145
+ 34017 DEFM "s extinguisher is empty"
+ 34040 DEFB 255
+; #7: "{actor}'s Laser is exhausted"
+ 34041 DEFB 254,145
+ 34043 DEFM "s Laser is exhausted"
+ 34063 DEFB 255
+; #8: "Structural Damage in {room}"
+ 34064 DEFM "Structural Damage in "
+ 34085 DEFB 252
+ 34086 DEFB 255
+; #9: "WARNING:Fire in {room}"
+ 34087 DEFM "WARNING:Fire in "
+ 34103 DEFB 252
+ 34104 DEFB 255
+; #10: "{actor} is being wounded"
+ 34105 DEFB 254
+ 34106 DEFM " is being wounded"
+ 34123 DEFB 255
+; #11: "{actor} prepares for hypersleep"
+ 34124 DEFB 254
+ 34125 DEFM " prepares for hypersleep"
+ 34149 DEFB 255
+; #12: "{actor} enters hypersleep"
+ 34150 DEFB 254
+ 34151 DEFM " enters hypersleep"
+ 34169 DEFB 255
+; #13: "DESTRUCT SEQUENCE INITIATED"
+ 34170 DEFM "DESTRUCT SEQUENCE INITIATED"
+ 34197 DEFB 255
+; #14: "DESTRUCT SEQUENCE ABORTED"
+ 34198 DEFM "DESTRUCT SEQUENCE ABORTED"
+ 34223 DEFB 255
+; #15: "Fire extinguished in {room}"
+ 34224 DEFM "Fire extinguished in "
+ 34245 DEFB 252
+ 34246 DEFB 255
+; #16: "WARNING:{room}DEPRESSURISED"
+ 34247 DEFM "WARNING:"
+ 34255 DEFB 252
+ 34256 DEFM "DEPRESSURISED"
+ 34269 DEFB 255
+; #17: "{room} PRESSURE RESTORED"
+ 34270 DEFB 252
+ 34271 DEFM " PRESSURE RESTORED"
+ 34289 DEFB 255
+; #18: "INTRUDER ENTERING {room}"
+ 34290 DEFM "INTRUDER ENTERING "
+ 34308 DEFB 252
+ 34309 DEFB 255
+; #19: "Jones is looking uneasy"
+ 34310 DEFM "Jones is looking uneasy"
+ 34333 DEFB 255
+; #20: "{actor} finds {target}'s body"
+ 34334 DEFB 254
+ 34335 DEFM " finds "
+ 34342 DEFB 253,145
+ 34344 DEFM "s body"
+ 34350 DEFB 255
+; #21: "{actor} has collapsed"
+ 34351 DEFB 254
+ 34352 DEFM " has collapsed"
+ 34366 DEFB 255
+; #22: "Partial loss of control systems"
+ 34367 DEFM "Partial loss of control systems"
+ 34398 DEFB 255
+; #23: "Computer Malfunction detected"
+ 34399 DEFM "Computer Malfunction detected"
+ 34428 DEFB 255
+; #24: "Environmental irregularities"
+ 34429 DEFM "Environmental irregularities"
+ 34457 DEFB 255
+; #25: "Narcissus status RED"
+ 34458 DEFM "Narcissus status RED"
+ 34478 DEFB 255
+; #26: "Oxygen status CRITICAL"
+ 34479 DEFM "Oxygen status CRITICAL"
+ 34501 DEFB 255
+; #27: "BioUnit Jones not present"
+ 34502 DEFM "BioUnit Jones not present"
+ 34527 DEFB 255
+; #28: "LAUNCH COUNTERMANDED"
+ 34528 DEFM "LAUNCH COUNTERMANDED"
+ 34548 DEFB 255
+; #29: "{target} is attacking {actor}"
+ 34549 DEFB 253
+ 34550 DEFM " is attacking "
+ 34564 DEFB 254
+ 34565 DEFB 255
+; #30: "{actor} is attacking {target}"
+ 34566 DEFB 254
+ 34567 DEFM " is attacking "
+ 34581 DEFB 253
+ 34582 DEFB 255
+; #31: "{actor} nets {target}"
+ 34583 DEFB 254
+ 34584 DEFM " nets "
+ 34590 DEFB 253
+ 34591 DEFB 255
+; #32: "{actor} hits the Android"
+ 34592 DEFB 254
+ 34593 DEFM " hits the Android"
+ 34610 DEFB 255
+; #33: "Alien has hatched from {actor}"
+ 34611 DEFM "Alien has hatched from "
+ 34634 DEFB 254
+ 34635 DEFB 255
+
+; KeyboardScanner
+;
+; Reads the keyboard half-rows used by the game and packs the active
+; directional / fire keys into #R33682. Bit 4 = fire/action, bit 3 = right
+; (key 8), bit 2 = left (key 5), bit 1 = up (key 6), bit 0 = down (key 7).
+; Used by the routine at #R34684 (HandleInput).
+;
+@ignoreua
+@label=KeyboardScanner
+c34636 CALL 34640    ; scan into AlienFlags
  34639 RET           ;
 @nowarn=33682
 @ssub=LD HL,AlienFlags
-*34640 LD HL,33682   ;
+*34640 LD HL,33682   ; HL points to AlienFlags
  34643 LD (HL),0     ;
  34645 LD BC,63486   ;
  34648 IN A,(C)      ;
@@ -4418,20 +3945,16 @@ c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
  34710 XOR 6         ; toggle between 0 (black) and 6 (yellow)
  34712 OUT (254),A   ; flash border
  34714 JR 34697      ; repeat until key released
-; This entry point is used by the routine at #R33862.
 *34716 BIT 3,A       ; move-right key (key 8)?
  34718 JR NZ,34743   ; yes: move crew forward along corridor
  34720 BIT 2,A       ; move-left key (key 5)?
-; This entry point is used by the routine at #R33862.
 *34722 JR NZ,34788   ; yes: move crew backward along corridor
  34724 AND 3         ; up (bit 1) or down (bit 0) key?
-; This entry point is used by the routine at #R33862.
 *34726 RET Z         ; no directional key: return
 @ignoreua
  34727 LD A,(31252)  ; A = room mode (#R31252)
  34730 AND A         ; mode 0 = single-row corridor (no up/down)
  34731 RET Z         ; in single-row mode: up/down keys ignored
-; This entry point is used by the routine at #R33862.
 @ignoreua
 *34732 LD A,(33685)  ; A = crew column position ($836D)
  34735 CP 61         ; column 61 = leftmost valid position
@@ -5048,10 +4571,18 @@ c35578 LD A,(33685)  ;
  35633 ADD HL,DE     ;
  35634 LD (HL),A     ;
  35635 JP 32719      ;
- 35638 LD (IX+0),0   ;
- 35642 LD DE,29630   ;
- 35645 LD HL,29962   ;
- 35648 LD B,17       ;
+; Room mode 33 follow-on. Re-builds the corridor template at
+; #R29630 from a 17-byte source pattern, substituting sentinel
+; bytes (255) via #R31857. Sets crew column to 61, corridor cursor to 17,
+; then draws 19 corridor tiles into the display file and switches room
+; mode to 4.
+@ignoreua
+@label=RoomHandler_OverflowInit
+*35638 LD (IX+0),0   ; clear (IX+0): action timer / state
+ 35642 LD DE,29630   ; DE -> CorridorPosTable
+@nowarn=29962
+ 35645 LD HL,29962   ; HL -> 17-byte source template
+ 35648 LD B,17       ; copy 17 entries
 @label=Auto_8B42
 *35650 LD A,(HL)     ;
  35651 CP 255        ;
@@ -5261,25 +4792,31 @@ c35973 PUSH IX       ;
  36009 DJNZ 35985    ;
  36011 POP IX        ;
  36013 RET           ;
-; This entry point is used by the routine at #R44880.
-@label=Auto_8CAE
-*36014 CALL 36579    ;
- 36017 AND A         ;
- 36018 RET Z         ;
- 36019 LD E,(IX+3)   ;
+; DispatchCrewAction
+;
+; Dispatches one crew/alien actor through #R33876 (CrewActionDispatch) based on
+; (IX+3). Action 0 returns early. Otherwise jumps to the per-action handler
+; via JP (HL). Used by the per-frame status panel update at #R44880.
+;
+@label=DispatchCrewAction
+*36014 CALL 36579    ; preliminary actor update
+ 36017 AND A         ; A = current action state from caller
+ 36018 RET Z         ; action 0: nothing more to do
+ 36019 LD E,(IX+3)   ; E = action state (1..7)
  36022 LD D,0        ;
 @nowarn=33876
-@ssub=LD HL,Auto_8454
- 36024 LD HL,33876   ;
- 36027 ADD HL,DE     ;
+@ssub=LD HL,CrewActionDispatch
+ 36024 LD HL,33876   ; HL = CrewActionDispatch base
+ 36027 ADD HL,DE     ; HL += action*2 (16-bit-pointer stride)
  36028 ADD HL,DE     ;
- 36029 LD A,(HL)     ;
+ 36029 LD A,(HL)     ; HL = *(table + action*2)
  36030 INC HL        ;
  36031 LD H,(HL)     ;
  36032 LD L,A        ;
- 36033 JP (HL)       ;
+ 36033 JP (HL)       ; tail-call into action handler
+; CrewAction1_Idle — dispatched via CrewActionDispatch entry 1.
 ; This entry point is used by the routine at #R37490.
-@label=Auto_8CC2
+@label=CrewAction1_Idle
 *36034 LD A,(IX+2)   ;
  36037 CP (IX+1)     ;
  36040 RET Z         ;
@@ -5317,7 +4854,9 @@ c35973 PUSH IX       ;
  36094 JP Z,32719    ;
  36097 CALL 45338    ;
  36100 RET           ;
- 36101 LD E,(IX+1)   ;
+; CrewAction2_Move — dispatched via CrewActionDispatch entry 2.
+@label=CrewAction2_Move
+*36101 LD E,(IX+1)   ;
  36104 LD A,(IX+5)   ;
  36107 BIT 6,E       ;
  36109 JR NZ,36113   ;
@@ -5345,7 +4884,8 @@ c35973 PUSH IX       ;
  36144 JP Z,32719    ;
  36147 JP 45338      ;
 ; This entry point is used by the routine at #R36457.
-@label=Auto_8D36
+; CrewAction3_Wait — dispatched via CrewActionDispatch entry 3.
+@label=CrewAction3_Wait
 *36150 LD A,1        ;
 @nowarn=33705
 @ssub=LD (Auto_83A9),A
@@ -5728,24 +5268,33 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
  36757 OR 64         ;
 *36759 LD (IX+2),A   ;
  36762 RET           ;
-; This entry point is used by the routines at #R36859, #R37018 and #R38379.
-*36763 CP 3          ;
+; ScriptNibbleToDirection
+;
+; Maps a 4-bit ROM-script command (in A, from #R33589 AdvanceScriptPtr) to
+; one of 5 direction-class codes: 0-2 → 0 (no direction), 3-5 → 1, 6-8 → 2,
+; 9-11 → 3, 12-15 → 4. Used to translate the deterministic ROM-byte stream
+; into AI movement decisions.
+;
+; Used by the routines at #R36859 (UpdateAlienEventTimer), #R37018
+; (UpdateCrewAI) and #R38379 (UpdateRoomActors).
+@label=ScriptNibbleToDirection
+*36763 CP 3          ; nibble 0..2?
  36765 JR NC,36769   ;
- 36767 XOR A         ;
+ 36767 XOR A         ; → direction 0
  36768 RET           ;
-*36769 CP 6          ;
+*36769 CP 6          ; nibble 3..5?
  36771 JR NC,36776   ;
- 36773 LD A,1        ;
+ 36773 LD A,1        ; → direction 1
  36775 RET           ;
-*36776 CP 9          ;
+*36776 CP 9          ; nibble 6..8?
  36778 JR NC,36783   ;
- 36780 LD A,2        ;
+ 36780 LD A,2        ; → direction 2
  36782 RET           ;
-*36783 CP 12         ;
+*36783 CP 12         ; nibble 9..11?
  36785 JR NC,36790   ;
- 36787 LD A,3        ;
+ 36787 LD A,3        ; → direction 3
  36789 RET           ;
-*36790 LD A,4        ;
+*36790 LD A,4        ; default (12..15) → direction 4
  36792 RET           ;
 ; This entry point is used by the routines at #R35451, #R35973 and #R45290.
 *36793 LD HL,65535   ;
@@ -5892,17 +5441,21 @@ c36859 LD A,(33706)  ;
 @ignoreua
 ;
 ; Assigns a new action to the first idle crew member. Scans the 7-entry crew
-; data table at $7236 (IX+0 = action counter). If a crew member's counter is
-; non-zero they are busy; the first one with counter = 0 gets a new action
-; sourced from the ROM-traversal script. The action sets IX+3 (action state:
-; 2=move, 3=wait, 5=investigate) and IX+0 (action timer). If no crew member
-; is idle, returns immediately.
+; data table at #R29566 (IX+0 = action counter). If a crew member's counter
+; is non-zero they are busy; the first one with counter = 0 gets a new action
+; sourced from the ROM-traversal script via #R33589 (AdvanceScriptPtr) and
+; #R36763 (ScriptNibbleToDirection). The action sets IX+3 to one of:
+;     1 = idle (action timer 80 frames)
+;     2 = move (action timer 50 frames)
+;     3 = wait (action timer 50 frames)
+;     5 = investigate (action timer 60 frames)
+; and IX+0 to the appropriate frame countdown.
 ;
 ; Used by the routine at #R36457.
 @label=UpdateCrewAI
 c37018 PUSH IX       ; save caller's IX
 @ignoreua
- 37020 LD IX,29566   ; IX = crew data base ($7236, first 7-entry crew table)
+ 37020 LD IX,29566   ; IX = crew data base (first 7-entry crew table)
  37024 XOR A         ; A = 0
  37025 CP (IX+0)     ; is crew member 0's action counter zero (idle)?
  37028 JR Z,37033    ; yes: assign new action at #R45721
@@ -5936,8 +5489,8 @@ c37018 PUSH IX       ; save caller's IX
  37067 LD A,(33695)  ;
  37070 CP 255        ;
  37072 JR Z,37085    ;
- 37074 LD (IX+0),60  ;
- 37078 LD (IX+3),5   ;
+ 37074 LD (IX+0),60  ; timer = 60 frames
+ 37078 LD (IX+3),5   ; action state = 5 (investigate)
  37082 POP IX        ;
  37084 RET           ;
 *37085 LD A,(IX+1)   ;
@@ -5949,29 +5502,29 @@ c37018 PUSH IX       ; save caller's IX
  37097 LD A,(HL)     ;
  37098 CP 255        ;
  37100 JR NZ,37122   ;
- 37102 CALL 33589    ;
- 37105 CALL 36763    ;
- 37108 AND A         ;
- 37109 JR NZ,37151   ;
- 37111 LD (IX+0),50  ;
- 37115 LD (IX+3),3   ;
+ 37102 CALL 33589    ; AdvanceScriptPtr → A = next script nibble
+ 37105 CALL 36763    ; ScriptNibbleToDirection → A ∈ [0..4]
+ 37108 AND A         ; direction 0?
+ 37109 JR NZ,37151   ; no: branch to idle assignment
+ 37111 LD (IX+0),50  ; timer = 50 frames
+ 37115 LD (IX+3),3   ; action state = 3 (wait)
  37119 POP IX        ;
  37121 RET           ;
-*37122 CALL 33589    ;
- 37125 CALL 36763    ;
- 37128 CP 2          ;
- 37130 JR NC,37151   ;
+*37122 CALL 33589    ; AdvanceScriptPtr → A
+ 37125 CALL 36763    ; ScriptNibbleToDirection
+ 37128 CP 2          ; direction < 2?
+ 37130 JR NC,37151   ; no: idle
 ; This entry point is used by the routine at #R45401.
 *37132 LD A,(IX+1)   ;
  37135 XOR 64        ;
  37137 LD (IX+2),A   ;
- 37140 LD (IX+0),50  ;
- 37144 LD (IX+3),2   ;
+ 37140 LD (IX+0),50  ; timer = 50 frames
+ 37144 LD (IX+3),2   ; action state = 2 (move)
  37148 POP IX        ;
  37150 RET           ;
 *37151 CALL 36717    ;
- 37154 LD (IX+0),80  ;
- 37158 LD (IX+3),1   ;
+ 37154 LD (IX+0),80  ; timer = 80 frames
+ 37158 LD (IX+3),1   ; action state = 1 (idle / wander)
  37162 LD A,(IX+1)   ;
  37165 CP (IX+2)     ;
  37168 LD A,1        ;
@@ -6026,7 +5579,7 @@ c37018 PUSH IX       ; save caller's IX
 *37221 LD HL,20704   ;
  37224 LD (31257),HL ;
 @nowarn=33892
-@ssub=LD DE,Auto_8464
+@ssub=LD DE,MessageTextTable
  37227 LD DE,33892   ;
  37230 AND A         ;
  37231 JR Z,37242    ;
@@ -6249,7 +5802,9 @@ c37490 XOR H         ;
  37513 CALL 31634    ;
  37516 CALL 34743    ;
  37519 RET           ;
- 37520 LD A,(29567)  ;
+; CrewAction4_Handler — dispatched via CrewActionDispatch entry 4.
+@label=CrewAction4_Handler
+*37520 LD A,(29567)  ;
  37523 CP (IX+1)     ;
  37526 JR Z,37547    ;
 @nowarn=33704
@@ -7022,9 +6577,11 @@ c38379 CALL 38846    ;
  38778 LD HL,29566   ;
  38781 LD (HL),0     ;
  38783 RET           ;
+; CrewAction6_Handler — dispatched via CrewActionDispatch entry 6.
+@label=CrewAction6_Handler
 @nowarn=33700
 @ssub=LD HL,(CrewIndex)
- 38784 LD HL,(33700) ;
+*38784 LD HL,(33700) ;
  38787 LD A,12       ;
  38789 CALL 37176    ;
  38792 LD (IX+7),255 ;
@@ -7319,7 +6876,9 @@ c38379 CALL 38846    ;
  39250 CALL 949      ;
  39253 POP IX        ;
  39255 RET           ;
- 39256 LD HL,65535   ;
+; CrewAction5_Investigate — dispatched via CrewActionDispatch entry 5.
+@label=CrewAction5_Investigate
+*39256 LD HL,65535   ;
 @nowarn=33696
 @ssub=LD (Auto_83A0),HL
  39259 LD (33696),HL ;
@@ -8183,101 +7742,106 @@ c40319 LD A,(33699)  ; A = sound-request flag (#R33731)
 @ssub=LD (SoundRequest),A
  40358 LD (33699),A  ; clear sound-request flag
  40361 RET           ;
-@label=Auto_9DAA
- 40362 DEC C         ;
- 40363 NOP           ;
- 40364 XOR D         ;
- 40365 LD B,17       ;
- 40367 NOP           ;
- 40368 CALL P,3332   ;
- 40371 NOP           ;
- 40372 LD B,D        ;
- 40373 LD B,10       ;
- 40375 NOP           ;
- 40376 LD L,L        ;
- 40377 EX AF,AF'     ;
- 40378 DEC BC        ;
- 40379 NOP           ;
- 40380 LD A,D        ;
- 40381 RLCA          ;
- 40382 INC DE        ;
- 40383 NOP           ;
- 40384 LD H,H        ;
- 40385 INC B         ;
- 40386 ADD HL,DE     ;
- 40387 NOP           ;
- 40388 LD B,D        ;
- 40389 INC BC        ;
- 40390 INC D         ;
- 40391 NOP           ;
- 40392 DEC H         ;
- 40393 INC B         ;
- 40394 LD C,0        ;
- 40396 ADC A,A       ;
- 40397 DEC B         ;
-@label=Auto_9DCE
- 40398 NOP           ;
- 40399 DEC B         ;
- 40400 NOP           ;
- 40401 DEC B         ;
- 40402 LD BC,262     ;
- 40405 LD B,2        ;
- 40407 RLCA          ;
- 40408 LD (BC),A     ;
- 40409 RLCA          ;
- 40410 INC BC        ;
- 40411 EX AF,AF'     ;
- 40412 INC B         ;
- 40413 LD BC,0       ;
-@label=Auto_9DE0
- 40416 NOP           ;
- 40417 NOP           ;
 
-; Routine at #R40418
+; NoteTable
 ;
-; Used by the routine at #R40439.
-@label=Auto_9DE2
-c40418 ADD A,A       ;
- 40419 ADD A,A       ;
+; 9 × 4-byte entries used by PlayNoteByIndex. Each entry feeds the ROM
+; BEEP routine at $03B5: DE = note duration (number of cycles),
+; HL = T-state half-period (frequency).
+;
+@label=NoteTable
+b40362 DEFW 13,1706  ; note 0: dur=13, period=1706 T-states
+ 40366 DEFW 17,1268  ; note 1: dur=17, period=1268 T-states
+ 40370 DEFW 13,1602  ; note 2: dur=13, period=1602 T-states
+ 40374 DEFW 10,2157  ; note 3: dur=10, period=2157 T-states
+ 40378 DEFW 11,1914  ; note 4: dur=11, period=1914 T-states
+ 40382 DEFW 19,1124  ; note 5: dur=19, period=1124 T-states
+ 40386 DEFW 25,834  ; note 6: dur=25, period=834 T-states
+ 40390 DEFW 20,1061  ; note 7: dur=20, period=1061 T-states
+ 40394 DEFW 14,1423  ; note 8: dur=14, period=1423 T-states
+
+; PhrasePairs
+;
+; 8 × 2-byte phrase pairs consumed by PlayMusicPhrase. Each pair is
+; (note_A_index, note_B_index) into NoteTable; the two notes are played
+; alternately 8 times to form a trill, then the next phrase starts.
+;
+@label=PhrasePairs
+b40398 DEFB 0,5  ; phrase 0: notes 0,5
+ 40400 DEFB 0,5  ; phrase 1: notes 0,5
+ 40402 DEFB 1,6  ; phrase 2: notes 1,6
+ 40404 DEFB 1,6  ; phrase 3: notes 1,6
+ 40406 DEFB 2,7  ; phrase 4: notes 2,7
+ 40408 DEFB 2,7  ; phrase 5: notes 2,7
+ 40410 DEFB 3,8  ; phrase 6: notes 3,8
+ 40412 DEFB 4,1  ; phrase 7: notes 4,1
+
+; NotePairScratch — 2 bytes of mutable state for the current note pair.
+@label=NotePairScratch
+b40414 DEFB 0,0
+; PhraseStateScratch — 2 bytes of mutable state used by PlayMusicPhrase:
+;     +0..+1 = current pointer into PhrasePairs
+@ignoreua
+@label=PhraseStateScratch
+b40416 DEFB 0,0
+
+; PlayNoteByIndex
+;
+; Plays one beeper note via the ZX Spectrum ROM BEEP routine at $03B5.
+; Input: A = note index (0..8) into NoteTable at #R40362. Each table entry
+; is 4 bytes: 2-byte duration (passed in DE) and 2-byte period in T-states
+; (passed in HL). Used twice per inner iteration of PlayMusicPhrase.
+;
+@label=PlayNoteByIndex
+c40418 ADD A,A       ; A *= 2
+ 40419 ADD A,A       ; A *= 2 (now A = index × 4 = byte offset)
  40420 LD E,A        ;
- 40421 LD D,0        ;
+ 40421 LD D,0        ; DE = byte offset
 @nowarn=40362
-@ssub=LD HL,Auto_9DAA
- 40423 LD HL,40362   ;
- 40426 ADD HL,DE     ;
+@ssub=LD HL,NoteTable
+ 40423 LD HL,40362   ; HL → NoteTable base
+ 40426 ADD HL,DE     ; HL → 4-byte entry for note A
  40427 LD E,(HL)     ;
  40428 INC HL        ;
- 40429 LD D,(HL)     ;
+ 40429 LD D,(HL)     ; DE = duration (cycles)
  40430 INC HL        ;
  40431 LD A,(HL)     ;
  40432 INC HL        ;
  40433 LD H,(HL)     ;
- 40434 LD L,A        ;
- 40435 CALL 949      ;
+ 40434 LD L,A        ; HL = T-state period
+ 40435 CALL 949      ; ROM BEEP at $03B5 — play tone
  40438 RET           ;
 
-; Routine at #R40439
+; PlayMusicPhrase
 ;
-; Used by the routine at #R42581.
+; Plays the title-screen jingle: 8 successive 2-note phrases drawn from
+; the phrase table at #R40398 (PhrasePairs). Each phrase byte is a (loA,
+; hiB) pair selecting two notes from NoteTable at #R40362 (PlayNoteByIndex).
+; The inner loop repeats each pair 8 times (so the phrase audibly trills
+; on its 2-note interval), and the keyboard rows are polled between
+; notes — any key press aborts playback via Auto_9E33.
+;
+; Used by the routine at #R42581 (DrawIntroScreen).
+;
 @nowarn=40398
 @label=PlayMusicPhrase
-@ssub=LD HL,Auto_9DCE
-c40439 LD HL,40398   ;
+@ssub=LD HL,PhrasePairs
+c40439 LD HL,40398   ; HL = PhrasePairs base
 @nowarn=40416
-@ssub=LD (Auto_9DE0),HL
+@ssub=LD (PhraseStateScratch),HL
  40442 LD (40416),HL ;
  40445 LD B,8        ;
 @label=Auto_9DFF
 *40447 PUSH BC       ;
 @nowarn=40416
-@ssub=LD HL,(Auto_9DE0)
+@ssub=LD HL,(PhraseStateScratch)
  40448 LD HL,(40416) ;
  40451 LD E,(HL)     ;
  40452 INC HL        ;
  40453 LD D,(HL)     ;
  40454 INC HL        ;
 @nowarn=40416
-@ssub=LD (Auto_9DE0),HL
+@ssub=LD (PhraseStateScratch),HL
  40455 LD (40416),HL ;
  40458 LD (40414),DE ;
  40462 LD B,8        ;
@@ -8308,242 +7872,60 @@ c40439 LD HL,40398   ;
  40502 NOP           ;
 @label=Auto_9E37
  40503 NOP           ;
-@label=Auto_9E38
- 40504 NOP           ;
- 40505 NOP           ;
- 40506 NOP           ;
- 40507 LD BC,770     ;
- 40510 INC B         ;
- 40511 NOP           ;
- 40512 NOP           ;
- 40513 NOP           ;
- 40514 NOP           ;
- 40515 NOP           ;
- 40516 NOP           ;
- 40517 DEC B         ;
- 40518 LD B,7        ;
- 40520 NOP           ;
- 40521 EX AF,AF'     ;
- 40522 ADD HL,BC     ;
- 40523 NOP           ;
- 40524 NOP           ;
- 40525 NOP           ;
- 40526 NOP           ;
- 40527 NOP           ;
- 40528 LD A,(BC)     ;
- 40529 DEC BC        ;
- 40530 INC C         ;
- 40531 NOP           ;
- 40532 NOP           ;
- 40533 DEC C         ;
- 40534 LD C,0        ;
- 40536 NOP           ;
- 40537 NOP           ;
- 40538 RRCA          ;
- 40539 DJNZ 40558    ;
- 40541 LD (DE),A     ;
- 40542 NOP           ;
- 40543 NOP           ;
- 40544 NOP           ;
- 40545 INC DE        ;
- 40546 INC D         ;
- 40547 NOP           ;
- 40548 NOP           ;
- 40549 DEC D         ;
- 40550 LD D,23       ;
- 40552 NOP           ;
- 40553 NOP           ;
- 40554 NOP           ;
- 40555 NOP           ;
- 40556 JR 40583      ;
-@label=Auto_9E6E
-*40558 NOP           ;
- 40559 LD A,(DE)     ;
- 40560 DEC DE        ;
- 40561 INC E         ;
- 40562 DEC E         ;
- 40563 NOP           ;
- 40564 NOP           ;
- 40565 NOP           ;
- 40566 NOP           ;
- 40567 NOP           ;
- 40568 LD E,0        ;
- 40570 RRA           ;
- 40571 JR NZ,40606   ;
- 40573 LD (0),HL     ;
- 40576 NOP           ;
- 40577 NOP           ;
- 40578 NOP           ;
- 40579 INC HL        ;
- 40580 INC H         ;
- 40581 DEC H         ;
- 40582 LD H,39       ;
- 40584 JR Z,40627    ;
- 40586 NOP           ;
- 40587 NOP           ;
- 40588 NOP           ;
- 40589 LD HL,(11307) ;
- 40592 DEC L         ;
- 40593 LD L,47       ;
- 40595 JR NC,40646   ;
- 40597 LD (13363),A  ;
- 40600 DEC (HL)      ;
- 40601 LD (HL),55    ;
- 40603 JR C,40662    ;
- 40605 LD A,(15419)  ;
- 40608 DEC A         ;
- 40609 LD A,63       ;
- 40611 LD B,B        ;
- 40612 LD B,C        ;
- 40613 LD B,D        ;
- 40614 LD B,E        ;
- 40615 LD B,H        ;
- 40616 LD B,L        ;
- 40617 LD B,(HL)     ;
- 40618 LD B,A        ;
- 40619 LD C,B        ;
- 40620 LD C,C        ;
- 40621 LD C,D        ;
- 40622 LD C,E        ;
- 40623 LD C,H        ;
- 40624 NOP           ;
- 40625 NOP           ;
- 40626 LD C,L        ;
-@label=Auto_9EB3
-*40627 LD C,(HL)     ;
- 40628 LD C,A        ;
- 40629 LD D,B        ;
- 40630 LD D,C        ;
- 40631 LD D,D        ;
- 40632 LD D,E        ;
- 40633 LD D,H        ;
- 40634 LD D,L        ;
- 40635 NOP           ;
- 40636 NOP           ;
- 40637 LD D,(HL)     ;
- 40638 LD D,A        ;
- 40639 LD E,B        ;
- 40640 LD E,C        ;
- 40641 LD E,D        ;
- 40642 LD E,E        ;
- 40643 LD E,H        ;
- 40644 LD E,L        ;
- 40645 NOP           ;
-@label=Auto_9EC6
-*40646 NOP           ;
- 40647 NOP           ;
- 40648 LD E,(HL)     ;
- 40649 LD E,A        ;
- 40650 LD H,B        ;
- 40651 LD H,C        ;
- 40652 LD H,D        ;
- 40653 LD H,E        ;
- 40654 LD H,H        ;
- 40655 NOP           ;
- 40656 NOP           ;
- 40657 NOP           ;
- 40658 NOP           ;
- 40659 NOP           ;
- 40660 NOP           ;
- 40661 LD H,L        ;
-@label=Auto_9ED6
-*40662 LD H,(HL)     ;
- 40663 LD H,A        ;
- 40664 LD L,B        ;
- 40665 NOP           ;
- 40666 NOP           ;
- 40667 NOP           ;
- 40668 NOP           ;
-@label=Auto_9EDD
- 40669 RLCA          ;
- 40670 RLCA          ;
- 40671 RLCA          ;
- 40672 RLCA          ;
- 40673 INC B         ;
- 40674 RLCA          ;
- 40675 RLCA          ;
- 40676 RLCA          ;
- 40677 INC B         ;
- 40678 INC B         ;
- 40679 RLCA          ;
- 40680 RLCA          ;
- 40681 RLCA          ;
- 40682 JR C,40688    ;
- 40684 RLCA          ;
- 40685 INC B         ;
- 40686 RLCA          ;
- 40687 INC B         ;
-@label=Auto_9EF0
-*40688 INC B         ;
- 40689 RLCA          ;
- 40690 RLCA          ;
- 40691 RLCA          ;
- 40692 RLCA          ;
- 40693 JR C,40699    ;
- 40695 INC B         ;
- 40696 RLCA          ;
- 40697 INC B         ;
- 40698 RLCA          ;
-@label=Auto_9EFB
-*40699 RLCA          ;
- 40700 RLCA          ;
- 40701 RLCA          ;
- 40702 RLCA          ;
- 40703 RLCA          ;
- 40704 RLCA          ;
- 40705 RLCA          ;
- 40706 INC B         ;
- 40707 RLCA          ;
- 40708 RLCA          ;
- 40709 INC A         ;
- 40710 RLCA          ;
- 40711 RLCA          ;
- 40712 RLCA          ;
- 40713 RLCA          ;
- 40714 RLCA          ;
- 40715 RLCA          ;
- 40716 RLCA          ;
- 40717 INC B         ;
- 40718 RLCA          ;
- 40719 RLCA          ;
- 40720 INC B         ;
- 40721 RLCA          ;
- 40722 RLCA          ;
- 40723 RLCA          ;
- 40724 RLCA          ;
- 40725 RLCA          ;
- 40726 RLCA          ;
- 40727 RLCA          ;
- 40728 INC B         ;
- 40729 RLCA          ;
- 40730 INC B         ;
- 40731 RLCA          ;
- 40732 RLCA          ;
- 40733 RLCA          ;
- 40734 RLCA          ;
- 40735 RLCA          ;
- 40736 RLCA          ;
- 40737 INC B         ;
- 40738 RLCA          ;
- 40739 INC B         ;
- 40740 INC B         ;
- 40741 RLCA          ;
- 40742 RLCA          ;
- 40743 RLCA          ;
- 40744 RLCA          ;
- 40745 RLCA          ;
- 40746 RLCA          ;
- 40747 RLCA          ;
- 40748 RLCA          ;
- 40749 RLCA          ;
- 40750 INC B         ;
- 40751 RLCA          ;
- 40752 RLCA          ;
- 40753 RLCA          ;
- 40754 RLCA          ;
- 40755 RLCA          ;
- 40756 RLCA          ;
- 40757 CALL 37876    ;
+
+; Data block at #R40504
+;
+; Two screen tables consumed by DrawIntroScreen (#R42581):
+;   IntroTileMap at #R40504 (165 bytes) — a 15 × 11 grid of tile indices.
+;       The outer loop drives 15 vertical column-strips and the inner
+;       loop draws 11 tiles down each strip via #R31369. A tile index N
+;       is converted into a bitmap address by multiplying by 8 and adding
+;       #R62000 (TileBitmaps).
+;   IntroAttributes at #R40669 (88 bytes) — an 8 × 11 grid of attribute
+;       bytes painted into the bottom rows of the attribute file. Mostly
+;       bright-white-on-black (7) with magenta (4) accents and a couple
+;       of brighter cells (56, 60).
+;
+@ignoreua
+@label=IntroTileMap
+b40504 DEFB 0,0,0,1,2,3,4,0,0,0,0  ; col  0
+ 40515 DEFB 0,0,5,6,7,0,8,9,0,0,0  ; col  1
+ 40526 DEFB 0,0,10,11,12,0,0,13,14,0,0  ; col  2
+ 40537 DEFB 0,15,16,17,18,0,0,0,19,20,0  ; col  3
+ 40548 DEFB 0,21,22,23,0,0,0,0,24,25,0  ; col  4
+ 40559 DEFB 26,27,28,29,0,0,0,0,0,30,0  ; col  5
+ 40570 DEFB 31,32,33,34,0,0,0,0,0,35,36  ; col  6
+ 40581 DEFB 37,38,39,40,41,0,0,0,42,43,44  ; col  7
+ 40592 DEFB 45,46,47,48,49,50,51,52,53,54,55  ; col  8
+ 40603 DEFB 56,57,58,59,60,61,62,63,64,65,66  ; col  9
+ 40614 DEFB 67,68,69,70,71,72,73,74,75,76,0  ; col 10
+ 40625 DEFB 0,77,78,79,80,81,82,83,84,85,0  ; col 11
+ 40636 DEFB 0,86,87,88,89,90,91,92,93,0,0  ; col 12
+ 40647 DEFB 0,94,95,96,97,98,99,100,0,0,0  ; col 13
+ 40658 DEFB 0,0,0,101,102,103,104,0,0,0,0  ; col 14
+@label=IntroAttributes
+ 40669 DEFB 7,7,7,7,4,7,7,7,4,4,7  ; row  0
+ 40680 DEFB 7,7,56,4,7,4,7,4,4,7,7  ; row  1
+ 40691 DEFB 7,7,56,4,4,7,4,7,7,7,7  ; row  2
+ 40702 DEFB 7,7,7,7,4,7,7,60,7,7,7  ; row  3
+ 40713 DEFB 7,7,7,7,4,7,7,4,7,7,7  ; row  4
+ 40724 DEFB 7,7,7,7,4,7,4,7,7,7,7  ; row  5
+ 40735 DEFB 7,7,4,7,4,4,7,7,7,7,7  ; row  6
+ 40746 DEFB 7,7,7,7,4,7,7,7,7,7,7  ; row  7
+
+; CrewAction7_Handler
+;
+; Action-state 7 handler dispatched from CrewActionDispatch (#R33876, entry
+; index 7). Called via JP (HL) from #R36014. Calls #R37876 to update the
+; sprite position, then walks the two nearest-crew slots (#R33696 and
+; #R33697) — if either crew member is still alive, decrements one of the
+; per-crew counters at offset -3 from its alive flag and, depending on
+; the value, either jumps to #R39400 or initiates a 29-step approach via
+; #R37176. Returns without further action if both nearest-crew entries
+; are dead or absent (255).
+;
+@label=CrewAction7_Handler
+c40757 CALL 37876    ;
 @nowarn=33696
 @ssub=LD A,(Auto_83A0)
  40760 LD A,(33696)  ;
@@ -10072,7 +9454,7 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
  42585 OUT (254),A   ; set border colour = black
  42587 CALL 42515    ; FillAttributes(0): all black-on-black (invisible)
 @nowarn=40504
-@ssub=LD DE,Auto_9E38
+@ssub=LD DE,IntroTileMap
  42590 LD DE,40504   ; DE = #R40504 (intro tile-map data)
 @ignoreua
  42593 LD HL,16522   ; HL = $408A (screen address: top-left of tile area)
@@ -10120,7 +9502,7 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
  42661 CALL 42515    ;
  42664 LD HL,22890   ;
 @nowarn=40669
-@ssub=LD DE,Auto_9EDD
+@ssub=LD DE,IntroAttributes
  42667 LD DE,40669   ;
  42670 LD B,8        ;
 *42672 PUSH BC       ;
