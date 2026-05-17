@@ -1327,20 +1327,8 @@ b26569 DEFB 138,64,170,72,77,64,73,64
 ; XOR-blit sprite: 24px wide x 12px tall (3 bytes per row).
 ; Largest box — wide outer border with a small inner rectangle. This
 ; cursor blinks over the current room on the corridor map.
-;
-; Full 24px per row (left-byte | centre-byte | right-byte):
-;   ......## ######## ##......  (row  0, outer border)
-;   ......#. ........ .#......  (row  1)
-;   ......#. ........ .#......  (row  2)
-;   ......#. ........ .#......  (row  3)
-;   ......#. ..####.. .#......  (row  4, inner rectangle)
-;   ......#. ..#..#.. .#......  (row  5)
-;   ......#. ..#..#.. .#......  (row  6)
-;   ......#. ..####.. .#......  (row  7)
-;   ......#. ........ .#......  (row  8)
-;   ......#. ........ .#......  (row  9)
-;   ......#. ........ .#......  (row 10)
-;   ......## ######## ##......  (row 11, outer border)
+; .
+; #HTML(#UDGARRAY3,56,4,3(26637-26639-1;26661-26663-1){0,0,96,48}(RoomCursor0))
 @label=RoomCursor0
 b26637 DEFB 3,255,192           ; row  0: top border
  26640 DEFB 2,0,64              ; row  1
@@ -1359,18 +1347,8 @@ b26637 DEFB 3,255,192           ; row  0: top border
 ;
 ; Room indicator cursor, phase 1 (AnimateCrewB phase 1). Narrower 1-pixel
 ; border with an oval interior — cursor drawn at reduced size.
-;
-;   ........ ........ ........  (row  0, blank)
-;   .......# ######## #.......  (row  1, narrow top border)
-;   .......# ........ #.......  (row  2)
-;   .......# .######. #.......  (row  3, oval)
-;   .......# .#....#. #.......  (row  4)
-;   .......# .#....#. #.......  (row  5)
-;   .......# .#....#. #.......  (row  6)
-;   .......# .######. #.......  (row  7)
-;   .......# ........ #.......  (row  8)
-;   .......# ######## #.......  (row  9, narrow bottom border)
-;   ........ ........ ........  (rows 10-11, blank)
+; .
+; #HTML(#UDGARRAY3,56,4,3(26673-26675-1;26697-26699-1){0,0,96,48}(RoomCursor1))
 @label=RoomCursor1
 b26673 DEFB 0,0,0               ; row  0: blank
  26676 DEFB 1,255,128           ; row  1: top border
@@ -1389,17 +1367,8 @@ b26673 DEFB 0,0,0               ; row  0: blank
 ;
 ; Room indicator cursor, phase 2 (AnimateCrewB phase 2). Centre-only
 ; pattern — horizontal bars with inner ring detail.
-;
-;   ........ ........ ........  (rows 0-1, blank)
-;   ........ ######## ........  (row  2, top bar)
-;   ........ #......# ........  (row  3, outer edge)
-;   ........ #.####.# ........  (row  4, inner ring)
-;   ........ #.#..#.# ........  (row  5, detail)
-;   ........ #.#..#.# ........  (row  6)
-;   ........ #.####.# ........  (row  7)
-;   ........ #......# ........  (row  8)
-;   ........ ######## ........  (row  9, bottom bar)
-;   ........ ........ ........  (rows 10-11, blank)
+; .
+; #HTML(#UDGARRAY3,56,4,3(26709-26711-1;26733-26735-1){0,0,96,48}(RoomCursor2))
 @label=RoomCursor2
 b26709 DEFB 0,0,0               ; row  0: blank
  26712 DEFB 0,0,0               ; row  1: blank
@@ -1418,15 +1387,8 @@ b26709 DEFB 0,0,0               ; row  0: blank
 ;
 ; Room indicator cursor, phase 3 (AnimateCrewB phase 3). Smallest
 ; oval shape — cursor at its most contracted phase.
-;
-;   ........ ........ ........  (rows 0-2, blank)
-;   ........ .######. ........  (row  3, oval)
-;   ........ .#....#. ........  (row  4)
-;   ........ .#.##.#. ........  (row  5, inner detail)
-;   ........ .#.##.#. ........  (row  6)
-;   ........ .#....#. ........  (row  7)
-;   ........ .######. ........  (row  8, oval)
-;   ........ ........ ........  (rows 9-11, blank)
+; .
+; #HTML(#UDGARRAY3,56,4,3(26745-26747-1;26769-26771-1){0,0,96,48}(RoomCursor3))
 @label=RoomCursor3
 b26745 DEFB 0,0,0               ; row  0: blank
  26748 DEFB 0,0,0               ; row  1: blank
@@ -1447,20 +1409,8 @@ b26745 DEFB 0,0,0               ; row  0: blank
 ; XOR-blit sprite: 24px wide x 12px tall (3 bytes per row).
 ; Upright standing/walking pose — arms close to body, feet together.
 ; Left and right bytes are zero (figure fits in the 8-pixel centre column).
-;
-; Centre 8px:
-;   ........  (row  0, blank)
-;   ....#...  (row  1, $08, head top)
-;   ...###..  (row  2, $1C, head)
-;   ....#...  (row  3, $08, chin)
-;   ..#####.  (row  4, $3E, shoulders)
-;   .#.###.#  (row  5, $5D, torso)
-;   ..#####.  (row  6, $3E, body)
-;   ...###..  (row  7, $1C, hips)
-;   ...#.#..  (row  8, $14, upper legs)
-;   ...#.#..  (row  9, $14, mid legs)
-;   ...#.#..  (row 10, $14, lower legs)
-;   ..##.##.  (row 11, $36, feet)
+; .
+; #HTML(#UDGARRAY3,56,4,3(26781-26783-1;26805-26807-1){0,0,96,48}(CrewWalkA1))
 @label=CrewWalkA1
 b26781 DEFB 0,0,0               ; row  0: blank
  26784 DEFB 0,8,0               ; row  1: head top
@@ -1480,20 +1430,8 @@ b26781 DEFB 0,0,0               ; row  0: blank
 ; Crew member walking sprite, phase 2 (AnimateCrewA #R34967, phases 2-3).
 ; Mid-stride pose — arms pumping outward, legs spread in step.
 ; Row 5 has a stray pixel in the right byte (arm extension).
-;
-; Centre 8px (+ right byte for row 5):
-;   ....#...                    (row  0, $08, head)
-;   ...#.#..                    (row  1, $14, head wide)
-;   ..#...#.                    (row  2, $22, arms raising)
-;   ..##.##.                    (row  3, $36, upper arms)
-;   .#.....#                    (row  4, $41, arms spread)
-;   #.#...#. + #.......         (row  5, $A2+$80, torso+arm)
-;   .#.....#                    (row  6, $41)
-;   ..#...#.                    (row  7, $22, arms return)
-;   ..#.#.#.                    (row  8, $2A, legs mid-stride)
-;   ..#.#.#.                    (row  9, $2A)
-;   .##.#.##                    (row 10, $6B, feet contact)
-;   .#..#..#                    (row 11, $49, feet split)
+; .
+; #HTML(#UDGARRAY3,56,4,3(26817-26819-1;26841-26843-1){0,0,96,48}(CrewWalkA2))
 @label=CrewWalkA2
 b26817 DEFB 0,8,0               ; row  0: head
  26820 DEFB 0,20,0              ; row  1: head wide
