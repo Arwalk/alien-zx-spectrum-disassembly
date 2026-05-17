@@ -2207,7 +2207,7 @@ c31417 XOR A         ; A = 0
 @ssub=LD (AlienXPhase),A
  31431 LD (39741),A  ; set alien pixel X sentinel (#R39741)
 @nowarn=39753
-@ssub=LD (AlienYPhase),A
+@ssub=LD (JonesPhase),A
  31434 LD (39753),A  ; set alien pixel Y sentinel (#R39753)
  31437 LD A,8        ; segment 8 = centre of 19-segment corridor
 @nowarn=33683
@@ -2996,7 +2996,7 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  32725 LD (31263),HL ;
  32728 LD A,128      ;
 @nowarn=39753
-@ssub=LD (AlienYPhase),A
+@ssub=LD (JonesPhase),A
  32730 LD (39753),A  ;
 @nowarn=39741
 @ssub=LD (AlienXPhase),A
@@ -7581,39 +7581,39 @@ c38379 CALL 38846    ;
  39653 RET           ;
  39654 RET           ;
 
-; InitAlienYAnim
+; InitJonesAnim
 ;
-; Resets alien Y (tail) animation and blits the first frame. Sets Y position to 8,
+; Resets Jones animation and blits the first frame. Sets Y position to 8,
 ; clears the Y phase freeze flag, then calls #R39832 with B=1 to draw frame 0.
 ; This entry point is used by the routines at #R31634 and #R36859.
-@label=InitAlienYAnim
+@label=InitJonesAnim
 c39655 XOR A         ; A = 0: clear freeze flag
 @nowarn=39753
-@ssub=LD (AlienYPhase),A
- 39656 LD (39753),A  ; AlienYPhase = 0
+@ssub=LD (JonesPhase),A
+ 39656 LD (39753),A  ; JonesPhase = 0
  39659 LD A,8        ;
- 39661 LD (39750),A  ; AlienYPos = 8 (initial Y pixel offset)
+ 39661 LD (39750),A  ; JonesPos = 8 (initial Y pixel offset)
  39664 LD B,1        ; B = 1 iteration
  39666 CALL 39832    ; draw first tail frame
  39669 RET           ;
 
-; TriggerAlienYAnim
+; TriggerJonesAnim
 ;
-; Advances the alien Y (tail) animation by one frame if not frozen. Sets the freeze
-; flag (bit 7 of AlienYPhase) after blitting so the animation runs exactly once.
+; Advances the Jones animation by one frame if not frozen. Sets the freeze
+; flag (bit 7 of JonesPhase) after blitting so the animation runs exactly once.
 ; This entry point is used by the routines at #R35578 and #R36859.
-@label=TriggerAlienYAnim
+@label=TriggerJonesAnim
 c39670 LD B,1        ; B = 1 iteration
 @nowarn=39753
-@ssub=LD A,(AlienYPhase)
- 39672 LD A,(39753)  ; A = AlienYPhase
+@ssub=LD A,(JonesPhase)
+ 39672 LD A,(39753)  ; A = JonesPhase
  39675 AND 128       ; test freeze flag (bit 7)
  39677 RET NZ        ; already frozen: do nothing
  39678 CALL 39832    ; blit one tail frame
  39681 LD A,128      ;
 @nowarn=39753
-@ssub=LD (AlienYPhase),A
- 39683 LD (39753),A  ; freeze: AlienYPhase |= 128
+@ssub=LD (JonesPhase),A
+ 39683 LD (39753),A  ; freeze: JonesPhase |= 128
  39686 RET           ;
 
 ; ResetAlienXAnim
@@ -7659,10 +7659,10 @@ c39695 LD A,(39741)  ; A = AlienXPhase
 c39718 CALL 34967    ; redraw room background
  39721 CALL 35016    ; redraw room actors
 @nowarn=39753
-@ssub=LD A,(AlienYPhase)
- 39724 LD A,(39753)  ; A = AlienYPhase
+@ssub=LD A,(JonesPhase)
+ 39724 LD A,(39753)  ; A = JonesPhase
  39727 AND 128       ; test freeze flag
- 39729 CALL Z,39830  ; not frozen: advance Y (tail) animation
+ 39729 CALL Z,39830  ; not frozen: advance Y animation
 @nowarn=39741
 @ssub=LD A,(AlienXPhase)
  39732 LD A,(39741)  ; A = AlienXPhase
@@ -7680,10 +7680,10 @@ b39741 DEFB 0          ; body frame index 0-3 (bit 7 = freeze flag)
  39744 DEFW 60378      ; #R60378 (AlienFrame1 sprite ptr)
  39746 DEFW 60756      ; #R60756 (AlienFrame2 sprite ptr)
  39748 DEFW 61134      ; #R61134 (AlienFrame3 sprite ptr)
- 39750 DEFB 0          ; AlienYPos: pixel Y offset 0-135
+ 39750 DEFB 0          ; JonesPos: pixel Y offset 0-135
 @label=AlienScreenPtr
  39751 DEFW 18432      ; current screen draw ptr (runtime, initially 0x4800)
-@label=AlienYPhase
+@label=JonesPhase
  39753 DEFB 0          ; tail phase 0-4 (bit 7 = freeze flag)
  39754 DEFW 61512      ; #R61512 (JonesFrame0 sprite ptr)
  39756 DEFW 61576      ; #R61576 (JonesFrame1 sprite ptr)
@@ -7751,11 +7751,11 @@ c39764 LD HL,39741   ; HL -> AlienXPhase
  39827 DJNZ 39789    ; next row
  39829 RET           ;
 
-; AnimAlienY
+; AnimJones
 ;
 ; Entry point called from UpdateAlienAnim with B=2 to advance the Y position counter
-; before blitting. Calls BlitJonesFrame with B=2, which will call AdvanceAlienYPos.
-@label=AnimAlienY
+; before blitting. Calls BlitJonesFrame with B=2, which will call AdvanceJonesPos.
+@label=AnimJones
 c39830 LD B,2        ; B=2: advance position then blit
 
 ; BlitJonesFrame
@@ -7763,35 +7763,35 @@ c39830 LD B,2        ; B=2: advance position then blit
 ; Blits the alien tail (Y channel) XOR sprite for the current phase and position.
 ; First XORs ink colour bits of a 4x2 attribute block to produce a flash effect.
 ; Then loads the current Y-phase sprite pointer (3 bytes/row, 21 rows) and chooses
-; between an unshifted XOR blit (AlienYPos&7 < 4) or a shifted one (>= 4). The
-; shift amount is encoded directly into the self-modifying JR at BlitAlienYShiftCode
+; between an unshifted XOR blit (JonesPos&7 < 4) or a shifted one (>= 4). The
+; shift amount is encoded directly into the self-modifying JR at BlitJonesShiftCode
 ; (byte 39932 is patched to select how many SRL/RR passes execute). DJNZ at the end
-; re-uses B to call AdvanceAlienYPos when B=2.
+; re-uses B to call AdvanceJonesPos when B=2.
 @label=BlitJonesFrame
 c39832 PUSH BC       ; save B (iteration count)
  39833 LD A,(22528)  ; A = attribute at top-left of screen (0x5800)
  39836 CPL           ;
  39837 AND 7         ; invert and mask ink colour bits
  39839 LD (39873),A  ; patch XOR 7 opcode operand for attribute flash
- 39842 LD A,(39750)  ; A = AlienYPos (pixel Y offset 0-135)
+ 39842 LD A,(39750)  ; A = JonesPos (pixel Y offset 0-135)
  39845 RRA           ;
  39846 RRA           ;
- 39847 RRA           ; A = AlienYPos >> 3 (character row 0-16)
+ 39847 RRA           ; A = JonesPos >> 3 (character row 0-16)
  39848 AND 31        ;
  39850 LD E,A        ;
  39851 LD D,0        ; DE = char row index
  39853 LD HL,19488   ; HL = 0x4C00+1 (display col 1, char-row 0)
- 39856 ADD HL,DE     ; HL = screen row address for AlienYPos
+ 39856 ADD HL,DE     ; HL = screen row address for JonesPos
 @nowarn=39751
 @ssub=LD (AlienScreenPtr),HL
  39857 LD (39751),HL ; AlienScreenPtr = screen row ptr
  39860 LD HL,22848   ; HL = 0x5940 (attr row, col 0, char-row 1)
- 39863 ADD HL,DE     ; HL = attr address for AlienYPos char row
+ 39863 ADD HL,DE     ; HL = attr address for JonesPos char row
  39864 LD DE,29      ; DE = attr row stride - 4 (skip to next pair)
  39867 LD C,2        ; 2 attribute rows
-@label=BlitAlienYAttrRow
+@label=BlitJonesAttrRow
 *39869 LD B,4        ; 4 attribute columns per row
-@label=BlitAlienYAttrInner
+@label=BlitJonesAttrInner
 *39871 LD A,(HL)     ;
  39872 XOR 7         ; toggle ink colour (self-modifying operand at 39873)
  39874 LD (HL),A     ; write flashed attribute
@@ -7801,8 +7801,8 @@ c39832 PUSH BC       ; save B (iteration count)
  39879 DEC C         ;
  39880 JR NZ,39869   ; next row
 @nowarn=39753
-@ssub=LD HL,AlienYPhase
- 39882 LD HL,39753   ; HL -> AlienYPhase
+@ssub=LD HL,JonesPhase
+ 39882 LD HL,39753   ; HL -> JonesPhase
  39885 LD E,(HL)     ; E = current Y phase (0-4)
  39886 LD D,0        ;
  39888 INC HL        ; HL -> Y frame pointer table
@@ -7811,18 +7811,18 @@ c39832 PUSH BC       ; save B (iteration count)
  39891 LD E,(HL)     ;
  39892 INC HL        ;
  39893 LD D,(HL)     ; DE = tail sprite data ptr for this phase
- 39894 LD A,(39750)  ; A = AlienYPos
+ 39894 LD A,(39750)  ; A = JonesPos
  39897 AND 7         ; A = sub-character Y pixel offset (0-7)
  39899 CP 4          ;
- 39901 JP NC,40040   ; >= 4: shifted blit (BlitAlienYShifted)
+ 39901 JP NC,40040   ; >= 4: shifted blit (BlitJonesShifted)
  39904 CPL           ;
- 39905 AND 3         ; shift count = 3-(AlienYPos&7) in [0,3]
+ 39905 AND 3         ; shift count = 3-(JonesPos&7) in [0,3]
  39907 LD L,A        ;
  39908 RLCA          ;
  39909 RLCA          ;
  39910 RLCA          ; A = shift_count * 8
  39911 SUB L         ; A = shift_count * 7 (bytes to skip in shift chain)
- 39912 LD (39932),A  ; patch JR offset: BlitAlienYShiftCode entry skips N SRL/RR pairs
+ 39912 LD (39932),A  ; patch JR offset: BlitJonesShiftCode entry skips N SRL/RR pairs
  39915 LD B,21       ; 21 pixel rows per tail frame
 @label=BlitJonesFrameRow
 *39917 PUSH BC       ;
@@ -7842,7 +7842,7 @@ c39832 PUSH BC       ; save B (iteration count)
 ; Self-modifying right-shift chain. Byte 39932 (the JR e operand) is patched before
 ; entry to skip 0-3 SRL/RR groups, giving a right-shift of 0-3 bits across the 3+1
 ; sprite bytes in {B,C,E,A}. After shifting, the result is XOR-blitted to screen.
-@label=BlitAlienYShiftCode
+@label=BlitJonesShiftCode
 *39931 JR 39931      ; self-modifying: JR offset patched to skip N SRL/RR groups
  39933 SRL B         ; shift group 3 (shift 3 bits right)
  39935 RR C          ;
@@ -7900,53 +7900,53 @@ c39832 PUSH BC       ; save B (iteration count)
  40004 DJNZ 40007    ;
  40006 RET           ;
 
-; AdvanceAlienYPos
+; AdvanceJonesPos
 ;
-; Increments AlienYPos by 4. If the new value >= 136 the tail sweep is complete:
-; freeze the Y animation (AlienYPhase |= 128) and return. Otherwise store the new
+; Increments JonesPos by 4. If the new value >= 136 the tail sweep is complete:
+; freeze the Y animation (JonesPhase |= 128) and return. Otherwise store the new
 ; position, cycle the phase counter (0->1->2->3->4->0) and jump back to BlitJonesFrame.
-@label=AdvanceAlienYPos
-c40007 LD A,(39750)  ; A = AlienYPos
+@label=AdvanceJonesPos
+c40007 LD A,(39750)  ; A = JonesPos
  40010 ADD A,4       ; advance by 4 pixels
  40012 CP 136        ; reached bottom of sweep area?
  40014 JR C,40022    ; no: update position
  40016 LD A,128      ; yes: A = freeze flag
 @nowarn=39753
-@ssub=LD (AlienYPhase),A
- 40018 LD (39753),A  ; AlienYPhase = 128 (frozen)
+@ssub=LD (JonesPhase),A
+ 40018 LD (39753),A  ; JonesPhase = 128 (frozen)
  40021 RET           ; done
-@label=AdvanceAlienYPosUpdate
-*40022 LD (39750),A  ; AlienYPos = new value
+@label=AdvanceJonesPosUpdate
+*40022 LD (39750),A  ; JonesPos = new value
 @nowarn=39753
-@ssub=LD A,(AlienYPhase)
+@ssub=LD A,(JonesPhase)
  40025 LD A,(39753)  ; A = current phase (0-4)
  40028 INC A         ;
  40029 CP 5          ; wrapped past phase 4?
  40031 JR C,40034    ; no: keep incremented value
  40033 XOR A         ; yes: wrap to 0
 @nowarn=39753
-@label=AdvanceAlienYPosSetPhase
-@ssub=LD (AlienYPhase),A
-*40034 LD (39753),A  ; AlienYPhase = new phase
+@label=AdvanceJonesPosSetPhase
+@ssub=LD (JonesPhase),A
+*40034 LD (39753),A  ; JonesPhase = new phase
  40037 JP 39832      ; blit next tail frame
 
-; BlitAlienYShifted
+; BlitJonesShifted
 ;
-; Handles the alien tail XOR blit when AlienYPos&7 >= 4 (sprite straddles the next
+; Handles the alien tail XOR blit when JonesPos&7 >= 4 (sprite straddles the next
 ; character row). Uses SLA/RL chains for a left-shift instead of SRL/RR, mirroring
 ; the logic of BlitJonesFrame's right-shift section. The shift amount (pixels left
 ; past the half-character boundary) is patched into the self-modifying JR at
-; BlitAlienYShiftCode2 (byte 40067), then 21 rows of 4 bytes are XOR-blitted.
-@label=BlitAlienYShifted
-c40040 SUB 4         ; A = (AlienYPos&7) - 4, left-shift amount in [0,3]
+; BlitJonesShiftCode2 (byte 40067), then 21 rows of 4 bytes are XOR-blitted.
+@label=BlitJonesShifted
+c40040 SUB 4         ; A = (JonesPos&7) - 4, left-shift amount in [0,3]
  40042 LD L,A        ;
  40043 RLCA          ;
  40044 RLCA          ;
  40045 RLCA          ; A = shift_count * 8
  40046 SUB L         ; A = shift_count * 7 (JR offset into SLA/RL chain)
- 40047 LD (40067),A  ; patch BlitAlienYShiftCode2 JR offset
+ 40047 LD (40067),A  ; patch BlitJonesShiftCode2 JR offset
  40050 LD B,21       ; 21 pixel rows
-@label=BlitAlienYShiftedRow
+@label=BlitJonesShiftedRow
 *40052 PUSH BC       ;
  40053 EX DE,HL      ;
  40054 LD B,(HL)     ;
@@ -7961,7 +7961,7 @@ c40040 SUB 4         ; A = (AlienYPos&7) - 4, left-shift amount in [0,3]
  40061 LD HL,(39751) ;
  40064 PUSH HL       ;
  40065 XOR A         ;
-@label=BlitAlienYShiftCode2
+@label=BlitJonesShiftCode2
 *40066 JR 40066      ;
  40068 SLA E         ;
  40070 RL C          ;
@@ -8000,18 +8000,18 @@ c40040 SUB 4         ; A = (AlienYPos&7) - 4, left-shift amount in [0,3]
  40116 JR Z,40121    ;
  40118 INC H         ;
  40119 JR 40136      ;
-@label=BlitAlienYShiftedBankCheck
+@label=BlitJonesShiftedBankCheck
 *40121 LD A,L        ;
  40122 CP 224        ;
  40124 JR NC,40132   ;
  40126 LD BC,63776   ;
  40129 ADD HL,BC     ;
  40130 JR 40136      ;
-@label=BlitAlienYShiftedNextThird
+@label=BlitJonesShiftedNextThird
 *40132 LD BC,32      ;
  40135 ADD HL,BC     ;
 @nowarn=39751
-@label=BlitAlienYShiftedNextRow
+@label=BlitJonesShiftedNextRow
 @ssub=LD (AlienScreenPtr),HL
 *40136 LD (39751),HL ;
  40139 POP DE        ;
@@ -9903,7 +9903,7 @@ c41264 LD HL,29570   ;
 @ssub=LD (AlienXPhase),A
  42391 LD (39741),A  ;
 @nowarn=39753
-@ssub=LD (AlienYPhase),A
+@ssub=LD (JonesPhase),A
  42394 LD (39753),A  ;
  42397 LD HL,41406   ;
  42400 LD DE,29940   ;
