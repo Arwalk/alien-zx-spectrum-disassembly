@@ -7632,7 +7632,7 @@ c39687 CALL 40149    ; clear 19x20-cell screen area (ClearAlienArea)
 ; TriggerAlienXAnim
 ;
 ; Arms the alien body animation (sets freeze flag so a single blit occurs next frame),
-; or ends the encounter sequence. If (31252)=1 the crew member was killed: jump to
+; or ends the encounter sequence. If (RoomModeByte)=1 the crew member was killed: jump to
 ; #R32719 to handle that. Otherwise clears the screen area and returns.
 ; This entry point is used by the routines at #R36457 and #R37490.
 @nowarn=39741
@@ -7680,9 +7680,11 @@ b39741 DEFB 0          ; body frame index 0-3 (bit 7 = freeze flag)
  39744 DEFW 60378      ; #R60378 (AlienFrame1 sprite ptr)
  39746 DEFW 60756      ; #R60756 (AlienFrame2 sprite ptr)
  39748 DEFW 61134      ; #R61134 (AlienFrame3 sprite ptr)
- 39750 DEFB 0          ; JonesPos: pixel Y offset 0-135
+@label=JonesPos
+ 39750 DEFB 0          ; pixel Y offset 0-135
 @label=AlienScreenPtr
- 39751 DEFW 18432      ; current screen draw ptr (runtime, initially 0x4800)
+@ignoreua
+ 39751 DEFW 18432      ; current screen draw ptr (runtime, initially $4800)
 @label=JonesPhase
  39753 DEFB 0          ; tail phase 0-4 (bit 7 = freeze flag)
  39754 DEFW 61512      ; #R61512 (JonesFrame0 sprite ptr)
@@ -7695,7 +7697,7 @@ b39741 DEFB 0          ; body frame index 0-3 (bit 7 = freeze flag)
 ;
 ; Advances AlienXPhase (0->1->2->3->0), loads the corresponding sprite frame pointer
 ; from the table at AlienXPhase+2, then LDIRs 6 bytes x 63 rows of sprite data to
-; the display file at 0x4807 (column 7, row 1, pixel-row 0), handling ZX Spectrum
+; the display file at col 7, char-row 1, pixel-row 0, handling ZX Spectrum
 ; interleaved scan-line addressing at each row boundary.
 @nowarn=39741
 @label=BlitAlienFrame
@@ -7713,7 +7715,8 @@ c39764 LD HL,39741   ; HL -> AlienXPhase
  39778 LD E,(HL)     ;
  39779 INC HL        ;
  39780 LD D,(HL)     ; DE = sprite frame data ptr
- 39781 LD HL,18439   ; HL = 0x4807: display file col 7, char-row 1, pixel-row 0
+@ignoreua
+ 39781 LD HL,18439   ; HL = display file col 7, char-row 1, pixel-row 0
  39784 EX DE,HL      ; DE = screen dst, HL = sprite src
  39785 LD B,63       ; 63 pixel rows per frame
  39787 LD C,0        ;
@@ -7730,14 +7733,14 @@ c39764 LD HL,39741   ; HL -> AlienXPhase
  39803 INC H         ;
  39804 JR 39821      ;
 ; ZX Spectrum display-file scan-line bank wrap: H&7 = 7 means we finished a
-; character row. If L < 0xE0 (224) add 0xF920 (-1760) to jump to the next
+; character row. If L < 0xE0 (224) add -1760 to jump to the next
 ; screen third; otherwise add 32 to advance to the next character row within
 ; the same third. Then subtract 6 from HL to step back past the LDIR'd bytes.
 @label=BlitAlienFrameBankCheck
 *39806 LD A,L        ;
  39807 CP 224        ; L >= 0xE0: last char-row of this screen third?
  39809 JR NC,39817   ; yes: next third
- 39811 LD BC,63776   ; BC = 0xF920 (-1760): wrap to next column in next third
+ 39811 LD BC,63776   ; BC = -1760: wrap to next column in next third
  39814 ADD HL,BC     ;
  39815 JR 39821      ;
 @label=BlitAlienFrameNextThird
@@ -7765,11 +7768,11 @@ c39830 LD B,2        ; B=2: advance position then blit
 ; Then loads the current Y-phase sprite pointer (3 bytes/row, 21 rows) and chooses
 ; between an unshifted XOR blit (JonesPos&7 < 4) or a shifted one (>= 4). The
 ; shift amount is encoded directly into the self-modifying JR at BlitJonesShiftCode
-; (byte 39932 is patched to select how many SRL/RR passes execute). DJNZ at the end
+; (the JR offset byte is patched to select how many SRL/RR passes execute). DJNZ at the end
 ; re-uses B to call AdvanceJonesPos when B=2.
 @label=BlitJonesFrame
 c39832 PUSH BC       ; save B (iteration count)
- 39833 LD A,(22528)  ; A = attribute at top-left of screen (0x5800)
+ 39833 LD A,(22528)  ; A = attribute at top-left of screen (Auto_5800)
  39836 CPL           ;
  39837 AND 7         ; invert and mask ink colour bits
  39839 LD (39873),A  ; patch XOR 7 opcode operand for attribute flash
@@ -7785,7 +7788,7 @@ c39832 PUSH BC       ; save B (iteration count)
 @nowarn=39751
 @ssub=LD (AlienScreenPtr),HL
  39857 LD (39751),HL ; AlienScreenPtr = screen row ptr
- 39860 LD HL,22848   ; HL = 0x5940 (attr row, col 0, char-row 1)
+ 39860 LD HL,22848   ; HL = Auto_5940 (attr row, col 0, char-row 1)
  39863 ADD HL,DE     ; HL = attr address for JonesPos char row
  39864 LD DE,29      ; DE = attr row stride - 4 (skip to next pair)
  39867 LD C,2        ; 2 attribute rows
@@ -7793,7 +7796,7 @@ c39832 PUSH BC       ; save B (iteration count)
 *39869 LD B,4        ; 4 attribute columns per row
 @label=BlitJonesAttrInner
 *39871 LD A,(HL)     ;
- 39872 XOR 7         ; toggle ink colour (self-modifying operand at 39873)
+ 39872 XOR 7         ; toggle ink colour (self-modifying: operand byte patched)
  39874 LD (HL),A     ; write flashed attribute
  39875 INC HL        ;
  39876 DJNZ 39871    ; next column
@@ -7839,7 +7842,7 @@ c39832 PUSH BC       ; save B (iteration count)
  39926 LD HL,(39751) ;
  39929 PUSH HL       ;
  39930 XOR A         ;
-; Self-modifying right-shift chain. Byte 39932 (the JR e operand) is patched before
+; Self-modifying right-shift chain. The JR operand byte is patched before
 ; entry to skip 0-3 SRL/RR groups, giving a right-shift of 0-3 bits across the 3+1
 ; sprite bytes in {B,C,E,A}. After shifting, the result is XOR-blitted to screen.
 @label=BlitJonesShiftCode
@@ -7936,7 +7939,7 @@ c40007 LD A,(39750)  ; A = JonesPos
 ; character row). Uses SLA/RL chains for a left-shift instead of SRL/RR, mirroring
 ; the logic of BlitJonesFrame's right-shift section. The shift amount (pixels left
 ; past the half-character boundary) is patched into the self-modifying JR at
-; BlitJonesShiftCode2 (byte 40067), then 21 rows of 4 bytes are XOR-blitted.
+; the JR at BlitJonesShiftCode2, then 21 rows of 4 bytes are XOR-blitted.
 @label=BlitJonesShifted
 c40040 SUB 4         ; A = (JonesPos&7) - 4, left-shift amount in [0,3]
  40042 LD L,A        ;
@@ -8025,10 +8028,10 @@ c40040 SUB 4         ; A = (JonesPos&7) - 4, left-shift amount in [0,3]
 ; ClearAlienArea
 ;
 ; Clears the 19x20-character area of the ZX Spectrum display file and attribute RAM
-; used by the alien body animation. Iterates 19 rows of 20 columns from 0x4000,
-; calling #R31370 to zero each cell, then repeats for the attribute area at 0x5800.
+; used by the alien body animation. Iterates 19 rows of 20 columns from DisplayFile,
+; calling #R31370 to zero each cell, then repeats for the attribute area at Auto_5800.
 @label=ClearAlienArea
-c40149 LD HL,16384   ; HL = 0x4000: start of display file
+c40149 LD HL,16384   ; HL = DisplayFile: start of display file
  40152 LD (31257),HL ; store current screen cell address
  40155 LD C,19       ; 19 character rows
 @label=ClearAlienAreaCol
@@ -26199,9 +26202,10 @@ c45401 LD IX,29574   ;
 ;
 ; Body frames 0-3 (#R60000-61511): 6 bytes x 63 rows each (48 pixels wide,
 ; 63 pixels tall). Blitted directly to the display file by #R39764.
-; Jones the cat frames 0-4 (#R61512-#R61831): 3 bytes x 21 rows each (24
+; Jones the cat frames 0-4 (#R61512-#N61831): 3 bytes x 21 rows each (24
 ; pixels wide, 21 pixels tall) plus 1 byte padding. XOR-blitted by #R39832.
 ;
+@ignoreua
 ; #HTML(#UDGARRAY6,56,4,6(60000-60005-1;60048-60053-1;60096-60101-1;60144-60149-1;60192-60197-1;60240-60245-1;60288-60293-1;60336-60341-1)(AlienFrame0))
 ; #HTML(#UDGARRAY6,56,4,6(60378-60383-1;60426-60431-1;60474-60479-1;60522-60527-1;60570-60575-1;60618-60623-1;60666-60671-1;60714-60719-1)(AlienFrame1))
 ; #HTML(#UDGARRAY6,56,4,6(60756-60761-1;60804-60809-1;60852-60857-1;60900-60905-1;60948-60953-1;60996-61001-1;61044-61049-1;61092-61097-1)(AlienFrame2))

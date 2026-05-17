@@ -1327,15 +1327,6 @@ CrewSpriteBitmaps:
 ; XOR-blit sprite: 24px wide x 12px tall (3 bytes per row). Largest box — wide
 ; outer border with a small inner rectangle. This cursor blinks over the
 ; current room on the corridor map.
-;
-; FULL 24px per row (left-byte | centre-byte | right-byte): .....## ########
-;      ##......  (row  0, outer border) .....#. ........ .#......  (row  1)
-;      .....#. ........ .#......  (row  2) .....#. ........ .#......  (row  3)
-;      .....#. ..####.. .#......  (row  4, inner rectangle) .....#. ..#..#..
-;      .#......  (row  5) .....#. ..#..#.. .#......  (row  6) .....#. ..####..
-;      .#......  (row  7) .....#. ........ .#......  (row  8) .....#. ........
-;      .#......  (row  9) .....#. ........ .#......  (row 10) .....## ########
-;      ##......  (row 11, outer border)
 RoomCursor0:
   DEFB $03,$FF,$C0        ; row  0: top border
   DEFB $02,$00,$40        ; row  1
@@ -1354,14 +1345,6 @@ RoomCursor0:
 ;
 ; Room indicator cursor, phase 1 (AnimateCrewB phase 1). Narrower 1-pixel
 ; border with an oval interior — cursor drawn at reduced size.
-;
-;  ...... ........ ........  (row  0, blank) ......# ######## #.......  (row
-;  1, narrow top border) ......# ........ #.......  (row  2) ......# .######.
-;  #.......  (row  3, oval) ......# .#....#. #.......  (row  4) ......#
-;  .#....#. #.......  (row  5) ......# .#....#. #.......  (row  6) ......#
-;  .######. #.......  (row  7) ......# ........ #.......  (row  8) ......#
-;  ######## #.......  (row  9, narrow bottom border) ....... ........ ........
-;  (rows 10-11, blank)
 RoomCursor1:
   DEFB $00,$00,$00        ; row  0: blank
   DEFB $01,$FF,$80        ; row  1: top border
@@ -1380,13 +1363,6 @@ RoomCursor1:
 ;
 ; Room indicator cursor, phase 2 (AnimateCrewB phase 2). Centre-only pattern —
 ; horizontal bars with inner ring detail.
-;
-;  ...... ........ ........  (rows 0-1, blank) ....... ######## ........  (row
-;  2, top bar) ....... #......# ........  (row  3, outer edge) ....... #.####.#
-;  ........  (row  4, inner ring) ....... #.#..#.# ........  (row  5, detail)
-;  ....... #.#..#.# ........  (row  6) ....... #.####.# ........  (row  7)
-;  ....... #......# ........  (row  8) ....... ######## ........  (row  9,
-;  bottom bar) ....... ........ ........  (rows 10-11, blank)
 RoomCursor2:
   DEFB $00,$00,$00        ; row  0: blank
   DEFB $00,$00,$00        ; row  1: blank
@@ -1405,12 +1381,6 @@ RoomCursor2:
 ;
 ; Room indicator cursor, phase 3 (AnimateCrewB phase 3). Smallest oval shape —
 ; cursor at its most contracted phase.
-;
-;  ...... ........ ........  (rows 0-2, blank) ....... .######. ........  (row
-;  3, oval) ....... .#....#. ........  (row  4) ....... .#.##.#. ........  (row
-;  5, inner detail) ....... .#.##.#. ........  (row  6) ....... .#....#.
-;  ........  (row  7) ....... .######. ........  (row  8, oval) .......
-;  ........ ........  (rows 9-11, blank)
 RoomCursor3:
   DEFB $00,$00,$00        ; row  0: blank
   DEFB $00,$00,$00        ; row  1: blank
@@ -1431,13 +1401,6 @@ RoomCursor3:
 ; XOR-blit sprite: 24px wide x 12px tall (3 bytes per row). Upright
 ; standing/walking pose — arms close to body, feet together. Left and right
 ; bytes are zero (figure fits in the 8-pixel centre column).
-;
-; CENTRE 8px: .......  (row  0, blank) ...#...  (row  1, $08, head top) ..###..
-;        (row  2, $1C, head) ...#...  (row  3, $08, chin) .#####.  (row  4,
-;        $3E, shoulders) #.###.#  (row  5, $5D, torso) .#####.  (row  6, $3E,
-;        body) ..###..  (row  7, $1C, hips) ..#.#..  (row  8, $14, upper legs)
-;        ..#.#..  (row  9, $14, mid legs) ..#.#..  (row 10, $14, lower legs)
-;        .##.##.  (row 11, $36, feet)
 CrewWalkA1:
   DEFB $00,$00,$00        ; row  0: blank
   DEFB $00,$08,$00        ; row  1: head top
@@ -1457,16 +1420,6 @@ CrewWalkA1:
 ; Crew member walking sprite, phase 2 (AnimateCrewA AnimateCrewA, phases 2-3).
 ; Mid-stride pose — arms pumping outward, legs spread in step. Row 5 has a
 ; stray pixel in the right byte (arm extension).
-;
-; CENTRE 8px (+ right byte for row 5): ...#...                    (row  0, $08,
-;        head) ..#.#..                    (row  1, $14, head wide) .#...#.
-;        (row  2, $22, arms raising) .##.##.                    (row  3, $36,
-;        upper arms) #.....#                    (row  4, $41, arms spread)
-; . ...#. + #.......         (row  5, $A2+$80, torso+arm) #.....#
-;   (row  6, $41) .#...#.                    (row  7, $22, arms return) .#.#.#.
-;   (row  8, $2A, legs mid-stride) .#.#.#.                    (row  9, $2A)
-;   ##.#.##                    (row 10, $6B, feet contact) #..#..#
-;   (row 11, $49, feet split)
 CrewWalkA2:
   DEFB $00,$08,$00        ; row  0: head
   DEFB $00,$14,$00        ; row  1: head wide
@@ -2018,7 +1971,9 @@ CrewPortraits:
   DEFB $C0,$80,$E0,$08,$F0,$10,$13,$1C
   DEFB $00,$00,$00,$84,$49,$21,$D2
 
-; Portrait data continuation (portraits 4 end, 5, 6 start)
+; CrewPortraitsCont
+;
+; Crew portrait bitmaps, continued (portraits 4 end, 5, 6 start).
 CrewPortraitsCont:
   DEFB $0C,$00,$00,$00,$90,$0F,$04,$FC
   DEFB $00,$00,$00,$00,$00,$01,$03,$07
@@ -2038,7 +1993,9 @@ CrewPortraitsCont:
   DEFB $FB,$F1,$7F,$BF,$60,$E0,$C0,$C0
   DEFB $C0,$80,$80,$70,$7E,$82
 
-; Portrait data continuation (portrait 6 end, portrait 7)
+; CrewPortraitsCont2
+;
+; Crew portrait bitmaps, continued (portrait 6 end, portrait 7).
 CrewPortraitsCont2:
   DEFB $02,$01,$01,$00,$00,$00,$DF,$60
   DEFB $7F,$7F,$3E,$00,$00,$00,$4F,$90
@@ -2238,7 +2195,7 @@ InitGameView:
   SET 7,(HL)              ; freeze animation channel B
   LD A,$80                ; $80
   LD (AlienXPhase),A      ; set alien pixel X sentinel (AlienXPhase)
-  LD (AlienYPhase),A      ; set alien pixel Y sentinel (AlienYPhase)
+  LD (JonesPhase),A       ; set alien pixel Y sentinel (JonesPhase)
   LD A,$08                ; segment 8 = centre of 19-segment corridor
   LD (CorridorCursor),A   ; store as current corridor cursor (DifficultyByte)
   LD A,$20                ; space char
@@ -2717,7 +2674,7 @@ DrawSprite_38:
   LD DE,$73CC
   LD A,$33
   LD (DE),A
-  CALL InitAlienYAnim
+  CALL InitJonesAnim
   POP AF
   RET
 DrawSprite_39:
@@ -3092,7 +3049,7 @@ DrawSprite_75:
   LD HL,Auto_8080
   LD (CrewAnimFlags),HL
   LD A,$80
-  LD (AlienYPhase),A
+  LD (JonesPhase),A
   LD (AlienXPhase),A
   CALL DrawSprite_7
   LD A,($7A0A)
@@ -5382,7 +5339,7 @@ Auto_8C38:
   LD ($73CC),A
   CALL DrawSprite
   CALL HandleInput_5
-  CALL TriggerAlienYAnim
+  CALL TriggerJonesAnim
   LD A,(ScreenDrawPtr)
   LD L,A
   LD A,$02
@@ -5946,7 +5903,7 @@ Auto_9014:
   LD A,(CorridorCursor)
   CP $0E
   CALL Z,HandleInput_5
-  CALL TriggerAlienYAnim
+  CALL TriggerJonesAnim
 Auto_904D:
   LD A,(AlienEventTimer)
   LD HL,$737F
@@ -5990,7 +5947,7 @@ Auto_9061:
   LD A,$33
   LD ($73CC),A
   CALL DrawSprite
-  CALL InitAlienYAnim
+  CALL InitJonesAnim
   RET
 
 ; UpdateCrewAI
@@ -7527,31 +7484,40 @@ Auto_9AD7:
   DJNZ Auto_9AD7
   RET
   RET
-; Resets alien Y (tail) animation and blits the first frame. Sets Y position to
-; 8, clears the Y phase freeze flag, then calls BlitAlienYFrame with B=1 to
-; draw frame 0. This entry point is used by the routines at DrawSprite and
+
+; InitJonesAnim
+;
+; Resets Jones animation and blits the first frame. Sets Y position to 8,
+; clears the Y phase freeze flag, then calls BlitJonesFrame with B=1 to draw
+; frame 0. This entry point is used by the routines at DrawSprite and
 ; UpdateAlienEventTimer.
-InitAlienYAnim:
+InitJonesAnim:
   XOR A                   ; A = 0: clear freeze flag
-  LD (AlienYPhase),A      ; AlienYPhase = 0
+  LD (JonesPhase),A       ; JonesPhase = 0
   LD A,$08
-  LD ($9B46),A            ; AlienYPos = 8 (initial Y pixel offset)
+  LD (JonesPos),A         ; JonesPos = 8 (initial Y pixel offset)
   LD B,$01                ; B = 1 iteration
-  CALL BlitAlienYFrame    ; draw first tail frame
+  CALL BlitJonesFrame     ; draw first tail frame
   RET
-; Advances the alien Y (tail) animation by one frame if not frozen. Sets the
-; freeze flag (bit 7 of AlienYPhase) after blitting so the animation runs
-; exactly once. This entry point is used by the routines at RoomHandler_4 and
+
+; TriggerJonesAnim
+;
+; Advances the Jones animation by one frame if not frozen. Sets the freeze flag
+; (bit 7 of JonesPhase) after blitting so the animation runs exactly once. This
+; entry point is used by the routines at RoomHandler_4 and
 ; UpdateAlienEventTimer.
-TriggerAlienYAnim:
+TriggerJonesAnim:
   LD B,$01                ; B = 1 iteration
-  LD A,(AlienYPhase)      ; A = AlienYPhase
+  LD A,(JonesPhase)       ; A = JonesPhase
   AND $80                 ; test freeze flag (bit 7)
   RET NZ                  ; already frozen: do nothing
-  CALL BlitAlienYFrame    ; blit one tail frame
+  CALL BlitJonesFrame     ; blit one tail frame
   LD A,$80
-  LD (AlienYPhase),A      ; freeze: AlienYPhase |= 128
+  LD (JonesPhase),A       ; freeze: JonesPhase |= 128
   RET
+
+; ResetAlienXAnim
+;
 ; Clears the alien body animation area from the screen, then resets the X phase
 ; counter so the next trigger starts from frame 0. This entry point is used by
 ; the routines at DrawSprite and PlayMusic.
@@ -7560,9 +7526,12 @@ ResetAlienXAnim:
   XOR A                   ; A = 0
   LD (AlienXPhase),A      ; AlienXPhase = 0 (unfreeze, frame 0)
   RET
+
+; TriggerAlienXAnim
+;
 ; Arms the alien body animation (sets freeze flag so a single blit occurs next
-; frame), or ends the encounter sequence. If (31252)=1 the crew member was
-; killed: jump to DrawSprite_75 to handle that. Otherwise clears the screen
+; frame), or ends the encounter sequence. If (RoomModeByte)=1 the crew member
+; was killed: jump to DrawSprite_75 to handle that. Otherwise clears the screen
 ; area and returns. This entry point is used by the routines at GameEntry and
 ; XorHAddE.
 TriggerAlienXAnim:
@@ -7576,55 +7545,51 @@ TriggerAlienXAnim:
   JP Z,DrawSprite_75      ; yes: handle death sequence
   CALL ClearAlienArea     ; no: clear alien screen area
   RET
+
+; UpdateAlienAnim
+;
 ; Per-frame alien encounter update: refreshes the map view, then advances both
 ; animation layers. Y layer (tail sweep) if not frozen, X layer (body) if not
 ; frozen.
 UpdateAlienAnim:
   CALL AnimateCrewA       ; redraw room background
   CALL AnimateCrewB       ; redraw room actors
-  LD A,(AlienYPhase)      ; A = AlienYPhase
+  LD A,(JonesPhase)       ; A = JonesPhase
   AND $80                 ; test freeze flag
-  CALL Z,AnimAlienY       ; not frozen: advance Y (tail) animation
+  CALL Z,AnimJones        ; not frozen: advance Y animation
   LD A,(AlienXPhase)      ; A = AlienXPhase
   AND $80                 ; test freeze flag
   CALL Z,BlitAlienFrame   ; not frozen: blit next alien body frame
   RET
-; Inline data: alien body animation state (read/written by the routines above).
-; Byte at AlienXPhase holds the current body frame index (0-3); bit 7 is the
-; freeze flag. The four word pointers immediately after it address the sprite
-; data for each frame in ExtraDataArea. AlienYPos holds the pixel Y offset of
-; the tail sweep (0-135). AlienScreenPtr is the current ZX Spectrum
-; display-file pointer used by the Y blit. AlienYPhase holds the current tail
-; animation phase (0-4); bit 7 is its freeze flag. Five word pointers follow
-; for the five Y-channel sprite frames.
+
+; AlienAnimVars
+;
+; Inline state variables for the alien encounter animation. Addresses are
+; self-modified at runtime; pointer table entries are fixed in ROM.
 AlienXPhase:
-  NOP                     ; [byte] body frame index 0-3 (bit 7 = freeze)
-  LD H,B                  ; [word lo] AlienFrame0 ptr lo = 0x60
-  JP PE,$EBDA             ; [word hi+lo] AlienFrame0 ptr hi = 0xEA; AlienFrame1
-                          ; ptr lo = 0xDA
-  LD D,H                  ; [word hi] AlienFrame1 ptr hi = 0xEB
-  DEFB $ED,$CE            ; [word] AlienFrame2 ptr = 0xED54 (60756)
-  XOR $00                 ; [word lo+hi] AlienFrame3 ptr = 0xEECE (61134) --
-                          ; XOR 0 encodes 0xCE
+  DEFB $00                ; body frame index 0-3 (bit 7 = freeze flag)
+  DEFW AlienFrame0        ; AlienFrame0 (AlienFrame0 sprite ptr)
+  DEFW AlienFrame1        ; AlienFrame1 (AlienFrame1 sprite ptr)
+  DEFW AlienFrame2        ; AlienFrame2 (AlienFrame2 sprite ptr)
+  DEFW AlienFrame3        ; AlienFrame3 (AlienFrame3 sprite ptr)
+JonesPos:
+  DEFB $00                ; pixel Y offset 0-135
 AlienScreenPtr:
-  NOP                     ; [word lo] screen draw ptr lo (runtime)
-  LD C,B                  ; [word hi] screen draw ptr hi (runtime)
-AlienYPhase:
-  NOP                     ; [byte] tail phase index 0-4 (bit 7 = freeze)
-  LD C,B                  ; [word lo] AlienYFrame0 ptr lo = 0x48
-  RET P                   ; [word hi] AlienYFrame0 ptr hi = 0xF0 (-> 61512)
-  ADC A,B                 ; [word lo] AlienYFrame1 ptr lo = 0x88
-  RET P                   ; [word hi] AlienYFrame1 ptr hi = 0xF0 (-> 61576)
-  RET Z                   ; [word lo] AlienYFrame2 ptr lo = 0xC8
-  RET P                   ; [word hi] AlienYFrame2 ptr hi = 0xF0 (-> 61640)
-  EX AF,AF'               ; [word lo] AlienYFrame3 ptr lo = 0x08
-  POP AF                  ; [word hi] AlienYFrame3 ptr hi = 0xF1 (-> 61704)
-  LD C,B                  ; [word lo] AlienYFrame4 ptr lo = 0x48
-  POP AF                  ; [word hi] AlienYFrame4 ptr hi = 0xF1 (-> 61768)
+  DEFW $4800              ; current screen draw ptr (runtime, initially $4800)
+JonesPhase:
+  DEFB $00                ; tail phase 0-4 (bit 7 = freeze flag)
+  DEFW JonesFrame0        ; JonesFrame0 (JonesFrame0 sprite ptr)
+  DEFW JonesFrame1        ; JonesFrame1 (JonesFrame1 sprite ptr)
+  DEFW JonesFrame2        ; JonesFrame2 (JonesFrame2 sprite ptr)
+  DEFW JonesFrame3        ; JonesFrame3 (JonesFrame3 sprite ptr)
+  DEFW JonesFrame4        ; JonesFrame4 (JonesFrame4 sprite ptr)
+
+; BlitAlienFrame
+;
 ; Advances AlienXPhase (0->1->2->3->0), loads the corresponding sprite frame
 ; pointer from the table at AlienXPhase+2, then LDIRs 6 bytes x 63 rows of
-; sprite data to the display file at 0x4807 (column 7, row 1, pixel-row 0),
-; handling ZX Spectrum interleaved scan-line addressing at each row boundary.
+; sprite data to the display file at col 7, char-row 1, pixel-row 0, handling
+; ZX Spectrum interleaved scan-line addressing at each row boundary.
 BlitAlienFrame:
   LD HL,AlienXPhase       ; HL -> AlienXPhase
   LD A,(HL)
@@ -7639,8 +7604,7 @@ BlitAlienFrame:
   LD E,(HL)
   INC HL
   LD D,(HL)               ; DE = sprite frame data ptr
-  LD HL,$4807             ; HL = 0x4807: display file col 7, char-row 1,
-                          ; pixel-row 0
+  LD HL,$4807             ; HL = display file col 7, char-row 1, pixel-row 0
   EX DE,HL                ; DE = screen dst, HL = sprite src
   LD B,$3F                ; 63 pixel rows per frame
   LD C,$00
@@ -7657,15 +7621,14 @@ BlitAlienFrameRow:
   INC H
   JR BlitAlienFrameNextRow
 ; ZX Spectrum display-file scan-line bank wrap: H&7 = 7 means we finished a
-; character row. If L < 0xE0 (224) add 0xF920 (-1760) to jump to the next
-; screen third; otherwise add 32 to advance to the next character row within
-; the same third. Then subtract 6 from HL to step back past the LDIR'd bytes.
+; character row. If L < 0xE0 (224) add -1760 to jump to the next screen third;
+; otherwise add 32 to advance to the next character row within the same third.
+; Then subtract 6 from HL to step back past the LDIR'd bytes.
 BlitAlienFrameBankCheck:
   LD A,L
   CP $E0                  ; L >= 0xE0: last char-row of this screen third?
   JR NC,BlitAlienFrameNextThird ; yes: next third
-  LD BC,Auto_F920         ; BC = 0xF920 (-1760): wrap to next column in next
-                          ; third
+  LD BC,Auto_F920         ; BC = -1760: wrap to next column in next third
   ADD HL,BC
   JR BlitAlienFrameNextRow
 BlitAlienFrameNextThird:
@@ -7678,51 +7641,58 @@ BlitAlienFrameNextRow:
   POP BC
   DJNZ BlitAlienFrameRow  ; next row
   RET
+
+; AnimJones
+;
 ; Entry point called from UpdateAlienAnim with B=2 to advance the Y position
-; counter before blitting. Calls BlitAlienYFrame with B=2, which will call
-; AdvanceAlienYPos.
-AnimAlienY:
+; counter before blitting. Calls BlitJonesFrame with B=2, which will call
+; AdvanceJonesPos.
+AnimJones:
   LD B,$02                ; B=2: advance position then blit
+
+; BlitJonesFrame
+;
 ; Blits the alien tail (Y channel) XOR sprite for the current phase and
 ; position. First XORs ink colour bits of a 4x2 attribute block to produce a
 ; flash effect. Then loads the current Y-phase sprite pointer (3 bytes/row, 21
-; rows) and chooses between an unshifted XOR blit (AlienYPos&7 < 4) or a
-; shifted one (>= 4). The shift amount is encoded directly into the
-; self-modifying JR at BlitAlienYShiftCode (byte 39932 is patched to select how
-; many SRL/RR passes execute). DJNZ at the end re-uses B to call
-; AdvanceAlienYPos when B=2.
-BlitAlienYFrame:
+; rows) and chooses between an unshifted XOR blit (JonesPos&7 < 4) or a shifted
+; one (>= 4). The shift amount is encoded directly into the self-modifying JR
+; at BlitJonesShiftCode (the JR offset byte is patched to select how many
+; SRL/RR passes execute). DJNZ at the end re-uses B to call AdvanceJonesPos
+; when B=2.
+BlitJonesFrame:
   PUSH BC                 ; save B (iteration count)
-  LD A,(Auto_5800)        ; A = attribute at top-left of screen (0x5800)
+  LD A,(Auto_5800)        ; A = attribute at top-left of screen (Auto_5800)
   CPL
   AND $07                 ; invert and mask ink colour bits
   LD ($9BC1),A            ; patch XOR 7 opcode operand for attribute flash
-  LD A,($9B46)            ; A = AlienYPos (pixel Y offset 0-135)
+  LD A,(JonesPos)         ; A = JonesPos (pixel Y offset 0-135)
   RRA
   RRA
-  RRA                     ; A = AlienYPos >> 3 (character row 0-16)
+  RRA                     ; A = JonesPos >> 3 (character row 0-16)
   AND $1F
   LD E,A
   LD D,$00                ; DE = char row index
   LD HL,Auto_4C20         ; HL = 0x4C00+1 (display col 1, char-row 0)
-  ADD HL,DE               ; HL = screen row address for AlienYPos
+  ADD HL,DE               ; HL = screen row address for JonesPos
   LD (AlienScreenPtr),HL  ; AlienScreenPtr = screen row ptr
-  LD HL,Auto_5940         ; HL = 0x5940 (attr row, col 0, char-row 1)
-  ADD HL,DE               ; HL = attr address for AlienYPos char row
+  LD HL,Auto_5940         ; HL = Auto_5940 (attr row, col 0, char-row 1)
+  ADD HL,DE               ; HL = attr address for JonesPos char row
   LD DE,$001D             ; DE = attr row stride - 4 (skip to next pair)
   LD C,$02                ; 2 attribute rows
-BlitAlienYAttrRow:
+BlitJonesAttrRow:
   LD B,$04                ; 4 attribute columns per row
-BlitAlienYAttrInner:
+BlitJonesAttrInner:
   LD A,(HL)
-  XOR $07                 ; toggle ink colour (self-modifying operand at 39873)
+  XOR $07                 ; toggle ink colour (self-modifying: operand byte
+                          ; patched)
   LD (HL),A               ; write flashed attribute
   INC HL
-  DJNZ BlitAlienYAttrInner ; next column
+  DJNZ BlitJonesAttrInner ; next column
   ADD HL,DE               ; skip to next attribute row
   DEC C
-  JR NZ,BlitAlienYAttrRow ; next row
-  LD HL,AlienYPhase       ; HL -> AlienYPhase
+  JR NZ,BlitJonesAttrRow  ; next row
+  LD HL,JonesPhase        ; HL -> JonesPhase
   LD E,(HL)               ; E = current Y phase (0-4)
   LD D,$00
   INC HL                  ; HL -> Y frame pointer table
@@ -7731,21 +7701,21 @@ BlitAlienYAttrInner:
   LD E,(HL)
   INC HL
   LD D,(HL)               ; DE = tail sprite data ptr for this phase
-  LD A,($9B46)            ; A = AlienYPos
+  LD A,(JonesPos)         ; A = JonesPos
   AND $07                 ; A = sub-character Y pixel offset (0-7)
   CP $04
-  JP NC,BlitAlienYShifted ; >= 4: shifted blit (BlitAlienYShifted)
+  JP NC,BlitJonesShifted  ; >= 4: shifted blit (BlitJonesShifted)
   CPL
-  AND $03                 ; shift count = 3-(AlienYPos&7) in [0,3]
+  AND $03                 ; shift count = 3-(JonesPos&7) in [0,3]
   LD L,A
   RLCA
   RLCA
   RLCA                    ; A = shift_count * 8
   SUB L                   ; A = shift_count * 7 (bytes to skip in shift chain)
-  LD ($9BFC),A            ; patch JR offset: BlitAlienYShiftCode entry skips N
+  LD ($9BFC),A            ; patch JR offset: BlitJonesShiftCode entry skips N
                           ; SRL/RR pairs
   LD B,$15                ; 21 pixel rows per tail frame
-BlitAlienYFrameRow:
+BlitJonesFrameRow:
   PUSH BC
   EX DE,HL
   LD B,(HL)
@@ -7758,12 +7728,12 @@ BlitAlienYFrameRow:
   LD HL,(AlienScreenPtr)
   PUSH HL
   XOR A
-; Self-modifying right-shift chain. Byte 39932 (the JR e operand) is patched
-; before entry to skip 0-3 SRL/RR groups, giving a right-shift of 0-3 bits
-; across the 3+1 sprite bytes in {B,C,E,A}. After shifting, the result is
-; XOR-blitted to screen.
-BlitAlienYShiftCode:
-  JR BlitAlienYShiftCode  ; self-modifying: JR offset patched to skip N SRL/RR
+; Self-modifying right-shift chain. The JR operand byte is patched before entry
+; to skip 0-3 SRL/RR groups, giving a right-shift of 0-3 bits across the 3+1
+; sprite bytes in {B,C,E,A}. After shifting, the result is XOR-blitted to
+; screen.
+BlitJonesShiftCode:
+  JR BlitJonesShiftCode   ; self-modifying: JR offset patched to skip N SRL/RR
                           ; groups
   SRL B                   ; shift group 3 (shift 3 bits right)
   RR C
@@ -7797,65 +7767,71 @@ BlitAlienYShiftCode:
   LD A,H
   AND $07
   CP $07
-  JR Z,BlitAlienYFrameBankCheck
+  JR Z,BlitJonesFrameBankCheck
   INC H
-  JR BlitAlienYFrameNextRow
-BlitAlienYFrameBankCheck:
+  JR BlitJonesFrameNextRow
+BlitJonesFrameBankCheck:
   LD A,L
   CP $E0
-  JR NC,BlitAlienYFrameNextThird
+  JR NC,BlitJonesFrameNextThird
   LD BC,Auto_F920
   ADD HL,BC
-  JR BlitAlienYFrameNextRow
-BlitAlienYFrameNextThird:
+  JR BlitJonesFrameNextRow
+BlitJonesFrameNextThird:
   LD BC,$0020
   ADD HL,BC
-BlitAlienYFrameNextRow:
+BlitJonesFrameNextRow:
   LD (AlienScreenPtr),HL
   POP DE
   POP BC
-  DJNZ BlitAlienYFrameRow
+  DJNZ BlitJonesFrameRow
   POP BC
-  DJNZ AdvanceAlienYPos
+  DJNZ AdvanceJonesPos
   RET
-; Increments AlienYPos by 4. If the new value >= 136 the tail sweep is
-; complete: freeze the Y animation (AlienYPhase |= 128) and return. Otherwise
-; store the new position, cycle the phase counter (0->1->2->3->4->0) and jump
-; back to BlitAlienYFrame.
-AdvanceAlienYPos:
-  LD A,($9B46)            ; A = AlienYPos
+
+; AdvanceJonesPos
+;
+; Increments JonesPos by 4. If the new value >= 136 the tail sweep is complete:
+; freeze the Y animation (JonesPhase |= 128) and return. Otherwise store the
+; new position, cycle the phase counter (0->1->2->3->4->0) and jump back to
+; BlitJonesFrame.
+AdvanceJonesPos:
+  LD A,(JonesPos)         ; A = JonesPos
   ADD A,$04               ; advance by 4 pixels
   CP $88                  ; reached bottom of sweep area?
-  JR C,AdvanceAlienYPosUpdate ; no: update position
+  JR C,AdvanceJonesPosUpdate ; no: update position
   LD A,$80                ; yes: A = freeze flag
-  LD (AlienYPhase),A      ; AlienYPhase = 128 (frozen)
+  LD (JonesPhase),A       ; JonesPhase = 128 (frozen)
   RET                     ; done
-AdvanceAlienYPosUpdate:
-  LD ($9B46),A            ; AlienYPos = new value
-  LD A,(AlienYPhase)      ; A = current phase (0-4)
+AdvanceJonesPosUpdate:
+  LD (JonesPos),A         ; JonesPos = new value
+  LD A,(JonesPhase)       ; A = current phase (0-4)
   INC A
   CP $05                  ; wrapped past phase 4?
-  JR C,AdvanceAlienYPosSetPhase ; no: keep incremented value
+  JR C,AdvanceJonesPosSetPhase ; no: keep incremented value
   XOR A                   ; yes: wrap to 0
-AdvanceAlienYPosSetPhase:
-  LD (AlienYPhase),A      ; AlienYPhase = new phase
-  JP BlitAlienYFrame      ; blit next tail frame
-; Handles the alien tail XOR blit when AlienYPos&7 >= 4 (sprite straddles the
+AdvanceJonesPosSetPhase:
+  LD (JonesPhase),A       ; JonesPhase = new phase
+  JP BlitJonesFrame       ; blit next tail frame
+
+; BlitJonesShifted
+;
+; Handles the alien tail XOR blit when JonesPos&7 >= 4 (sprite straddles the
 ; next character row). Uses SLA/RL chains for a left-shift instead of SRL/RR,
-; mirroring the logic of BlitAlienYFrame's right-shift section. The shift
-; amount (pixels left past the half-character boundary) is patched into the
-; self-modifying JR at BlitAlienYShiftCode2 (byte 40067), then 21 rows of 4
-; bytes are XOR-blitted.
-BlitAlienYShifted:
-  SUB $04                 ; A = (AlienYPos&7) - 4, left-shift amount in [0,3]
+; mirroring the logic of BlitJonesFrame's right-shift section. The shift amount
+; (pixels left past the half-character boundary) is patched into the
+; self-modifying JR at the JR at BlitJonesShiftCode2, then 21 rows of 4 bytes
+; are XOR-blitted.
+BlitJonesShifted:
+  SUB $04                 ; A = (JonesPos&7) - 4, left-shift amount in [0,3]
   LD L,A
   RLCA
   RLCA
   RLCA                    ; A = shift_count * 8
   SUB L                   ; A = shift_count * 7 (JR offset into SLA/RL chain)
-  LD ($9C83),A            ; patch BlitAlienYShiftCode2 JR offset
+  LD ($9C83),A            ; patch BlitJonesShiftCode2 JR offset
   LD B,$15                ; 21 pixel rows
-BlitAlienYShiftedRow:
+BlitJonesShiftedRow:
   PUSH BC
   EX DE,HL
   LD B,(HL)
@@ -7868,8 +7844,8 @@ BlitAlienYShiftedRow:
   LD HL,(AlienScreenPtr)
   PUSH HL
   XOR A
-BlitAlienYShiftCode2:
-  JR BlitAlienYShiftCode2
+BlitJonesShiftCode2:
+  JR BlitJonesShiftCode2
   SLA E
   RL C
   RL B
@@ -7904,34 +7880,37 @@ BlitAlienYShiftCode2:
   LD A,H
   AND $07
   CP $07
-  JR Z,BlitAlienYShiftedBankCheck
+  JR Z,BlitJonesShiftedBankCheck
   INC H
-  JR BlitAlienYShiftedNextRow
-BlitAlienYShiftedBankCheck:
+  JR BlitJonesShiftedNextRow
+BlitJonesShiftedBankCheck:
   LD A,L
   CP $E0
-  JR NC,BlitAlienYShiftedNextThird
+  JR NC,BlitJonesShiftedNextThird
   LD BC,Auto_F920
   ADD HL,BC
-  JR BlitAlienYShiftedNextRow
-BlitAlienYShiftedNextThird:
+  JR BlitJonesShiftedNextRow
+BlitJonesShiftedNextThird:
   LD BC,$0020
   ADD HL,BC
-BlitAlienYShiftedNextRow:
+BlitJonesShiftedNextRow:
   LD (AlienScreenPtr),HL
   POP DE
   POP BC
-  DJNZ BlitAlienYShiftedRow
+  DJNZ BlitJonesShiftedRow
   POP BC
   DEC B
-  JP NZ,AdvanceAlienYPos
+  JP NZ,AdvanceJonesPos
   RET
+
+; ClearAlienArea
+;
 ; Clears the 19x20-character area of the ZX Spectrum display file and attribute
 ; RAM used by the alien body animation. Iterates 19 rows of 20 columns from
-; 0x4000, calling DrawSpriteRow_0 to zero each cell, then repeats for the
-; attribute area at 0x5800.
+; DisplayFile, calling DrawSpriteRow_0 to zero each cell, then repeats for the
+; attribute area at Auto_5800.
 ClearAlienArea:
-  LD HL,DisplayFile       ; HL = 0x4000: start of display file
+  LD HL,DisplayFile       ; HL = DisplayFile: start of display file
   LD ($7A19),HL           ; store current screen cell address
   LD C,$13                ; 19 character rows
 ClearAlienAreaCol:
@@ -9735,7 +9714,7 @@ Auto_A58C:
   LD (CrewAnimFlags),HL
   LD A,L
   LD (AlienXPhase),A
-  LD (AlienYPhase),A
+  LD (JonesPhase),A
   LD HL,$A1BE
   LD DE,$74F4
   LD BC,$0016
@@ -9881,9 +9860,10 @@ FillAttributes_3:
 ; black, fills attributes (0 = black on black = hidden). Renders a 15×11 tile
 ; grid: each byte of the tile map at Auto_9E38 is a tile index; multiplied by 8
 ; gives an offset into the 8-byte-per-tile bitmap array at Auto_F230 (actually
-; at Auto_F230 = Auto_F230 decimal, in the extra-data area loaded at EA60).
-; Tile rows are blitted column by column down into the display file. After
-; drawing, loops animating colours until any key on row $F7FE is pressed.
+; at Auto_F230 = Auto_F230 decimal, in the extra-data area loaded at
+; AlienFrame0). Tile rows are blitted column by column down into the display
+; file. After drawing, loops animating colours until any key on row $F7FE is
+; pressed.
 ;
 ; USED by the routine at GameEntry.
 DrawIntroScreen:
@@ -25912,14 +25892,453 @@ Auto_DFFE:
   NOP
   NOP
 
+; Alien encounter animation data
+;
+; Body frames 0-3 (AlienFrame0-61511): 6 bytes x 63 rows each (48 pixels wide,
+; 63 pixels tall). Blitted directly to the display file by BlitAlienFrame.
+; Jones the cat frames 0-4 (JonesFrame0-F187): 3 bytes x 21 rows each (24
+; pixels wide, 21 pixels tall) plus 1 byte padding. XOR-blitted by
+; BlitJonesFrame.
+;
+; HTML( UDGARRAY6,56,4,6(60000-60005-1;60048-60053-1;60096-60101-1;60144-60149-1;60192-60197-1;60240-60245-1;60288-60293-1;60336-60341-1)(AlienFrame0))
+; HTML( UDGARRAY6,56,4,6(60378-60383-1;60426-60431-1;60474-60479-1;60522-60527-1;60570-60575-1;60618-60623-1;60666-60671-1;60714-60719-1)(AlienFrame1))
+; HTML( UDGARRAY6,56,4,6(60756-60761-1;60804-60809-1;60852-60857-1;60900-60905-1;60948-60953-1;60996-61001-1;61044-61049-1;61092-61097-1)(AlienFrame2))
+; HTML( UDGARRAY6,56,4,6(61134-61139-1;61182-61187-1;61230-61235-1;61278-61283-1;61326-61331-1;61374-61379-1;61422-61427-1;61470-61475-1)(AlienFrame3))
+; HTML( UDGARRAY3,56,4,3(61512-61514-1;61536-61538-1;61560-61562-1)(JonesFrame0))
+; HTML( UDGARRAY3,56,4,3(61576-61578-1;61600-61602-1;61624-61626-1)(JonesFrame1))
+; HTML( UDGARRAY3,56,4,3(61640-61642-1;61664-61666-1;61688-61690-1)(JonesFrame2))
+; HTML( UDGARRAY3,56,4,3(61704-61706-1;61728-61730-1;61752-61754-1)(JonesFrame3))
+; HTML( UDGARRAY3,56,4,3(61768-61770-1;61792-61794-1;61816-61818-1)(JonesFrame4))
+; ALIEN body frame 0 (phase 0). 63 rows x 6 bytes, blitted to display file
+; AT 0x4807 (column 7, char-row 1).
+; HTML( UDGARRAY6,56,4,6(60000-60005-1;60048-60053-1;60096-60101-1;60144-60149-1;60192-60197-1;60240-60245-1;60288-60293-1;60336-60341-1)(AlienFrame0))
+AlienFrame0:
+  DEFB $00,$00,$00,$0F,$80,$00
+  DEFB $00,$00,$00,$3F,$C0,$00
+  DEFB $00,$00,$00,$7F,$E0,$00
+  DEFB $02,$00,$38,$FF,$E0,$00
+  DEFB $04,$00,$7D,$FF,$60,$00
+  DEFB $0F,$FF,$E9,$FD,$E0,$00
+  DEFB $0F,$FF,$63,$FB,$DC,$00
+  DEFB $0F,$FF,$63,$F7,$3E,$00
+  DEFB $05,$FF,$63,$FE,$3E,$00
+  DEFB $06,$07,$67,$F8,$76,$00
+  DEFB $07,$80,$2F,$BE,$62,$00
+  DEFB $07,$00,$1F,$D2,$EC,$00
+  DEFB $07,$80,$1F,$D1,$DE,$00
+  DEFB $07,$00,$1F,$D3,$B9,$00
+  DEFB $07,$80,$1F,$A7,$77,$00
+  DEFB $07,$00,$0F,$4E,$EF,$80
+  DEFB $07,$80,$10,$CC,$1F,$80
+  DEFB $07,$78,$0F,$5C,$6F,$C0
+  DEFB $07,$7E,$00,$97,$C7,$E0
+  DEFB $07,$BF,$8F,$78,$43,$E0
+  DEFB $03,$DF,$EE,$EF,$C3,$F4
+  DEFB $02,$EF,$F8,$30,$81,$F4
+  DEFB $02,$B7,$F5,$EF,$00,$F8
+  DEFB $03,$97,$FB,$30,$80,$70
+  DEFB $03,$A7,$FC,$9F,$01,$F0
+  DEFB $03,$BF,$FC,$C0,$1C,$E0
+  DEFB $01,$5D,$FF,$2D,$FB,$E0
+  DEFB $01,$5E,$FF,$F3,$F9,$C0
+  DEFB $00,$AE,$7F,$FF,$F7,$D0
+  DEFB $00,$1E,$3F,$FF,$F7,$B0
+  DEFB $00,$3E,$0F,$FF,$E7,$70
+  DEFB $00,$3E,$01,$FF,$DE,$F0
+  DEFB $00,$3E,$18,$3E,$06,$F0
+  DEFB $00,$3E,$38,$00,$35,$F0
+  DEFB $00,$1E,$F7,$00,$F9,$F0
+  DEFB $00,$1E,$CC,$01,$D9,$E0
+  DEFB $00,$1E,$34,$02,$B3,$E0
+  DEFB $00,$5E,$D0,$02,$F3,$C0
+  DEFB $00,$DE,$40,$01,$53,$C0
+  DEFB $01,$C1,$00,$01,$57,$C0
+  DEFB $03,$AF,$00,$00,$A7,$C0
+  DEFB $0E,$4F,$00,$00,$47,$C0
+  DEFB $0D,$8A,$80,$00,$07,$C0
+  DEFB $1A,$0B,$80,$00,$03,$80
+  DEFB $1B,$0B,$80,$00,$04,$80
+  DEFB $34,$0F,$00,$00,$0F,$00
+  DEFB $36,$1F,$00,$00,$0F,$00
+  DEFB $3C,$1B,$00,$00,$05,$00
+  DEFB $34,$36,$00,$00,$0D,$00
+  DEFB $38,$7E,$00,$00,$0F,$80
+  DEFB $3C,$D6,$00,$00,$05,$C0
+  DEFB $38,$B4,$00,$00,$06,$E0
+  DEFB $3E,$00,$00,$00,$07,$E0
+  DEFB $1C,$00,$00,$00,$06,$A0
+  DEFB $1F,$00,$00,$00,$02,$C0
+  DEFB $0F,$C0,$00,$00,$00,$00
+  DEFB $07,$F8,$00,$00,$00,$00
+  DEFB $03,$FE,$00,$00,$00,$00
+  DEFB $00,$7F,$80,$00,$00,$00
+  DEFB $00,$03,$80,$00,$00,$00
+  DEFB $00,$01,$C0,$00,$00,$00
+  DEFB $00,$00,$C0,$00,$00,$00
+  DEFB $00,$00,$C0,$00,$00,$00
+
+; AlienFrame1
+;
+; Alien body frame 1 (phase 1).
+AlienFrame1:
+  DEFB $00,$00,$00,$3E,$00,$00
+  DEFB $00,$00,$00,$7F,$00,$00
+  DEFB $00,$00,$00,$FF,$80,$00
+  DEFB $02,$00,$39,$FE,$80,$00
+  DEFB $04,$00,$7D,$FF,$80,$00
+  DEFB $0F,$FF,$EB,$FB,$80,$00
+  DEFB $0F,$FF,$63,$F7,$1C,$00
+  DEFB $0F,$FF,$67,$F4,$3E,$00
+  DEFB $05,$FF,$67,$F8,$3E,$00
+  DEFB $06,$07,$67,$B0,$76,$00
+  DEFB $07,$80,$37,$DC,$62,$00
+  DEFB $07,$00,$2F,$F2,$EC,$00
+  DEFB $07,$80,$0F,$E9,$DE,$00
+  DEFB $07,$00,$0F,$EB,$B9,$00
+  DEFB $07,$80,$0F,$D7,$77,$00
+  DEFB $07,$00,$07,$AE,$EF,$80
+  DEFB $07,$80,$08,$6C,$1F,$80
+  DEFB $07,$78,$07,$AC,$6F,$C0
+  DEFB $07,$7E,$00,$57,$C7,$E0
+  DEFB $07,$BF,$87,$B8,$43,$E0
+  DEFB $03,$DF,$E7,$6F,$C3,$F4
+  DEFB $02,$EF,$F8,$B0,$81,$F4
+  DEFB $02,$B7,$F5,$EF,$00,$F8
+  DEFB $03,$97,$FB,$30,$80,$70
+  DEFB $03,$A7,$FC,$9F,$01,$F0
+  DEFB $03,$BF,$FC,$C0,$1C,$E0
+  DEFB $01,$5D,$FF,$2D,$FB,$E0
+  DEFB $01,$5E,$FF,$2D,$FB,$E0
+  DEFB $00,$AE,$7F,$F3,$F9,$C0
+  DEFB $00,$1E,$3F,$FF,$F7,$D0
+  DEFB $00,$3E,$0F,$FF,$F7,$B0
+  DEFB $00,$3E,$01,$FF,$E7,$70
+  DEFB $00,$3E,$18,$FF,$DE,$F0
+  DEFB $00,$3E,$38,$3E,$06,$F0
+  DEFB $00,$1E,$F7,$00,$35,$F0
+  DEFB $00,$1E,$CC,$00,$F9,$F0
+  DEFB $00,$1E,$34,$03,$59,$E0
+  DEFB $00,$5E,$D0,$05,$B3,$E0
+  DEFB $00,$DE,$40,$02,$E3,$C0
+  DEFB $01,$C1,$00,$05,$63,$C0
+  DEFB $03,$AF,$00,$0A,$A7,$C0
+  DEFB $0E,$4F,$00,$05,$27,$C0
+  DEFB $0D,$8A,$80,$00,$07,$C0
+  DEFB $1A,$0B,$80,$00,$03,$80
+  DEFB $1B,$0B,$80,$00,$04,$80
+  DEFB $34,$0F,$00,$00,$0F,$00
+  DEFB $36,$1F,$00,$00,$0F,$00
+  DEFB $3C,$1B,$00,$00,$05,$00
+  DEFB $34,$36,$00,$00,$0D,$00
+  DEFB $38,$7E,$00,$00,$0F,$80
+  DEFB $3C,$D6,$00,$00,$05,$C0
+  DEFB $38,$B4,$00,$00,$06,$E0
+  DEFB $3E,$00,$00,$00,$07,$E0
+  DEFB $1C,$00,$00,$00,$06,$A0
+  DEFB $1F,$00,$00,$00,$02,$C0
+  DEFB $0F,$C0,$00,$00,$00,$00
+  DEFB $07,$F8,$00,$00,$00,$00
+  DEFB $03,$FF,$80,$00,$00,$00
+  DEFB $00,$7F,$E0,$00,$00,$00
+  DEFB $00,$01,$F0,$00,$00,$00
+  DEFB $00,$00,$38,$00,$00,$00
+  DEFB $00,$00,$18,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00
+
+; AlienFrame2
+;
+; Alien body frame 2 (phase 2).
+AlienFrame2:
+  DEFB $00,$00,$00,$7C,$00,$00
+  DEFB $00,$00,$01,$FE,$00,$00
+  DEFB $00,$00,$03,$FF,$00,$00
+  DEFB $02,$00,$3B,$FD,$00,$00
+  DEFB $04,$00,$7B,$FB,$00,$00
+  DEFB $0F,$FF,$E7,$F7,$00,$00
+  DEFB $0F,$FF,$67,$F6,$1C,$00
+  DEFB $0F,$FF,$67,$F8,$3E,$00
+  DEFB $05,$FF,$67,$F0,$3E,$00
+  DEFB $06,$07,$67,$F0,$76,$00
+  DEFB $07,$80,$37,$DC,$62,$00
+  DEFB $07,$00,$2F,$E2,$EC,$00
+  DEFB $07,$80,$0F,$F1,$DE,$00
+  DEFB $07,$00,$0F,$F3,$B9,$00
+  DEFB $07,$80,$0F,$E7,$77,$00
+  DEFB $07,$00,$07,$D6,$EF,$80
+  DEFB $07,$80,$08,$34,$1F,$80
+  DEFB $07,$78,$07,$EC,$6F,$C0
+  DEFB $07,$7E,$03,$A7,$C7,$E0
+  DEFB $07,$BF,$84,$58,$43,$E0
+  DEFB $03,$DF,$E3,$AF,$C3,$F4
+  DEFB $02,$EF,$FB,$B0,$81,$F4
+  DEFB $02,$B7,$F4,$6F,$00,$F8
+  DEFB $03,$97,$FB,$30,$80,$70
+  DEFB $03,$A7,$FC,$9F,$01,$F0
+  DEFB $03,$BF,$FC,$C0,$1C,$E0
+  DEFB $01,$5D,$FF,$2D,$FB,$E0
+  DEFB $01,$5E,$FF,$F3,$F9,$C0
+  DEFB $00,$AE,$7F,$FF,$F7,$D0
+  DEFB $00,$1E,$3F,$FF,$F7,$B0
+  DEFB $00,$3E,$0F,$FF,$EF,$70
+  DEFB $00,$3E,$01,$FF,$96,$F0
+  DEFB $00,$3E,$18,$3E,$79,$F0
+  DEFB $00,$3E,$38,$01,$F9,$F0
+  DEFB $00,$1E,$F7,$06,$B1,$F0
+  DEFB $00,$1E,$CC,$0B,$61,$E0
+  DEFB $00,$1E,$34,$05,$C3,$E0
+  DEFB $00,$5E,$D0,$0A,$C3,$C0
+  DEFB $00,$DE,$40,$15,$43,$C0
+  DEFB $01,$C1,$00,$0A,$47,$C0
+  DEFB $03,$AF,$00,$00,$07,$C0
+  DEFB $0E,$4F,$00,$00,$07,$C0
+  DEFB $0D,$8A,$80,$00,$07,$C0
+  DEFB $1A,$0B,$80,$00,$03,$80
+  DEFB $1B,$0B,$80,$00,$04,$80
+  DEFB $34,$0F,$00,$00,$0F,$00
+  DEFB $36,$1F,$00,$00,$0F,$00
+  DEFB $3C,$1B,$00,$00,$05,$00
+  DEFB $34,$36,$00,$00,$0D,$00
+  DEFB $38,$7E,$00,$00,$0F,$80
+  DEFB $3C,$D6,$00,$00,$05,$C0
+  DEFB $38,$B4,$00,$00,$06,$E0
+  DEFB $3E,$00,$00,$00,$07,$E0
+  DEFB $1C,$00,$00,$00,$06,$A0
+  DEFB $1F,$00,$08,$00,$02,$C0
+  DEFB $0F,$80,$18,$00,$00,$00
+  DEFB $07,$F8,$F8,$00,$00,$00
+  DEFB $03,$FF,$F0,$00,$00,$00
+  DEFB $00,$FF,$C0,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00
+
+; AlienFrame3
+;
+; Alien body frame 3 (phase 3).
+AlienFrame3:
+  DEFB $00,$00,$00,$7C,$00,$00
+  DEFB $00,$00,$01,$FE,$00,$00
+  DEFB $00,$00,$03,$FF,$00,$00
+  DEFB $02,$00,$3B,$FF,$00,$00
+  DEFB $04,$00,$7B,$FF,$00,$00
+  DEFB $0F,$FF,$E7,$F9,$00,$00
+  DEFB $0F,$FF,$67,$F6,$1C,$00
+  DEFB $0F,$FF,$67,$F4,$3E,$00
+  DEFB $05,$FF,$67,$F8,$3E,$00
+  DEFB $06,$07,$67,$90,$76,$00
+  DEFB $07,$80,$2F,$EC,$62,$00
+  DEFB $07,$00,$2F,$F2,$EC,$00
+  DEFB $07,$80,$0F,$F1,$DE,$00
+  DEFB $07,$00,$0F,$E3,$B9,$00
+  DEFB $07,$80,$07,$D7,$77,$00
+  DEFB $07,$00,$08,$16,$EF,$80
+  DEFB $07,$80,$07,$EC,$1F,$80
+  DEFB $07,$78,$03,$CC,$6F,$C0
+  DEFB $07,$7E,$04,$27,$C7,$E0
+  DEFB $07,$BF,$85,$A8,$43,$E0
+  DEFB $03,$DF,$E5,$AF,$C3,$F4
+  DEFB $02,$EF,$FA,$50,$81,$F4
+  DEFB $02,$B7,$F3,$CF,$00,$F8
+  DEFB $03,$97,$F8,$30,$80,$70
+  DEFB $03,$A7,$FF,$9F,$01,$F0
+  DEFB $03,$BF,$FC,$C0,$18,$E0
+  DEFB $01,$5D,$FF,$2D,$F7,$C0
+  DEFB $01,$5E,$FF,$F3,$F3,$A0
+  DEFB $00,$AE,$7F,$FF,$EF,$70
+  DEFB $00,$1E,$3F,$FF,$CE,$F0
+  DEFB $00,$3E,$0F,$FF,$1D,$F0
+  DEFB $00,$3E,$01,$FC,$CB,$F0
+  DEFB $00,$3E,$18,$23,$E0,$F0
+  DEFB $00,$3E,$38,$1D,$61,$F0
+  DEFB $00,$1E,$F7,$06,$C1,$F0
+  DEFB $00,$1E,$CC,$1B,$C1,$E0
+  DEFB $00,$1E,$34,$25,$43,$E0
+  DEFB $00,$5E,$D0,$09,$43,$C0
+  DEFB $00,$DE,$40,$12,$43,$C0
+  DEFB $01,$C1,$00,$02,$07,$C0
+  DEFB $03,$AF,$00,$00,$07,$C0
+  DEFB $0E,$4F,$00,$00,$07,$C0
+  DEFB $0D,$8A,$80,$00,$07,$C0
+  DEFB $1A,$0B,$80,$00,$03,$80
+  DEFB $1B,$0B,$80,$00,$04,$80
+  DEFB $34,$0F,$00,$00,$0F,$00
+  DEFB $36,$1F,$00,$00,$0F,$00
+  DEFB $3C,$1B,$00,$00,$05,$00
+  DEFB $34,$36,$00,$00,$0D,$00
+  DEFB $38,$7E,$10,$00,$0F,$80
+  DEFB $3C,$D6,$30,$00,$05,$C0
+  DEFB $38,$B4,$30,$00,$06,$E0
+  DEFB $3E,$00,$60,$00,$07,$E0
+  DEFB $1E,$00,$E0,$00,$06,$A0
+  DEFB $1F,$83,$C0,$00,$02,$C0
+  DEFB $0F,$FF,$80,$00,$00,$00
+  DEFB $07,$FF,$00,$00,$00,$00
+  DEFB $01,$FC,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00
+
+; JonesFrame0
+;
+; Jones the cat frame 0 (phase 0). 21 rows x 3 bytes, XOR-blitted.
+JonesFrame0:
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $30,$00,$00
+  DEFB $18,$00,$00
+  DEFB $0C,$00,$00
+  DEFB $06,$00,$40
+  DEFB $03,$E0,$E0
+  DEFB $03,$FF,$F0
+  DEFB $03,$FF,$F0
+  DEFB $03,$FF,$C0
+  DEFB $07,$BF,$C0
+  DEFB $1F,$0F,$E8
+  DEFB $34,$00,$74
+  DEFB $20,$00,$18
+  DEFB $00,$00,$0C
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00
+
+; JonesFrame1
+;
+; Jones the cat frame 1 (phase 1). 21 rows x 3 bytes, XOR-blitted.
+JonesFrame1:
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $60,$00,$00
+  DEFB $3C,$00,$10
+  DEFB $07,$F8,$38
+  DEFB $01,$FE,$FC
+  DEFB $00,$FF,$FC
+  DEFB $01,$FF,$F0
+  DEFB $01,$FF,$E0
+  DEFB $01,$E7,$C0
+  DEFB $01,$80,$C0
+  DEFB $01,$80,$C0
+  DEFB $00,$C0,$C0
+  DEFB $00,$C0,$E0
+  DEFB $00,$00,$60
+  DEFB $00
+
+; JonesFrame2
+;
+; Jones the cat frame 2 (phase 2). 21 rows x 3 bytes, XOR-blitted.
+JonesFrame2:
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$10
+  DEFB $80,$00,$38
+  DEFB $E1,$E0,$FC
+  DEFB $3F,$FF,$FC
+  DEFB $07,$FF,$F0
+  DEFB $03,$FF,$E0
+  DEFB $01,$FF,$E0
+  DEFB $00,$F6,$C0
+  DEFB $00,$F0,$C0
+  DEFB $00,$60,$C0
+  DEFB $00,$31,$80
+  DEFB $00,$1D,$80
+  DEFB $00
+
+; JonesFrame3
+;
+; Jones the cat frame 3 (phase 3). 21 rows x 3 bytes, XOR-blitted.
+JonesFrame3:
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$04
+  DEFB $00,$00,$0E
+  DEFB $00,$00,$7F
+  DEFB $00,$0F,$FF
+  DEFB $20,$FF,$F0
+  DEFB $1F,$FF,$F0
+  DEFB $0E,$7F,$F8
+  DEFB $00,$FF,$3C
+  DEFB $00,$F8,$14
+  DEFB $01,$E0,$18
+  DEFB $01,$80,$18
+  DEFB $01,$80,$30
+  DEFB $01,$80,$00
+  DEFB $00,$C0,$00
+  DEFB $00
+
+; JonesFrame4
+;
+; Jones the cat frame 4 (phase 4). 21 rows x 3 bytes, XOR-blitted.
+JonesFrame4:
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $00,$00,$00
+  DEFB $38,$00,$08
+  DEFB $0E,$00,$1C
+  DEFB $03,$FF,$FE
+  DEFB $00,$FF,$FE
+  DEFB $00,$FF,$E0
+  DEFB $00,$FF,$E0
+  DEFB $03,$F7,$F0
+  DEFB $03,$E0,$7C
+  DEFB $03,$00,$36
+  DEFB $06,$00,$30
+  DEFB $04,$00,$18
+  DEFB $04,$00,$08
+  DEFB $00,$00,$00
+  DEFB $00
+; Padding / unused.
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+
 ; IntroTileData
 ;
-; 8×8 pixel tile bitmaps for the game's extra-data area (EA60-$F5FF). The first
-; 8 tiles ($F1B0-$F22F, addresses 61936-61999) are blank padding. Tile graphics
-; used by DrawIntroScreen (DrawIntroScreen) start at Auto_F230 (Auto_F230):
-; tile index N maps to address Auto_F230 + N×8. The tile map at Auto_9E38
-; indexes into this set to build the 15×11 title-screen graphic. Subsequent
-; tiles (beyond the intro set) are used by other game screens and the ship map.
+; 8×8 pixel tile bitmaps for the game's extra-data area (AlienFrame0-$F5FF).
+; The first 8 tiles ($F1B0-$F22F, addresses 61936-61999) are blank padding.
+; Tile graphics used by DrawIntroScreen (DrawIntroScreen) start at Auto_F230
+; (Auto_F230): tile index N maps to address Auto_F230 + N×8. The tile map at
+; Auto_9E38 indexes into this set to build the 15×11 title-screen graphic.
+; Subsequent tiles (beyond the intro set) are used by other game screens and
+; the ship map.
 ;
 ; INTRO tile sheet — tiles starting at Auto_F230, 16 per row, 2× scale:
 ;
