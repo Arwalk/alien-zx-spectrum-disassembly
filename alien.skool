@@ -2454,26 +2454,39 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31716 CP 255        ;
  31718 JR NZ,31705   ;
  31720 RET           ;
+; SelectSlotByDrawIdx
+@ignoreua
+;
+; Re-points IX at the 8-byte record indexed by (#R31241) and loads the
+; slot's identity into (#R31242) for downstream lookups. Critically, if
+; the slot wears the HostMarker (byte+1 == $FF), the routine returns
+; immediately without writing #R31242 / #R31243 — every per-frame caller
+; that walks into this entry point therefore skips that slot during
+; routine corridor processing. In the Long Game this means the
+; chestburster host is excluded from normal crew handling; in the
+; Short Game the same exclusion applies to all four pre-stamped slots.
+;
 ; This entry point is used by the routine at #R35163.
-*31721 LD A,(31241)  ;
+@label=SelectSlotByDrawIdx
+*31721 LD A,(31241)  ; A = current draw index (slot 0..7)
  31724 ADD A,A       ;
  31725 ADD A,A       ;
- 31726 ADD A,A       ;
+ 31726 ADD A,A       ; A *= 8 (record stride)
  31727 LD E,A        ;
  31728 LD D,0        ;
- 31730 LD IX,29566   ;
- 31734 ADD IX,DE     ;
- 31736 LD A,(IX+1)   ;
- 31739 CP 255        ;
- 31741 RET Z         ;
- 31742 LD (31242),A  ;
- 31745 AND 63        ;
+ 31730 LD IX,29566   ; IX = $7376 (slot table base)
+ 31734 ADD IX,DE     ; IX = &slot[index]
+ 31736 LD A,(IX+1)   ; A = slot.byte+1
+ 31739 CP 255        ; HostMarker?
+ 31741 RET Z         ; yes → bail out (slot is not a normal crew member)
+ 31742 LD (31242),A  ; cache slot identity for the rest of the room handler
+ 31745 AND 63        ; mask off direction bit → raw crew ID (0..63)
  31747 LD E,A        ;
  31748 LD D,0        ;
  31750 LD HL,29905   ;
  31753 ADD HL,DE     ;
  31754 LD A,(HL)     ;
- 31755 LD (31243),A  ;
+ 31755 LD (31243),A  ; RoomTypeByte for this crew
  31758 RET           ;
 *31759 LD A,(31242)  ;
  31762 LD L,A        ;
@@ -8350,191 +8363,142 @@ c41264 LD HL,29570   ; HL → alien's current corridor index
  41354 RET Z         ;
  41355 SET 4,(HL)    ;
  41357 RET           ;
-@label=Auto_A18E
- 41358 INC BC        ;
- 41359 INC B         ;
- 41360 DEC B         ;
- 41361 ADD HL,BC     ;
- 41362 LD A,(BC)     ;
- 41363 DEC BC        ;
- 41364 DEC C         ;
- 41365 LD C,18       ;
- 41367 INC DE        ;
- 41368 INC D         ;
- 41369 INC D         ;
- 41370 LD D,24       ;
- 41372 ADD HL,DE     ;
- 41373 LD E,1        ;
- 41375 LD (BC),A     ;
- 41376 DEC B         ;
- 41377 LD BC,1282    ;
- 41380 LD BC,1282    ;
- 41383 LD BC,1282    ;
- 41386 LD BC,1282    ;
- 41389 LD (BC),A     ;
-@label=Auto_A1AE
- 41390 LD BC,1026    ;
- 41393 LD B,1        ;
- 41395 LD (BC),A     ;
- 41396 INC B         ;
- 41397 LD B,1        ;
- 41399 LD (BC),A     ;
- 41400 INC B         ;
- 41401 LD B,1        ;
- 41403 LD (BC),A     ;
- 41404 INC B         ;
- 41405 LD B,24       ;
- 41407 DEC D         ;
- 41408 INC D         ;
- 41409 LD B,6        ;
- 41411 DJNZ 41419    ;
- 41413 DJNZ 41442    ;
- 41415 LD DE,4882    ;
- 41418 JR NZ,41422   ;
- 41420 LD (BC),A     ;
- 41421 LD (BC),A     ;
-@label=Auto_A1CE
-*41422 JR 41447      ;
- 41424 RRA           ;
- 41425 INC D         ;
- 41426 RST 56        ;
- 41427 RST 56        ;
-@label=Auto_A1D4
- 41428 NOP           ;
- 41429 NOP           ;
- 41430 NOP           ;
- 41431 NOP           ;
- 41432 NOP           ;
- 41433 NOP           ;
- 41434 NOP           ;
- 41435 NOP           ;
- 41436 INC BC        ;
- 41437 INC BC        ;
- 41438 INC BC        ;
- 41439 INC BC        ;
- 41440 LD BC,2056    ;
- 41443 EX AF,AF'     ;
-@label=Auto_A1E4
- 41444 NOP           ;
- 41445 NOP           ;
- 41446 NOP           ;
-@label=Auto_A1E7
-*41447 NOP           ;
- 41448 NOP           ;
- 41449 NOP           ;
- 41450 NOP           ;
- 41451 NOP           ;
- 41452 NOP           ;
- 41453 LD B,0        ;
- 41455 NOP           ;
- 41456 LD B,4        ;
- 41458 INC B         ;
- 41459 NOP           ;
- 41460 NOP           ;
- 41461 LD B,0        ;
- 41463 NOP           ;
- 41464 DEC B         ;
- 41465 INC B         ;
- 41466 INC B         ;
- 41467 NOP           ;
- 41468 NOP           ;
- 41469 LD B,0        ;
- 41471 NOP           ;
- 41472 INC B         ;
- 41473 INC BC        ;
- 41474 INC BC        ;
- 41475 NOP           ;
- 41476 NOP           ;
- 41477 DEC DE        ;
- 41478 NOP           ;
- 41479 NOP           ;
- 41480 DEC B         ;
- 41481 INC B         ;
- 41482 INC B         ;
- 41483 NOP           ;
- 41484 NOP           ;
- 41485 DEC DE        ;
- 41486 NOP           ;
- 41487 NOP           ;
- 41488 LD B,4        ;
- 41490 INC B         ;
- 41491 NOP           ;
- 41492 NOP           ;
- 41493 DEC DE        ;
- 41494 NOP           ;
- 41495 NOP           ;
- 41496 LD B,4        ;
- 41498 INC B         ;
- 41499 NOP           ;
- 41500 NOP           ;
- 41501 NOP           ;
- 41502 NOP           ;
- 41503 NOP           ;
- 41504 DEC B         ;
- 41505 INC BC        ;
- 41506 INC BC        ;
- 41507 NOP           ;
-@label=Auto_A224
- 41508 NOP           ;
- 41509 NOP           ;
- 41510 NOP           ;
- 41511 NOP           ;
- 41512 NOP           ;
- 41513 NOP           ;
- 41514 NOP           ;
- 41515 NOP           ;
- 41516 NOP           ;
- 41517 RST 56        ;
- 41518 NOP           ;
- 41519 NOP           ;
- 41520 NOP           ;
- 41521 NOP           ;
- 41522 NOP           ;
- 41523 RST 56        ;
- 41524 NOP           ;
- 41525 RST 56        ;
- 41526 NOP           ;
- 41527 NOP           ;
- 41528 NOP           ;
- 41529 NOP           ;
- 41530 NOP           ;
- 41531 RST 56        ;
- 41532 NOP           ;
- 41533 LD B,6        ;
- 41535 NOP           ;
- 41536 INC B         ;
- 41537 INC BC        ;
- 41538 INC BC        ;
- 41539 NOP           ;
- 41540 NOP           ;
- 41541 RST 56        ;
- 41542 NOP           ;
- 41543 NOP           ;
- 41544 NOP           ;
- 41545 NOP           ;
- 41546 NOP           ;
- 41547 RST 56        ;
- 41548 NOP           ;
- 41549 LD B,6        ;
- 41551 NOP           ;
- 41552 INC B         ;
- 41553 INC BC        ;
- 41554 INC BC        ;
- 41555 NOP           ;
- 41556 NOP           ;
- 41557 LD B,0        ;
- 41559 NOP           ;
- 41560 LD B,4        ;
- 41562 INC B         ;
- 41563 NOP           ;
- 41564 NOP           ;
- 41565 RST 56        ;
- 41566 NOP           ;
- 41567 NOP           ;
- 41568 NOP           ;
- 41569 NOP           ;
- 41570 NOP           ;
- 41571 RST 56        ;
+
+; AlienInitTable
+@ignoreua
+;
+; 16-byte lookup table indexed by a ROM-script nibble (0-15) inside
+; CommonGameInit (#R42380). The looked-up value is ORed with $40
+; (direction flag, bit 6) and written to $737F (the alien slot's
+; identity/heading byte), randomising the alien's starting attributes.
+@label=AlienInitTable
+b41358 DEFB 3,4,5,9,10,11,13,14,18,19,20,20,22,24,25,30
+
+; LongGameHostSlotTable
+@ignoreua
+;
+; 16-byte lookup table indexed by a ROM-script nibble (0-15) inside
+; LongGameInit (#R42276). Selects which 8-byte record slot at #R29566
+; will be the **chestburster host** for this run — i.e. the crew
+; member whose name will be substituted into the opening status-bar
+; message #33 "Alien has hatched from {actor}" enqueued at #R42362.
+; The chosen slot has byte +1 and byte +7 overwritten with $FF (the
+; HostMarker pattern); that tag is what every "skip this slot during
+; normal corridor processing" check keys off (e.g. `CP 255` on byte +1
+; at #R31739 inside SelectSlotByDrawIdx). Values are restricted to
+; {1, 2, 5} so the host is always one of the alien-area slot 1 or the
+; crew slots 2 / 5.
+@label=LongGameHostSlotTable
+ 41374 DEFB 1,2,5,1,2,5,1,2,5,1,2,5,1,2,5,2
+
+; LongGameTargetTable
+@ignoreua
+;
+; 16-byte lookup table indexed by a ROM-script nibble (0-15) inside
+; LongGameInit (#R42276). Used to randomise #R33703 (AlienTargetID): the
+; selector loops until it picks a value different from the host slot
+; chosen via #R41374 (LongGameHostSlotTable), then stores the value
+; in AlienTargetID and uses it to compute the targeted crew's record
+; pointer at #R33701. Values are restricted to {1, 2, 4, 6}, so the
+; alien's first stalk target is always a different crew slot from the
+; one the alien hatched out of.
+@label=LongGameTargetTable
+ 41390 DEFB 1,2,4,6,1,2,4,6,1,2,4,6,1,2,4,6
+
+; CommonInit_AnimTable
+;
+; 22 bytes copied wholesale by CommonGameInit (#R42397) to #R29940
+; ($7434) — corridor / animation state for the new game session. The
+; final two bytes are $FF sentinels.
+@label=CommonInit_AnimTable
+ 41406 DEFB 24,21,20,6,6,16,3,16,24,17,18,19,32,2,2,2
+ 41422 DEFB 24,23,31,20,255,255
+
+; CommonInit_WorkspaceTable
+;
+; 16 bytes copied by CommonGameInit (#R42454) to #R33746 ($83D2): zeros
+; the Auto_83D2 area then writes 3,3,3,3,1,8,8,8 into Auto_83DA.
+@label=CommonInit_WorkspaceTable
+ 41428 DEFB 0,0,0,0,0,0,0,0,3,3,3,3,1,8,8,8
+
+; LongGameCrewInit
+@ignoreua
+;
+; 64-byte starting state (eight 8-byte records) copied by LongGameInit
+; (#R42276) into $7376-$73B5. Layout, with #R29566 ($7376) as record 0:
+;
+;   slot 0 ($7376): alien-slot header (all zero)
+;   slot 1 ($737E): alien gameplay slot proper
+;   slot 2 ($7386): crew[0]    \
+;   slot 3 ($738E): crew[1]     |
+;   slot 4 ($7396): crew[2]     |  Initial state for the 6 crew that
+;   slot 5 ($739E): crew[3]     |  share the 64-byte block. crew[6] at
+;   slot 6 ($73A6): crew[4]     |  $73B6 is initialised separately.
+;   slot 7 ($73AE): crew[5]    /
+;
+; Per-record byte layout (offsets inside each 8-byte record):
+;   +0 reserved (zero in both templates)
+;   +1 crew ID + direction flag (bit 6) — stamped to $FF by LongGameInit
+;      on the slot chosen via LongGameHostSlotTable (the HostMarker)
+;   +2 corridor position (0 = unplaced)
+;   +3 action state (0 = uninitialised)
+;   +4 attribute / colour byte: 6 = white, $1B = bright magenta, 0 = N/A
+;   +5 sprite X tile
+;   +6 sprite Y tile
+;   +7 alive flag — also stamped to $FF on the host slot
+;
+; All seven crew slots start with non-zero +4/+5/+6, so every crew
+; member is alive and placed when a Long Game begins. LongGameInit's
+; script-driven step at #R42313-#R42334 then marks one slot as the
+; chestburster host — the only crew whose +1 and +7 will hold $FF
+; after init.
+@label=LongGameCrewInit
+ 41444 DEFB 0,0,0,0,0,0,0,0      ; slot 0: alien header
+ 41452 DEFB 0,6,0,0,6,4,4,0      ; slot 1: alien gameplay slot
+ 41460 DEFB 0,6,0,0,5,4,4,0      ; slot 2 (crew[0])
+ 41468 DEFB 0,6,0,0,4,3,3,0      ; slot 3 (crew[1])
+ 41476 DEFB 0,27,0,0,5,4,4,0     ; slot 4 (crew[2])  — attr $1B
+ 41484 DEFB 0,27,0,0,6,4,4,0     ; slot 5 (crew[3])  — attr $1B
+ 41492 DEFB 0,27,0,0,6,4,4,0     ; slot 6 (crew[4])  — attr $1B
+ 41500 DEFB 0,0,0,0,5,3,3,0      ; slot 7 (crew[5])
+
+; ShortGameCrewInit
+@ignoreua
+;
+; 64-byte starting state (eight 8-byte records) copied by ShortGameInit
+; (#R44738) into $7376-$73B5. Same record layout as #R41444
+; (LongGameCrewInit) — see that block for field semantics.
+;
+; Slot occupancy comparison (ShortGameCrewInit vs LongGameCrewInit):
+;
+;   slot 0 (alien header)  : both all-zero
+;   slot 1 (alien gameplay): both placeholders, but Short has +1=$FF / +7=$FF
+;   slot 2 (crew[0])       : Short has +1=$FF / +7=$FF (HostMarker)
+;   slot 3 (crew[1])       : Short alive (+1=6, +4=4)
+;   slot 4 (crew[2])       : Short has +1=$FF / +7=$FF (HostMarker)
+;   slot 5 (crew[3])       : Short alive (+1=6, +4=4)
+;   slot 6 (crew[4])       : Short alive (+1=6, +4=6)
+;   slot 7 (crew[5])       : Short has +1=$FF / +7=$FF (HostMarker)
+;
+; The Short Game starts with FOUR slots already carrying the HostMarker
+; pattern that the Long Game applies to exactly one random slot. The
+; gameplay meaning of the marker here is "skip this slot in normal
+; crew processing" (whatever that means for the abbreviated scenario);
+; the marker doesn't literally mean four chestburster hosts. Combined
+; with the fixed #R33703 AlienTargetID=9 (which the alien-target guard
+; at #R41274 reads as "no valid target", so the alien never actively
+; hunts), the Short Game has only three "normal" crew members and no
+; alien-host subplot — whereas the Long Game uses script randomisation
+; to pick a single chestburster host plus the alien's first target.
+@label=ShortGameCrewInit
+ 41508 DEFB 0,0,0,0,0,0,0,0      ; slot 0: alien header
+ 41516 DEFB 0,255,0,0,0,0,0,255  ; slot 1: alien gameplay slot — tagged
+ 41524 DEFB 0,255,0,0,0,0,0,255  ; slot 2 (crew[0]) — tagged
+ 41532 DEFB 0,6,6,0,4,3,3,0      ; slot 3 (crew[1])
+ 41540 DEFB 0,255,0,0,0,0,0,255  ; slot 4 (crew[2]) — tagged
+ 41548 DEFB 0,6,6,0,4,3,3,0      ; slot 5 (crew[3])
+ 41556 DEFB 0,6,0,0,6,4,4,0      ; slot 6 (crew[4])
+ 41564 DEFB 0,255,0,0,0,0,0,255  ; slot 7 (crew[5]) — tagged
 @label=Auto_A264
  41572 LD C,L        ;
  41573 LD B,C        ;
@@ -9220,88 +9184,145 @@ c41264 LD HL,29570   ; HL → alien's current corridor index
 *42272 JR NZ,42349   ;
  42274 LD B,L        ;
  42275 LD E,C        ;
+
+; LongGameInit
+@ignoreua
+;
+; Game-mode handler for "2: Long Game" (dispatched from #R43135).
+;
+; The Long Game is the full-length scenario. All 7 crew start alive but
+; ONE of them is selected (via the ROM-traversal script, see #R33589
+; AdvanceScriptPtr) to be the **chestburster host** — the crew member
+; the alien physically hatches out of. That slot is marked by stamping
+; the HostMarker pattern ($FF on bytes +1 and +7 of its 8-byte record)
+; so per-frame routines like #R31721 (SelectSlotByDrawIdx) can skip it
+; with a `CP 255` test on byte +1. The host's name is also baked into
+; the opening status-bar message #33 enqueued at step 7 below.
+;
+; The script independently chooses the alien's initial stalk target, so
+; each Long Game has both a different host AND a different first victim.
+;
+; (Note: this is NOT the "android traitor" slot — the in-game Android
+; is a separate concept referenced by message #32 "{actor} hits the
+; Android", whose backing state has yet to be located in the disassembly.)
+;
+; Steps:
+;   1. Point the message queue head (Auto_83CD #R33741) at the queue base
+;      Auto_83B2 (#R33714) and clear the two run-state bytes #R33708/#R33709.
+;   2. CALL #R45222: reseed the script pointer from the ZX SEED system
+;      variable and reset the message-dup marker (Auto_83CF #R33743)
+;      to $FFFF.
+;   3. LDIR 64 bytes from #R41444 (LongGameCrewInit) into $7376 to populate
+;      the alien slot and the seven crew slots with the long-game starting
+;      state (all crew alive, normal alien position).
+;   4. Pull one script nibble, look it up in #R41374
+;      (LongGameHostSlotTable) to get the host slot index A_host
+;      (one of {1, 2, 5}), then stamp the HostMarker on that record by
+;      overwriting bytes +1 and +7 with $FF.
+;   5. Loop pulling more script nibbles, looking them up in #R41390
+;      (LongGameTargetTable), until the looked-up alien-target value
+;      A_target differs from A_host — guarantees the alien's first
+;      stalk target isn't the same slot it just hatched out of.
+;   6. Store A_target in #R33703 (AlienTargetID).
+;   7. Enqueue message #33 ("Alien has hatched from {actor}") via
+;      #R37176, with the host slot index as the actor parameter — this
+;      is the long game's opening narrative beat.
+;   8. Store &slot[A_target] in #R33701 (Auto_83A5) so subsequent code
+;      can access the alien's target crew record directly.
+;   9. Fall through into the common init at #R42380 (CommonGameInit).
+;
+; Used by the dispatcher at #R43134 via the table at #R43135.
 @nowarn=33714
 @label=LongGameInit
 @ssub=LD HL,Auto_83B2
-*42276 LD HL,33714   ;
+c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
 @nowarn=33741
 @ssub=LD (Auto_83CD),HL
- 42279 LD (33741),HL ;
- 42282 XOR A         ;
+ 42279 LD (33741),HL ; event queue head = queue base (empty queue)
+ 42282 XOR A         ; A = 0
 @nowarn=33709
 @ssub=LD (Auto_83AD),A
- 42283 LD (33709),A  ;
+ 42283 LD (33709),A  ; clear run-state byte #R33709
 @nowarn=33708
 @ssub=LD (Auto_83AC),A
- 42286 LD (33708),A  ;
- 42289 CALL 45222    ;
+ 42286 LD (33708),A  ; clear run-state byte #R33708
+ 42289 CALL 45222    ; reset message-dup marker + reseed script pointer
 @nowarn=41444
-@ssub=LD HL,Auto_A1E4
- 42292 LD HL,41444   ;
- 42295 LD DE,29566   ;
+@ssub=LD HL,LongGameCrewInit
+ 42292 LD HL,41444   ; HL = LongGameCrewInit ($A1E4)
+ 42295 LD DE,29566   ; DE = $7376 (alien slot + crew table base)
 @label=Auto_A53A
-*42298 LD BC,64      ;
+*42298 LD BC,64      ; 64 bytes = 8 × 8-byte records
 @label=Auto_A53D
-*42301 LDIR          ;
- 42303 CALL 33589    ;
+*42301 LDIR          ; copy long-game starting crew/alien state
+ 42303 CALL 33589    ; A = script nibble (0-15)
  42306 LD E,A        ;
  42307 LD D,0        ;
- 42309 LD HL,41374   ;
+@nowarn=41374
+@ssub=LD HL,LongGameHostSlotTable
+ 42309 LD HL,41374   ; HL = LongGameHostSlotTable ($A19E)
  42312 ADD HL,DE     ;
- 42313 LD A,(HL)     ;
- 42314 PUSH AF       ;
+ 42313 LD A,(HL)     ; A_host = chestburster-host slot index for this run
+ 42314 PUSH AF       ; stash A_host
  42315 ADD A,A       ;
  42316 ADD A,A       ;
- 42317 ADD A,A       ;
+ 42317 ADD A,A       ; A_host × 8 (record stride)
  42318 LD E,A        ;
  42319 LD HL,29566   ;
- 42322 ADD HL,DE     ;
- 42323 INC HL        ;
+ 42322 ADD HL,DE     ; HL = &slot[A_host]
+ 42323 INC HL        ; HL = &slot[A_host] + 1 (crew ID byte)
  42324 LD A,(HL)     ;
- 42325 LD (29623),A  ;
- 42328 LD (HL),255   ;
+ 42325 LD (29623),A  ; save original ID at #R29623 (never read; effectively scratch)
+ 42328 LD (HL),255   ; stamp HostMarker: slot[A_host].byte+1 = $FF
  42330 LD DE,6       ;
- 42333 ADD HL,DE     ;
- 42334 LD (HL),255   ;
-@label=Auto_A560
-*42336 CALL 33589    ;
+ 42333 ADD HL,DE     ; HL = &slot[A_host] + 7 (alive flag)
+ 42334 LD (HL),255   ; stamp HostMarker: slot[A_host].byte+7 = $FF
+@label=PickAlienTargetLoop
+*42336 CALL 33589    ; A = next script nibble
 @nowarn=41390
-@ssub=LD HL,Auto_A1AE
- 42339 LD HL,41390   ;
+@ssub=LD HL,LongGameTargetTable
+ 42339 LD HL,41390   ; HL = LongGameTargetTable ($A1AE)
  42342 LD E,A        ;
  42343 LD D,0        ;
  42345 ADD HL,DE     ;
- 42346 LD C,(HL)     ;
- 42347 POP AF        ;
+ 42346 LD C,(HL)     ; C = candidate alien-target index
+ 42347 POP AF        ; A = A_host
  42348 CP C          ;
 @label=Auto_A56D
-*42349 JR NZ,42354   ;
+*42349 JR NZ,42354   ; if C != A_host → accept
  42351 PUSH AF       ;
 @label=Auto_A570
-*42352 JR 42336      ;
+*42352 JR 42336      ; else: pull another nibble (avoid colliding with host)
 @nowarn=33703
-@label=Auto_A572
+@label=StoreAlienTarget
 @ssub=LD HL,AlienTargetID
-*42354 LD HL,33703   ;
+*42354 LD HL,33703   ; HL = &AlienTargetID
 @label=Auto_A575
-*42357 LD (HL),C     ;
+*42357 LD (HL),C     ; AlienTargetID = C (randomised)
  42358 PUSH BC       ;
- 42359 LD L,A        ;
- 42360 LD A,33       ;
- 42362 CALL 37176    ;
+ 42359 LD L,A        ; L = A_host (actor param for message)
+ 42360 LD A,33       ; A = 33 → message "Alien has hatched from {actor}"
+ 42362 CALL 37176    ; enqueue opening narrative naming the host
 @label=Auto_A57D
 *42365 POP BC        ;
- 42366 LD A,C        ;
+ 42366 LD A,C        ; A = AlienTargetID
  42367 ADD A,A       ;
  42368 ADD A,A       ;
- 42369 ADD A,A       ;
+ 42369 ADD A,A       ; A × 8
  42370 LD E,A        ;
  42371 LD D,0        ;
  42373 LD HL,29566   ;
- 42376 ADD HL,DE     ;
- 42377 LD (33701),HL ;
+ 42376 ADD HL,DE     ; HL = &slot[AlienTargetID]
+ 42377 LD (33701),HL ; store alien-target record pointer at Auto_83A5
 ; This entry point is used by the routine at #R44561.
-@label=Auto_A58C
+@ignoreua
+; CommonGameInit: shared post-init for both Short and Long modes. Called
+; (via JP) from #R44767 (ShortGameInit) and fallen into from #R42276
+; (LongGameInit). Resets the alien runtime state, seeds the crew workspace
+; tables, clears the corridor cursor at #R30076, picks the initial alien
+; event timer from the script, and switches the room mode to 1 (corridor
+; view) so the player drops straight into gameplay.
+@label=CommonGameInit
 *42380 XOR A         ;
 @nowarn=33704
 @ssub=LD (AlienActiveFlag),A
@@ -9317,10 +9338,12 @@ c41264 LD HL,29570   ; HL → alien's current corridor index
 @nowarn=39753
 @ssub=LD (JonesPhase),A
  42394 LD (39753),A  ;
- 42397 LD HL,41406   ;
- 42400 LD DE,29940   ;
+@nowarn=41406
+@ssub=LD HL,CommonInit_AnimTable
+ 42397 LD HL,41406   ; HL = CommonInit_AnimTable ($A1BE)
+ 42400 LD DE,29940   ; DE = $7434 (anim state target)
  42403 LD BC,22      ;
- 42406 LDIR          ;
+ 42406 LDIR          ; copy 22-byte anim state
  42408 LD B,33       ;
  42410 LD HL,30076   ;
  42413 LD A,255      ;
@@ -9343,15 +9366,15 @@ c41264 LD HL,29570   ; HL → alien's current corridor index
  42441 LD E,A        ;
  42442 LD D,0        ;
 @nowarn=41358
-@ssub=LD HL,Auto_A18E
- 42444 LD HL,41358   ;
+@ssub=LD HL,AlienInitTable
+ 42444 LD HL,41358   ; HL = AlienInitTable ($A18E)
  42447 ADD HL,DE     ;
- 42448 LD A,(HL)     ;
- 42449 OR 64         ;
- 42451 LD (29567),A  ;
+ 42448 LD A,(HL)     ; A = AlienInitTable[script_byte]
+ 42449 OR 64         ; set direction bit (bit 6)
+ 42451 LD (29567),A  ; alien slot's ID/heading byte ($737F)
 @nowarn=41428
-@ssub=LD HL,Auto_A1D4
- 42454 LD HL,41428   ;
+@ssub=LD HL,CommonInit_WorkspaceTable
+ 42454 LD HL,41428   ; HL = CommonInit_WorkspaceTable ($A1D4)
 @nowarn=33746
 @ssub=LD DE,Auto_83D2
  42457 LD DE,33746   ;
@@ -9802,9 +9825,61 @@ c42821 LD A,4        ; A = 4 (green border)
 ; JP (HL) at #R43134 lands here; the word for the current selection
 ; is loaded into HL and jumped to.
 ;
-;   Mode 0 — Short Game   → #R44738
-;   Mode 1 — Long Game    → #R42276
-;   Mode 2 — Introduction → #R43242
+;   Mode 0 — Short Game   → #R44738 (ShortGameInit)
+;   Mode 1 — Long Game    → #R42276 (LongGameInit)
+;   Mode 2 — Introduction → #R43242 (IntroductionMode)
+;
+; Short vs Long Game summary (see the two init routines for full detail):
+;
+;   AlienTargetID (#R33703):
+;     - Short Game = 9, hard-wired at #R44751. Crucially, this is >= 8,
+;       which the alien-event guard at #R41274 (TriggerAlienEvent's "CP 8
+;       / RET NC") treats as "no valid target" — so the alien's targeted-
+;       stalk logic is effectively disabled in Short Game and the alien
+;       just roams.
+;     - Long Game  = random pick from #R41390 (LongGameTargetTable, values
+;                    in {1, 2, 4, 6}) at #R42357. Always < 8, so the alien
+;                    actively hunts the chosen crew member.
+;
+;   Chestburster host slot (HostMarker = byte+1=$FF, byte+7=$FF):
+;     - Long Game  = exactly ONE slot, picked randomly via
+;                    #R41374 (LongGameHostSlotTable, values {1,2,5}).
+;                    That crew is the chestburster host — message #33
+;                    enqueued at startup ("Alien has hatched from
+;                    {actor}") substitutes this crew's name in.
+;     - Short Game = FOUR pre-stamped slots (1, 2, 4, 7) in the template.
+;                    Here the marker means "skip in normal crew
+;                    processing" — the abbreviated scenario simply runs
+;                    with 3 active crew members and no host subplot.
+;
+; (The in-game "Android" referenced by message #32 "{actor} hits the
+; Android" is a separate concept whose backing state has not yet been
+; located in the disassembly.)
+;
+;   Starting crew/alien record state at $7376:
+;     - Short Game = #R41508 (ShortGameCrewInit) — four slots pre-stamped
+;                    with the HostMarker, yielding a smaller "active"
+;                    starting cast
+;     - Long Game  = #R41444 (LongGameCrewInit) — every slot starts with
+;                    normal (non-$FF) data; LongGameInit then picks ONE
+;                    slot via #R41374 (LongGameHostSlotTable, values
+;                    in {1, 2, 5}) and stamps the HostMarker on that
+;                    record's bytes +1 and +7
+;
+;   Script-driven startup message:
+;     - Short Game does not enqueue any startup message
+;     - Long Game enqueues message #33 ("Alien has hatched from {actor}")
+;       carrying the host slot index via #R37176 — the long game's
+;       opening narrative beat naming the chestburster host
+;
+; Both modes then fall through to #R42380 (CommonGameInit), which
+; finishes the per-session setup identically (alien position, animation
+; tables, room mode = 1 corridor view).
+;
+; In short: the Short Game is a deterministic, abbreviated scenario; the
+; Long Game uses the ROM-traversal script (#R33589) to randomise both
+; the alien's first target and one tagged crew slot per run, producing a
+; longer and more varied game.
 @label=GameModeDispatchTable
 w43135 DEFW 44738,42276,43242
 
@@ -10737,31 +10812,59 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
 @ssub=LD (Auto_9E37),A
  44734 LD (40503),A  ;
  44737 RET           ;
+
+; ShortGameInit
+@ignoreua
+;
+; Game-mode handler for "1: Short Game" (dispatched from #R43135).
+;
+; The Short Game is the abbreviated scenario. Several slots in the
+; starting template (#R41508 ShortGameCrewInit) are pre-stamped with the
+; HostMarker pattern ($FF on bytes +1 and +7) and the alien's first
+; target is hard-wired to crew ID 9 — a value the alien-targeting guard
+; at #R41274 treats as "no valid target", so the alien's stalk-the-host
+; logic is effectively disabled. No script-driven randomisation runs.
+; Every Short Game opens from exactly the same configuration, which is
+; what makes it shorter and more deterministic than the Long Game.
+;
+; Steps:
+;   1. Clear the two run-state bytes at #R33708 / #R33709.
+;   2. Point the message queue head (Auto_83CD #R33741) at the queue
+;      base Auto_83B2 (#R33714).
+;   3. Hard-wire #R33703 (AlienTargetID) = 9 — disables alien hunt logic.
+;   4. LDIR 64 bytes from #R41508 (ShortGameCrewInit) into $7376 to populate
+;      the alien slot and the seven crew slots with the short-game starting
+;      state (four slots wear the HostMarker so they're skipped by normal
+;      crew processing, leaving the alien header plus three active crew).
+;   5. JP into the shared common init at #R42380 (CommonGameInit) — skipping
+;      the Long Game's script-driven host selection and target picking.
+;
+; Used by the dispatcher at #R43134 via the table at #R43135.
 @label=ShortGameInit
-*44738 XOR A         ;
+c44738 XOR A         ; A = 0
 @nowarn=33708
 @ssub=LD (Auto_83AC),A
- 44739 LD (33708),A  ;
+ 44739 LD (33708),A  ; clear run-state byte #R33708
 @nowarn=33709
 @ssub=LD (Auto_83AD),A
- 44742 LD (33709),A  ;
+ 44742 LD (33709),A  ; clear run-state byte #R33709
 @nowarn=33714
 @ssub=LD HL,Auto_83B2
- 44745 LD HL,33714   ;
+ 44745 LD HL,33714   ; HL = Auto_83B2 (event queue base)
 @nowarn=33741
 @ssub=LD (Auto_83CD),HL
- 44748 LD (33741),HL ;
- 44751 LD A,9        ;
+ 44748 LD (33741),HL ; event queue head = queue base (empty queue)
+ 44751 LD A,9        ; A = 9 (fixed Short Game alien target)
 @nowarn=33703
 @ssub=LD (AlienTargetID),A
- 44753 LD (33703),A  ;
+ 44753 LD (33703),A  ; AlienTargetID = 9 — no randomisation
 @nowarn=41508
-@ssub=LD HL,Auto_A224
- 44756 LD HL,41508   ;
- 44759 LD DE,29566   ;
- 44762 LD BC,64      ;
- 44765 LDIR          ;
- 44767 JP 42380      ;
+@ssub=LD HL,ShortGameCrewInit
+ 44756 LD HL,41508   ; HL = ShortGameCrewInit ($A224)
+ 44759 LD DE,29566   ; DE = $7376 (alien slot + crew table base)
+ 44762 LD BC,64      ; 64 bytes = 8 × 8-byte records
+ 44765 LDIR          ; copy short-game starting crew/alien state
+ 44767 JP 42380      ; → CommonGameInit (skip Long Game randomisation)
 @label=Auto_AEE2
  44770 LD D,B        ;
  44771 LD D,D        ;
