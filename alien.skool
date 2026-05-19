@@ -1468,9 +1468,12 @@ w26861 DEFW 26637,26673,26709,26745
 ; CharTileBitmaps
 ;
 ; Master 8×8 pixel tileset used by DrawSpriteRow (#R31369) for all corridor
-; and room graphics. 169 tiles × 8 bytes each (one byte per pixel row).
-; Tile N starts at #R26869 + N×8. Referenced by DrawSprite (#R31634) which
-; looks up 10 tile indices per sprite from the sprite table at #R28221 (#R28221).
+; and room graphics. 169 tiles × 8 bytes each (one byte per pixel row). The
+; first 128 tiles are arranged so that tile N is the glyph for ASCII code N,
+; which lets DrawSprite (#R31634) render the 10-character text labels stored
+; in #R28221 (RoomNameTable / UIStringTable) by treating each ASCII byte as
+; a tile index. Tiles 128+ are non-text graphics (sprites, arrows, etc.).
+; Tile N starts at #R26869 + N×8.
 ;
 ; Sprite sheet — 16 tiles per row, 2× scale:
 ;
@@ -1646,127 +1649,121 @@ b26869 DEFB 0,0,0,0,0,0,0,0
  28205 DEFB 0,0,0,0,1,1,3,7
  28213 DEFB 252,252,240,240,224,224,192,192
 
-; Data block at #R28221
+; RoomNameTable / UIStringTable
+;
+; 95-entry × 10-byte text table. DrawSprite (#R31634) reads 10 bytes starting
+; at (#R28221 + N×10) and renders them as a 10-character label by blitting the
+; CharBitmaps (#R26869) glyph for each byte — i.e. the ASCII text *is* the
+; "sprite data". Indices 0–46 are #R28221 (room / item / deck names); indices
+; 47–94 are #R28691 (UI / menu / action labels).
+;
+; Entries 57–60 embed the four cursor-arrow UDG codes ($8A–$8D) inside the
+; otherwise-ASCII text.
 @label=RoomNameTable
-b28221 DEFB 65,105,114,108,111,99,107,32
- 28229 DEFB 35,49,65,105,114,108,111,99
- 28237 DEFB 107,32,35,50,65,114,109,111
- 28245 DEFB 117,114,121,32,32,32,67,97
- 28253 DEFB 114,103,111,112,111,100,35,49
- 28261 DEFB 67,97,114,103,111,112,111,100
- 28269 DEFB 35,50,67,97,114,103,111,112
- 28277 DEFB 111,100,35,51,67,111,109,109
- 28285 DEFB 100,67,101,110,116,114,67,111
- 28293 DEFB 109,112,117,116,101,114,32,32
- 28301 DEFB 67,111,114,114,105,100,111,114
- 28309 DEFB 35,49,67,111,114,114,105,100
- 28317 DEFB 111,114,35,50,67,111,114,114
- 28325 DEFB 105,100,111,114,35,51,67,111
- 28333 DEFB 114,114,105,100,111,114,35,52
- 28341 DEFB 67,111,114,114,105,100,111,114
- 28349 DEFB 35,53,67,111,114,114,105,100
- 28357 DEFB 111,114,35,54,67,111,114,114
- 28365 DEFB 105,100,111,114,35,55,67,114
- 28373 DEFB 121,111,32,86,97,117,108,116
- 28381 DEFB 69,110,103,105,110,101,101,114
- 28389 DEFB 110,103,69,110,103,105,110,101
- 28397 DEFB 32,35,49,32,69,110,103,105
- 28405 DEFB 110,101,32,35,50,32,69,110
- 28413 DEFB 103,105,110,101,32,35,51,32
- 28421 DEFB 69,110,103,32,83,116,111,114
- 28429 DEFB 101,115,73,110,102,105,114,109
- 28437 DEFB 97,114,121,32,73,110,102,32
- 28445 DEFB 83,116,111,114,101,115,76,97
- 28453 DEFB 98,111,114,97,116,111,114,121
- 28461 DEFB 76,97,98,32,83,116,111,114
- 28469 DEFB 101,115,76,105,102,101,32,83
- 28477 DEFB 117,112,112,116,76,105,118,110
- 28485 DEFB 103,32,81,116,114,115,77,101
- 28493 DEFB 115,115,32,32,32,32,32,32
- 28501 DEFB 82,101,99,114,116,110,65,114
- 28509 DEFB 101,97,83,116,111,114,101,115
- 28517 DEFB 32,35,49,32,83,116,111,114
- 28525 DEFB 101,115,32,35,50,32,83,116
- 28533 DEFB 111,114,101,115,32,35,51,32
- 28541 DEFB 83,104,117,116,116,108,101,66
- 28549 DEFB 97,121,83,104,116,116,108,115
- 28557 DEFB 116,111,114,101,78,97,114,99
- 28565 DEFB 105,115,115,117,115,32,69,108
- 28573 DEFB 99,116,114,99,32,80,114,100
- 28581 DEFB 73,110,99,105,110,101,114,97
- 28589 DEFB 116,114,84,114,97,99,107,101
- 28597 DEFB 114,32,32,32,70,105,114,101
- 28605 DEFB 32,69,120,116,110,103,72,97
- 28613 DEFB 114,112,110,32,71,117,110,32
- 28621 DEFB 76,97,115,101,114,32,80,105
- 28629 DEFB 115,116,78,101,116,32,32,32
- 28637 DEFB 32,32,32,32,67,97,116,32
- 28645 DEFB 66,111,120,32,32,32,83,112
- 28653 DEFB 97,110,110,101,114,32,32,32
- 28661 DEFB 85,112,112,101,114,32,68,101
- 28669 DEFB 99,107,77,105,100,100,108,101
- 28677 DEFB 68,101,99,107,76,111,119,101
- 28685 DEFB 114,32,68,101,99,107,71,101
- 28693 DEFB 116,32,73,116,101,109,32,32
- 28701 DEFB 76,101,97,118,101,32,73,116
- 28709 DEFB 101,109,82,109,118,101,71,114
- 28717 DEFB 105,108,108,101,71,114,105,108
- 28725 DEFB 108,101,32,32,32,32,71,101
- 28733 DEFB 116,32,74,111,110,101,115,32
- 28741 DEFB 32,32,65,84,84,65,67,75
- 28749 DEFB 32,32,66,108,111,119,76,111
- 28757 DEFB 99,107,35,49,66,108,111,119
- 28765 DEFB 76,111,99,107,35,50,83,101
- 28773 DEFB 97,108,76,111,99,107,35,49
- 28781 DEFB 83,101,97,108,76,111,99,107
- 28789 DEFB 35,50,78,111,114,116,104,32
- 28797 DEFB 138,32,32,32,69,97,115,116
- 28805 DEFB 32,32,139,32,32,32,83,111
- 28813 DEFB 117,116,104,32,140,32,32,32
- 28821 DEFB 87,101,115,116,32,32,141,32
- 28829 DEFB 32,32,32,32,32,81,85,73
- 28837 DEFB 84,32,32,32,79,116,104,101
- 28845 DEFB 114,32,76,105,115,116,65,71
- 28853 DEFB 70,58,80,82,79,84,69,75
- 28861 DEFB 32,75,69,77,80,83,84,79
- 28869 DEFB 78,32,32,75,69,89,66,79
- 28877 DEFB 65,82,68,32,32,83,73,78
- 28885 DEFB 67,76,65,73,82,32,32,32
- 28893 DEFB 70,85,76,76,69,82,32,32
- 28901 DEFB 67,97,116,32,105,110,32,78
- 28909 DEFB 101,116,67,97,116,32,105,110
- 28917 DEFB 32,66,111,120,32,83,99,117
- 28925 DEFB 116,116,108,101,32,32,32,78
- 28933 DEFB 111,115,116,114,111,109,111,32
- 28941 DEFB 32,79,118,101,114,114,105,100
- 28949 DEFB 101,32,32,68,101,115,116,114
- 28957 DEFB 117,99,116,32,32,32,69,110
- 28965 DEFB 116,101,114,32,32,32,72,121
- 28973 DEFB 112,101,114,115,108,101,101,112
- 28981 DEFB 32,70,105,103,104,116,32,32
- 28989 DEFB 32,32,32,32,70,105,114,101
- 28997 DEFB 32,32,32,32,32,32,76,97
- 29005 DEFB 117,110,99,104,32,32,32,73
- 29013 DEFB 110,100,105,99,97,116,101,32
- 29021 DEFB 32,76,111,99,97,116,105,111
- 29029 DEFB 110,32,78,97,114,99,105,115
- 29037 DEFB 115,117,115,32,32,67,79,78
- 29045 DEFB 84,82,79,76,32,32,79,114
- 29053 DEFB 100,101,114,58,32,32,32,32
- 29061 DEFB 32,68,105,115,112,108,97,121
- 29069 DEFB 32,32,32,32,76,101,118,101
- 29077 DEFB 108,32,32,32,109,111,118,101
- 29085 DEFB 32,116,111,58,32,32,32,117
- 29093 DEFB 115,101,58,32,32,32,32,32
- 29101 DEFB 83,112,101,99,105,97,108,32
- 29109 DEFB 32,32,68,97,109,97,103,101
- 29117 DEFB 32,32,32,32,32,105,110,32
- 29125 DEFB 112,108,97,99,101,32,32,114
- 29133 DEFB 101,109,111,118,101,100,32,32
- 29141 DEFB 32,32,32,32,32,32,32,32
- 29149 DEFB 32,32,73,110,32,68,117,99
- 29157 DEFB 116,32,32,32,66,111,100,121
- 29165 DEFB 32,111,102,32,32,32,13,13
+t28221 DEFM "Airlock #1"     ;  0
+ 28231 DEFM "Airlock #2"     ;  1
+ 28241 DEFM "Armoury   "     ;  2
+ 28251 DEFM "Cargopod#1"     ;  3
+ 28261 DEFM "Cargopod#2"     ;  4
+ 28271 DEFM "Cargopod#3"     ;  5
+ 28281 DEFM "CommdCentr"     ;  6
+ 28291 DEFM "Computer  "     ;  7
+ 28301 DEFM "Corridor#1"     ;  8
+ 28311 DEFM "Corridor#2"     ;  9
+ 28321 DEFM "Corridor#3"     ; 10
+ 28331 DEFM "Corridor#4"     ; 11
+ 28341 DEFM "Corridor#5"     ; 12
+ 28351 DEFM "Corridor#6"     ; 13
+ 28361 DEFM "Corridor#7"     ; 14
+ 28371 DEFM "Cryo Vault"     ; 15
+ 28381 DEFM "Engineerng"     ; 16
+ 28391 DEFM "Engine #1 "     ; 17
+ 28401 DEFM "Engine #2 "     ; 18
+ 28411 DEFM "Engine #3 "     ; 19
+ 28421 DEFM "Eng Stores"     ; 20
+ 28431 DEFM "Infirmary "     ; 21
+ 28441 DEFM "Inf Stores"     ; 22
+ 28451 DEFM "Laboratory"     ; 23
+ 28461 DEFM "Lab Stores"     ; 24
+ 28471 DEFM "Life Suppt"     ; 25
+ 28481 DEFM "Livng Qtrs"     ; 26
+ 28491 DEFM "Mess      "     ; 27
+ 28501 DEFM "RecrtnArea"     ; 28
+ 28511 DEFM "Stores #1 "     ; 29
+ 28521 DEFM "Stores #2 "     ; 30
+ 28531 DEFM "Stores #3 "     ; 31
+ 28541 DEFM "ShuttleBay"     ; 32
+ 28551 DEFM "Shttlstore"     ; 33
+ 28561 DEFM "Narcissus "     ; 34
+ 28571 DEFM "Elctrc Prd"     ; 35
+ 28581 DEFM "Incineratr"     ; 36
+ 28591 DEFM "Tracker   "     ; 37
+ 28601 DEFM "Fire Extng"     ; 38
+ 28611 DEFM "Harpn Gun "     ; 39
+ 28621 DEFM "Laser Pist"     ; 40
+ 28631 DEFM "Net       "     ; 41
+ 28641 DEFM "Cat Box   "     ; 42
+ 28651 DEFM "Spanner   "     ; 43
+ 28661 DEFM "Upper Deck"     ; 44
+ 28671 DEFM "MiddleDeck"     ; 45
+ 28681 DEFM "Lower Deck"     ; 46
+@label=UIStringTable
+ 28691 DEFM "Get Item  "     ; 47
+ 28701 DEFM "Leave Item"     ; 48
+ 28711 DEFM "RmveGrille"     ; 49
+ 28721 DEFM "Grille    "     ; 50
+ 28731 DEFM "Get Jones "     ; 51
+ 28741 DEFM "  ATTACK  "     ; 52
+ 28751 DEFM "BlowLock#1"     ; 53
+ 28761 DEFM "BlowLock#2"     ; 54
+ 28771 DEFM "SealLock#1"     ; 55
+ 28781 DEFM "SealLock#2"     ; 56
+ 28791 DEFM "North ",138,"   " ; 57 (138 = up arrow UDG)
+ 28801 DEFM "East  ",139,"   " ; 58 (139 = right arrow UDG)
+ 28811 DEFM "South ",140,"   " ; 59 (140 = down arrow UDG)
+ 28821 DEFM "West  ",141,"   " ; 60 (141 = left arrow UDG)
+ 28831 DEFM "   QUIT   "     ; 61
+ 28841 DEFM "Other List"     ; 62
+ 28851 DEFM "AGF:PROTEK"     ; 63 joystick types
+ 28861 DEFM " KEMPSTON "     ; 64
+ 28871 DEFM " KEYBOARD "     ; 65
+ 28881 DEFM " SINCLAIR "     ; 66
+ 28891 DEFM "  FULLER  "     ; 67
+ 28901 DEFM "Cat in Net"     ; 68
+ 28911 DEFM "Cat in Box"     ; 69
+ 28921 DEFM " Scuttle  "     ; 70
+ 28931 DEFM " Nostromo "     ; 71
+ 28941 DEFM " Override "     ; 72
+ 28951 DEFM " Destruct "     ; 73
+ 28961 DEFM "  Enter   "     ; 74
+ 28971 DEFM "Hypersleep"     ; 75
+ 28981 DEFM " Fight    "     ; 76
+ 28991 DEFM "  Fire    "     ; 77
+ 29001 DEFM "  Launch  "     ; 78
+ 29011 DEFM " Indicate "     ; 79
+ 29021 DEFM " Location "     ; 80
+ 29031 DEFM "Narcissus "     ; 81
+ 29041 DEFM " CONTROL  "     ; 82
+ 29051 DEFM "Order:    "     ; 83
+ 29061 DEFM " Display  "     ; 84
+ 29071 DEFM "  Level   "     ; 85
+ 29081 DEFM "move to:  "     ; 86
+ 29091 DEFM " use:     "     ; 87
+ 29101 DEFM "Special   "     ; 88
+ 29111 DEFM "Damage    "     ; 89
+ 29121 DEFM " in place "     ; 90
+ 29131 DEFM " removed  "     ; 91
+ 29141 DEFM "          "     ; 92 (blank)
+ 29151 DEFM "In Duct   "     ; 93
+ 29161 DEFM "Body of   "     ; 94
+
+; Data block at #R29171
+;
+; 5-byte-per-entry table read by the routine at #R31759 (and three other call
+; sites at $8F70 / $900C / $9831) using `base + crew_id*5`. Contents and
+; purpose still TODO.
+@label=Auto_71F3
+b29171 DEFB 13,13
  29173 DEFB 0,0,0,13,13,1,1,1
  29181 DEFB 10,10,10,2,2,4,4,3
  29189 DEFB 3,3,32,3,14,5,9,4
@@ -2145,7 +2142,9 @@ b30720 DEFB 20,2
 b31232 DEFB 9,9,9,9,9,9,9,45
  31240 DEFB 45
 @label=ScreenDrawPtr
- 31241 DEFB 5,6
+ 31241 DEFB 5
+@label=CurrentSlotID
+ 31242 DEFB 6              ; slot.byte+1 cached by SelectSlotByDrawIdx (#R31721)
 @label=RoomTypeByte
  31243 DEFB 1,0,0,0,0
 @label=GameState_7A10
@@ -2384,14 +2383,14 @@ c31626 LD HL,(31261) ; HL = corridor tile-source pointer (#R31261)
 
 ; DrawSprite
 ;
-; Draws a 10-column × 8-row (80px wide) sprite at the current draw position
-; (#R31241). Each column is one 8-pixel-tall tile drawn by #R31369. The sprite
-; data is a table of 10 tile indices (each 10 bytes wide) looked up from the
-; 10-byte-per-sprite character table at #R28221 ($#R28221). After drawing 10
-; columns, advances #R31241 to the next character row accounting for the ZX
-; Spectrum display-file row wrapping.
+; Renders a 10-character text label at the current draw position (#R31241).
+; The "sprite" data is the 10-byte text entry at #R28221 + A×10 (see
+; RoomNameTable / UIStringTable); each byte is used as a tile index into
+; #R26869, which is laid out so that index N == ASCII N produces the glyph
+; for that character. After drawing 10 columns, advances #R31241 to the next
+; character row accounting for the ZX Spectrum display-file row wrapping.
 ;
-; Input:  A = sprite index (255 → use default/blank sprite index 92)
+; Input:  A = text/label index (255 → use blank label, entry 92)
 ;         (#R31241) = screen destination address
 ;
 ; Used by the routines at #R31417, #R33610, #R35290, #R35451, #R35578, #R36457,
@@ -2407,11 +2406,11 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31645 ADD HL,HL     ; HL = index × 4
  31646 ADD HL,HL     ; HL = index × 8
  31647 POP DE        ; DE = index × 2
- 31648 ADD HL,DE     ; HL = index × 10 (sprite record size)
- 31649 LD DE,28221   ; DE = #R28221 (character sprite table base)
- 31652 ADD HL,DE     ; HL = address of sprite's 10 tile-index bytes
- 31653 EX DE,HL      ; DE = sprite data source
- 31654 LD B,10       ; 10 tile columns per sprite
+ 31648 ADD HL,DE     ; HL = index × 10 (label record size)
+ 31649 LD DE,28221   ; DE = #R28221 (RoomNameTable base)
+ 31652 ADD HL,DE     ; HL = address of the 10-byte text entry
+ 31653 EX DE,HL      ; DE = source pointer (10 ASCII tile-indices)
+ 31654 LD B,10       ; 10 character columns per label
 *31656 PUSH BC       ; save column counter
  31657 PUSH DE       ; save sprite data pointer
  31658 CALL 31369    ; DrawSpriteRow: draw one tile column (8px tall)
@@ -3632,7 +3631,7 @@ b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D
 @label=Auto_83A5
  33701 DEFB 134,115          ; 16-bit pointer to current crew record
 @label=AlienTargetID
- 33703 DEFB 9                ; Crew ID the alien is currently targetting (255 = none)
+ 33703 DEFB 9                ; In the Long Game this is the **Android** slot index (1..7): the dormant traitor crew member that UpdateAlien (#R40826) activates on first encounter with the alien (the first frame AlienActiveFlag is set and the slot still has its template +0=+7=0). Once activated, the Android enters action state 7 and wounds nearby crew via CrewAction7_Handler (#R40757). Values >= 8 (e.g. ShortGameInit's hard-wired 9) disable the mechanic — TriggerAlienEvent (#R41264) treats them as "no valid target".
 @label=AlienActiveFlag
  33704 DEFB 0                ; Non-zero when the alien is loose in corridors
 @label=Auto_83A9
@@ -3882,6 +3881,14 @@ b33862 DEFW 35725,35448,35787,35845  ; 7 × 16-bit pointers (room-handler tail)
  34590 DEFB 253
  34591 DEFB 255
 ; #32: "{actor} hits the Android"
+; Enqueued by CrewHitsAndroid (#R40941). The "Android" is the long-game
+; AlienTargetID slot (#R33703) — the dormant traitor crew member that
+; UpdateAlien (#R40826) activates on first encounter with the alien.
+; The actor placeholder is filled from CrewIndex (#R33700) = the slot
+; currently being dispatched in combat state 4. Because the (IX+1)
+; sprite-class match in CrewAction4_Handler is by class (not unique
+; slot ID), the message can fire for any crew sharing the Android's
+; class — see CrewAction4_Handler header for the ambiguity.
  34592 DEFB 254
  34593 DEFM " hits the Android"
  34610 DEFB 255
@@ -5835,27 +5842,66 @@ c37490 XOR H         ;
  37513 CALL 31634    ;
  37516 CALL 34743    ;
  37519 RET           ;
-; CrewAction4_Handler — dispatched via CrewActionDispatch entry 4.
+; CrewAction4_Handler — dispatched via CrewActionDispatch entry 4 (combat).
+;
+; Branches a combat-state actor into one of two parallel handlers based on
+; whose sprite-class byte (+1) matches the actor's:
+;
+;   1. If the actor's (IX+1) matches the alien slot's identity at $737F
+;      → CALL #R37584 (CrewHitsAlien) — message #3 "nets the ALIEN" or
+;      #4 "hits the ALIEN".
+;
+;   2. Else, if AlienActiveFlag is non-zero AND the actor's (IX+1)
+;      matches the alien-target slot's (IX+1) — i.e. the **Android**
+;      slot picked by LongGameInit (#R42276) via LongGameTargetTable
+;      (#R41390) and pointed to by Auto_83A5 (#R33701) — → CALL
+;      #R40941 (CrewHitsAndroid) — message #31 "nets {target}" or
+;      #32 "hits the Android".
+;
+; The Android role: LongGameInit randomly picks one of crew slots
+; {1, 2, 4, 6} (Dallas / Kane / Ash / Parker) and stores it in
+; AlienTargetID (#R33703). That crew member is dormant at first — they
+; appear and behave like a normal crew member. UpdateAlien (#R40826)
+; turns them hostile the first frame the alien is loose and the slot
+; is still in its template state (the "first encounter"), stamping
+; them into action state 7 and giving them their sprite-class kin as
+; targets via NearestCrewA/B (see #R37876). After activation the
+; Android wounds nearby crew through CrewAction7_Handler (#R40757);
+; CrewHitsAndroid here is the **player-response branch**, dispatched
+; when other crew engage the Android in combat state 4.
+;
+; CAVEAT: the (IX+1) byte is NOT a unique slot ID in the LongGameCrewInit
+; template (#R41444) — slots 1/2/3 share +1=6, slots 4/5/6 share +1=27.
+; So branch 2's match fires for the whole **sprite class** of the
+; Android, not strictly the chosen slot:
+;   - AlienTargetID ∈ {1, 2}: matches {Dallas, Kane, Ripley}
+;   - AlienTargetID ∈ {4, 6}: matches {Ash, Lambert, Parker}
+; Whether that ambiguity is intentional design or a missing per-slot ID
+; write is unresolved — verify on an emulator before extending. The
+; short game hard-wires AlienTargetID = 9 (out of range), so branch 2
+; never fires there.
+;
+; After dispatch, CALL #R44924 clears IX+3 (action state) and returns.
 @label=CrewAction4_Handler
-*37520 LD A,(29567)  ;
- 37523 CP (IX+1)     ;
- 37526 JR Z,37547    ;
+*37520 LD A,(29567)  ; A = alien-slot identity byte ($737F)
+ 37523 CP (IX+1)     ; current actor IS the alien slot?
+ 37526 JR Z,37547    ; yes → CrewHitsAlien branch
 @nowarn=33704
 @ssub=LD A,(AlienActiveFlag)
- 37528 LD A,(33704)  ;
- 37531 AND A         ;
- 37532 RET Z         ;
- 37533 LD HL,(33701) ;
- 37536 INC HL        ;
- 37537 LD A,(HL)     ;
- 37538 CP (IX+1)     ;
- 37541 RET NZ        ;
- 37542 CALL 40941    ;
+ 37528 LD A,(33704)  ; A = AlienActiveFlag
+ 37531 AND A         ; alien loose on ship?
+ 37532 RET Z         ; no: nothing to dispatch
+ 37533 LD HL,(33701) ; HL = pointer to alien-target crew record
+ 37536 INC HL        ; HL → target's identity byte (+1)
+ 37537 LD A,(HL)     ; A = target's identity
+ 37538 CP (IX+1)     ; current actor IS the alien's target (= the Android)?
+ 37541 RET NZ        ; no: not in combat with either alien or android
+ 37542 CALL 40941    ; yes → CrewHitsAndroid (msg #32 / #31)
  37545 JR 37550      ;
-@label=Auto_92AB
-*37547 CALL 37584    ;
-@label=Auto_92AE
-*37550 CALL 44924    ;
+@label=DispatchHitsAlien
+*37547 CALL 37584    ; alien slot → CrewHitsAlien (msg #4 / #3)
+@label=ClearActionState
+*37550 CALL 44924    ; reset IX+3 = 0 (action state cleared post-combat)
  37553 NOP           ;
  37554 RET           ;
 @label=Auto_92B3
@@ -5874,44 +5920,100 @@ c37490 XOR H         ;
  37577 LD (31257),HL ;
  37580 CALL 31634    ;
  37583 RET           ;
-@label=Auto_92D0
-*37584 LD A,(29567)  ;
- 37587 CP (IX+1)     ;
- 37590 RET NZ        ;
- 37591 LD A,(IX+4)   ;
+; CrewHitsAlien — alien-side combat handler. Called from
+; CrewAction4_Handler (#R37547) when the actor in state 4 has (IX+1)
+; matching $737F (the alien's identity from CommonGameInit, #R42451).
+;
+; This routine is dual-purpose: it both enqueues the "{actor} hits the
+; ALIEN" dialogue AND houses the **alien's direct kill primitive** at
+; #R37733, fired when the alien's corridor scan position is 12.
+;
+; Guards: re-asserts that (IX+1) matches the alien identity, then
+; requires pixel coords IX+4 >= 2 and IX+6 >= 2 (sprite fully placed).
+; Calls #R44986 to clear the scan-slot, then #R31823 to locate the
+; alien's corridor scan position into (31248):
+;
+;   (31248) == 17       → silent: JP to ClearActionState
+;   (31248) >= 20       → silent (template sentinels)
+;   (31248) == 16       → "net" outcome: write $FF to $7376 (slot 0
+;                         byte +0) to disable the alien, then enqueue
+;                         message #3 "{actor} nets the ALIEN"
+;   else                → "hit" outcome at #R37646: enqueue message #4
+;                         "{actor} hits the ALIEN", then dispatch on
+;                         the saved (31248):
+;                           - {0..5, 18, 19}: INC alien's wound counter
+;                             at $73B2 (byte +4 of slot 0). If it
+;                             reaches the Auto_83D1 threshold, JP 44125
+;                             (alien-defeated path).
+;                           - {6, 7}: enqueue msg #5 "Tracker is broken"
+;                           - {8..11}: decrement Auto_83D2 entry for
+;                             this corridor cell; on underflow enqueue
+;                             msg #6 "extinguisher empty".
+;                           - **== 12: the alien's kill primitive at
+;                             #R37733**. Calls #R37876 to gather up to
+;                             three candidate slots (Auto_839F +
+;                             NearestCrewA/B) sharing the alien's
+;                             sprite class. For each: clear their
+;                             entries in the 22-byte anim table at
+;                             $7504, then if their slot's byte +7 is
+;                             still zero stamp it to 1 (killed) and
+;                             clear their byte +4 wound counter. Then
+;                             alien's wound counter += 5 (cost of
+;                             attack); if it crosses Auto_83D1 → JP
+;                             44125. Otherwise CALL 31417 (rebuild
+;                             corridor view) and JP 37992 (Auto_9468).
+;                           - {13..15}: JP 37831 — decrement Auto_83D2
+;                             entry, then either msg #7 or JP 41022.
+;
+; In short: when the alien enters combat at corridor cell 12 (the
+; alien-spawn anim slot, value 32 in the CommonInit_AnimTable
+; template), the routine kills the alien's three sprite-class
+; "encounter slots" outright by stamping byte +7 = 1 on each. That is
+; the alien's direct attack — it doesn't decrement wound counters
+; like the Android does in CrewAction7_Handler; it kills in one tick.
+;
+; This routine parallels #R40941 (CrewHitsAndroid) in structure but
+; refers to the alien (slot 0 at $7376) and emits messages #3 / #4
+; instead of #31 / #32.
+@label=CrewHitsAlien
+*37584 LD A,(29567)  ; A = alien-slot identity byte
+ 37587 CP (IX+1)     ; re-check: IX is the alien slot
+ 37590 RET NZ        ; defensive: not the alien → bail
+ 37591 LD A,(IX+4)   ; A = pixel X-tile
  37594 CP 2          ;
- 37596 RET C         ;
- 37597 LD A,(IX+6)   ;
+ 37596 RET C         ; X-tile < 2 → alien not fully on screen, bail
+ 37597 LD A,(IX+6)   ; A = pixel Y
  37600 CP 2          ;
- 37602 RET C         ;
- 37603 CALL 44986    ;
- 37606 CALL 31823    ;
- 37609 LD A,(31248)  ;
+ 37602 RET C         ; Y < 2 → bail
+ 37603 CALL 44986    ; clear (31248) scan slot, A = CrewIndex
+ 37606 CALL 31823    ; populate (31248)/(31249) with corridor positions
+ 37609 LD A,(31248)  ; A = alien's corridor scan position
  37612 CP 17         ;
- 37614 JP Z,37555    ;
+ 37614 JP Z,37555    ; pos 17 → silent
  37617 CP 20         ;
- 37619 JP NC,37555   ;
+ 37619 JP NC,37555   ; pos >= 20 → silent (sentinel cells)
  37622 CP 16         ;
- 37624 JR NZ,37646   ;
- 37626 LD HL,29566   ;
- 37629 LD (HL),255   ;
+ 37624 JR NZ,37646   ; pos != 16 → "hits the ALIEN" branch
+ 37626 LD HL,29566   ; HL = $7376 (alien slot byte 0)
+ 37629 LD (HL),255   ; mark alien slot as "netted/inactive"
  37631 CALL 37924    ;
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
- 37634 LD A,(33700)  ;
- 37637 LD L,A        ;
- 37638 LD A,3        ;
- 37640 CALL 37176    ;
+ 37634 LD A,(33700)  ; A = CrewIndex (= alien-slot index)
+ 37637 LD L,A        ; L = actor index
+ 37638 LD A,3        ; A = msg #3 "{actor} nets the ALIEN"
+ 37640 CALL 37176    ; enqueue
  37643 JP 37555      ;
-@label=Auto_930E
-*37646 PUSH AF       ;
+; "{actor} hits the ALIEN" branch (CrewHitsAlien continued).
+@label=CrewHitsAlien_HitPath
+*37646 PUSH AF       ; stash (31248) for post-message dispatch
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
- 37647 LD A,(33700)  ;
- 37650 LD L,A        ;
- 37651 LD A,4        ;
- 37653 CALL 37176    ;
- 37656 POP AF        ;
+ 37647 LD A,(33700)  ; A = CrewIndex
+ 37650 LD L,A        ; L = actor index
+ 37651 LD A,4        ; A = msg #4 "{actor} hits the ALIEN"
+ 37653 CALL 37176    ; enqueue
+ 37656 POP AF        ; A = (31248) restored
  37657 CP 6          ;
  37659 JR C,37669    ;
  37661 CP 18         ;
@@ -5958,9 +6060,24 @@ c37490 XOR H         ;
  37722 LD A,6        ;
  37724 CALL 37176    ;
  37727 JP 37555      ;
-@label=Auto_9362
-*37730 JP NZ,37831   ;
- 37733 CALL 37876    ;
+; AlienKillPrimitive — the alien's direct kill, reached from
+; CrewHitsAlien (#R37584) when CP 12 on the corridor scan position
+; (31248) sets Z (i.e. exactly position 12 in the 22-byte anim table
+; at $7504). Position 12 in the CommonInit_AnimTable template
+; (#R41406) carries sprite value 32 — the alien-spawn cell. When the
+; alien attacks at that cell, this routine kills up to three crew
+; outright (no wound-counter ramp): for each of Auto_839F (CrewIndex),
+; NearestCrewA, NearestCrewB it clears the anim-table fingerprint of
+; that slot and, if the slot's byte +7 is still zero (alive), stamps
+; +7 = 1 (killed) and clears its byte +4 wound counter. Then bumps
+; the alien's own +4 by 5 (attack cost — too many attacks at this
+; cell and the alien crosses the Auto_83D1 threshold and dies via JP
+; 44125), redraws the corridor view (CALL 31417), and tail-calls into
+; Auto_9468 (#R37992) to advance the per-frame chain.
+@label=AlienKillPrimitive
+*37730 JP NZ,37831   ; (31248) != 12 → 37831 (decrement Auto_83D2)
+ 37733 CALL 37876    ; populate Auto_839F + NearestCrewA/B with the
+                     ; three slots sharing the alien's sprite class
 @nowarn=33695
 @ssub=LD DE,Auto_839F
  37736 LD DE,33695   ;
@@ -8014,43 +8131,79 @@ c40757 CALL 37876    ;
 ; UpdateAlien
 @ignoreua
 ;
-; Moves the alien and attacks reachable crew. Returns immediately if the alien
-; is inactive (flag at #R33736 = 0) or if the alien's current target crew
-; record (pointer at $83A5) shows the crew member is already dead (byte 0 of
-; record non-zero means busy/alive). Otherwise checks whether the crew members
-; stored at #R33696 and #R33697 (nearest crew IDs) are still alive by looking up
-; their alive flags in the crew table at $73BD. If neither is alive, calls
-; #R36717 (alien wander) and sets the alien to idle state. If at least one is
-; reachable, calls #R37176 to move the alien toward the target and sets
-; IX+3=7 (attack state), IX+0 to attack timer.
+; Per-frame driver for the alien's combat behaviour. The alien itself
+; does still attack crew directly elsewhere in the per-frame chain —
+; this routine specifically handles the **first-encounter activation of
+; the Android**: once the alien is loose and meets the alien_target
+; slot for the first time, this routine pulls that slot into action
+; state 7 (attack), turning the Android from a normal-looking crew
+; member into a hostile actor that wounds nearby crew.
+;
+; Returns immediately if any of:
+;   - AlienActiveFlag (#R33704) == 0 (alien not yet loose / no encounter)
+;   - alien_target's byte +0 != 0 (Android already activated; the
+;     activation stamp at #R40849 sets +0 = 80, so on every subsequent
+;     frame this guard short-circuits the routine)
+;   - alien_target's byte +7 != 0 (lockout sentinel — CrewHitsAndroid's
+;     collapse path at #R41039 writes +7 = 2, and that prevents
+;     re-activation if the Android has been defeated)
+;
+; In other words: the routine fires exactly ONCE per game for the
+; Android, the first frame the alien is active and the slot is still
+; in its as-issued template state (LongGameCrewInit, #R41444, gives
+; +0 = +7 = 0 for every slot). That single firing is the "encounter".
+;
+; When all guards pass:
+;   1. IX = alien_target record; stamp (IX+0) = 80 (activation marker
+;      and timer that also blocks future re-entry into this branch).
+;   2. Cache AlienTargetID into CrewIndex (#R33700) for downstream
+;      message enqueues.
+;   3. CALL #R37876 — scan crew records 1..7 for slots sharing the
+;      Android's (IX+1) sprite-class and write up to two slot indices
+;      into NearestCrewA / NearestCrewB (the Android's "kin" — its
+;      attack pool).
+;   4. If at least one of NearestCrewA/B is alive: enqueue message #30
+;      "{actor} is attacking {target}" with actor = AlienTargetID
+;      (the Android's name, e.g. "Ash is attacking Lambert"), put the
+;      alien_target into action state 7 with timer 40, then return.
+;   5. If neither kin is reachable, fall through to #R36717 (wander)
+;      and reset the Android to action state 1.
+;
+; Once the Android is in state 7, subsequent ResetCrewTimers frames
+; dispatch it through CrewAction7_Handler (#R40757) which decrements
+; the wound counter on its NearestCrewA/B kin and can collapse them
+; via #R39400 (msg #21 "{actor} has collapsed").
+;
+; This routine is NOT the alien's own attack — the alien attacks crew
+; directly via a separate per-frame path (not fully mapped here).
 ;
 ; Used by the routine at #R36457.
 @nowarn=33704
 @label=UpdateAlien
 @ssub=LD A,(AlienActiveFlag)
 @ignoreua
-c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
- 40829 AND A         ; alien present on ship?
- 40830 RET Z         ; no: nothing to do
+c40826 LD A,(33704)  ; A = AlienActiveFlag
+ 40829 AND A         ; alien loose on ship?
+ 40830 RET Z         ; no: no encounter yet, nothing to activate
 @ignoreua
- 40831 LD HL,(33701) ; HL = pointer to alien's target crew record ($83A5)
- 40834 LD A,(HL)     ; read byte 0 of crew record (action state)
- 40835 AND A         ; 0 = crew idle/available
- 40836 RET NZ        ; crew is busy (not vulnerable): skip attack
- 40837 LD DE,7       ; offset to alive flag within crew record
- 40840 ADD HL,DE     ; HL → alive-flag byte of target crew
- 40841 CP (HL)       ; alive flag = 0 means dead
- 40842 RET NZ        ; crew still alive: don't attack yet
+ 40831 LD HL,(33701) ; HL = alien_target record (Auto_83A5)
+ 40834 LD A,(HL)     ; A = byte +0
+ 40835 AND A         ; Android already activated (+0 stamped to 80)?
+ 40836 RET NZ        ; yes: this routine has already fired once, skip
+ 40837 LD DE,7       ; offset to byte +7 (defeated-lockout sentinel)
+ 40840 ADD HL,DE     ; HL → +7
+ 40841 CP (HL)       ; A=0 here; Z iff byte +7 == 0 (template, not defeated)
+ 40842 RET NZ        ; +7 != 0: Android collapsed earlier, stay dormant
  40843 PUSH IX       ; save caller's IX
- 40845 LD IX,(33701) ; IX = alien's current target crew record
- 40849 LD (IX+0),80  ; set alien action state = 80 (attack)
+ 40845 LD IX,(33701) ; IX = Android record (= alien_target)
+ 40849 LD (IX+0),80  ; stamp +0 = 80 — activation marker / blocks re-entry
 @nowarn=33703
 @ssub=LD A,(AlienTargetID)
- 40853 LD A,(33703)  ; A = alien target corridor ID (#R33703)
+ 40853 LD A,(33703)  ; A = AlienTargetID (= Android slot index)
 @nowarn=33700
 @ssub=LD (CrewIndex),A
- 40856 LD (33700),A  ; store as alien current corridor (#R33700)
- 40859 CALL 37876    ; update alien sprite position on screen
+ 40856 LD (33700),A  ; CrewIndex = AlienTargetID (Android's slot)
+ 40859 CALL 37876    ; pick the Android's two sprite-class kin as targets
 @nowarn=33696
 @ssub=LD A,(NearestCrewA)
  40862 LD A,(33696)  ; A = nearest crew ID 1 (#R33696)
@@ -8063,14 +8216,14 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  40873 LD E,A        ;
  40874 LD D,0        ;
 @ignoreua
- 40876 LD HL,29573   ; HL = crew table base ($73BD)
- 40879 ADD HL,DE     ; index to crew record's alive flag
- 40880 XOR A         ;
- 40881 CP (HL)       ; alive = 0 → dead
- 40882 JR Z,40920    ; crew 1 alive: attack it
+ 40876 LD HL,29573   ; HL = crew alive-table base ($7385)
+ 40879 ADD HL,DE     ; HL → NearestCrewA's alive-flag byte
+ 40880 XOR A         ; A = 0
+ 40881 CP (HL)       ; Z iff (HL) == 0 (which is the "alive" value here)
+ 40882 JR Z,40920    ; NearestCrewA alive: attack them
 @nowarn=33697
 @ssub=LD A,(NearestCrewB)
- 40884 LD A,(33697)  ; A = nearest crew ID 2 (#R33697)
+ 40884 LD A,(33697)  ; A = NearestCrewB
  40887 CP 255        ;
  40889 JR Z,40906    ; no secondary target either: wander
  40891 LD C,A        ;
@@ -8079,64 +8232,130 @@ c40826 LD A,(33704)  ; A = alien-active flag (#R33736)
  40894 ADD A,A       ;
  40895 LD E,A        ;
  40896 LD D,0        ;
- 40898 LD HL,29573   ; crew table base
+ 40898 LD HL,29573   ; crew alive-table base
  40901 ADD HL,DE     ;
  40902 XOR A         ;
- 40903 CP (HL)       ; crew 2 alive?
- 40904 JR Z,40920    ; yes: attack crew 2
+ 40903 CP (HL)       ; Z iff NearestCrewB's flag == 0 (alive)
+ 40904 JR Z,40920    ; alive: attack them
 *40906 CALL 36717    ; no reachable crew: alien wanders
- 40909 LD (IX+3),1   ; set alien state = 1 (idle/wander)
- 40913 LD (IX+0),60  ; set alien timer = 60 frames
+ 40909 LD (IX+3),1   ; Android slot → action state 1 (idle/wander)
+ 40913 LD (IX+0),60  ; with timer 60 frames
  40917 POP IX        ;
  40919 RET           ;
-*40920 LD H,C        ; H = target crew ID
+*40920 LD H,C        ; H = nearest-crew ID (message target)
 @nowarn=33703
 @ssub=LD A,(AlienTargetID)
- 40921 LD A,(33703)  ; A = alien corridor
- 40924 LD L,A        ; L = alien corridor position
- 40925 LD A,30       ; move distance = 30
- 40927 CALL 37176    ; move alien toward crew member
- 40930 LD (IX+3),7   ;
- 40934 LD (IX+0),40  ;
+ 40921 LD A,(33703)  ; A = AlienTargetID
+ 40924 LD L,A        ; L = Android slot index (message actor)
+ 40925 LD A,30       ; A = message #30 "{actor} is attacking {target}"
+ 40927 CALL 37176    ; enqueue: "{Android name} is attacking {nearest}"
+ 40930 LD (IX+3),7   ; Android slot → action state 7 (attack)
+ 40934 LD (IX+0),40  ; with timer 40 frames (next dispatch runs the attack)
  40938 POP IX        ;
  40940 RET           ;
-; This entry point is used by the routine at #R37490.
-*40941 LD A,(IX+4)   ;
+; CrewHitsAndroid — combat-resolution dialogue when the current actor
+; engages the Android (called from CrewAction4_Handler at #R37542).
+;
+; Fires from action state 4 (combat) when the actor's (IX+1) sprite-class
+; byte matches the alien-target slot's (IX+1). Because (IX+1) is not
+; unique in LongGameCrewInit (#R41444), this fires for the whole class
+; that contains the Android (see CrewAction4_Handler header) — multiple
+; crew members can trigger this routine, not only the Android itself.
+;
+; The Android is the slot picked by LongGameInit (#R42276) from
+; LongGameTargetTable (#R41390) and stored in AlienTargetID (#R33703),
+; record pointer cached at Auto_83A5 (#R33701). It starts dormant and
+; is activated by UpdateAlien (#R40826) on first encounter with the
+; alien (the first frame AlienActiveFlag is set while the slot's +0/+7
+; are still template-zero), entering action state 7 and wounding its
+; sprite-class kin via CrewAction7_Handler (#R40757). This routine is
+; the **player-response leg**: when the Android (or another crew in
+; its sprite class) is engaged in combat state 4, log the dialogue
+; and apply the per-corridor-cell outcome.
+;
+; Guards: pixel coords IX+4 >= 2 and IX+6 >= 2 (actor placed on screen).
+; Then #R31823 locates the actor's corridor scan position into (31248):
+;
+;   (31248) == 17       → silent: JP to #R41229 (post-combat fade-out)
+;   (31248) >= 20       → silent: JP to #R41229 (sentinel cells)
+;   (31248) == 16       → "net" outcome: write $FF to alien-target slot
+;                         byte +0 (locks the Android out for the rest
+;                         of this engagement), then enqueue message #31
+;                         "{actor} nets {target}" with actor =
+;                         CrewIndex (#R33700) — the crew slot currently
+;                         being dispatched — and target high byte from
+;                         (33702). JP to #R41229.
+;   else                → "hit" outcome at #R40999: enqueue message #32
+;                         "{actor} hits the Android" with actor =
+;                         CrewIndex. Then run the per-(31248) follow-up:
+;                           - decrement alien-target's byte +4 (wound
+;                             counter); if it underflows past 2,
+;                             stamp byte +7 = 2 (lockout sentinel that
+;                             prevents UpdateAlien re-commandeering on
+;                             subsequent frames, see UpdateAlien's
+;                             byte-+7 gate at #R40841) and enqueue
+;                             message #21 "{Android} has collapsed"
+;                           - if (31248) ∈ {6, 7}: enqueue message #5
+;                             "{actor}'s Tracker is broken"
+;                           - if (31248) < 12: decrement the slot's
+;                             entry in Auto_83D2 (#R33746) and enqueue
+;                             message #6 if it expires
+;                           - other (31248) values branch into the
+;                             corridor-display rebuild at #R41109 /
+;                             #R41195 (clears the Android's class entries
+;                             from the corridor display and respawns
+;                             the room)
+;
+; Caveat on the actor name: when (33700) is itself the Android's slot
+; (the dispatch ran for the Android slot), the message reads
+; "{Android} hits the Android" — apparent self-reference. With the
+; class-not-ID matching above, the message ALSO fires for non-Android
+; slots in the same class, e.g. "Lambert hits the Android" if
+; AlienTargetID = 4 (Ash). The semantics here are best confirmed with
+; an emulator run rather than further static reading.
+;
+; This routine is the parallel of #R37584 (CrewHitsAlien) — identical
+; control flow but referring to the Android slot (#R33701) and emitting
+; messages #31 / #32 instead of #3 / #4.
+@label=CrewHitsAndroid
+*40941 LD A,(IX+4)   ; A = actor pixel X-tile
  40944 CP 2          ;
- 40946 RET C         ;
- 40947 LD A,(IX+6)   ;
+ 40946 RET C         ; X-tile < 2 → not yet placed: bail
+ 40947 LD A,(IX+6)   ; A = actor pixel Y
  40950 CP 2          ;
- 40952 RET C         ;
+ 40952 RET C         ; Y < 2 → bail
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
- 40953 LD A,(33700)  ;
- 40956 CALL 31823    ;
- 40959 LD A,(31248)  ;
+ 40953 LD A,(33700)  ; A = CrewIndex (slot being dispatched)
+ 40956 CALL 31823    ; populate (31248)/(31249) with corridor positions
+ 40959 LD A,(31248)  ; A = scan position in 22-byte anim table
  40962 CP 17         ;
- 40964 JP Z,41229    ;
+ 40964 JP Z,41229    ; pos 17 → silent post-combat
  40967 CP 20         ;
- 40969 JP NC,41229   ;
+ 40969 JP NC,41229   ; pos >= 20 → silent (sentinel cells)
  40972 CP 16         ;
- 40974 JR NZ,40999   ;
- 40976 LD HL,(33701) ;
- 40979 LD (HL),255   ;
+ 40974 JR NZ,40999   ; pos != 16 → "hits the Android" branch
+ 40976 LD HL,(33701) ; HL = alien-target (Android) slot pointer
+ 40979 LD (HL),255   ; lock Android's byte +0 = $FF for this engagement
  40981 CALL 37924    ;
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
- 40984 LD A,(33700)  ;
- 40987 LD HL,(33702) ;
- 40990 LD L,A        ;
- 40991 LD A,31       ;
- 40993 CALL 37176    ;
+ 40984 LD A,(33700)  ; A = CrewIndex
+ 40987 LD HL,(33702) ; H = (Auto_83A6) — high byte of target reference
+ 40990 LD L,A        ; L = actor (CrewIndex)
+ 40991 LD A,31       ; A = msg #31 "{actor} nets {target}"
+ 40993 CALL 37176    ; enqueue
  40996 JP 41229      ;
-*40999 PUSH AF       ;
+; "{actor} hits the Android" branch (CrewHitsAndroid continued).
+@label=CrewHitsAndroid_HitPath
+*40999 PUSH AF       ; stash (31248) for the post-message dispatch
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
- 41000 LD A,(33700)  ;
- 41003 LD L,A        ;
- 41004 LD A,32       ;
- 41006 CALL 37176    ;
- 41009 POP AF        ;
+ 41000 LD A,(33700)  ; A = CrewIndex (slot being dispatched)
+ 41003 LD L,A        ; L = actor for the message
+ 41004 LD A,32       ; A = msg #32 "{actor} hits the Android"
+ 41006 CALL 37176    ; enqueue
+ 41009 POP AF        ; A = (31248) restored
  41010 CP 6          ;
  41012 JR C,41022    ;
  41014 CP 18         ;
@@ -8389,7 +8608,7 @@ b41358 DEFB 3,4,5,9,10,11,13,14,18,19,20,20,22,24,25,30
 ; {1, 2, 5} so the host is always one of the alien-area slot 1 or the
 ; crew slots 2 / 5.
 @label=LongGameHostSlotTable
- 41374 DEFB 1,2,5,1,2,5,1,2,5,1,2,5,1,2,5,2
+b41374 DEFB 1,2,5,1,2,5,1,2,5,1,2,5,1,2,5,2
 
 ; LongGameTargetTable
 @ignoreua
@@ -8399,19 +8618,32 @@ b41358 DEFB 3,4,5,9,10,11,13,14,18,19,20,20,22,24,25,30
 ; selector loops until it picks a value different from the host slot
 ; chosen via #R41374 (LongGameHostSlotTable), then stores the value
 ; in AlienTargetID and uses it to compute the targeted crew's record
-; pointer at #R33701. Values are restricted to {1, 2, 4, 6}, so the
-; alien's first stalk target is always a different crew slot from the
-; one the alien hatched out of.
+; pointer at #R33701. Values are restricted to {1, 2, 4, 6} = the four
+; crew slots {Dallas, Kane, Ash, Parker}, always different from the
+; chestburster host slot.
+;
+; This selection is the long-game **Android assignment**. The chosen
+; crew member behaves like a normal crew member at first; UpdateAlien
+; (#R40826) activates them as hostile the first time the alien is
+; loose AND their slot is still in template state (i.e. they haven't
+; been activated or defeated yet). After activation they enter action
+; state 7 and wound their sprite-class kin via CrewAction7_Handler
+; (#R40757). Status-bar messages #30 / #32 name that slot.
+;
+; The four candidate slots correspond to the canonical hatch-victim
+; (Kane = 2) plus three crew the alien can plausibly puppet (Dallas /
+; Ash / Parker). Note Ash (slot 4) — the canonical film android — is
+; one of the four but the pick is random per run.
 @label=LongGameTargetTable
- 41390 DEFB 1,2,4,6,1,2,4,6,1,2,4,6,1,2,4,6
+b41390 DEFB 1,2,4,6,1,2,4,6,1,2,4,6,1,2,4,6
 
 ; CommonInit_AnimTable
 ;
-; 22 bytes copied wholesale by CommonGameInit (#R42397) to #R29940
+; 22 bytes copied wholesale by CommonGameInit (#R42397) to $7504
 ; ($7434) — corridor / animation state for the new game session. The
 ; final two bytes are $FF sentinels.
 @label=CommonInit_AnimTable
- 41406 DEFB 24,21,20,6,6,16,3,16,24,17,18,19,32,2,2,2
+b41406 DEFB 24,21,20,6,6,16,3,16,24,17,18,19,32,2,2,2
  41422 DEFB 24,23,31,20,255,255
 
 ; CommonInit_WorkspaceTable
@@ -8419,7 +8651,7 @@ b41358 DEFB 3,4,5,9,10,11,13,14,18,19,20,20,22,24,25,30
 ; 16 bytes copied by CommonGameInit (#R42454) to #R33746 ($83D2): zeros
 ; the Auto_83D2 area then writes 3,3,3,3,1,8,8,8 into Auto_83DA.
 @label=CommonInit_WorkspaceTable
- 41428 DEFB 0,0,0,0,0,0,0,0,3,3,3,3,1,8,8,8
+b41428 DEFB 0,0,0,0,0,0,0,0,3,3,3,3,1,8,8,8
 
 ; LongGameCrewInit
 @ignoreua
@@ -8453,7 +8685,7 @@ b41358 DEFB 3,4,5,9,10,11,13,14,18,19,20,20,22,24,25,30
 ; chestburster host — the only crew whose +1 and +7 will hold $FF
 ; after init.
 @label=LongGameCrewInit
- 41444 DEFB 0,0,0,0,0,0,0,0      ; slot 0: alien header
+b41444 DEFB 0,0,0,0,0,0,0,0      ; slot 0: alien header
  41452 DEFB 0,6,0,0,6,4,4,0      ; slot 1: alien gameplay slot
  41460 DEFB 0,6,0,0,5,4,4,0      ; slot 2 (crew[0])
  41468 DEFB 0,6,0,0,4,3,3,0      ; slot 3 (crew[1])
@@ -8491,7 +8723,7 @@ b41358 DEFB 3,4,5,9,10,11,13,14,18,19,20,20,22,24,25,30
 ; alien-host subplot — whereas the Long Game uses script randomisation
 ; to pick a single chestburster host plus the alien's first target.
 @label=ShortGameCrewInit
- 41508 DEFB 0,0,0,0,0,0,0,0      ; slot 0: alien header
+b41508 DEFB 0,0,0,0,0,0,0,0      ; slot 0: alien header
  41516 DEFB 0,255,0,0,0,0,0,255  ; slot 1: alien gameplay slot — tagged
  41524 DEFB 0,255,0,0,0,0,0,255  ; slot 2 (crew[0]) — tagged
  41532 DEFB 0,6,6,0,4,3,3,0      ; slot 3 (crew[1])
@@ -9202,9 +9434,21 @@ b41358 DEFB 3,4,5,9,10,11,13,14,18,19,20,20,22,24,25,30
 ; The script independently chooses the alien's initial stalk target, so
 ; each Long Game has both a different host AND a different first victim.
 ;
-; (Note: this is NOT the "android traitor" slot — the in-game Android
-; is a separate concept referenced by message #32 "{actor} hits the
-; Android", whose backing state has yet to be located in the disassembly.)
+; The android-traitor mechanic lives on the OTHER randomised slot picked
+; below: AlienTargetID (LongGameTargetTable values {1, 2, 4, 6} =
+; Dallas / Kane / Ash / Parker). That slot is dormant at game start —
+; it appears as just another crew member. UpdateAlien (#R40826) flips
+; it hostile on the **first encounter** with the alien: the first
+; frame AlienActiveFlag is non-zero AND the slot still carries the
+; template's zero values in bytes +0 and +7, UpdateAlien stamps it
+; into action state 7 (attack) and arms it with sprite-class kin as
+; targets. From then on the Android wounds nearby crew via
+; CrewAction7_Handler (#R40757), named in status-bar dialogue (msg
+; #30 "{Android} is attacking {target}"). When other crew fight it in
+; combat state 4, CrewHitsAndroid (#R40941, msg #32 "{actor} hits the
+; Android") logs the response. The alien itself attacks crew directly
+; through a separate (still un-annotated) per-frame path — that
+; behaviour is independent of this Android subplot.
 ;
 ; Steps:
 ;   1. Point the message queue head (Auto_83CD #R33741) at the queue base
@@ -9220,15 +9464,18 @@ b41358 DEFB 3,4,5,9,10,11,13,14,18,19,20,20,22,24,25,30
 ;      (one of {1, 2, 5}), then stamp the HostMarker on that record by
 ;      overwriting bytes +1 and +7 with $FF.
 ;   5. Loop pulling more script nibbles, looking them up in #R41390
-;      (LongGameTargetTable), until the looked-up alien-target value
-;      A_target differs from A_host — guarantees the alien's first
-;      stalk target isn't the same slot it just hatched out of.
-;   6. Store A_target in #R33703 (AlienTargetID).
+;      (LongGameTargetTable), until the looked-up value A_target differs
+;      from A_host — the Android can't be the same slot the alien just
+;      hatched out of.
+;   6. Store A_target in #R33703 (AlienTargetID) — this slot is the
+;      per-run **Android**: a dormant traitor crew member that
+;      UpdateAlien (#R40826) flips hostile on first encounter with the
+;      loose alien.
 ;   7. Enqueue message #33 ("Alien has hatched from {actor}") via
 ;      #R37176, with the host slot index as the actor parameter — this
 ;      is the long game's opening narrative beat.
-;   8. Store &slot[A_target] in #R33701 (Auto_83A5) so subsequent code
-;      can access the alien's target crew record directly.
+;   8. Store &slot[A_target] in #R33701 (Auto_83A5) so UpdateAlien and
+;      CrewHitsAndroid can access the Android's crew record directly.
 ;   9. Fall through into the common init at #R42380 (CommonGameInit).
 ;
 ; Used by the dispatcher at #R43134 via the table at #R43135.
@@ -9272,7 +9519,7 @@ c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
  42322 ADD HL,DE     ; HL = &slot[A_host]
  42323 INC HL        ; HL = &slot[A_host] + 1 (crew ID byte)
  42324 LD A,(HL)     ;
- 42325 LD (29623),A  ; save original ID at #R29623 (never read; effectively scratch)
+ 42325 LD (29623),A  ; save original ID at $73E7 (never read; effectively scratch)
  42328 LD (HL),255   ; stamp HostMarker: slot[A_host].byte+1 = $FF
  42330 LD DE,6       ;
  42333 ADD HL,DE     ; HL = &slot[A_host] + 7 (alive flag)
@@ -9319,7 +9566,7 @@ c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
 ; CommonGameInit: shared post-init for both Short and Long modes. Called
 ; (via JP) from #R44767 (ShortGameInit) and fallen into from #R42276
 ; (LongGameInit). Resets the alien runtime state, seeds the crew workspace
-; tables, clears the corridor cursor at #R30076, picks the initial alien
+; tables, clears the corridor cursor at $757C, picks the initial alien
 ; event timer from the script, and switches the room mode to 1 (corridor
 ; view) so the player drops straight into gameplay.
 @label=CommonGameInit
