@@ -1056,258 +1056,193 @@ b23756 DEFB 0,108,0,234,221,33,0,64
  24564 DEFB 93,28,186,205,82,28,118,27
  24572 DEFB 3,19,0,62
 
-; Data block at #R24576
+; Ship-map screen data — three deck maps
+;
+; The map screen shown by DrawShipMap (#R42821) as three stacked deck
+; views: 3 decks x 19 rows x 20 columns of tile codes (the same 20-wide
+; grid format the room views use). Row texts like "UPPER DECK" are
+; plain ASCII tile codes; other values are map glyphs (room outlines,
+; corridors, and the legend symbols: 123 '{' ladder up, 124 '|'
+; hatchway down, 125 '}' duct grille).
 @label=ShipMapData
-b24576 DEFB 0,0,0,0,0,0,0,0
- 24584 DEFB 0,0,0,0,0,0,0,0
- 24592 DEFB 0,0,0,0,0,85,80,80
- 24600 DEFB 69,82,0,0,0,0,0,0
- 24608 DEFB 0,0,0,0,0,0,0,0
- 24616 DEFB 0,68,69,67,75,0,0,0
- 24624 DEFB 0,0,0,0,0,0,0,0
- 24632 DEFB 0,0,0,0,0,0,0,0
- 24640 DEFB 0,0,5,11,12,1,1,15
- 24648 DEFB 1,12,1,1,1,36,0,0
- 24656 DEFB 0,0,0,0,0,5,3,4
- 24664 DEFB 2,96,0,0,0,2,96,0
- 24672 DEFB 0,2,0,0,0,0,0,0
- 24680 DEFB 5,3,4,96,2,0,0,0
- 24688 DEFB 0,2,0,0,0,2,0,0
- 24696 DEFB 0,0,0,0,29,4,0,0
- 24704 DEFB 19,1,1,1,34,134,1,12
- 24712 DEFB 15,21,0,0,0,0,0,0
- 24720 DEFB 2,0,0,0,2,0,0,0
- 24728 DEFB 2,96,0,2,96,2,0,0
- 24736 DEFB 0,0,0,0,2,0,124,0
- 24744 DEFB 16,0,0,0,2,0,0,2
- 24752 DEFB 0,2,0,0,0,0,0,0
- 24760 DEFB 19,15,1,1,21,0,0,0
- 24768 DEFB 16,0,0,16,0,2,0,0
- 24776 DEFB 0,0,0,0,2,0,0,0
- 24784 DEFB 16,0,0,0,2,0,0,2
- 24792 DEFB 0,2,0,0,0,0,0,0
- 24800 DEFB 2,0,0,0,2,0,0,96
- 24808 DEFB 2,0,0,2,0,2,0,0
- 24816 DEFB 0,0,0,0,30,9,0,0
- 24824 DEFB 19,1,1,1,26,27,15,20
- 24832 DEFB 1,21,0,0,0,0,0,0
- 24840 DEFB 7,8,9,96,2,0,0,0
- 24848 DEFB 0,2,0,0,0,2,0,0
- 24856 DEFB 0,0,0,0,0,7,8,9
- 24864 DEFB 2,96,0,0,0,2,96,0
- 24872 DEFB 0,2,0,0,0,0,0,0
- 24880 DEFB 0,0,7,31,20,1,1,15
- 24888 DEFB 1,20,1,1,1,37,0,0
- 24896 DEFB 0,0,0,0,0,0,0,0
- 24904 DEFB 0,0,0,0,0,0,0,0
- 24912 DEFB 0,0,0,0,0,0,0,0
- 24920 DEFB 0,0,0,0,0,0,0,0
- 24928 DEFB 0,0,0,0,0,0,0,0
- 24936 DEFB 0,0,0,0,0,0,0,0
- 24944 DEFB 0,0,0,0,0,0,0,0
- 24952 DEFB 0,0,0,0,0,0,0,0
- 24960 DEFB 0,0,0,0,0,0,0,5
- 24968 DEFB 11,12,1,12,1,1,13,9
- 24976 DEFB 0,77,73,68,68,76,69,0
- 24984 DEFB 0,0,5,3,4,2,96,2
- 24992 DEFB 96,0,7,14,0,68,69,67
- 25000 DEFB 75,0,0,0,0,5,3,4
- 25008 DEFB 0,2,0,2,0,0,0,2
- 25016 DEFB 0,0,0,0,0,0,5,11
- 25024 DEFB 1,18,4,0,96,2,0,2
- 25032 DEFB 0,0,0,2,0,0,0,0
- 25040 DEFB 0,5,3,4,0,19,1,15
- 25048 DEFB 1,20,15,21,0,0,0,2
- 25056 DEFB 0,0,0,0,5,3,4,0
- 25064 DEFB 0,2,0,0,96,0,0,16
- 25072 DEFB 0,0,5,17,5,11,1,1
- 25080 DEFB 18,4,0,0,24,26,27,1
- 25088 DEFB 1,12,15,28,1,1,22,23
- 25096 DEFB 29,4,0,0,2,96,0,0
- 25104 DEFB 2,124,2,0,0,2,0,2
- 25112 DEFB 0,0,7,14,2,0,0,0
- 25120 DEFB 19,15,1,1,21,0,2,0
- 25128 DEFB 0,2,96,2,0,0,0,2
- 25136 DEFB 2,96,0,0,16,0,96,123
- 25144 DEFB 16,0,16,0,96,2,0,16
- 25152 DEFB 0,0,0,2,2,0,0,0
- 25160 DEFB 19,1,1,15,21,96,2,0
- 25168 DEFB 0,2,0,2,96,0,0,2
- 25176 DEFB 30,9,0,0,2,96,0,0
- 25184 DEFB 2,0,2,0,0,2,0,2
- 25192 DEFB 0,0,5,17,7,31,1,1
- 25200 DEFB 33,9,0,0,25,34,134,1
- 25208 DEFB 1,20,15,28,1,1,22,23
- 25216 DEFB 0,0,0,0,7,8,9,0
- 25224 DEFB 0,2,0,0,96,0,0,16
- 25232 DEFB 0,0,7,14,0,0,0,0
- 25240 DEFB 0,7,8,9,0,19,1,15
- 25248 DEFB 1,12,15,21,0,0,0,2
- 25256 DEFB 0,0,0,0,0,0,7,31
- 25264 DEFB 1,33,9,0,96,2,0,2
- 25272 DEFB 0,0,0,2,0,0,0,0
- 25280 DEFB 0,0,0,0,0,7,8,9
- 25288 DEFB 0,2,0,2,96,0,0,2
- 25296 DEFB 0,0,0,0,0,0,0,0
- 25304 DEFB 0,0,7,8,9,2,96,2
- 25312 DEFB 0,0,5,17,0,0,0,0
- 25320 DEFB 0,0,0,0,0,0,0,7
- 25328 DEFB 31,20,1,20,1,1,10,4
- 25336 DEFB 0,0,0,0,0,0,24,1
- 25344 DEFB 12,1,1,1,38,39,39,0
- 25352 DEFB 0,0,0,0,0,76,79,87
- 25360 DEFB 69,82,2,96,2,0,0,0
- 25368 DEFB 45,44,44,0,0,0,0,0
- 25376 DEFB 0,68,69,67,75,0,2,0
- 25384 DEFB 2,0,0,0,45,44,44,0
- 25392 DEFB 0,0,0,0,0,0,0,0
- 25400 DEFB 0,0,2,0,2,0,0,0
- 25408 DEFB 45,44,44,43,0,0,0,0
- 25416 DEFB 0,0,0,0,0,5,17,0
- 25424 DEFB 2,0,0,0,45,44,44,44
- 25432 DEFB 43,0,0,0,0,0,0,0
- 25440 DEFB 5,3,4,0,2,96,0,0
- 25448 DEFB 45,44,44,44,44,43,0,0
- 25456 DEFB 0,0,0,0,64,91,15,1
- 25464 DEFB 28,1,15,1,46,44,44,44
- 25472 DEFB 95,59,1,36,0,0,0,0
- 25480 DEFB 2,0,0,0,2,123,0,0
- 25488 DEFB 45,44,44,44,60,96,0,2
- 25496 DEFB 0,0,0,0,16,0,0,0
- 25504 DEFB 2,0,0,0,47,59,59,59
- 25512 DEFB 63,0,0,2,0,0,0,0
- 25520 DEFB 16,96,0,0,16,0,0,0
- 25528 DEFB 16,0,0,96,16,0,0,2
- 25536 DEFB 0,0,0,0,16,0,0,0
- 25544 DEFB 2,96,0,0,137,61,61,61
- 25552 DEFB 62,0,0,2,0,0,0,0
- 25560 DEFB 2,0,0,0,2,0,0,0
- 25568 DEFB 45,44,44,44,60,0,0,2
- 25576 DEFB 0,0,0,0,92,93,15,1
- 25584 DEFB 28,1,15,1,46,44,44,44
- 25592 DEFB 94,61,1,37,0,0,0,0
- 25600 DEFB 7,8,9,0,2,96,0,0
- 25608 DEFB 45,44,44,44,44,42,0,0
- 25616 DEFB 0,0,0,0,0,7,14,96
- 25624 DEFB 2,0,0,0,45,44,44,44
- 25632 DEFB 42,0,0,0,0,0,0,0
- 25640 DEFB 0,0,19,15,21,0,0,0
- 25648 DEFB 45,44,44,42,0,0,0,0
- 25656 DEFB 0,0,0,0,0,0,2,0
- 25664 DEFB 2,0,0,0,45,44,44,0
- 25672 DEFB 0,0,0,0,0,0,0,0
- 25680 DEFB 0,0,2,96,2,0,0,0
- 25688 DEFB 45,44,44,0,0,0,0,0
- 25696 DEFB 0,0,0,0,0,0,25,1
- 25704 DEFB 20,1,1,1,41,40,40,0
- 25712 DEFB 0,0,0,0,20,20,20,6
- 25720 DEFB 125,126,126,125,126,126,126,126
- 25728 DEFB 125,5,6,127,2,127,4,133
- 25736 DEFB 5,6,127,2,127,4,133,5
- 25744 DEFB 6,127,2,127,3,128,130,5
- 25752 DEFB 6,127,2,127,3,127,6,6
- 25760 DEFB 127,2,127,3,127,6,6,127
- 25768 DEFB 2,125,126,126,126,125,126,126
- 25776 DEFB 126,125,131,1,6,127,2,127
- 25784 DEFB 3,127,4,133,1,6,127,2
- 25792 DEFB 127,3,127,4,143,1,6,127
- 25800 DEFB 2,127,3,129,131,5,6,127
- 25808 DEFB 2,127,4,133,5,6,127,2
- 25816 DEFB 127,4,133,5,6,125,126,126
- 25824 DEFB 125,126,126,126,126,125,5,20
- 25832 DEFB 20,20,255,20,20,9,128,126
- 25840 DEFB 126,125,126,126,131,125,126,131
- 25848 DEFB 1,9,125,126,131,3,133,2
- 25856 DEFB 133,1,11,133,3,133,2,133
- 25864 DEFB 1,11,133,3,133,2,133,1
- 25872 DEFB 5,125,126,126,126,126,126,125
- 25880 DEFB 3,133,2,133,1,5,127,2
- 25888 DEFB 128,126,126,130,3,133,2,133
- 25896 DEFB 142,5,127,2,127,6,133,2
- 25904 DEFB 133,133,125,126,126,126,126,125
- 25912 DEFB 2,125,2,125,126,126,126,125
- 25920 DEFB 126,126,125,130,5,127,2,127
- 25928 DEFB 6,133,2,133,1,5,127,2
- 25936 DEFB 129,126,126,131,3,133,2,133
- 25944 DEFB 1,5,125,126,126,126,126,126
- 25952 DEFB 125,3,133,2,133,1,11,133
- 25960 DEFB 3,133,2,133,1,11,133,3
- 25968 DEFB 133,2,133,1,9,125,132,130
- 25976 DEFB 3,133,2,133,1,9,129,132
- 25984 DEFB 132,125,132,132,130,125,132,130
- 25992 DEFB 1,20,20,255,20,20,1,128
- 26000 DEFB 126,126,126,125,126,126,126,131
- 26008 DEFB 10,1,127,7,133,10,1,127
- 26016 DEFB 7,125,126,126,126,126,131,5
- 26024 DEFB 1,127,12,133,1,142,3,1
- 26032 DEFB 127,12,133,1,127,3,1,127
- 26040 DEFB 12,133,1,129,132,125,1,1
- 26048 DEFB 127,12,133,3,133,1,1,125
- 26056 DEFB 7,125,132,132,132,132,125,132
- 26064 DEFB 132,132,130,1,1,127,12,133
- 26072 DEFB 5,1,127,12,133,5,1,127
- 26080 DEFB 12,133,5,1,127,12,133,5
- 26088 DEFB 1,129,132,132,132,125,3,125
- 26096 DEFB 132,132,132,132,130,5,5,127
- 26104 DEFB 3,133,10,5,127,3,133,10
- 26112 DEFB 5,125,132,132,132,130,10,20
- 26120 DEFB 255,0,0,0,0,0,0,0
- 26128 DEFB 0,0,0,0,0,0,0,0
- 26136 DEFB 0,0,0,0,0,0,0,0
- 26144 DEFB 0,0,0,0,0,0,0,0
- 26152 DEFB 0,0,0,0,0,0,0,0
- 26160 DEFB 0,0,0,0,0,0,0,0
- 26168 DEFB 0,0,0,0,0,0,0,0
- 26176 DEFB 0,0,0,0,0,0,0,0
- 26184 DEFB 0,0,0,0,0,0,0,0
- 26192 DEFB 0,0,0,0,0,0,0,0
- 26200 DEFB 0,0,0,0,0,0,0,0
- 26208 DEFB 0,0,0,0,0,0,0,0
- 26216 DEFB 0,0,0,0,0,0,0,0
- 26224 DEFB 0,0,0,0,0,0,0,0
- 26232 DEFB 0,0,0,0,0,0,0,0
- 26240 DEFB 0,0,0,0,0,0,0,0
- 26248 DEFB 0,0,0,0,0,0,0,0
- 26256 DEFB 0,0,0,0,0,0,0,0
- 26264 DEFB 0,0,0,0,0,0,0,0
- 26272 DEFB 0,0,0,0,0,0,0,0
- 26280 DEFB 0,0,0,0,0,0,0,0
- 26288 DEFB 0,0,0,0,0,0,0,0
- 26296 DEFB 0,0,0,0,0,0,0,0
- 26304 DEFB 0,0,0,0,0,0,0,0
- 26312 DEFB 0,0,0,0,0,0,0,0
- 26320 DEFB 0,0,0,0,0,0,0,0
- 26328 DEFB 0,0,0,0,0,0,0,0
- 26336 DEFB 0,0,0,0,0,0,0,0
- 26344 DEFB 0,0,0,0,0,0,0,0
- 26352 DEFB 0,0,0,0,0,0,0,0
- 26360 DEFB 0,0,0,0,0,0,0,0
- 26368 DEFB 0,0,0,0,0,0,0,0
- 26376 DEFB 0,0,0,0,0,0,0,0
- 26384 DEFB 0,0,0,0,0,0,0,0
- 26392 DEFB 0,0,0,0,0,0,0,0
- 26400 DEFB 0,0,0,0,0,0,0,0
- 26408 DEFB 0,0,0,0,0,0,0,0
- 26416 DEFB 0,0,0,0,0,0,0,0
- 26424 DEFB 0,0,0,0,0,0,0,0
- 26432 DEFB 0,0,0,0,0,0,0,0
- 26440 DEFB 0,0,0,0,0,0,0,0
- 26448 DEFB 0,0,0,0,0,0,0,0
- 26456 DEFB 0,0,0,0,0,0,0,0
- 26464 DEFB 0,0,0,0,0,0,0,0
- 26472 DEFB 0,0,0,0,0,0,0,0
- 26480 DEFB 0,0,0,0,0,0,0,0
- 26488 DEFB 0,0,0,0,0,0,0,0
- 26496 DEFB 0,0,0,0,0,3,9,15
- 26504 DEFB 9,2,12,4,9,9,9,14
- 26512 DEFB 9,9,0,9,17,9,5,9
- 26520 DEFB 8,6,11,9,15,12,11,9
- 26528 DEFB 13,9,14,9,11,14,5,2
- 26536 DEFB 16,9,18,16,16,17,5,6
- 26544 DEFB 5,3,9,12,5,15,9,7
- 26552 DEFB 18,3,6,9,9,15,6,16
- 26560 DEFB 12,3,14,15,14,9,1,2
- 26568 DEFB 5
+b24576 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  ; UPPER deck row 0
+ 24596 DEFB 0,85,80,80,69,82,0,0,0,0,0,0,0,0,0,0,0,0,0,0  ; UPPER deck row 1
+ 24616 DEFB 0,68,69,67,75,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  ; UPPER deck row 2
+ 24636 DEFB 0,0,0,0,0,0,5,11,12,1,1,15,1,12,1,1,1,36,0,0  ; UPPER deck row 3
+ 24656 DEFB 0,0,0,0,0,5,3,4,2,96,0,0,0,2,96,0,0,2,0,0  ; UPPER deck row 4
+ 24676 DEFB 0,0,0,0,5,3,4,96,2,0,0,0,0,2,0,0,0,2,0,0  ; UPPER deck row 5
+ 24696 DEFB 0,0,0,0,29,4,0,0,19,1,1,1,34,134,1,12,15,21,0,0  ; UPPER deck row 6
+ 24716 DEFB 0,0,0,0,2,0,0,0,2,0,0,0,2,96,0,2,96,2,0,0  ; UPPER deck row 7
+ 24736 DEFB 0,0,0,0,2,0,124,0,16,0,0,0,2,0,0,2,0,2,0,0  ; UPPER deck row 8
+ 24756 DEFB 0,0,0,0,19,15,1,1,21,0,0,0,16,0,0,16,0,2,0,0  ; UPPER deck row 9
+ 24776 DEFB 0,0,0,0,2,0,0,0,16,0,0,0,2,0,0,2,0,2,0,0  ; UPPER deck row 10
+ 24796 DEFB 0,0,0,0,2,0,0,0,2,0,0,96,2,0,0,2,0,2,0,0  ; UPPER deck row 11
+ 24816 DEFB 0,0,0,0,30,9,0,0,19,1,1,1,26,27,15,20,1,21,0,0  ; UPPER deck row 12
+ 24836 DEFB 0,0,0,0,7,8,9,96,2,0,0,0,0,2,0,0,0,2,0,0  ; UPPER deck row 13
+ 24856 DEFB 0,0,0,0,0,7,8,9,2,96,0,0,0,2,96,0,0,2,0,0  ; UPPER deck row 14
+ 24876 DEFB 0,0,0,0,0,0,7,31,20,1,1,15,1,20,1,1,1,37,0,0  ; UPPER deck row 15
+ 24896 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  ; UPPER deck row 16
+ 24916 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  ; UPPER deck row 17
+ 24936 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  ; UPPER deck row 18
+ 24956 DEFB 0,0,0,0,0,0,0,0,0,0,0,5,11,12,1,12,1,1,13,9  ; MIDDLE deck row 0
+ 24976 DEFB 0,77,73,68,68,76,69,0,0,0,5,3,4,2,96,2,96,0,7,14  ; MIDDLE deck row 1
+ 24996 DEFB 0,68,69,67,75,0,0,0,0,5,3,4,0,2,0,2,0,0,0,2  ; MIDDLE deck row 2
+ 25016 DEFB 0,0,0,0,0,0,5,11,1,18,4,0,96,2,0,2,0,0,0,2  ; MIDDLE deck row 3
+ 25036 DEFB 0,0,0,0,0,5,3,4,0,19,1,15,1,20,15,21,0,0,0,2  ; MIDDLE deck row 4
+ 25056 DEFB 0,0,0,0,5,3,4,0,0,2,0,0,96,0,0,16,0,0,5,17  ; MIDDLE deck row 5
+ 25076 DEFB 5,11,1,1,18,4,0,0,24,26,27,1,1,12,15,28,1,1,22,23  ; MIDDLE deck row 6
+ 25096 DEFB 29,4,0,0,2,96,0,0,2,124,2,0,0,2,0,2,0,0,7,14  ; MIDDLE deck row 7
+ 25116 DEFB 2,0,0,0,19,15,1,1,21,0,2,0,0,2,96,2,0,0,0,2  ; MIDDLE deck row 8
+ 25136 DEFB 2,96,0,0,16,0,96,123,16,0,16,0,96,2,0,16,0,0,0,2  ; MIDDLE deck row 9
+ 25156 DEFB 2,0,0,0,19,1,1,15,21,96,2,0,0,2,0,2,96,0,0,2  ; MIDDLE deck row 10
+ 25176 DEFB 30,9,0,0,2,96,0,0,2,0,2,0,0,2,0,2,0,0,5,17  ; MIDDLE deck row 11
+ 25196 DEFB 7,31,1,1,33,9,0,0,25,34,134,1,1,20,15,28,1,1,22,23  ; MIDDLE deck row 12
+ 25216 DEFB 0,0,0,0,7,8,9,0,0,2,0,0,96,0,0,16,0,0,7,14  ; MIDDLE deck row 13
+ 25236 DEFB 0,0,0,0,0,7,8,9,0,19,1,15,1,12,15,21,0,0,0,2  ; MIDDLE deck row 14
+ 25256 DEFB 0,0,0,0,0,0,7,31,1,33,9,0,96,2,0,2,0,0,0,2  ; MIDDLE deck row 15
+ 25276 DEFB 0,0,0,0,0,0,0,0,0,7,8,9,0,2,0,2,96,0,0,2  ; MIDDLE deck row 16
+ 25296 DEFB 0,0,0,0,0,0,0,0,0,0,7,8,9,2,96,2,0,0,5,17  ; MIDDLE deck row 17
+ 25316 DEFB 0,0,0,0,0,0,0,0,0,0,0,7,31,20,1,20,1,1,10,4  ; MIDDLE deck row 18
+ 25336 DEFB 0,0,0,0,0,0,24,1,12,1,1,1,38,39,39,0,0,0,0,0  ; LOWER deck row 0
+ 25356 DEFB 0,76,79,87,69,82,2,96,2,0,0,0,45,44,44,0,0,0,0,0  ; LOWER deck row 1
+ 25376 DEFB 0,68,69,67,75,0,2,0,2,0,0,0,45,44,44,0,0,0,0,0  ; LOWER deck row 2
+ 25396 DEFB 0,0,0,0,0,0,2,0,2,0,0,0,45,44,44,43,0,0,0,0  ; LOWER deck row 3
+ 25416 DEFB 0,0,0,0,0,5,17,0,2,0,0,0,45,44,44,44,43,0,0,0  ; LOWER deck row 4
+ 25436 DEFB 0,0,0,0,5,3,4,0,2,96,0,0,45,44,44,44,44,43,0,0  ; LOWER deck row 5
+ 25456 DEFB 0,0,0,0,64,91,15,1,28,1,15,1,46,44,44,44,95,59,1,36  ; LOWER deck row 6
+ 25476 DEFB 0,0,0,0,2,0,0,0,2,123,0,0,45,44,44,44,60,96,0,2  ; LOWER deck row 7
+ 25496 DEFB 0,0,0,0,16,0,0,0,2,0,0,0,47,59,59,59,63,0,0,2  ; LOWER deck row 8
+ 25516 DEFB 0,0,0,0,16,96,0,0,16,0,0,0,16,0,0,96,16,0,0,2  ; LOWER deck row 9
+ 25536 DEFB 0,0,0,0,16,0,0,0,2,96,0,0,137,61,61,61,62,0,0,2  ; LOWER deck row 10
+ 25556 DEFB 0,0,0,0,2,0,0,0,2,0,0,0,45,44,44,44,60,0,0,2  ; LOWER deck row 11
+ 25576 DEFB 0,0,0,0,92,93,15,1,28,1,15,1,46,44,44,44,94,61,1,37  ; LOWER deck row 12
+ 25596 DEFB 0,0,0,0,7,8,9,0,2,96,0,0,45,44,44,44,44,42,0,0  ; LOWER deck row 13
+ 25616 DEFB 0,0,0,0,0,7,14,96,2,0,0,0,45,44,44,44,42,0,0,0  ; LOWER deck row 14
+ 25636 DEFB 0,0,0,0,0,0,19,15,21,0,0,0,45,44,44,42,0,0,0,0  ; LOWER deck row 15
+ 25656 DEFB 0,0,0,0,0,0,2,0,2,0,0,0,45,44,44,0,0,0,0,0  ; LOWER deck row 16
+ 25676 DEFB 0,0,0,0,0,0,2,96,2,0,0,0,45,44,44,0,0,0,0,0  ; LOWER deck row 17
+ 25696 DEFB 0,0,0,0,0,0,25,1,20,1,1,1,41,40,40,0,0,0,0,0  ; LOWER deck row 18
+
+; Room-interior layout template 0 (RLE-compressed)
+;
+; Selected by room type (#R31243) at PickRoomLayout (#R32981) and
+; decompressed into the grid buffer at #R26121 by RoomLayoutExpand
+; (#R33153): byte < 30 = that many zero cells, 30-254 = literal tile
+; code, 255 = end.
+@label=RoomLayout0
+b25716 DEFB 20,20,20,6,125,126,126,125,126,126,126,126,125,5,6,127
+ 25732 DEFB 2,127,4,133,5,6,127,2,127,4,133,5,6,127,2,127
+ 25748 DEFB 3,128,130,5,6,127,2,127,3,127,6,6,127,2,127,3
+ 25764 DEFB 127,6,6,127,2,125,126,126,126,125,126,126,126,125,131,1
+ 25780 DEFB 6,127,2,127,3,127,4,133,1,6,127,2,127,3,127,4
+ 25796 DEFB 143,1,6,127,2,127,3,129,131,5,6,127,2,127,4,133
+ 25812 DEFB 5,6,127,2,127,4,133,5,6,125,126,126,125,126,126,126
+ 25828 DEFB 126,125,5,20,20,20,255
+
+; Room-interior layout template 1 (RLE-compressed)
+;
+; Selected by room type (#R31243) at PickRoomLayout (#R32981) and
+; decompressed into the grid buffer at #R26121 by RoomLayoutExpand
+; (#R33153): byte < 30 = that many zero cells, 30-254 = literal tile
+; code, 255 = end.
+@label=RoomLayout1
+b25835 DEFB 20,20,9,128,126,126,125,126,126,131,125,126,131,1,9,125
+ 25851 DEFB 126,131,3,133,2,133,1,11,133,3,133,2,133,1,11,133
+ 25867 DEFB 3,133,2,133,1,5,125,126,126,126,126,126,125,3,133,2
+ 25883 DEFB 133,1,5,127,2,128,126,126,130,3,133,2,133,142,5,127
+ 25899 DEFB 2,127,6,133,2,133,133,125,126,126,126,126,125,2,125,2
+ 25915 DEFB 125,126,126,126,125,126,126,125,130,5,127,2,127,6,133,2
+ 25931 DEFB 133,1,5,127,2,129,126,126,131,3,133,2,133,1,5,125
+ 25947 DEFB 126,126,126,126,126,125,3,133,2,133,1,11,133,3,133,2
+ 25963 DEFB 133,1,11,133,3,133,2,133,1,9,125,132,130,3,133,2
+ 25979 DEFB 133,1,9,129,132,132,125,132,132,130,125,132,130,1,20,20
+ 25995 DEFB 255
+
+; Room-interior layout template 2 (RLE-compressed)
+;
+; Selected by room type (#R31243) at PickRoomLayout (#R32981) and
+; decompressed into the grid buffer at #R26121 by RoomLayoutExpand
+; (#R33153): byte < 30 = that many zero cells, 30-254 = literal tile
+; code, 255 = end.
+@label=RoomLayout2
+b25996 DEFB 20,20,1,128,126,126,126,125,126,126,126,131,10,1,127,7
+ 26012 DEFB 133,10,1,127,7,125,126,126,126,126,131,5,1,127,12,133
+ 26028 DEFB 1,142,3,1,127,12,133,1,127,3,1,127,12,133,1,129
+ 26044 DEFB 132,125,1,1,127,12,133,3,133,1,1,125,7,125,132,132
+ 26060 DEFB 132,132,125,132,132,132,130,1,1,127,12,133,5,1,127,12
+ 26076 DEFB 133,5,1,127,12,133,5,1,127,12,133,5,1,129,132,132
+ 26092 DEFB 132,125,3,125,132,132,132,132,130,5,5,127,3,133,10,5
+ 26108 DEFB 127,3,133,10,5,125,132,132,132,130,10,20,255
+
+; Room grid buffer — 19 rows x 20 columns
+;
+; Working buffer holding the decompressed cell grid of the current
+; room view (or corridor view, decompressed from #R30720). Blitted to
+; the screen by DrawRoomBackground (#R31267); the door drawer walks it
+; via RoomCellCursor (#R31259). The bytes below are load-image
+; leftovers.
+@label=RoomGridBuffer
+b26121 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26141 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26161 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26181 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26201 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26221 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26241 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26261 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26281 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26301 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26321 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26341 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26361 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26381 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26401 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26421 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26441 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26461 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 26481 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+; Per-room view origin table — 34 rooms x (row, column)
+;
+; Read by SetRoomOrigin (#R33178): for the current room, byte 0 =
+; grid row and byte 1 = column where exit/door drawing starts;
+; converted to RoomCellCursor (#R26121 + 20*row + col) and
+; RoomAttrCursor (attr file + 32*row + col). Narcissus has no entry.
+@label=RoomOriginTable
+b26501 DEFB 3,9          ;  0 Airlock #1
+ 26503 DEFB 15,9          ;  1 Airlock #2
+ 26505 DEFB 2,12          ;  2 Armoury
+ 26507 DEFB 4,9          ;  3 Cargopod#1
+ 26509 DEFB 9,9          ;  4 Cargopod#2
+ 26511 DEFB 14,9          ;  5 Cargopod#3
+ 26513 DEFB 9,0          ;  6 CommdCentr
+ 26515 DEFB 9,17          ;  7 Computer
+ 26517 DEFB 9,5          ;  8 Corridor#1
+ 26519 DEFB 9,8          ;  9 Corridor#2
+ 26521 DEFB 6,11          ; 10 Corridor#3
+ 26523 DEFB 9,15          ; 11 Corridor#4
+ 26525 DEFB 12,11          ; 12 Corridor#5
+ 26527 DEFB 9,13          ; 13 Corridor#6
+ 26529 DEFB 9,14          ; 14 Corridor#7
+ 26531 DEFB 9,11          ; 15 Cryo Vault
+ 26533 DEFB 14,5          ; 16 Engineerng
+ 26535 DEFB 2,16          ; 17 Engine #1
+ 26537 DEFB 9,18          ; 18 Engine #2
+ 26539 DEFB 16,16          ; 19 Engine #3
+ 26541 DEFB 17,5          ; 20 Eng Stores
+ 26543 DEFB 6,5          ; 21 Infirmary
+ 26545 DEFB 3,9          ; 22 Inf Stores
+ 26547 DEFB 12,5          ; 23 Laboratory
+ 26549 DEFB 15,9          ; 24 Lab Stores
+ 26551 DEFB 7,18          ; 25 Life Suppt
+ 26553 DEFB 3,6          ; 26 Livng Qtrs
+ 26555 DEFB 9,9          ; 27 Mess
+ 26557 DEFB 15,6          ; 28 RecrtnArea
+ 26559 DEFB 16,12          ; 29 Stores #1
+ 26561 DEFB 3,14          ; 30 Stores #2
+ 26563 DEFB 15,14          ; 31 Stores #3
+ 26565 DEFB 9,1          ; 32 ShuttleBay
+ 26567 DEFB 2,5          ; 33 Shttlstore
 
 ; Data block at #R26569
 @label=CrewSpriteBitmaps
@@ -2137,6 +2072,7 @@ b30626 DEFB 2,1,1,0,0,0,223,96
 ; Tile-index sequences defining the visual appearance of each room type.
 ; Loaded into HL within #R31634 (DrawSprite) and used via #R33153.
 @label=RoomTileMaps
+@label=CorridorLayout
 b30720 DEFB 20,2
  30722 DEFB 146,147,12,148,149,2,146,147
  30730 DEFB 146,147,12,148,149,148,149,146
@@ -2508,11 +2444,11 @@ c31626 LD HL,(31261) ; HL = corridor tile-source pointer (#R31261)
 
 ; DrawSprite
 ;
-; Renders a 10-character text label at the current draw position (#R31241).
+; Renders a 10-character text label at the current draw position (#R31257).
 ; The "sprite" data is the 10-byte text entry at #R28221 + A×10 (see
 ; RoomNameTable / UIStringTable); each byte is used as a tile index into
 ; #R26869, which is laid out so that index N == ASCII N produces the glyph
-; for that character. After drawing 10 columns, advances #R31241 to the next
+; for that character. After drawing 10 columns, advances #R31257 to the next
 ; character row accounting for the ZX Spectrum display-file row wrapping.
 ;
 ; Input:  A = text/label index (255 → use blank label, entry 92)
@@ -2556,9 +2492,18 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
 *31685 ADD HL,DE     ; move draw pointer to start of next character row
  31686 LD (31257),HL ; save updated draw pointer
  31689 RET           ;
-; This entry point is used by the routines at #R31562, #R37018, #R42821,
-; #R44313 and #R45401.
-*31690 LD DE,29516   ;
+
+; PrintName
+;
+; Prints actor name A (0 = ALIEN, 1-7 = crew) by skipping A
+; 255-terminated names in CrewNameTable and drawing the next one one
+; glyph at a time. The second entry point three bytes in is also
+; entered directly with DE pre-set to walk other string lists.
+;
+; Used by the routines at #R31562, #R37018, #R42821, #R44313 and
+; #R45401.
+@label=PrintName
+c31690 LD DE,29516   ; CrewNameTable
 ; This entry point is used by the routine at #R42821.
 *31693 AND A         ;
  31694 JR Z,31705    ;
@@ -2578,6 +2523,7 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31716 CP 255        ;
  31718 JR NZ,31705   ;
  31720 RET           ;
+
 ; SelectSlotByDrawIdx
 @ignoreua
 ;
@@ -2592,7 +2538,7 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
 ;
 ; This entry point is used by the routine at #R35163.
 @label=SelectSlotByDrawIdx
-*31721 LD A,(31241)  ; A = current draw index (slot 0..7)
+c31721 LD A,(31241)  ; A = current draw index (slot 0..7)
  31724 ADD A,A       ;
  31725 ADD A,A       ;
  31726 ADD A,A       ; A *= 8 (record stride)
@@ -2614,7 +2560,16 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31754 LD A,(HL)     ;
  31755 LD (31243),A  ; RoomTypeByte for this crew
  31758 RET           ;
-*31759 LD A,(31242)  ;
+
+; BuildExitList
+;
+; Builds the current room's door-exit list (CorridorPosTable + 2):
+; walks the room's
+; 5 direction slots in RoomAdjCorridors and stores each destination
+; that differs from the current room (up to 5 entries). The room view
+; draws one door per entry.
+@label=BuildExitList
+c31759 LD A,(31242)  ; A = current room
  31762 LD L,A        ;
  31763 LD H,0        ;
  31765 PUSH HL       ;
@@ -2655,8 +2610,16 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31819 RET           ;
 ; This entry point is used by the routines at #R35451, #R35578 and #R44880.
 *31820 LD A,(31241)  ;
-; This entry point is used by the routines at #R37490 and #R40826.
-*31823 ADD A,128     ;
+
+; FindActorCells
+;
+; Finds where actor A stands in the 22-cell corridor strip:
+; scans for the id+160 marker into ActorCellFront (#R31248) and the
+; id+128 marker into ActorCellBack (#R31249).
+;
+; Used by the routines at #R37490 and #R40826.
+@label=FindActorCells
+c31823 ADD A,128     ; C = id + 128, E = id + 160
  31825 LD C,A        ;
  31826 ADD A,32      ;
  31828 LD E,A        ;
@@ -2678,14 +2641,17 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31854 DJNZ 31834    ;
  31856 RET           ;
 ; This entry point is used by the routines at #R35451, #R35578 and #R37490.
-; CellToItemString: map a corridor cell (in A) to the string index of
+
+; CellToItemString
+;
+; Maps a corridor cell (in A) to the string index of
 ; the item stored at that shelf position: cells 0-2 -> 35 Elctrc Prd,
 ; 3-5 -> 36 Incineratr, 6-7 -> 37 Tracker, 8-11 -> 38 Fire Extng, 12 ->
 ; 39 Harpn Gun, 13-15 -> 40 Laser Pist, 16 -> 41 Net, 17 -> 42 Cat Box,
 ; 18+ -> 43 Spanner; special cells 20/21 -> strings 68/69. Items thus
 ; live at fixed positions within rooms.
 @label=CellToItemString
-*31857 LD E,35       ; E = first item string ("Elctrc Prd")
+c31857 LD E,35       ; E = first item string ("Elctrc Prd")
  31859 CP 3          ;
  31861 JR C,31899    ;
  31863 INC E         ;
@@ -2719,14 +2685,17 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31911 LD E,69       ;
 *31913 LD A,E        ;
  31914 RET           ;
-; BuildItemMenu: fill the action-menu buffer (corridor table + 8) with
+
+; BuildItemMenu
+;
+; Fills the action-menu buffer (corridor table + 8) with
 ; up to four
 ; string indexes for the current standing position: the item names at
 ; the actor's two cells, then "Get Item" (47) when the held-item slot
 ; is loaded and the back cell is empty, and "Leave Item" (48)
 ; when the front cell is empty.
 @label=BuildItemMenu
-*31915 LD C,255      ; C = "empty" sentinel
+c31915 LD C,255      ; C = "empty" sentinel
  31917 LD HL,29638   ; menu buffer
  31920 LD A,(31248)  ; item at the actor's front cell
  31923 CP C          ;
@@ -2754,9 +2723,16 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31960 LD A,48       ; offer "Leave Item"
  31962 LD (HL),A     ;
  31963 RET           ;
+
+; DrawRoomSpecials
+;
+; Draws the special actors into the room view when the viewed room
+; hosts them: the activated Android (via AlienTargetID's record) and
+; Jones the cat, plus follow-on room furniture.
+@label=DrawRoomSpecials
 @nowarn=33703
 @ssub=LD A,(AlienTargetID)
-*31964 LD A,(33703)  ;
+c31964 LD A,(33703)  ; Android slot chosen for this run
  31967 CP 8          ;
  31969 JR NC,31988   ;
 @nowarn=33704
@@ -3186,9 +3162,16 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  32712 LD (31250),A  ;
  32715 LD (31251),A  ;
  32718 RET           ;
-; This entry point is used by the routines at #R35163, #R35578, #R35973,
-; #R38379 and #R44815.
-*32719 CALL 32684    ;
+
+; DeathSequence
+;
+; Handles a crew member's on-screen death in the room view: rebuilds
+; the corridor strip, redraws the scene and updates the status panel.
+;
+; Used by the routines at #R35163, #R35578, #R35973, #R38379 and
+; #R44815.
+@label=DeathSequence
+c32719 CALL 32684    ;
 @nowarn=32896
 @ssub=LD HL,Auto_8080
  32722 LD HL,32896   ;
@@ -3285,44 +3268,42 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  32927 CALL 34882    ;
  32930 CALL 39572    ;
  32933 RET           ;
-@label=Auto_80A6
- 32934 LD A,L        ;
- 32935 LD L,H        ;
- 32936 ADD A,D       ;
- 32937 LD A,(HL)     ;
- 32938 EI            ;
- 32939 ADD A,C       ;
- 32940 LD A,A        ;
- 32941 EI            ;
- 32942 ADD A,C       ;
- 32943 ADD A,B       ;
- 32944 CALL M,33153  ;
- 32947 JR 32823      ;
- 32949 ADD A,D       ;
- 32950 INC (HL)      ;
- 32951 ADD A,D       ;
- 32952 ADD A,E       ;
- 32953 LD D,B        ;
- 32954 ADD A,D       ;
- 32955 ADD A,H       ;
- 32956 EI            ;
- 32957 ADD A,C       ;
- 32958 ADD A,L       ;
- 32959 EI            ;
- 32960 ADD A,C       ;
- 32961 ADC A,(HL)    ;
- 32962 LD L,H        ;
- 32963 ADD A,D       ;
- 32964 ADC A,A       ;
- 32965 LD L,H        ;
- 32966 ADD A,D       ;
-*32967 LD A,(31243)  ;
- 32970 CP 4          ;
+; Cell-glyph draw-handler table (was mis-disassembled as code):
+; 3-byte records (glyph, handler word) looked up by the door-arm
+; DrawDoorArm (#R33223), which patches the handler into its CALL.
+; Glyph 125
+; '}' = duct grille; 126-133 = door/corridor segment glyphs mapping
+; to four segment drawers, the grille drawer, or CellDrawStop
+; (#R33275).
+@label=CellDrawTable
+ 32934 DEFB 125,108,130   ; '}' -> grille drawer
+ 32937 DEFB 126,251,129   ; glyph 126 -> stop
+ 32940 DEFB 127,251,129   ; glyph 127 -> stop
+ 32943 DEFB 128,252,129   ; glyph 128 -> segment drawer A
+ 32946 DEFB 129,24,130   ; glyph 129 -> segment drawer B
+ 32949 DEFB 130,52,130   ; glyph 130 -> segment drawer C
+ 32952 DEFB 131,80,130   ; glyph 131 -> segment drawer D
+ 32955 DEFB 132,251,129   ; glyph 132 -> stop
+ 32958 DEFB 133,251,129   ; glyph 133 -> stop
+ 32961 DEFB 142,108,130   ; glyph 142 -> grille drawer
+ 32964 DEFB 143,108,130   ; glyph 143 -> grille drawer
+
+; RedrawRoomView
+;
+; Rebuilds the room-interior view for the current room: picks the
+; layout template by room type, decompresses it into the grid buffer,
+; draws walls/furniture, then walks the exit list drawing one door arm
+; per neighbour (and grille arms for duct openings). Room type 4 (the
+; alien's lair view) resets the encounter animation instead.
+@label=RedrawRoomView
+c32967 LD A,(31243)  ; A = room type
+ 32970 CP 4          ; alien-lair view?
  32972 JR NZ,32981   ;
- 32974 CALL 39687    ;
+ 32974 CALL 39687    ; yes: reset alien body animation
  32977 CALL 33421    ;
  32980 RET           ;
-*32981 LD HL,25716   ;
+@label=PickRoomLayout
+*32981 LD HL,25716   ; room type 0: layout template 0
  32984 AND A         ;
  32985 JR Z,32997    ;
  32987 LD HL,25835   ;
@@ -3397,8 +3378,16 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  33146 LD (31246),HL ;
  33149 CALL 33223    ;
  33152 RET           ;
-; This entry point is used by the routine at #R33610.
-*33153 LD DE,26121   ;
+
+; RoomLayoutExpand
+;
+; Decompresses the RLE room layout at HL into the 20x19 grid buffer:
+; byte < 30 = that many zero cells, 30-254 = literal tile code,
+; 255 = end.
+;
+; Used by the corridor-view builder at #R33610 and the room renderer.
+@label=RoomLayoutExpand
+c33153 LD DE,26121   ; DE = grid buffer; HL = RLE source
 *33156 LD A,(HL)     ;
  33157 CP 30         ;
  33159 JR C,33169    ;
@@ -3415,7 +3404,14 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  33173 DJNZ 33171    ;
  33175 INC HL        ;
  33176 JR 33156      ;
-*33178 LD A,(31242)  ;
+
+; SetRoomOrigin
+;
+; Loads the current room's (row, column) pair from RoomOriginTable and
+; sets RoomCellCursor (grid buffer + 20*row + col) and RoomAttrCursor
+; (attribute file + 32*row + col) for the door drawing pass.
+@label=SetRoomOrigin
+c33178 LD A,(31242)  ; A = current room
  33181 AND 63        ;
  33183 ADD A,A       ;
  33184 LD D,0        ;
@@ -3440,10 +3436,19 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  33218 ADD HL,BC     ;
  33219 LD (31255),HL ;
  33222 RET           ;
-*33223 LD HL,(31259) ;
+
+; DrawDoorArm
+;
+; Draws one door/corridor arm of the room view: reads the grid cell
+; under RoomCellCursor, looks its glyph up in CellDrawTable (#R32934),
+; patches the matching handler into the CALL below (self-modifying),
+; paints attribute 5 (cyan) and steps both cursors by the stride pair
+; RoomAttrStep/RoomCellStep, looping until a stop handler fires.
+@label=DrawDoorArm
+c33223 LD HL,(31259) ; read grid cell under the cursor
  33226 LD A,(HL)     ;
 @nowarn=32934
-@ssub=LD HL,Auto_80A6
+@ssub=LD HL,CellDrawTable
  33227 LD HL,32934   ;
 *33230 CP (HL)       ;
  33231 JR Z,33238    ;
@@ -3468,7 +3473,13 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  33269 ADD HL,DE     ;
  33270 LD (31259),HL ;
  33273 JR 33223      ;
-*33275 RET           ;
+
+; CellDrawStop
+;
+; Null cell-draw handler: glyphs mapped here in CellDrawTable end the
+; door arm.
+@label=CellDrawStop
+c33275 RET           ;
  33276 LD HL,(31244) ;
  33279 LD A,L        ;
  33280 LD DE,32      ;

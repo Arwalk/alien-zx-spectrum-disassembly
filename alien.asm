@@ -1056,258 +1056,257 @@ LoadedCode:
   DEFB $5D,$1C,$BA,$CD,$52,$1C,$76,$1B
   DEFB $03,$13,$00,$3E
 
-; Data block at ShipMapData
+; Ship-map screen data — three deck maps
+;
+; The map screen shown by DrawShipMap (DrawShipMap) as three stacked deck
+; views: 3 decks x 19 rows x 20 columns of tile codes (the same 20-wide grid
+; format the room views use). Row texts like "UPPER DECK" are plain ASCII tile
+; codes; other values are map glyphs (room outlines, corridors, and the legend
+; symbols: 123 '{' ladder up, 124 '|' hatchway down, 125 '}' duct grille).
 ShipMapData:
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$55,$50,$50
-  DEFB $45,$52,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$44,$45,$43,$4B,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$05,$0B,$0C,$01,$01,$0F
-  DEFB $01,$0C,$01,$01,$01,$24,$00,$00
-  DEFB $00,$00,$00,$00,$00,$05,$03,$04
-  DEFB $02,$60,$00,$00,$00,$02,$60,$00
-  DEFB $00,$02,$00,$00,$00,$00,$00,$00
-  DEFB $05,$03,$04,$60,$02,$00,$00,$00
-  DEFB $00,$02,$00,$00,$00,$02,$00,$00
-  DEFB $00,$00,$00,$00,$1D,$04,$00,$00
-  DEFB $13,$01,$01,$01,$22,$86,$01,$0C
-  DEFB $0F,$15,$00,$00,$00,$00,$00,$00
-  DEFB $02,$00,$00,$00,$02,$00,$00,$00
-  DEFB $02,$60,$00,$02,$60,$02,$00,$00
-  DEFB $00,$00,$00,$00,$02,$00,$7C,$00
-  DEFB $10,$00,$00,$00,$02,$00,$00,$02
-  DEFB $00,$02,$00,$00,$00,$00,$00,$00
-  DEFB $13,$0F,$01,$01,$15,$00,$00,$00
-  DEFB $10,$00,$00,$10,$00,$02,$00,$00
-  DEFB $00,$00,$00,$00,$02,$00,$00,$00
-  DEFB $10,$00,$00,$00,$02,$00,$00,$02
-  DEFB $00,$02,$00,$00,$00,$00,$00,$00
-  DEFB $02,$00,$00,$00,$02,$00,$00,$60
-  DEFB $02,$00,$00,$02,$00,$02,$00,$00
-  DEFB $00,$00,$00,$00,$1E,$09,$00,$00
-  DEFB $13,$01,$01,$01,$1A,$1B,$0F,$14
-  DEFB $01,$15,$00,$00,$00,$00,$00,$00
-  DEFB $07,$08,$09,$60,$02,$00,$00,$00
-  DEFB $00,$02,$00,$00,$00,$02,$00,$00
-  DEFB $00,$00,$00,$00,$00,$07,$08,$09
-  DEFB $02,$60,$00,$00,$00,$02,$60,$00
-  DEFB $00,$02,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$07,$1F,$14,$01,$01,$0F
-  DEFB $01,$14,$01,$01,$01,$25,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$05
-  DEFB $0B,$0C,$01,$0C,$01,$01,$0D,$09
-  DEFB $00,$4D,$49,$44,$44,$4C,$45,$00
-  DEFB $00,$00,$05,$03,$04,$02,$60,$02
-  DEFB $60,$00,$07,$0E,$00,$44,$45,$43
-  DEFB $4B,$00,$00,$00,$00,$05,$03,$04
-  DEFB $00,$02,$00,$02,$00,$00,$00,$02
-  DEFB $00,$00,$00,$00,$00,$00,$05,$0B
-  DEFB $01,$12,$04,$00,$60,$02,$00,$02
-  DEFB $00,$00,$00,$02,$00,$00,$00,$00
-  DEFB $00,$05,$03,$04,$00,$13,$01,$0F
-  DEFB $01,$14,$0F,$15,$00,$00,$00,$02
-  DEFB $00,$00,$00,$00,$05,$03,$04,$00
-  DEFB $00,$02,$00,$00,$60,$00,$00,$10
-  DEFB $00,$00,$05,$11,$05,$0B,$01,$01
-  DEFB $12,$04,$00,$00,$18,$1A,$1B,$01
-  DEFB $01,$0C,$0F,$1C,$01,$01,$16,$17
-  DEFB $1D,$04,$00,$00,$02,$60,$00,$00
-  DEFB $02,$7C,$02,$00,$00,$02,$00,$02
-  DEFB $00,$00,$07,$0E,$02,$00,$00,$00
-  DEFB $13,$0F,$01,$01,$15,$00,$02,$00
-  DEFB $00,$02,$60,$02,$00,$00,$00,$02
-  DEFB $02,$60,$00,$00,$10,$00,$60,$7B
-  DEFB $10,$00,$10,$00,$60,$02,$00,$10
-  DEFB $00,$00,$00,$02,$02,$00,$00,$00
-  DEFB $13,$01,$01,$0F,$15,$60,$02,$00
-  DEFB $00,$02,$00,$02,$60,$00,$00,$02
-  DEFB $1E,$09,$00,$00,$02,$60,$00,$00
-  DEFB $02,$00,$02,$00,$00,$02,$00,$02
-  DEFB $00,$00,$05,$11,$07,$1F,$01,$01
-  DEFB $21,$09,$00,$00,$19,$22,$86,$01
-  DEFB $01,$14,$0F,$1C,$01,$01,$16,$17
-  DEFB $00,$00,$00,$00,$07,$08,$09,$00
-  DEFB $00,$02,$00,$00,$60,$00,$00,$10
-  DEFB $00,$00,$07,$0E,$00,$00,$00,$00
-  DEFB $00,$07,$08,$09,$00,$13,$01,$0F
-  DEFB $01,$0C,$0F,$15,$00,$00,$00,$02
-  DEFB $00,$00,$00,$00,$00,$00,$07,$1F
-  DEFB $01,$21,$09,$00,$60,$02,$00,$02
-  DEFB $00,$00,$00,$02,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$07,$08,$09
-  DEFB $00,$02,$00,$02,$60,$00,$00,$02
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$07,$08,$09,$02,$60,$02
-  DEFB $00,$00,$05,$11,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$07
-  DEFB $1F,$14,$01,$14,$01,$01,$0A,$04
-  DEFB $00,$00,$00,$00,$00,$00,$18,$01
-  DEFB $0C,$01,$01,$01,$26,$27,$27,$00
-  DEFB $00,$00,$00,$00,$00,$4C,$4F,$57
-  DEFB $45,$52,$02,$60,$02,$00,$00,$00
-  DEFB $2D,$2C,$2C,$00,$00,$00,$00,$00
-  DEFB $00,$44,$45,$43,$4B,$00,$02,$00
-  DEFB $02,$00,$00,$00,$2D,$2C,$2C,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$02,$00,$02,$00,$00,$00
-  DEFB $2D,$2C,$2C,$2B,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$05,$11,$00
-  DEFB $02,$00,$00,$00,$2D,$2C,$2C,$2C
-  DEFB $2B,$00,$00,$00,$00,$00,$00,$00
-  DEFB $05,$03,$04,$00,$02,$60,$00,$00
-  DEFB $2D,$2C,$2C,$2C,$2C,$2B,$00,$00
-  DEFB $00,$00,$00,$00,$40,$5B,$0F,$01
-  DEFB $1C,$01,$0F,$01,$2E,$2C,$2C,$2C
-  DEFB $5F,$3B,$01,$24,$00,$00,$00,$00
-  DEFB $02,$00,$00,$00,$02,$7B,$00,$00
-  DEFB $2D,$2C,$2C,$2C,$3C,$60,$00,$02
-  DEFB $00,$00,$00,$00,$10,$00,$00,$00
-  DEFB $02,$00,$00,$00,$2F,$3B,$3B,$3B
-  DEFB $3F,$00,$00,$02,$00,$00,$00,$00
-  DEFB $10,$60,$00,$00,$10,$00,$00,$00
-  DEFB $10,$00,$00,$60,$10,$00,$00,$02
-  DEFB $00,$00,$00,$00,$10,$00,$00,$00
-  DEFB $02,$60,$00,$00,$89,$3D,$3D,$3D
-  DEFB $3E,$00,$00,$02,$00,$00,$00,$00
-  DEFB $02,$00,$00,$00,$02,$00,$00,$00
-  DEFB $2D,$2C,$2C,$2C,$3C,$00,$00,$02
-  DEFB $00,$00,$00,$00,$5C,$5D,$0F,$01
-  DEFB $1C,$01,$0F,$01,$2E,$2C,$2C,$2C
-  DEFB $5E,$3D,$01,$25,$00,$00,$00,$00
-  DEFB $07,$08,$09,$00,$02,$60,$00,$00
-  DEFB $2D,$2C,$2C,$2C,$2C,$2A,$00,$00
-  DEFB $00,$00,$00,$00,$00,$07,$0E,$60
-  DEFB $02,$00,$00,$00,$2D,$2C,$2C,$2C
-  DEFB $2A,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$13,$0F,$15,$00,$00,$00
-  DEFB $2D,$2C,$2C,$2A,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$02,$00
-  DEFB $02,$00,$00,$00,$2D,$2C,$2C,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$02,$60,$02,$00,$00,$00
-  DEFB $2D,$2C,$2C,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$19,$01
-  DEFB $14,$01,$01,$01,$29,$28,$28,$00
-  DEFB $00,$00,$00,$00,$14,$14,$14,$06
-  DEFB $7D,$7E,$7E,$7D,$7E,$7E,$7E,$7E
-  DEFB $7D,$05,$06,$7F,$02,$7F,$04,$85
-  DEFB $05,$06,$7F,$02,$7F,$04,$85,$05
-  DEFB $06,$7F,$02,$7F,$03,$80,$82,$05
-  DEFB $06,$7F,$02,$7F,$03,$7F,$06,$06
-  DEFB $7F,$02,$7F,$03,$7F,$06,$06,$7F
-  DEFB $02,$7D,$7E,$7E,$7E,$7D,$7E,$7E
-  DEFB $7E,$7D,$83,$01,$06,$7F,$02,$7F
-  DEFB $03,$7F,$04,$85,$01,$06,$7F,$02
-  DEFB $7F,$03,$7F,$04,$8F,$01,$06,$7F
-  DEFB $02,$7F,$03,$81,$83,$05,$06,$7F
-  DEFB $02,$7F,$04,$85,$05,$06,$7F,$02
-  DEFB $7F,$04,$85,$05,$06,$7D,$7E,$7E
-  DEFB $7D,$7E,$7E,$7E,$7E,$7D,$05,$14
-  DEFB $14,$14,$FF,$14,$14,$09,$80,$7E
-  DEFB $7E,$7D,$7E,$7E,$83,$7D,$7E,$83
-  DEFB $01,$09,$7D,$7E,$83,$03,$85,$02
-  DEFB $85,$01,$0B,$85,$03,$85,$02,$85
-  DEFB $01,$0B,$85,$03,$85,$02,$85,$01
-  DEFB $05,$7D,$7E,$7E,$7E,$7E,$7E,$7D
-  DEFB $03,$85,$02,$85,$01,$05,$7F,$02
-  DEFB $80,$7E,$7E,$82,$03,$85,$02,$85
-  DEFB $8E,$05,$7F,$02,$7F,$06,$85,$02
-  DEFB $85,$85,$7D,$7E,$7E,$7E,$7E,$7D
-  DEFB $02,$7D,$02,$7D,$7E,$7E,$7E,$7D
-  DEFB $7E,$7E,$7D,$82,$05,$7F,$02,$7F
-  DEFB $06,$85,$02,$85,$01,$05,$7F,$02
-  DEFB $81,$7E,$7E,$83,$03,$85,$02,$85
-  DEFB $01,$05,$7D,$7E,$7E,$7E,$7E,$7E
-  DEFB $7D,$03,$85,$02,$85,$01,$0B,$85
-  DEFB $03,$85,$02,$85,$01,$0B,$85,$03
-  DEFB $85,$02,$85,$01,$09,$7D,$84,$82
-  DEFB $03,$85,$02,$85,$01,$09,$81,$84
-  DEFB $84,$7D,$84,$84,$82,$7D,$84,$82
-  DEFB $01,$14,$14,$FF,$14,$14,$01,$80
-  DEFB $7E,$7E,$7E,$7D,$7E,$7E,$7E,$83
-  DEFB $0A,$01,$7F,$07,$85,$0A,$01,$7F
-  DEFB $07,$7D,$7E,$7E,$7E,$7E,$83,$05
-  DEFB $01,$7F,$0C,$85,$01,$8E,$03,$01
-  DEFB $7F,$0C,$85,$01,$7F,$03,$01,$7F
-  DEFB $0C,$85,$01,$81,$84,$7D,$01,$01
-  DEFB $7F,$0C,$85,$03,$85,$01,$01,$7D
-  DEFB $07,$7D,$84,$84,$84,$84,$7D,$84
-  DEFB $84,$84,$82,$01,$01,$7F,$0C,$85
-  DEFB $05,$01,$7F,$0C,$85,$05,$01,$7F
-  DEFB $0C,$85,$05,$01,$7F,$0C,$85,$05
-  DEFB $01,$81,$84,$84,$84,$7D,$03,$7D
-  DEFB $84,$84,$84,$84,$82,$05,$05,$7F
-  DEFB $03,$85,$0A,$05,$7F,$03,$85,$0A
-  DEFB $05,$7D,$84,$84,$84,$82,$0A,$14
-  DEFB $FF,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$03,$09,$0F
-  DEFB $09,$02,$0C,$04,$09,$09,$09,$0E
-  DEFB $09,$09,$00,$09,$11,$09,$05,$09
-  DEFB $08,$06,$0B,$09,$0F,$0C,$0B,$09
-  DEFB $0D,$09,$0E,$09,$0B,$0E,$05,$02
-  DEFB $10,$09,$12,$10,$10,$11,$05,$06
-  DEFB $05,$03,$09,$0C,$05,$0F,$09,$07
-  DEFB $12,$03,$06,$09,$09,$0F,$06,$10
-  DEFB $0C,$03,$0E,$0F,$0E,$09,$01,$02
-  DEFB $05
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ; UPPER deck
+                                                                                       ; row 0
+  DEFB $00,$55,$50,$50,$45,$52,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ; UPPER deck
+                                                                                       ; row 1
+  DEFB $00,$44,$45,$43,$4B,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ; UPPER deck
+                                                                                       ; row 2
+  DEFB $00,$00,$00,$00,$00,$00,$05,$0B,$0C,$01,$01,$0F,$01,$0C,$01,$01,$01,$24,$00,$00 ; UPPER deck
+                                                                                       ; row 3
+  DEFB $00,$00,$00,$00,$00,$05,$03,$04,$02,$60,$00,$00,$00,$02,$60,$00,$00,$02,$00,$00 ; UPPER deck
+                                                                                       ; row 4
+  DEFB $00,$00,$00,$00,$05,$03,$04,$60,$02,$00,$00,$00,$00,$02,$00,$00,$00,$02,$00,$00 ; UPPER deck
+                                                                                       ; row 5
+  DEFB $00,$00,$00,$00,$1D,$04,$00,$00,$13,$01,$01,$01,$22,$86,$01,$0C,$0F,$15,$00,$00 ; UPPER deck
+                                                                                       ; row 6
+  DEFB $00,$00,$00,$00,$02,$00,$00,$00,$02,$00,$00,$00,$02,$60,$00,$02,$60,$02,$00,$00 ; UPPER deck
+                                                                                       ; row 7
+  DEFB $00,$00,$00,$00,$02,$00,$7C,$00,$10,$00,$00,$00,$02,$00,$00,$02,$00,$02,$00,$00 ; UPPER deck
+                                                                                       ; row 8
+  DEFB $00,$00,$00,$00,$13,$0F,$01,$01,$15,$00,$00,$00,$10,$00,$00,$10,$00,$02,$00,$00 ; UPPER deck
+                                                                                       ; row 9
+  DEFB $00,$00,$00,$00,$02,$00,$00,$00,$10,$00,$00,$00,$02,$00,$00,$02,$00,$02,$00,$00 ; UPPER deck
+                                                                                       ; row 10
+  DEFB $00,$00,$00,$00,$02,$00,$00,$00,$02,$00,$00,$60,$02,$00,$00,$02,$00,$02,$00,$00 ; UPPER deck
+                                                                                       ; row 11
+  DEFB $00,$00,$00,$00,$1E,$09,$00,$00,$13,$01,$01,$01,$1A,$1B,$0F,$14,$01,$15,$00,$00 ; UPPER deck
+                                                                                       ; row 12
+  DEFB $00,$00,$00,$00,$07,$08,$09,$60,$02,$00,$00,$00,$00,$02,$00,$00,$00,$02,$00,$00 ; UPPER deck
+                                                                                       ; row 13
+  DEFB $00,$00,$00,$00,$00,$07,$08,$09,$02,$60,$00,$00,$00,$02,$60,$00,$00,$02,$00,$00 ; UPPER deck
+                                                                                       ; row 14
+  DEFB $00,$00,$00,$00,$00,$00,$07,$1F,$14,$01,$01,$0F,$01,$14,$01,$01,$01,$25,$00,$00 ; UPPER deck
+                                                                                       ; row 15
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ; UPPER deck
+                                                                                       ; row 16
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ; UPPER deck
+                                                                                       ; row 17
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ; UPPER deck
+                                                                                       ; row 18
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$05,$0B,$0C,$01,$0C,$01,$01,$0D,$09 ; MIDDLE
+                                                                                       ; deck row 0
+  DEFB $00,$4D,$49,$44,$44,$4C,$45,$00,$00,$00,$05,$03,$04,$02,$60,$02,$60,$00,$07,$0E ; MIDDLE
+                                                                                       ; deck row 1
+  DEFB $00,$44,$45,$43,$4B,$00,$00,$00,$00,$05,$03,$04,$00,$02,$00,$02,$00,$00,$00,$02 ; MIDDLE
+                                                                                       ; deck row 2
+  DEFB $00,$00,$00,$00,$00,$00,$05,$0B,$01,$12,$04,$00,$60,$02,$00,$02,$00,$00,$00,$02 ; MIDDLE
+                                                                                       ; deck row 3
+  DEFB $00,$00,$00,$00,$00,$05,$03,$04,$00,$13,$01,$0F,$01,$14,$0F,$15,$00,$00,$00,$02 ; MIDDLE
+                                                                                       ; deck row 4
+  DEFB $00,$00,$00,$00,$05,$03,$04,$00,$00,$02,$00,$00,$60,$00,$00,$10,$00,$00,$05,$11 ; MIDDLE
+                                                                                       ; deck row 5
+  DEFB $05,$0B,$01,$01,$12,$04,$00,$00,$18,$1A,$1B,$01,$01,$0C,$0F,$1C,$01,$01,$16,$17 ; MIDDLE
+                                                                                       ; deck row 6
+  DEFB $1D,$04,$00,$00,$02,$60,$00,$00,$02,$7C,$02,$00,$00,$02,$00,$02,$00,$00,$07,$0E ; MIDDLE
+                                                                                       ; deck row 7
+  DEFB $02,$00,$00,$00,$13,$0F,$01,$01,$15,$00,$02,$00,$00,$02,$60,$02,$00,$00,$00,$02 ; MIDDLE
+                                                                                       ; deck row 8
+  DEFB $02,$60,$00,$00,$10,$00,$60,$7B,$10,$00,$10,$00,$60,$02,$00,$10,$00,$00,$00,$02 ; MIDDLE
+                                                                                       ; deck row 9
+  DEFB $02,$00,$00,$00,$13,$01,$01,$0F,$15,$60,$02,$00,$00,$02,$00,$02,$60,$00,$00,$02 ; MIDDLE
+                                                                                       ; deck row
+                                                                                       ; 10
+  DEFB $1E,$09,$00,$00,$02,$60,$00,$00,$02,$00,$02,$00,$00,$02,$00,$02,$00,$00,$05,$11 ; MIDDLE
+                                                                                       ; deck row
+                                                                                       ; 11
+  DEFB $07,$1F,$01,$01,$21,$09,$00,$00,$19,$22,$86,$01,$01,$14,$0F,$1C,$01,$01,$16,$17 ; MIDDLE
+                                                                                       ; deck row
+                                                                                       ; 12
+  DEFB $00,$00,$00,$00,$07,$08,$09,$00,$00,$02,$00,$00,$60,$00,$00,$10,$00,$00,$07,$0E ; MIDDLE
+                                                                                       ; deck row
+                                                                                       ; 13
+  DEFB $00,$00,$00,$00,$00,$07,$08,$09,$00,$13,$01,$0F,$01,$0C,$0F,$15,$00,$00,$00,$02 ; MIDDLE
+                                                                                       ; deck row
+                                                                                       ; 14
+  DEFB $00,$00,$00,$00,$00,$00,$07,$1F,$01,$21,$09,$00,$60,$02,$00,$02,$00,$00,$00,$02 ; MIDDLE
+                                                                                       ; deck row
+                                                                                       ; 15
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$07,$08,$09,$00,$02,$00,$02,$60,$00,$00,$02 ; MIDDLE
+                                                                                       ; deck row
+                                                                                       ; 16
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$07,$08,$09,$02,$60,$02,$00,$00,$05,$11 ; MIDDLE
+                                                                                       ; deck row
+                                                                                       ; 17
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$07,$1F,$14,$01,$14,$01,$01,$0A,$04 ; MIDDLE
+                                                                                       ; deck row
+                                                                                       ; 18
+  DEFB $00,$00,$00,$00,$00,$00,$18,$01,$0C,$01,$01,$01,$26,$27,$27,$00,$00,$00,$00,$00 ; LOWER deck
+                                                                                       ; row 0
+  DEFB $00,$4C,$4F,$57,$45,$52,$02,$60,$02,$00,$00,$00,$2D,$2C,$2C,$00,$00,$00,$00,$00 ; LOWER deck
+                                                                                       ; row 1
+  DEFB $00,$44,$45,$43,$4B,$00,$02,$00,$02,$00,$00,$00,$2D,$2C,$2C,$00,$00,$00,$00,$00 ; LOWER deck
+                                                                                       ; row 2
+  DEFB $00,$00,$00,$00,$00,$00,$02,$00,$02,$00,$00,$00,$2D,$2C,$2C,$2B,$00,$00,$00,$00 ; LOWER deck
+                                                                                       ; row 3
+  DEFB $00,$00,$00,$00,$00,$05,$11,$00,$02,$00,$00,$00,$2D,$2C,$2C,$2C,$2B,$00,$00,$00 ; LOWER deck
+                                                                                       ; row 4
+  DEFB $00,$00,$00,$00,$05,$03,$04,$00,$02,$60,$00,$00,$2D,$2C,$2C,$2C,$2C,$2B,$00,$00 ; LOWER deck
+                                                                                       ; row 5
+  DEFB $00,$00,$00,$00,$40,$5B,$0F,$01,$1C,$01,$0F,$01,$2E,$2C,$2C,$2C,$5F,$3B,$01,$24 ; LOWER deck
+                                                                                       ; row 6
+  DEFB $00,$00,$00,$00,$02,$00,$00,$00,$02,$7B,$00,$00,$2D,$2C,$2C,$2C,$3C,$60,$00,$02 ; LOWER deck
+                                                                                       ; row 7
+  DEFB $00,$00,$00,$00,$10,$00,$00,$00,$02,$00,$00,$00,$2F,$3B,$3B,$3B,$3F,$00,$00,$02 ; LOWER deck
+                                                                                       ; row 8
+  DEFB $00,$00,$00,$00,$10,$60,$00,$00,$10,$00,$00,$00,$10,$00,$00,$60,$10,$00,$00,$02 ; LOWER deck
+                                                                                       ; row 9
+  DEFB $00,$00,$00,$00,$10,$00,$00,$00,$02,$60,$00,$00,$89,$3D,$3D,$3D,$3E,$00,$00,$02 ; LOWER deck
+                                                                                       ; row 10
+  DEFB $00,$00,$00,$00,$02,$00,$00,$00,$02,$00,$00,$00,$2D,$2C,$2C,$2C,$3C,$00,$00,$02 ; LOWER deck
+                                                                                       ; row 11
+  DEFB $00,$00,$00,$00,$5C,$5D,$0F,$01,$1C,$01,$0F,$01,$2E,$2C,$2C,$2C,$5E,$3D,$01,$25 ; LOWER deck
+                                                                                       ; row 12
+  DEFB $00,$00,$00,$00,$07,$08,$09,$00,$02,$60,$00,$00,$2D,$2C,$2C,$2C,$2C,$2A,$00,$00 ; LOWER deck
+                                                                                       ; row 13
+  DEFB $00,$00,$00,$00,$00,$07,$0E,$60,$02,$00,$00,$00,$2D,$2C,$2C,$2C,$2A,$00,$00,$00 ; LOWER deck
+                                                                                       ; row 14
+  DEFB $00,$00,$00,$00,$00,$00,$13,$0F,$15,$00,$00,$00,$2D,$2C,$2C,$2A,$00,$00,$00,$00 ; LOWER deck
+                                                                                       ; row 15
+  DEFB $00,$00,$00,$00,$00,$00,$02,$00,$02,$00,$00,$00,$2D,$2C,$2C,$00,$00,$00,$00,$00 ; LOWER deck
+                                                                                       ; row 16
+  DEFB $00,$00,$00,$00,$00,$00,$02,$60,$02,$00,$00,$00,$2D,$2C,$2C,$00,$00,$00,$00,$00 ; LOWER deck
+                                                                                       ; row 17
+  DEFB $00,$00,$00,$00,$00,$00,$19,$01,$14,$01,$01,$01,$29,$28,$28,$00,$00,$00,$00,$00 ; LOWER deck
+                                                                                       ; row 18
+
+; Room-interior layout template 0 (RLE-compressed)
+;
+; Selected by room type (RoomTypeByte) at PickRoomLayout (PickRoomLayout) and
+; decompressed into the grid buffer at RoomGridBuffer by RoomLayoutExpand
+; (RoomLayoutExpand): byte < 30 = that many zero cells, 30-254 = literal tile
+; code, 255 = end.
+RoomLayout0:
+  DEFB $14,$14,$14,$06,$7D,$7E,$7E,$7D,$7E,$7E,$7E,$7E,$7D,$05,$06,$7F
+  DEFB $02,$7F,$04,$85,$05,$06,$7F,$02,$7F,$04,$85,$05,$06,$7F,$02,$7F
+  DEFB $03,$80,$82,$05,$06,$7F,$02,$7F,$03,$7F,$06,$06,$7F,$02,$7F,$03
+  DEFB $7F,$06,$06,$7F,$02,$7D,$7E,$7E,$7E,$7D,$7E,$7E,$7E,$7D,$83,$01
+  DEFB $06,$7F,$02,$7F,$03,$7F,$04,$85,$01,$06,$7F,$02,$7F,$03,$7F,$04
+  DEFB $8F,$01,$06,$7F,$02,$7F,$03,$81,$83,$05,$06,$7F,$02,$7F,$04,$85
+  DEFB $05,$06,$7F,$02,$7F,$04,$85,$05,$06,$7D,$7E,$7E,$7D,$7E,$7E,$7E
+  DEFB $7E,$7D,$05,$14,$14,$14,$FF
+
+; Room-interior layout template 1 (RLE-compressed)
+;
+; Selected by room type (RoomTypeByte) at PickRoomLayout (PickRoomLayout) and
+; decompressed into the grid buffer at RoomGridBuffer by RoomLayoutExpand
+; (RoomLayoutExpand): byte < 30 = that many zero cells, 30-254 = literal tile
+; code, 255 = end.
+RoomLayout1:
+  DEFB $14,$14,$09,$80,$7E,$7E,$7D,$7E,$7E,$83,$7D,$7E,$83,$01,$09,$7D
+  DEFB $7E,$83,$03,$85,$02,$85,$01,$0B,$85,$03,$85,$02,$85,$01,$0B,$85
+  DEFB $03,$85,$02,$85,$01,$05,$7D,$7E,$7E,$7E,$7E,$7E,$7D,$03,$85,$02
+  DEFB $85,$01,$05,$7F,$02,$80,$7E,$7E,$82,$03,$85,$02,$85,$8E,$05,$7F
+  DEFB $02,$7F,$06,$85,$02,$85,$85,$7D,$7E,$7E,$7E,$7E,$7D,$02,$7D,$02
+  DEFB $7D,$7E,$7E,$7E,$7D,$7E,$7E,$7D,$82,$05,$7F,$02,$7F,$06,$85,$02
+  DEFB $85,$01,$05,$7F,$02,$81,$7E,$7E,$83,$03,$85,$02,$85,$01,$05,$7D
+  DEFB $7E,$7E,$7E,$7E,$7E,$7D,$03,$85,$02,$85,$01,$0B,$85,$03,$85,$02
+  DEFB $85,$01,$0B,$85,$03,$85,$02,$85,$01,$09,$7D,$84,$82,$03,$85,$02
+  DEFB $85,$01,$09,$81,$84,$84,$7D,$84,$84,$82,$7D,$84,$82,$01,$14,$14
+  DEFB $FF
+
+; Room-interior layout template 2 (RLE-compressed)
+;
+; Selected by room type (RoomTypeByte) at PickRoomLayout (PickRoomLayout) and
+; decompressed into the grid buffer at RoomGridBuffer by RoomLayoutExpand
+; (RoomLayoutExpand): byte < 30 = that many zero cells, 30-254 = literal tile
+; code, 255 = end.
+RoomLayout2:
+  DEFB $14,$14,$01,$80,$7E,$7E,$7E,$7D,$7E,$7E,$7E,$83,$0A,$01,$7F,$07
+  DEFB $85,$0A,$01,$7F,$07,$7D,$7E,$7E,$7E,$7E,$83,$05,$01,$7F,$0C,$85
+  DEFB $01,$8E,$03,$01,$7F,$0C,$85,$01,$7F,$03,$01,$7F,$0C,$85,$01,$81
+  DEFB $84,$7D,$01,$01,$7F,$0C,$85,$03,$85,$01,$01,$7D,$07,$7D,$84,$84
+  DEFB $84,$84,$7D,$84,$84,$84,$82,$01,$01,$7F,$0C,$85,$05,$01,$7F,$0C
+  DEFB $85,$05,$01,$7F,$0C,$85,$05,$01,$7F,$0C,$85,$05,$01,$81,$84,$84
+  DEFB $84,$7D,$03,$7D,$84,$84,$84,$84,$82,$05,$05,$7F,$03,$85,$0A,$05
+  DEFB $7F,$03,$85,$0A,$05,$7D,$84,$84,$84,$82,$0A,$14,$FF
+
+; Room grid buffer — 19 rows x 20 columns
+;
+; Working buffer holding the decompressed cell grid of the current room view
+; (or corridor view, decompressed from CorridorLayout). Blitted to the screen
+; by DrawRoomBackground (DrawRoomBackground); the door drawer walks it via
+; RoomCellCursor (RoomCellCursor). The bytes below are load-image leftovers.
+RoomGridBuffer:
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+
+; Per-room view origin table — 34 rooms x (row, column)
+;
+; Read by SetRoomOrigin (SetRoomOrigin): for the current room, byte 0 = grid
+; row and byte 1 = column where exit/door drawing starts; converted to
+; RoomCellCursor (RoomGridBuffer + 20*row + col) and RoomAttrCursor (attr file
+; + 32*row + col). Narcissus has no entry.
+RoomOriginTable:
+  DEFB $03,$09            ; 0 Airlock #1
+  DEFB $0F,$09            ; 1 Airlock #2
+  DEFB $02,$0C            ; 2 Armoury
+  DEFB $04,$09            ; 3 Cargopod#1
+  DEFB $09,$09            ; 4 Cargopod#2
+  DEFB $0E,$09            ; 5 Cargopod#3
+  DEFB $09,$00            ; 6 CommdCentr
+  DEFB $09,$11            ; 7 Computer
+  DEFB $09,$05            ; 8 Corridor#1
+  DEFB $09,$08            ; 9 Corridor#2
+  DEFB $06,$0B            ; 10 Corridor#3
+  DEFB $09,$0F            ; 11 Corridor#4
+  DEFB $0C,$0B            ; 12 Corridor#5
+  DEFB $09,$0D            ; 13 Corridor#6
+  DEFB $09,$0E            ; 14 Corridor#7
+  DEFB $09,$0B            ; 15 Cryo Vault
+  DEFB $0E,$05            ; 16 Engineerng
+  DEFB $02,$10            ; 17 Engine #1
+  DEFB $09,$12            ; 18 Engine #2
+  DEFB $10,$10            ; 19 Engine #3
+  DEFB $11,$05            ; 20 Eng Stores
+  DEFB $06,$05            ; 21 Infirmary
+  DEFB $03,$09            ; 22 Inf Stores
+  DEFB $0C,$05            ; 23 Laboratory
+  DEFB $0F,$09            ; 24 Lab Stores
+  DEFB $07,$12            ; 25 Life Suppt
+  DEFB $03,$06            ; 26 Livng Qtrs
+  DEFB $09,$09            ; 27 Mess
+  DEFB $0F,$06            ; 28 RecrtnArea
+  DEFB $10,$0C            ; 29 Stores #1
+  DEFB $03,$0E            ; 30 Stores #2
+  DEFB $0F,$0E            ; 31 Stores #3
+  DEFB $09,$01            ; 32 ShuttleBay
+  DEFB $02,$05            ; 33 Shttlstore
 
 ; Data block at CrewSpriteBitmaps
 CrewSpriteBitmaps:
@@ -2047,11 +2046,11 @@ Auto_75FD:
 ; Crew portrait bitmaps
 ;
 ; Seven 3x3-character (24x24 pixel) raw bitmap portraits, drawn by
-; DrawSprite_115. Used by DrawShipMap (DrawShipMap -- all 7 at once) and by the
-; crew-status display (single-portrait draw, crew index from DrawSlotIndex, via
-; DrawSprite). Crew member names from CrewNameTable (CrewNameTable); portrait N
-; is at address CrewPortraits + (N-1)*72. Portrait data continues into
-; CrewPortraitsCont and CrewPortraitsCont2 due to block boundaries.
+; CellDrawStop_19. Used by DrawShipMap (DrawShipMap -- all 7 at once) and by
+; the crew-status display (single-portrait draw, crew index from DrawSlotIndex,
+; via DrawSprite). Crew member names from CrewNameTable (CrewNameTable);
+; portrait N is at address CrewPortraits + (N-1)*72. Portrait data continues
+; into CrewPortraitsCont and CrewPortraitsCont2 due to block boundaries.
 ;
 ; DALLAS (1):
 ; KANE (2):
@@ -2139,8 +2138,8 @@ CrewPortraitsCont2:
 ; Room tile-index maps
 ;
 ; Tile-index sequences defining the visual appearance of each room type. Loaded
-; into HL within DrawSprite (DrawSprite) and used via DrawSprite_85.
-RoomTileMaps:
+; into HL within DrawSprite (DrawSprite) and used via RoomLayoutExpand.
+CorridorLayout:
   DEFB $14,$02
   DEFB $92,$93,$0C,$94,$95,$02,$92,$93
   DEFB $92,$93,$0C,$94,$95,$94,$95,$92
@@ -2260,7 +2259,7 @@ RoomCellStep:
 ActorCellFront:
   DEFB $FF                ; corridor-strip cell (0-21) of the actor's id+160
                           ; marker; 12 = the alien's lair cell (see
-                          ; DrawSprite_14)
+                          ; FindActorCells)
 ActorCellBack:
   DEFB $FF                ; corridor-strip cell of the actor's id+128 marker
 RoomMateA:
@@ -2391,7 +2390,7 @@ InitGameView:
   LD A,$08                ; segment 8 = centre of 19-segment corridor
   LD (CorridorCursor),A   ; store as current corridor cursor (CorridorCursor)
   LD A,$20                ; space char
-  CALL DrawSprite_108     ; draw blank room border / clear game window
+  CALL CellDrawStop_12    ; draw blank room border / clear game window
   LD A,(RoomTypeByte)     ; read room-type byte (RoomTypeByte)
   CP $04                  ; room type 4 = special (engine room)
   JR NZ,InitGameView_0
@@ -2456,7 +2455,7 @@ NextCorridorEntry:
   LD A,D
   PUSH AF
   PUSH HL
-  CALL DrawSprite_3
+  CALL PrintName
   POP HL
   LD DE,$0020
   LD A,L
@@ -2525,10 +2524,10 @@ DrawNextCorridorTile:
 ; DrawSprite
 ;
 ; Renders a 10-character text label at the current draw position
-; (DrawSlotIndex). The "sprite" data is the 10-byte text entry at RoomNameTable
+; (DrawScreenPtr). The "sprite" data is the 10-byte text entry at RoomNameTable
 ; + A×10 (see RoomNameTable / UIStringTable); each byte is used as a tile index
 ; into CharBitmaps, which is laid out so that index N == ASCII N produces the
-; glyph for that character. After drawing 10 columns, advances DrawSlotIndex to
+; glyph for that character. After drawing 10 columns, advances DrawScreenPtr to
 ; the next character row accounting for the ZX Spectrum display-file row
 ; wrapping.
 ;
@@ -2576,22 +2575,31 @@ DrawSprite_2:
   ADD HL,DE               ; move draw pointer to start of next character row
   LD (DrawScreenPtr),HL   ; save updated draw pointer
   RET
-; This entry point is used by the routines at NextCorridorEntry, UpdateCrewAI,
-; DrawShipMap, DrawStatusPanel and UpdateAllCrew.
-DrawSprite_3:
-  LD DE,CrewNameTable
+
+; PrintName
+;
+; Prints actor name A (0 = ALIEN, 1-7 = crew) by skipping A 255-terminated
+; names in CrewNameTable and drawing the next one one glyph at a time. The
+; second entry point three bytes in is also entered directly with DE pre-set to
+; walk other string lists.
+;
+; USED by the routines at NextCorridorEntry, UpdateCrewAI, DrawShipMap,
+;      DrawStatusPanel and
+; #R45401.
+PrintName:
+  LD DE,CrewNameTable     ; CrewNameTable
 ; This entry point is used by the routine at DrawShipMap.
-DrawSprite_4:
+PrintName_0:
   AND A
-  JR Z,DrawSprite_6
+  JR Z,PrintName_2
   LD B,A
-DrawSprite_5:
+PrintName_1:
   LD A,(DE)
   INC DE
   CP $FF
-  JR NZ,DrawSprite_5
-  DJNZ DrawSprite_5
-DrawSprite_6:
+  JR NZ,PrintName_1
+  DJNZ PrintName_1
+PrintName_2:
   PUSH DE
   CALL DrawSpriteRow
   POP DE
@@ -2600,17 +2608,21 @@ DrawSprite_6:
   INC (HL)
   LD A,(DE)
   CP $FF
-  JR NZ,DrawSprite_6
+  JR NZ,PrintName_2
   RET
-; SelectSlotByDrawIdx Re-points IX at the 8-byte record indexed by
-; (DrawSlotIndex) and loads the slot's identity into (CurrentRoom) for
-; downstream lookups. Critically, if the slot wears the HostMarker (byte+1 ==
-; $FF), the routine returns immediately without writing CurrentRoom /
-; RoomTypeByte — every per-frame caller that walks into this entry point
-; therefore skips that slot during routine corridor processing. In the Long
-; Game this means the chestburster host is excluded from normal crew handling;
-; in the Short Game the same exclusion applies to all four pre-stamped slots.
-; This entry point is used by the routine at RoomHandlerCommon.
+
+; SelectSlotByDrawIdx
+;
+; Re-points IX at the 8-byte record indexed by (DrawSlotIndex) and loads the
+; slot's identity into (CurrentRoom) for downstream lookups. Critically, if the
+; slot wears the HostMarker (byte+1 == $FF), the routine returns immediately
+; without writing CurrentRoom / RoomTypeByte — every per-frame caller that
+; walks into this entry point therefore skips that slot during routine corridor
+; processing. In the Long Game this means the chestburster host is excluded
+; from normal crew handling; in the Short Game the same exclusion applies to
+; all four pre-stamped slots.
+;
+; THIS entry point is used by the routine at RoomHandlerCommon.
 SelectSlotByDrawIdx:
   LD A,(DrawSlotIndex)    ; A = current draw index (slot 0..7)
   ADD A,A
@@ -2634,8 +2646,15 @@ Auto_7BFB:
   LD A,(HL)
   LD (RoomTypeByte),A     ; RoomTypeByte for this crew
   RET
-DrawSprite_7:
-  LD A,(CurrentRoom)
+
+; BuildExitList
+;
+; Builds the current room's door-exit list (CorridorPosTable + 2): walks the
+; room's 5 direction slots in RoomAdjCorridors and stores each destination that
+; differs from the current room (up to 5 entries). The room view draws one door
+; per entry.
+BuildExitList:
+  LD A,(CurrentRoom)      ; A = current room
   LD L,A
   LD H,$00
   PUSH HL
@@ -2647,117 +2666,130 @@ DrawSprite_7:
   ADD HL,DE
   LD DE,$73C0
   LD B,$05
-DrawSprite_8:
+BuildExitList_0:
   LD C,(HL)
   CP C
-  JR Z,DrawSprite_9
+  JR Z,BuildExitList_1
   LD A,(CurrentRoom)
   CP C
-  JR Z,DrawSprite_9
+  JR Z,BuildExitList_1
   LD A,C
   LD (DE),A
   INC DE
-DrawSprite_9:
+BuildExitList_1:
   INC HL
-  DJNZ DrawSprite_8
+  DJNZ BuildExitList_0
   RET
-DrawSprite_10:
+BuildExitList_2:
   LD A,(CurrentRoom)
   LD C,A
   LD HL,$7509
   LD DE,$750A
   LD B,$16
-DrawSprite_11:
+BuildExitList_3:
   LD A,(HL)
   CP C
-  JR NZ,DrawSprite_12
+  JR NZ,BuildExitList_4
   LD A,B
   DEC A
   LD (DE),A
   INC DE
-DrawSprite_12:
+BuildExitList_4:
   DEC HL
-  DJNZ DrawSprite_11
+  DJNZ BuildExitList_3
   RET
 ; This entry point is used by the routines at RoomHandler_33, RoomHandler_4 and
 ; PlayMusic.
-DrawSprite_13:
+BuildExitList_5:
   LD A,(DrawSlotIndex)
-; This entry point is used by the routines at XorHAddE and UpdateAlien.
-DrawSprite_14:
-  ADD A,$80
+
+; FindActorCells
+;
+; Finds where actor A stands in the 22-cell corridor strip: scans for the
+; id+160 marker into ActorCellFront (ActorCellFront) and the id+128 marker into
+; ActorCellBack (ActorCellBack).
+;
+; USED by the routines at XorHAddE and UpdateAlien.
+FindActorCells:
+  ADD A,$80               ; C = id + 128, E = id + 160
   LD C,A
   ADD A,$20
   LD E,A
   LD HL,$7509
   LD B,$16
-DrawSprite_15:
+FindActorCells_0:
   LD A,(HL)
   CP C
-  JR NZ,DrawSprite_16
+  JR NZ,FindActorCells_1
   LD A,B
   DEC A
   LD (ActorCellBack),A
-  JR DrawSprite_17
-DrawSprite_16:
+  JR FindActorCells_2
+FindActorCells_1:
   CP E
-  JR NZ,DrawSprite_17
+  JR NZ,FindActorCells_2
   LD A,B
   DEC A
   LD (ActorCellFront),A
-DrawSprite_17:
+FindActorCells_2:
   DEC HL
-  DJNZ DrawSprite_15
+  DJNZ FindActorCells_0
   RET
 ; This entry point is used by the routines at RoomHandler_33, RoomHandler_4 and
-; XorHAddE. CellToItemString: map a corridor cell (in A) to the string index of
-; the item stored at that shelf position: cells 0-2 -> 35 Elctrc Prd, 3-5 -> 36
-; Incineratr, 6-7 -> 37 Tracker, 8-11 -> 38 Fire Extng, 12 -> 39 Harpn Gun,
-; 13-15 -> 40 Laser Pist, 16 -> 41 Net, 17 -> 42 Cat Box, 18+ -> 43 Spanner;
-; special cells 20/21 -> strings 68/69. Items thus live at fixed positions
-; within rooms.
+; XorHAddE.
+
+; CellToItemString
+;
+; Maps a corridor cell (in A) to the string index of the item stored at that
+; shelf position: cells 0-2 -> 35 Elctrc Prd, 3-5 -> 36 Incineratr, 6-7 -> 37
+; Tracker, 8-11 -> 38 Fire Extng, 12 -> 39 Harpn Gun, 13-15 -> 40 Laser Pist,
+; 16 -> 41 Net, 17 -> 42 Cat Box, 18+ -> 43 Spanner; special cells 20/21 ->
+; strings 68/69. Items thus live at fixed positions within rooms.
 CellToItemString:
   LD E,$23                ; E = first item string ("Elctrc Prd")
   CP $03
-  JR C,DrawSprite_18
+  JR C,CellToItemString_0
   INC E
   CP $06
-  JR C,DrawSprite_18
+  JR C,CellToItemString_0
   INC E
   CP $08
-  JR C,DrawSprite_18
+  JR C,CellToItemString_0
   INC E
   CP $0C
-  JR C,DrawSprite_18
+  JR C,CellToItemString_0
   INC E
   CP $0C
-  JR Z,DrawSprite_18
+  JR Z,CellToItemString_0
   INC E
   CP $10
-  JR C,DrawSprite_18
+  JR C,CellToItemString_0
   INC E
   CP $10
-  JR Z,DrawSprite_18
+  JR Z,CellToItemString_0
   INC E
   CP $11
-  JR Z,DrawSprite_18
+  JR Z,CellToItemString_0
   INC E
-DrawSprite_18:
+CellToItemString_0:
   CP $14
-  JR NZ,DrawSprite_19
+  JR NZ,CellToItemString_1
   LD E,$44
-  JR DrawSprite_20
-DrawSprite_19:
+  JR CellToItemString_2
+CellToItemString_1:
   CP $15
-  JR NZ,DrawSprite_20
+  JR NZ,CellToItemString_2
   LD E,$45
-DrawSprite_20:
+CellToItemString_2:
   LD A,E
   RET
-; BuildItemMenu: fill the action-menu buffer (corridor table + 8) with up to
-; four string indexes for the current standing position: the item names at the
-; actor's two cells, then "Get Item" (47) when the held-item slot is loaded and
-; the back cell is empty, and "Leave Item" (48) when the front cell is empty.
+
+; BuildItemMenu
+;
+; Fills the action-menu buffer (corridor table + 8) with up to four string
+; indexes for the current standing position: the item names at the actor's two
+; cells, then "Get Item" (47) when the held-item slot is loaded and the back
+; cell is empty, and "Leave Item" (48) when the front cell is empty.
 BuildItemMenu:
   LD C,$FF                ; C = "empty" sentinel
   LD HL,Auto_73C6         ; menu buffer
@@ -2774,13 +2806,13 @@ BuildItemMenu:
   LD DE,$750A             ; held-item slot
   LD A,(DE)
   CP C
-  JR Z,DrawSprite_21
+  JR Z,BuildItemMenu_0
   LD A,(ActorCellBack)
   CP C
-  JR NZ,DrawSprite_21
+  JR NZ,BuildItemMenu_0
   LD A,$2F                ; offer "Get Item"
   LD (HL),A
-DrawSprite_21:
+BuildItemMenu_0:
   INC HL
   LD A,(ActorCellFront)
   CP C
@@ -2788,44 +2820,50 @@ DrawSprite_21:
   LD A,$30                ; offer "Leave Item"
   LD (HL),A
   RET
-DrawSprite_22:
-  LD A,(AlienTargetID)
+
+; DrawRoomSpecials
+;
+; Draws the special actors into the room view when the viewed room hosts them:
+; the activated Android (via AlienTargetID's record) and Jones the cat, plus
+; follow-on room furniture.
+DrawRoomSpecials:
+  LD A,(AlienTargetID)    ; Android slot chosen for this run
   CP $08
-  JR NC,DrawSprite_23
+  JR NC,DrawRoomSpecials_0
   LD A,(AlienActiveFlag)
   AND A
-  JR Z,DrawSprite_23
+  JR Z,DrawRoomSpecials_0
   LD HL,(Auto_83A5)
   INC HL
   LD A,(CurrentRoom)
   CP (HL)
-  CALL Z,DrawSprite_39
-DrawSprite_23:
+  CALL Z,DrawRoomSpecials_16
+DrawRoomSpecials_0:
   LD A,(CurrentRoom)
   LD HL,JonesRoom
   CP (HL)
-  CALL Z,DrawSprite_35
+  CALL Z,DrawRoomSpecials_12
   LD HL,$737F
   CP (HL)
-  CALL Z,DrawSprite_36
+  CALL Z,DrawRoomSpecials_13
   LD HL,ShipSystemFlags
   LD DE,$73CD
   CP $06
-  JR Z,DrawSprite_25
+  JR Z,DrawRoomSpecials_2
   CP $0D
-  JR Z,DrawSprite_32
+  JR Z,DrawRoomSpecials_9
   CP $0F
-  JR Z,DrawSprite_27
+  JR Z,DrawRoomSpecials_4
   CP $11
-  JR Z,DrawSprite_28
+  JR Z,DrawRoomSpecials_5
   CP $12
-  JR Z,DrawSprite_29
+  JR Z,DrawRoomSpecials_6
   CP $13
-  JR Z,DrawSprite_30
+  JR Z,DrawRoomSpecials_7
   CP $22
-  JR Z,DrawSprite_24
+  JR Z,DrawRoomSpecials_1
   RET
-DrawSprite_24:
+DrawRoomSpecials_1:
   BIT 6,(HL)
   RET NZ
   LD A,$4E
@@ -2834,33 +2872,33 @@ DrawSprite_24:
   INC DE
   LD (DE),A
   RET
-DrawSprite_25:
+DrawRoomSpecials_2:
   LD A,$46
   BIT 0,(HL)
-  JR Z,DrawSprite_26
+  JR Z,DrawRoomSpecials_3
   LD A,$48
-DrawSprite_26:
+DrawRoomSpecials_3:
   LD (DE),A
   INC DE
   INC A
   LD (DE),A
   RET
-DrawSprite_27:
+DrawRoomSpecials_4:
   LD A,$4A
   LD (DE),A
   INC DE
   INC A
   LD (DE),A
   RET
-DrawSprite_28:
+DrawRoomSpecials_5:
   BIT 3,(HL)
-  JR DrawSprite_31
-DrawSprite_29:
+  JR DrawRoomSpecials_8
+DrawRoomSpecials_6:
   BIT 4,(HL)
-  JR DrawSprite_31
-DrawSprite_30:
+  JR DrawRoomSpecials_8
+DrawRoomSpecials_7:
   BIT 5,(HL)
-DrawSprite_31:
+DrawRoomSpecials_8:
   RET Z
   LD A,$4C
   LD (DE),A
@@ -2868,22 +2906,22 @@ DrawSprite_31:
   INC DE
   LD (DE),A
   RET
-DrawSprite_32:
+DrawRoomSpecials_9:
   LD A,$35
   BIT 1,(HL)
-  JR Z,DrawSprite_33
+  JR Z,DrawRoomSpecials_10
   LD A,$37
-DrawSprite_33:
+DrawRoomSpecials_10:
   LD (DE),A
   INC DE
   LD A,$36
   BIT 2,(HL)
-  JR Z,DrawSprite_34
+  JR Z,DrawRoomSpecials_11
   LD A,$38
-DrawSprite_34:
+DrawRoomSpecials_11:
   LD (DE),A
   RET
-DrawSprite_35:
+DrawRoomSpecials_12:
   PUSH AF
   LD DE,$73CC
   LD A,$33
@@ -2891,37 +2929,37 @@ DrawSprite_35:
   CALL InitJonesAnim
   POP AF
   RET
-DrawSprite_36:
+DrawRoomSpecials_13:
   PUSH AF
   JP PlayMusic_9
 ; This entry point is used by the routine at PlayMusic.
-DrawSprite_37:
+DrawRoomSpecials_14:
   LD A,$34
   LD (DE),A
   XOR A
   LD (AlienXPhase),A
 ; This entry point is used by the routine at PlayMusic.
-DrawSprite_38:
+DrawRoomSpecials_15:
   POP AF
   RET
-DrawSprite_39:
+DrawRoomSpecials_16:
   PUSH AF
   JP PlayMusic_17
 ; This entry point is used by the routine at PlayMusic.
-DrawSprite_40:
+DrawRoomSpecials_17:
   LD A,$34
   LD (DE),A
 ; This entry point is used by the routine at PlayMusic.
-DrawSprite_41:
+DrawRoomSpecials_18:
   POP AF
   RET
 ; This entry point is used by the routine at XorHAddE.
-DrawSprite_42:
+DrawRoomSpecials_19:
   LD A,(CurrentRoom)
   BIT 6,A
-  JR Z,DrawSprite_43
+  JR Z,DrawRoomSpecials_20
   LD A,$5D
-DrawSprite_43:
+DrawRoomSpecials_20:
   LD HL,Auto_5060
   LD (DrawScreenPtr),HL
   CALL DrawSprite
@@ -2959,7 +2997,7 @@ Auto_7DDB:
   LD H,L
   LD L,L
   LD (HL),E
-  JR NZ,DrawSprite_45
+  JR NZ,DrawRoomSpecials_22
   LD (HL),D
   LD H,L
   LD (HL),E
@@ -2977,7 +3015,7 @@ Auto_7DEE:
   JR NZ,$7E59
   LD (HL),E
   JR NZ,$7D7B
-  JR NZ,DrawSprite_46
+  JR NZ,DrawRoomSpecials_23
   LD L,H
   LD (HL),E
   LD L,A
@@ -2985,13 +3023,13 @@ Auto_7DEE:
   LD H,L
   LD (HL),D
   LD H,L
-  JR NZ,DrawSprite_50
+  JR NZ,DrawRoomSpecials_27
   LD L,(HL)
   LD H,H
-  JR NZ,DrawSprite_51
+  JR NZ,DrawRoomSpecials_28
   LD (HL),L
   LD (HL),H
-  JR NZ,DrawSprite_48
+  JR NZ,DrawRoomSpecials_25
   LD L,H
   LD (HL),E
   LD L,A
@@ -3003,40 +3041,40 @@ Auto_7DEE:
   LD (HL),E
   JR NZ,$7E82
   LD H,(HL)
-  JR NZ,DrawSprite_46
+  JR NZ,DrawRoomSpecials_23
   ADC A,B
   JR NZ,$7E3A
   LD A,(BC)
   LD (HL),L
   LD A,(HL)
   CP $FF
-  JR Z,DrawSprite_47
+  JR Z,DrawRoomSpecials_24
   LD HL,Auto_5080
   LD (DrawScreenPtr),HL
   LD DE,Auto_7DDB
   LD B,$0D
-DrawSprite_44:
+DrawRoomSpecials_21:
   PUSH BC
   PUSH DE
   CALL DrawSpriteRow
   POP DE
   POP BC
-DrawSprite_45:
+DrawRoomSpecials_22:
   INC DE
   LD HL,DrawScreenPtr
-DrawSprite_46:
+DrawRoomSpecials_23:
   INC (HL)
-  DJNZ DrawSprite_44
-DrawSprite_47:
+  DJNZ DrawRoomSpecials_21
+DrawRoomSpecials_24:
   LD A,(CurrentRoom)
   CP $22
   RET Z
   LD DE,Auto_7DE8
   LD HL,Auto_5090
   LD (DrawScreenPtr),HL
-DrawSprite_48:
+DrawRoomSpecials_25:
   LD B,$06
-DrawSprite_49:
+DrawRoomSpecials_26:
   PUSH BC
   PUSH DE
   CALL DrawSpriteRow
@@ -3045,25 +3083,25 @@ DrawSprite_49:
   INC DE
   LD HL,DrawScreenPtr
   INC (HL)
-  DJNZ DrawSprite_49
+  DJNZ DrawRoomSpecials_26
   LD A,(CurrentRoom)
   AND $3F
   LD L,A
   LD H,$00
-DrawSprite_50:
+DrawRoomSpecials_27:
   LD DE,$757C
   ADD HL,DE
   LD A,(HL)
-DrawSprite_51:
+DrawRoomSpecials_28:
   CP $FF
-  JR Z,DrawSprite_52
+  JR Z,DrawRoomSpecials_29
   LD A,$5B
   CALL DrawSprite
   LD DE,$73BF
   LD A,$32
   LD (DE),A
   RET
-DrawSprite_52:
+DrawRoomSpecials_29:
   LD A,$5A
   CALL DrawSprite
   LD DE,$73CB
@@ -3072,14 +3110,14 @@ DrawSprite_52:
   RET
 ; This entry point is used by the routines at RoomHandler_33, UpdateRoomActors,
 ; WrapScreenAddr and UpdateAllCrew.
-DrawSprite_53:
+DrawRoomSpecials_30:
   LD A,(DrawSlotIndex)
   LD HL,Auto_50A0
   LD (DrawScreenPtr),HL
-  CALL DrawSprite_3
+  CALL PrintName
   LD DE,Auto_7DEE
   LD B,$04
-DrawSprite_54:
+DrawRoomSpecials_31:
   PUSH BC
   PUSH DE
   CALL DrawSpriteRow
@@ -3088,33 +3126,33 @@ DrawSprite_54:
   LD HL,DrawScreenPtr
   INC (HL)
   POP BC
-  DJNZ DrawSprite_54
+  DJNZ DrawRoomSpecials_31
   LD A,(IX+$04)
   CP $03
-  JR C,DrawSprite_55
+  JR C,DrawRoomSpecials_32
   LD A,$03
-  JR NZ,DrawSprite_55
+  JR NZ,DrawRoomSpecials_32
   LD A,$02
-DrawSprite_55:
+DrawRoomSpecials_32:
   LD DE,$759E
-  CALL DrawSprite_4
+  CALL PrintName_0
   LD DE,$7DFE
   LD A,(IX+$04)
   CP $04
-  JR C,DrawSprite_56
+  JR C,DrawRoomSpecials_33
   LD A,(IX+$06)
   CP $03
-  JR NC,DrawSprite_58
-  JR DrawSprite_57
-DrawSprite_56:
+  JR NC,DrawRoomSpecials_35
+  JR DrawRoomSpecials_34
+DrawRoomSpecials_33:
   LD A,(IX+$06)
   CP $03
-  JR C,DrawSprite_58
-DrawSprite_57:
+  JR C,DrawRoomSpecials_35
+DrawRoomSpecials_34:
   LD DE,$7E02
-DrawSprite_58:
+DrawRoomSpecials_35:
   LD B,$04
-DrawSprite_59:
+DrawRoomSpecials_36:
   PUSH BC
   PUSH DE
   CALL DrawSpriteRow
@@ -3123,55 +3161,55 @@ DrawSprite_59:
   LD HL,DrawScreenPtr
   INC (HL)
   POP BC
-  DJNZ DrawSprite_59
+  DJNZ DrawRoomSpecials_36
   LD A,(IX+$06)
   CP $05
-  JR C,DrawSprite_60
+  JR C,DrawRoomSpecials_37
   LD A,$04
-DrawSprite_60:
+DrawRoomSpecials_37:
   LD DE,$75BC
-  CALL DrawSprite_4
+  CALL PrintName_0
   JP Auto_B27F
-DrawSprite_61:
+DrawRoomSpecials_38:
   LD HL,$7387
   LD DE,RoomMateA
   LD BC,$0701
   LD A,(DrawSlotIndex)
   EX AF,AF'
   LD A,(CurrentRoom)
-DrawSprite_62:
+DrawRoomSpecials_39:
   CP (HL)
-  JR NZ,DrawSprite_64
+  JR NZ,DrawRoomSpecials_41
   EX AF,AF'
   CP C
-  JR Z,DrawSprite_63
+  JR Z,DrawRoomSpecials_40
   EX DE,HL
   LD (HL),C
   EX DE,HL
   INC DE
-DrawSprite_63:
+DrawRoomSpecials_40:
   EX AF,AF'
-DrawSprite_64:
+DrawRoomSpecials_41:
   PUSH DE
   LD DE,$0008
   ADD HL,DE
   POP DE
   INC C
-  DJNZ DrawSprite_62
+  DJNZ DrawRoomSpecials_39
   RET
 ; This entry point is used by the routines at GameEntry and UpdateAllCrew.
-DrawSprite_65:
-  CALL DrawSprite_61
+DrawRoomSpecials_42:
+  CALL DrawRoomSpecials_38
   LD HL,Auto_50C0
   LD (DrawScreenPtr),HL
   LD BC,$0200
   LD DE,RoomMateA
-DrawSprite_66:
+DrawRoomSpecials_43:
   PUSH BC
   PUSH DE
   LD A,(DE)
   CP $FF
-  JR Z,DrawSprite_67
+  JR Z,DrawRoomSpecials_44
   ADD A,A
   ADD A,A
   ADD A,A
@@ -3181,32 +3219,32 @@ DrawSprite_66:
   LD HL,ActorStatusColumn
   ADD HL,DE
   CP (HL)
-  JR Z,DrawSprite_67
+  JR Z,DrawRoomSpecials_44
   POP DE
   INC DE
   POP BC
-  DJNZ DrawSprite_66
+  DJNZ DrawRoomSpecials_43
   LD DE,$7E06
   LD B,$0F
   CALL DrawStatusPanel_14
   LD A,(RoomMateA)
-  CALL DrawSprite_3
+  CALL PrintName
   LD DE,$7E15
   LD B,$03
   CALL DrawStatusPanel_14
   LD A,(RoomMateB)
-  CALL DrawSprite_3
-  JP DrawSprite_69
-DrawSprite_67:
+  CALL PrintName
+  JP DrawRoomSpecials_46
+DrawRoomSpecials_44:
   POP BC
   POP DE
   LD HL,RoomMateA
   LD A,(HL)
   CP $FF
-  JR Z,DrawSprite_69
+  JR Z,DrawRoomSpecials_46
   LD DE,$7DF4
   LD B,$0A
-DrawSprite_68:
+DrawRoomSpecials_45:
   PUSH BC
   PUSH DE
   CALL DrawSpriteRow
@@ -3215,13 +3253,13 @@ DrawSprite_68:
   LD HL,DrawScreenPtr
   INC (HL)
   POP BC
-  DJNZ DrawSprite_68
+  DJNZ DrawRoomSpecials_45
   LD A,(RoomMateA)
   CALL DrawCrewStatusHalf
-  CALL DrawSprite_3
+  CALL PrintName
   LD A,(RoomMateB)
   CP $FF
-  JR Z,DrawSprite_69
+  JR Z,DrawRoomSpecials_46
   LD A,$90
   CALL DrawSpriteRow_0
   LD HL,DrawScreenPtr
@@ -3230,7 +3268,7 @@ DrawSprite_68:
   CALL DrawCrewStatusHalf
   JP Auto_B27C
 ; This entry point is used by the routine at UpdateAllCrew.
-DrawSprite_69:
+DrawRoomSpecials_46:
   XOR A
   CALL DrawSpriteRow_0
   LD HL,DrawScreenPtr
@@ -3238,8 +3276,8 @@ DrawSprite_69:
   LD A,(HL)
   AND $1F
   RET Z
-  JR DrawSprite_69
-DrawSprite_70:
+  JR DrawRoomSpecials_46
+DrawRoomSpecials_47:
   LD DE,CorridorPosTable
   LD HL,$75E2
   LD BC,$0013
@@ -3247,19 +3285,26 @@ DrawSprite_70:
   LD HL,$750A
   LD A,$FF
   LD B,$14
-DrawSprite_71:
+DrawRoomSpecials_48:
   LD (HL),A
   INC HL
-  DJNZ DrawSprite_71
+  DJNZ DrawRoomSpecials_48
   LD (ActorCellBack),A
   LD (ActorCellFront),A
   LD (RoomMateA),A
   LD (RoomMateB),A
   RET
-; This entry point is used by the routines at RoomHandlerCommon, RoomHandler_4,
-; ResetCrewTimers, UpdateRoomActors and PauseMenu.
-DrawSprite_72:
-  CALL DrawSprite_70
+
+; DeathSequence
+;
+; Handles a crew member's on-screen death in the room view: rebuilds the
+; corridor strip, redraws the scene and updates the status panel.
+;
+; USED by the routines at RoomHandlerCommon, RoomHandler_4, ResetCrewTimers,
+;      UpdateRoomActors and
+; #R44815.
+DeathSequence:
+  CALL DrawRoomSpecials_47
   LD HL,Auto_8080
   LD (CrewAnimFlags),HL
   LD A,$80
@@ -3269,29 +3314,29 @@ DrawSprite_72:
   LD A,(CurrentRoom)
   LD HL,$737F
   CP (HL)
-  JR NZ,DrawSprite_73
+  JR NZ,DeathSequence_0
   LD HL,RoomTypeByte
   LD (HL),$04
-DrawSprite_73:
+DeathSequence_0:
   BIT 6,A
-  JR NZ,DrawSprite_74
+  JR NZ,DeathSequence_1
   CALL DrawRoomBackground
-  CALL DrawSprite_7
-  JR DrawSprite_75
-DrawSprite_74:
-  CALL DrawSprite_79
-DrawSprite_75:
-  CALL DrawSprite_110
-  CALL DrawSprite_10
-  CALL DrawSprite_13
+  CALL BuildExitList
+  JR DeathSequence_2
+DeathSequence_1:
+  CALL RedrawRoomView
+DeathSequence_2:
+  CALL CellDrawStop_14
+  CALL BuildExitList_2
+  CALL BuildExitList_5
   CALL BuildItemMenu
-  CALL DrawSprite_108
-  CALL DrawSprite_42
+  CALL CellDrawStop_12
+  CALL DrawRoomSpecials_19
   CALL $7E18
-  CALL DrawSprite_53
-  CALL DrawSprite_65
-  CALL DrawSprite_22
-  CALL DrawSprite_76
+  CALL DrawRoomSpecials_30
+  CALL DrawRoomSpecials_42
+  CALL DrawRoomSpecials
+  CALL DeathSequence_3
   LD A,(RoomTypeByte)
   CP $04
   RET Z
@@ -3300,18 +3345,18 @@ DrawSprite_75:
   CALL Z,AnimateCrewB_5
   RET
 ; This entry point is used by the routine at PlayMusic.
-DrawSprite_76:
+DeathSequence_3:
   LD HL,$4016
   LD (DrawScreenPtr),HL
   PUSH HL
-DrawSprite_77:
+DeathSequence_4:
   LD A,$FF
   CALL DrawSprite
   POP HL
   INC HL
   LD (DrawScreenPtr),HL
   LD A,(DrawSlotIndex)
-  CALL DrawSprite_3
+  CALL PrintName
   LD HL,$5816
   LD A,$07
   LD C,$01
@@ -3346,65 +3391,59 @@ Auto_8080:
   LD HL,$4036
   LD (DrawScreenPtr),HL
   LD B,$12
-DrawSprite_78:
+DeathSequence_5:
   PUSH BC
   CALL DrawNextCorridorTile
   POP BC
-  DJNZ DrawSprite_78
+  DJNZ DeathSequence_5
   CALL HandleInput_15
   CALL Auto_9A94
   RET
-Auto_80A6:
-  LD A,L
-  LD L,H
-  ADD A,D
-  LD A,(HL)
-  EI
-  ADD A,C
-  LD A,A
-  EI
-  ADD A,C
-  ADD A,B
-  CALL M,DrawSprite_85
-  JR DrawSprite_77
-  ADD A,D
-  INC (HL)
-  ADD A,D
-  ADD A,E
-  LD D,B
-  ADD A,D
-  ADD A,H
-  EI
-  ADD A,C
-  ADD A,L
-  EI
-  ADD A,C
-  ADC A,(HL)
-  LD L,H
-  ADD A,D
-  ADC A,A
-  LD L,H
-  ADD A,D
-DrawSprite_79:
-  LD A,(RoomTypeByte)
-  CP $04
-  JR NZ,DrawSprite_80
-  CALL ResetAlienXAnim
-  CALL DrawSprite_103
+; Cell-glyph draw-handler table (was mis-disassembled as code): 3-byte records
+; (glyph, handler word) looked up by the door-arm DrawDoorArm (DrawDoorArm),
+; which patches the handler into its CALL. Glyph 125 '}' = duct grille; 126-133
+; = door/corridor segment glyphs mapping to four segment drawers, the grille
+; drawer, or CellDrawStop (CellDrawStop).
+CellDrawTable:
+  DEFB $7D,$6C,$82        ; '}' -> grille drawer
+  DEFB $7E,$FB,$81        ; glyph 126 -> stop
+  DEFB $7F,$FB,$81        ; glyph 127 -> stop
+  DEFB $80,$FC,$81        ; glyph 128 -> segment drawer A
+  DEFB $81,$18,$82        ; glyph 129 -> segment drawer B
+  DEFB $82,$34,$82        ; glyph 130 -> segment drawer C
+  DEFB $83,$50,$82        ; glyph 131 -> segment drawer D
+  DEFB $84,$FB,$81        ; glyph 132 -> stop
+  DEFB $85,$FB,$81        ; glyph 133 -> stop
+  DEFB $8E,$6C,$82        ; glyph 142 -> grille drawer
+  DEFB $8F,$6C,$82        ; glyph 143 -> grille drawer
+
+; RedrawRoomView
+;
+; Rebuilds the room-interior view for the current room: picks the layout
+; template by room type, decompresses it into the grid buffer, draws
+; walls/furniture, then walks the exit list drawing one door arm per neighbour
+; (and grille arms for duct openings). Room type 4 (the alien's lair view)
+; resets the encounter animation instead.
+RedrawRoomView:
+  LD A,(RoomTypeByte)     ; A = room type
+  CP $04                  ; alien-lair view?
+  JR NZ,PickRoomLayout
+  CALL ResetAlienXAnim    ; yes: reset alien body animation
+  CALL CellDrawStop_7
   RET
-DrawSprite_80:
-  LD HL,$6474
+PickRoomLayout:
+  LD HL,RoomLayout0       ; room type 0: layout template 0
   AND A
-  JR Z,DrawSprite_81
-  LD HL,$64EB
+  JR Z,RedrawRoomView_0
+  LD HL,RoomLayout1
   CP $01
-  JR Z,DrawSprite_81
-  LD HL,$658C
-DrawSprite_81:
-  CALL DrawSprite_85
-  CALL DrawSprite_103
-  CALL DrawSprite_100
-  CALL DrawSprite_89
+  JR Z,RedrawRoomView_0
+  LD HL,RoomLayout2
+RedrawRoomView_0:
+  CALL RoomLayoutExpand
+  CALL CellDrawStop_7
+  CALL CellDrawStop_4
+  CALL SetRoomOrigin
   LD HL,(RoomAttrCursor)
   LD (HL),$47
   PUSH HL
@@ -3412,7 +3451,7 @@ DrawSprite_81:
   PUSH HL
   LD A,($73C0)
   CP $FF
-  JR Z,DrawSprite_82
+  JR Z,RedrawRoomView_1
   LD DE,$FFEC
   LD (RoomCellStep),DE
   ADD HL,DE
@@ -3423,11 +3462,11 @@ DrawSprite_81:
   LD (RoomAttrStep),DE
   ADD HL,DE
   LD (RoomAttrCursor),HL
-  CALL DrawSprite_92
-DrawSprite_82:
+  CALL DrawDoorArm
+RedrawRoomView_1:
   LD A,($73C1)
   CP $FF
-  JR Z,DrawSprite_83
+  JR Z,RedrawRoomView_2
   POP HL
   POP DE
   PUSH DE
@@ -3439,11 +3478,11 @@ DrawSprite_82:
   LD (RoomAttrCursor),DE
   LD (RoomAttrStep),BC
   LD (RoomCellStep),BC
-  CALL DrawSprite_92
-DrawSprite_83:
+  CALL DrawDoorArm
+RedrawRoomView_2:
   LD A,($73C2)
   CP $FF
-  JR Z,DrawSprite_84
+  JR Z,RedrawRoomView_3
   POP HL
   POP DE
   PUSH DE
@@ -3456,8 +3495,8 @@ DrawSprite_83:
   LD (RoomAttrStep),HL
   ADD HL,DE
   LD (RoomAttrCursor),HL
-  CALL DrawSprite_92
-DrawSprite_84:
+  CALL DrawDoorArm
+RedrawRoomView_3:
   POP HL
   POP DE
   LD A,($73C3)
@@ -3470,77 +3509,98 @@ DrawSprite_84:
   LD HL,$FFFF
   LD (RoomAttrStep),HL
   LD (RoomCellStep),HL
-  CALL DrawSprite_92
+  CALL DrawDoorArm
   RET
-; This entry point is used by the routine at DrawCrewStatusHalf.
-DrawSprite_85:
-  LD DE,$6609
-DrawSprite_86:
+
+; RoomLayoutExpand
+;
+; Decompresses the RLE room layout at HL into the 20x19 grid buffer: byte < 30
+; = that many zero cells, 30-254 = literal tile code, 255 = end.
+;
+; USED by the corridor-view builder at DrawCrewStatusHalf and the room
+;      renderer.
+RoomLayoutExpand:
+  LD DE,RoomGridBuffer    ; DE = grid buffer; HL = RLE source
+RoomLayoutExpand_0:
   LD A,(HL)
   CP $1E
-  JR C,DrawSprite_87
+  JR C,RoomLayoutExpand_1
   CP $FF
   RET Z
   LD (DE),A
   INC HL
   INC DE
-  JR DrawSprite_86
-DrawSprite_87:
+  JR RoomLayoutExpand_0
+RoomLayoutExpand_1:
   LD B,A
   XOR A
-DrawSprite_88:
+RoomLayoutExpand_2:
   LD (DE),A
   INC DE
-  DJNZ DrawSprite_88
+  DJNZ RoomLayoutExpand_2
   INC HL
-  JR DrawSprite_86
-DrawSprite_89:
-  LD A,(CurrentRoom)
+  JR RoomLayoutExpand_0
+
+; SetRoomOrigin
+;
+; Loads the current room's (row, column) pair from RoomOriginTable and sets
+; RoomCellCursor (grid buffer + 20*row + col) and RoomAttrCursor (attribute
+; file + 32*row + col) for the door drawing pass.
+SetRoomOrigin:
+  LD A,(CurrentRoom)      ; A = current room
   AND $3F
   ADD A,A
   LD D,$00
   LD E,A
-  LD HL,$6785
+  LD HL,RoomOriginTable
   ADD HL,DE
   LD B,(HL)
   INC HL
   LD C,(HL)
   PUSH BC
   LD DE,$0014
-  LD HL,$6609
-DrawSprite_90:
+  LD HL,RoomGridBuffer
+SetRoomOrigin_0:
   ADD HL,DE
-  DJNZ DrawSprite_90
+  DJNZ SetRoomOrigin_0
   ADD HL,BC
   LD (RoomCellCursor),HL
   POP BC
   LD HL,Auto_5800
   LD DE,$0020
-DrawSprite_91:
+SetRoomOrigin_1:
   ADD HL,DE
-  DJNZ DrawSprite_91
+  DJNZ SetRoomOrigin_1
   ADD HL,BC
   LD (RoomAttrCursor),HL
   RET
-DrawSprite_92:
-  LD HL,(RoomCellCursor)
+
+; DrawDoorArm
+;
+; Draws one door/corridor arm of the room view: reads the grid cell under
+; RoomCellCursor, looks its glyph up in CellDrawTable (CellDrawTable), patches
+; the matching handler into the CALL below (self-modifying), paints attribute 5
+; (cyan) and steps both cursors by the stride pair RoomAttrStep/RoomCellStep,
+; looping until a stop handler fires.
+DrawDoorArm:
+  LD HL,(RoomCellCursor)  ; read grid cell under the cursor
   LD A,(HL)
-  LD HL,Auto_80A6
-DrawSprite_93:
+  LD HL,CellDrawTable
+DrawDoorArm_0:
   CP (HL)
-  JR Z,DrawSprite_94
+  JR Z,DrawDoorArm_1
   INC HL
   INC HL
   INC HL
-  JR DrawSprite_93
-DrawSprite_94:
+  JR DrawDoorArm_0
+DrawDoorArm_1:
   INC HL
   LD A,(HL)
   INC HL
   LD H,(HL)
   LD L,A
   LD ($81DF),HL
-  CALL DrawSprite_95
+  CALL CellDrawStop
   LD HL,(RoomAttrCursor)
   LD (HL),$05
   LD DE,(RoomAttrStep)
@@ -3550,18 +3610,22 @@ DrawSprite_94:
   LD DE,(RoomCellStep)
   ADD HL,DE
   LD (RoomCellCursor),HL
-  JR DrawSprite_92
-DrawSprite_95:
+  JR DrawDoorArm
+
+; CellDrawStop
+;
+; Null cell-draw handler: glyphs mapped here in CellDrawTable end the door arm.
+CellDrawStop:
   RET
   LD HL,(RoomAttrStep)
   LD A,L
   LD DE,$0020
   LD HL,$0014
   CP $E0
-  JR NZ,DrawSprite_96
+  JR NZ,CellDrawStop_0
   LD DE,$0001
   LD HL,$0001
-DrawSprite_96:
+CellDrawStop_0:
   LD (RoomAttrStep),DE
   LD (RoomCellStep),HL
   RET
@@ -3570,10 +3634,10 @@ DrawSprite_96:
   LD DE,$0001
   LD HL,$0001
   CP $20
-  JR Z,DrawSprite_97
+  JR Z,CellDrawStop_1
   LD DE,$FFE0             ; DE = -32 (screen stride)
   LD HL,$FFEC             ; HL = -20
-DrawSprite_97:
+CellDrawStop_1:
   LD (RoomAttrStep),DE
   LD (RoomCellStep),HL
   RET
@@ -3582,10 +3646,10 @@ DrawSprite_97:
   LD DE,$FFE0             ; DE = -32 (screen stride)
   LD HL,$FFEC             ; HL = -20
   CP $01
-  JR Z,DrawSprite_98
+  JR Z,CellDrawStop_2
   LD DE,$FFFF
   LD HL,$FFFF
-DrawSprite_98:
+CellDrawStop_2:
   LD (RoomAttrStep),DE
   LD (RoomCellStep),HL
   RET
@@ -3594,10 +3658,10 @@ DrawSprite_98:
   LD DE,$0020
   LD HL,$0014
   CP $01
-  JR Z,DrawSprite_99
+  JR Z,CellDrawStop_3
   LD DE,$FFFF
   LD HL,$FFFF
-DrawSprite_99:
+CellDrawStop_3:
   LD (RoomAttrStep),DE
   LD (RoomCellStep),HL
   RET
@@ -3605,23 +3669,23 @@ DrawSprite_99:
   LD HL,(RoomAttrCursor)
   LD (HL),$05
   RET
-DrawSprite_100:
+CellDrawStop_4:
   LD DE,$000C
   LD HL,Auto_5800
   LD C,$13
-DrawSprite_101:
+CellDrawStop_5:
   LD B,$14
-DrawSprite_102:
+CellDrawStop_6:
   LD (HL),$00
   INC HL
-  DJNZ DrawSprite_102
+  DJNZ CellDrawStop_6
   ADD HL,DE
   DEC C
-  JR NZ,DrawSprite_101
-  LD HL,$6609
+  JR NZ,CellDrawStop_5
+  LD HL,RoomGridBuffer
   CALL DrawRoomBackground_0
   RET
-DrawSprite_103:
+CellDrawStop_7:
   LD A,(CurrentRoom)
   AND $3F
   LD L,A
@@ -3635,105 +3699,105 @@ DrawSprite_103:
   ADD HL,DE
   LD DE,$73C0
   LD B,$04
-DrawSprite_104:
+CellDrawStop_8:
   LD C,(HL)
   CP C
-  JR Z,DrawSprite_105
+  JR Z,CellDrawStop_9
   LD A,(CurrentRoom)
   AND $3F
   CP C
-  JR Z,DrawSprite_105
+  JR Z,CellDrawStop_9
   LD A,C
   LD (DE),A
-DrawSprite_105:
+CellDrawStop_9:
   INC DE
   INC HL
-  DJNZ DrawSprite_104
+  DJNZ CellDrawStop_8
   LD B,$04
   LD HL,$73C0
   LD C,$39
-DrawSprite_106:
+CellDrawStop_10:
   LD A,(HL)
   CP $FF
-  JR Z,DrawSprite_107
+  JR Z,CellDrawStop_11
   LD (HL),C
-DrawSprite_107:
+CellDrawStop_11:
   INC C
   INC HL
-  DJNZ DrawSprite_106
+  DJNZ CellDrawStop_10
   RET
 ; This entry point is used by the routines at InitGameView and PauseMenu.
-DrawSprite_108:
+CellDrawStop_12:
   LD HL,Auto_5060
   LD (DrawScreenPtr),HL
   LD B,$80
-DrawSprite_109:
+CellDrawStop_13:
   PUSH BC
   XOR A
   CALL DrawSpriteRow_0
   LD HL,DrawScreenPtr
   INC (HL)
   POP BC
-  DJNZ DrawSprite_109
+  DJNZ CellDrawStop_13
   RET
-DrawSprite_110:
+CellDrawStop_14:
   LD HL,$59E1
   LD DE,$001D
   LD C,$03
-DrawSprite_111:
+CellDrawStop_15:
   LD B,$03
-DrawSprite_112:
+CellDrawStop_16:
   LD (HL),$39
   INC HL
-  DJNZ DrawSprite_112
+  DJNZ CellDrawStop_16
   DEC C
   ADD HL,DE
-  JR NZ,DrawSprite_111
+  JR NZ,CellDrawStop_15
   LD DE,$0048
   LD HL,CrewPortraits
   LD A,(DrawSlotIndex)
   DEC A
-  JR Z,DrawSprite_114
+  JR Z,CellDrawStop_18
   LD B,A
-DrawSprite_113:
+CellDrawStop_17:
   ADD HL,DE
-  DJNZ DrawSprite_113
-DrawSprite_114:
+  DJNZ CellDrawStop_17
+CellDrawStop_18:
   EX DE,HL
   LD HL,$48E1
 ; This entry point is used by the routine at DrawShipMap.
-DrawSprite_115:
+CellDrawStop_19:
   LD (DrawScreenPtr),HL
   LD B,$03
-DrawSprite_116:
+CellDrawStop_20:
   LD C,$03
-DrawSprite_117:
+CellDrawStop_21:
   PUSH BC
   LD HL,(DrawScreenPtr)
   LD B,$08
-DrawSprite_118:
+CellDrawStop_22:
   LD A,(DE)
   LD (HL),A
   INC H
   INC DE
-  DJNZ DrawSprite_118
+  DJNZ CellDrawStop_22
   LD HL,DrawScreenPtr
   INC (HL)
   POP BC
   DEC C
-  JR NZ,DrawSprite_117
+  JR NZ,CellDrawStop_21
   PUSH DE
   LD HL,(DrawScreenPtr)
   LD DE,$001D
   LD A,L
   CP $E0
-  JR C,DrawSprite_119
+  JR C,CellDrawStop_23
   LD DE,$071D
-DrawSprite_119:
+CellDrawStop_23:
   ADD HL,DE
   LD (DrawScreenPtr),HL
   POP DE
-  DJNZ DrawSprite_116
+  DJNZ CellDrawStop_20
   RET
 
 ; AdvanceScriptPtr
@@ -3796,8 +3860,8 @@ DrawCrewStatusHalf_0:
 DrawCrewStatusHalf_1:
   POP AF
   RET
-  LD HL,RoomTileMaps
-  CALL DrawSprite_85
+  LD HL,CorridorLayout
+  CALL RoomLayoutExpand
   LD DE,$788D
   LD HL,Auto_5800
   LD C,$13
@@ -3815,7 +3879,7 @@ DrawCrewStatusHalf_3:
   POP DE
   DEC C
   JR NZ,DrawCrewStatusHalf_2
-  LD HL,$6609
+  LD HL,RoomGridBuffer
   CALL DrawRoomBackground_0
   RET
 
@@ -4575,7 +4639,7 @@ AnimateCrewB_7:
 ; to this room). If the crew member is dead (IX+7=0), jumps to InitGameView to
 ; redraw the view. If the alien is active (SprScreenAddrB non-zero) and its
 ; target corridor matches the saved cursor, calls the alien-in-room handler
-; DrawSprite_72.
+; DeathSequence.
 RoomHandlerCommon:
   LD A,(CorridorCursor)   ; A = corridor cursor (CorridorCursor)
   LD (DrawSlotIndex),A    ; save as room-entry position (DrawSlotIndex)
@@ -4589,12 +4653,12 @@ RoomHandlerCommon:
   JP NZ,InitGameView      ; crew dead: reinit view
   LD A,(AlienActiveFlag)  ; A = alien active flag (SprScreenAddrB)
   AND A                   ; alien present?
-  JP Z,DrawSprite_72      ; no alien: draw room contents
+  JP Z,DeathSequence      ; no alien: draw room contents
   LD HL,AlienTargetID     ; HL = alien target corridor ($83C7)
   LD A,(DrawSlotIndex)    ; A = saved entry cursor
   CP (HL)                 ; alien on this room's corridor?
   JP Z,InitGameView       ; yes: alien blocks entry, redraw
-  CALL DrawSprite_72      ; draw room contents (crew sprites etc.)
+  CALL DeathSequence      ; draw room contents (crew sprites etc.)
   RET
 
 ; Routine at RoomHandler_17
@@ -4751,7 +4815,7 @@ RoomHandlerNop2:
 
 ; Routine at RoomHandler_33
 RoomHandler_33:
-  CALL DrawSprite_13
+  CALL BuildExitList_5
   LD (IX+$00),$00
   LD DE,(ActorCellFront)
   LD HL,$7520
@@ -4806,7 +4870,7 @@ Auto_8AAA:
   LD A,(ActorCellBack)
   CALL CellToItemString
   CALL DrawSprite
-  CALL DrawSprite_53
+  CALL DrawRoomSpecials_30
   CALL GameEntry_21
   RET
 
@@ -4826,7 +4890,7 @@ RoomHandler_24:
 RoomHandler_4:
   LD A,($8395)
   CP $3D
-  JP Z,DrawSprite_72
+  JP Z,DeathSequence
   LD A,(CorridorCursor)
   LD E,A
   LD D,$00
@@ -4852,7 +4916,7 @@ Auto_8B2A:
   LD HL,$74F4
   ADD HL,DE
   LD (HL),A
-  JP DrawSprite_72
+  JP DeathSequence
 ; Room mode 33 follow-on. Re-builds the corridor template at CorridorPosTable
 ; from a 17-byte source pattern, substituting sentinel bytes (255) via
 ; CellToItemString. Sets crew column to 61, corridor cursor to 17, then draws
@@ -4928,7 +4992,7 @@ Auto_8BBA:
   ADD HL,DE
   LD A,(CurrentRoom)
   LD (HL),A
-  CALL DrawSprite_72
+  CALL DeathSequence
   RET
 Auto_8BC6:
   LD E,A
@@ -5011,7 +5075,7 @@ Auto_8C38:
   LD A,(DrawSlotIndex)
   ADD A,$A0
   LD (HL),A
-  CALL DrawSprite_13
+  CALL BuildExitList_5
   LD A,(ActorCellFront)
   CALL CellToItemString
   LD (Auto_73C6),A
@@ -5110,7 +5174,7 @@ Auto_8CF1:
   LD A,(CrewIndex)
   LD HL,DrawSlotIndex
   CP (HL)
-  JP Z,DrawSprite_72
+  JP Z,DeathSequence
   CALL Auto_B11A
   RET
 ; CrewAction2_Move — dispatched via CrewActionDispatch entry 2.
@@ -5138,7 +5202,7 @@ Auto_8D17:
   LD A,(CrewIndex)
   LD HL,DrawSlotIndex
   CP (HL)
-  JP Z,DrawSprite_72
+  JP Z,DeathSequence
   JP Auto_B11A
 ; This entry point is used by the routine at GameEntry. CrewAction3_Wait —
 ; dispatched via CrewActionDispatch entry 3.
@@ -5158,7 +5222,7 @@ CrewAction3_Wait:
   LD A,(CurrentRoom)
   AND $3F
   CP E
-  JP Z,DrawSprite_72
+  JP Z,DeathSequence
   JP GameEntry_21
 Auto_8D5B:
   LD HL,$FFFF
@@ -5534,7 +5598,7 @@ GameEntry_20:
 GameEntry_21:
   LD HL,$FFFF
   LD (RoomMateA),HL
-  CALL DrawSprite_65
+  CALL DrawRoomSpecials_42
   LD A,(CurrentRoom)
   LD HL,$737F
   CP (HL)
@@ -5837,7 +5901,7 @@ UpdateCrewAI_13:
 UpdateCrewAI_14:
   INC DE
   PUSH DE
-  CALL DrawSprite_3
+  CALL PrintName
   POP DE
   JR UpdateCrewAI_11
 UpdateCrewAI_15:
@@ -6060,7 +6124,7 @@ Auto_92B3:
 ; alien's corridor scan position is 12. Guards: re-asserts that (IX+1) matches
 ; the alien identity, then requires pixel coords IX+4 >= 2 and IX+6 >= 2
 ; (sprite fully placed). Calls PlayMusic_8 to clear the scan-slot, then
-; DrawSprite_14 to locate the alien's corridor scan position into (31248):
+; FindActorCells to locate the alien's corridor scan position into (31248):
 ; (31248) == 17       → silent: JP to ClearActionState (31248) >= 20       →
 ; silent (template sentinels) (31248) == 16       → "net" outcome: write $FF to
 ; $7376 (slot 0 byte +0) to disable the alien, then enqueue message #3 "{actor}
@@ -6097,7 +6161,7 @@ CrewHitsAlien:
   CP $02
   RET C                   ; Y < 2 → bail
   CALL PlayMusic_8        ; clear (31248) scan slot, A = CrewIndex
-  CALL DrawSprite_14      ; populate (31248)/(31249) with corridor positions
+  CALL FindActorCells     ; populate (31248)/(31249) with corridor positions
   LD A,(ActorCellFront)   ; A = alien's corridor scan position
   CP $11
   JP Z,Auto_92B3          ; pos 17 → silent
@@ -6369,7 +6433,7 @@ Auto_9476:
   INC (HL)
 Auto_94A2:
   POP AF
-  CALL DrawSprite_14
+  CALL FindActorCells
   LD HL,Auto_83A2
   LD A,(ActorCellFront)
   CP $0D
@@ -6534,7 +6598,7 @@ Auto_959A:
   RET NZ
   LD A,(CurrentRoom)
   CP E
-  CALL Z,DrawSprite_42
+  CALL Z,DrawRoomSpecials_19
   RET
 ; This entry point is used by the routine at UpdateRoomActors.
 Auto_95AD:
@@ -7172,7 +7236,7 @@ Auto_99C5:
   LD E,A
   LD D,$00
   ADD IX,DE
-  CALL DrawSprite_53
+  CALL DrawRoomSpecials_30
   POP IX
   RET
 ; This entry point is used by the routine at PlayMusicPhrase.
@@ -7374,7 +7438,7 @@ ResetAlienXAnim:
 ;
 ; Arms the alien body animation (sets freeze flag so a single blit occurs next
 ; frame), or ends the encounter sequence. If (RoomModeByte)=1 the crew member
-; was killed: jump to DrawSprite_72 to handle that. Otherwise clears the screen
+; was killed: jump to DeathSequence to handle that. Otherwise clears the screen
 ; area and returns. This entry point is used by the routines at GameEntry and
 ; XorHAddE.
 TriggerAlienXAnim:
@@ -7385,7 +7449,7 @@ TriggerAlienXAnim:
   LD (AlienXPhase),A      ; freeze: AlienXPhase |= 128
   LD A,(RoomModeByte)     ; A = encounter outcome byte
   CP $01                  ; crew member killed?
-  JP Z,DrawSprite_72      ; yes: handle death sequence
+  JP Z,DeathSequence      ; yes: handle death sequence
   CALL ClearAlienArea     ; no: clear alien screen area
   RET
 
@@ -8235,7 +8299,7 @@ UpdateAlien_1:
 ; **player-response leg**: when the Android (or another crew in its sprite
 ; class) is engaged in combat state 4, log the dialogue and apply the
 ; per-corridor-cell outcome. Guards: pixel coords IX+4 >= 2 and IX+6 >= 2
-; (actor placed on screen). Then DrawSprite_14 locates the actor's corridor
+; (actor placed on screen). Then FindActorCells locates the actor's corridor
 ; scan position into (31248): (31248) == 17       → silent: JP to
 ; UpdateAlien_13 (post-combat fade-out) (31248) >= 20       → silent: JP to
 ; UpdateAlien_13 (sentinel cells) (31248) == 16       → "net" outcome: write
@@ -8270,7 +8334,7 @@ CrewHitsAndroid:
   CP $02
   RET C                   ; Y < 2 → bail
   LD A,(CrewIndex)        ; A = CrewIndex (slot being dispatched)
-  CALL DrawSprite_14      ; populate (31248)/(31249) with corridor positions
+  CALL FindActorCells     ; populate (31248)/(31249) with corridor positions
   LD A,(ActorCellFront)   ; A = scan position in 22-byte anim table
   CP $11
   JP Z,UpdateAlien_13     ; pos 17 → silent post-combat
@@ -9177,7 +9241,7 @@ DrawIntroScreen_10:
 ; Draws the Nostromo ship overview map and handles game-mode selection. Sets
 ; border green, fills attributes (32), clears display, then blits the deck plan
 ; as tile blocks at fixed screen positions. After drawing, prints the crew
-; names via DrawSprite_3 (one name per corridor segment) and the four-line menu
+; names via PrintName (one name per corridor segment) and the four-line menu
 ; ("1: Short Game", "2: Long Game", "3: Introduction", "4: Select") from the
 ; text table at GameModeText (GameModeText).
 ;
@@ -9205,7 +9269,7 @@ DrawShipMap_0:
   PUSH BC
   PUSH HL
   PUSH DE
-  CALL DrawSprite_115
+  CALL CellDrawStop_19
   POP DE
   LD HL,$0048
   ADD HL,DE
@@ -9221,7 +9285,7 @@ DrawShipMap_1:
   PUSH BC
   PUSH HL
   PUSH DE
-  CALL DrawSprite_115
+  CALL CellDrawStop_19
   POP DE
   LD HL,$0048
   ADD HL,DE
@@ -9234,60 +9298,60 @@ DrawShipMap_1:
   LD HL,$40C3
   LD A,$01
   LD (DrawScreenPtr),HL
-  CALL DrawSprite_3
+  CALL PrintName
   LD HL,$40CB
   LD (DrawScreenPtr),HL
   LD A,$02
-  CALL DrawSprite_3
+  CALL PrintName
   LD HL,$40D1
   LD (DrawScreenPtr),HL
   LD A,$03
-  CALL DrawSprite_3
+  CALL PrintName
   LD HL,$40D9
   LD (DrawScreenPtr),HL
   LD A,$04
-  CALL DrawSprite_3
+  CALL PrintName
   LD HL,$4885
   LD (DrawScreenPtr),HL
   LD A,$05
-  CALL DrawSprite_3
+  CALL PrintName
   LD HL,$488D
   LD (DrawScreenPtr),HL
   LD A,$06
-  CALL DrawSprite_3
+  CALL PrintName
   LD HL,$4895
   LD (DrawScreenPtr),HL
   LD A,$07
-  CALL DrawSprite_3
+  CALL PrintName
   LD DE,GameModeText
   LD HL,$48E9
   LD (DrawScreenPtr),HL
   PUSH DE
   XOR A
-  CALL DrawSprite_4
+  CALL PrintName_0
   LD HL,$5029
   LD (DrawScreenPtr),HL
   POP DE
   PUSH DE
   LD A,$01
-  CALL DrawSprite_4
+  CALL PrintName_0
   LD HL,$5069
   LD (DrawScreenPtr),HL
   POP DE
   PUSH DE
   LD A,$02
-  CALL DrawSprite_4
+  CALL PrintName_0
   LD HL,$50A9
   LD (DrawScreenPtr),HL
   POP DE
   PUSH DE
   LD A,$03
-  CALL DrawSprite_4
+  CALL PrintName_0
   LD HL,$50E6
   LD (DrawScreenPtr),HL
   POP DE
   LD A,$04
-  CALL DrawSprite_4
+  CALL PrintName_0
   XOR A
   LD (CorridorCursor),A
   CALL HighlightGameMode
@@ -9393,7 +9457,7 @@ GameModeDispatchTable:
 ; GameModeText
 ;
 ; 0xFF-terminated text strings for the game-mode menu, rendered by DrawShipMap
-; (DrawShipMap) via five calls to DrawSprite_4. Indices 0-3 are the four menu
+; (DrawShipMap) via five calls to PrintName_0. Indices 0-3 are the four menu
 ; lines; index 4 is the footer prompt.
 GameModeText:
   DEFB $31,$3A,$20,$53,$68,$6F,$72,$74,$20,$47,$61,$6D,$65,$FF ; "1: Short
@@ -10042,7 +10106,7 @@ DrawStatusPanel_4:
   LD HL,(DrawScreenPtr)
   PUSH HL
   LD A,C
-  CALL DrawSprite_3
+  CALL PrintName
   LD DE,Auto_A426
   LD B,$08
   CALL DrawStatusPanel_14
@@ -10069,7 +10133,7 @@ DrawStatusPanel_7:
   LD A,(AlienTargetID)
   CP $08
   RET NC
-  CALL DrawSprite_3
+  CALL PrintName
   LD DE,Auto_A42E
   LD B,$10
   CALL DrawStatusPanel_14
@@ -10345,11 +10409,11 @@ Auto_AEF6:
 ; yellow (6) and waits for the player to press key 1 again. If key 1 is
 ; pressed, jumps directly to GameEntry (GameEntry) to restart the game. Any
 ; other key resumes play by returning normally. If the corridor view was active
-; (mode=1), calls DrawSprite_72 to restore the room display before returning.
+; (mode=1), calls DeathSequence to restore the room display before returning.
 ;
 ; USED by the routine at GameEntry.
 PauseMenu:
-  CALL DrawSprite_108     ; draw game-window border
+  CALL CellDrawStop_12    ; draw game-window border
   LD HL,$5086             ; HL = $5086 (mid-screen attribute row)
   LD (DrawScreenPtr),HL   ; set draw pointer
   LD B,$14                ; 20-character message line
@@ -10376,14 +10440,14 @@ PauseMenu_2:
   JP NC,GameEntry         ; key 1 held: restart game from entry
   XOR A                   ; A = 0
   OUT ($FE),A             ; restore border to black
-  CALL DrawSprite_108     ; redraw game-window frame
+  CALL CellDrawStop_12    ; redraw game-window frame
   LD A,(RoomModeByte)     ; A = room mode (RoomModeByte)
 ; This entry point is used by the routine at ScreenTransition.
 PauseMenu_3:
   CP $01                  ; mode 1 = corridor view active
 ; This entry point is used by the routine at ScreenTransition.
 PauseMenu_4:
-  CALL Z,DrawSprite_72    ; if in corridor: redraw room contents
+  CALL Z,DeathSequence    ; if in corridor: redraw room contents
   RET                     ; resume game loop
 
 ; PlayMusic
@@ -10433,7 +10497,7 @@ PlayMusic_4:
   LD (IX+$03),$00
   LD HL,$FFFF
   LD (ActorCellFront),HL
-  CALL DrawSprite_13
+  CALL BuildExitList_5
   RET
 ; This entry point is used by the routine at XorHAddE.
 PlayMusic_5:
@@ -10461,7 +10525,7 @@ PlayMusic_7:
   CALL DrawSprite
   LD A,$FF
   LD ($73C9),A
-  CALL DrawSprite_76
+  CALL DeathSequence_3
   RET
 ; This entry point is used by the routine at XorHAddE.
 PlayMusic_8:
@@ -10476,11 +10540,11 @@ PlayMusic_9:
   JR NZ,PlayMusic_10
   LD A,(IX+$00)
   OR A
-  JP NZ,DrawSprite_38
+  JP NZ,DrawRoomSpecials_15
 PlayMusic_10:
   CALL PlayMusic_29
   LD DE,$73CB
-  JP DrawSprite_37
+  JP DrawRoomSpecials_14
 ; This entry point is used by the routine at GameEntry.
 PlayMusic_11:
   PUSH IX
@@ -10549,11 +10613,11 @@ PlayMusic_17:
   JR NZ,PlayMusic_18
   LD A,(IX+$00)
   OR A
-  JP NZ,DrawSprite_41
+  JP NZ,DrawRoomSpecials_18
 PlayMusic_18:
   CALL PlayMusic_29
   LD DE,$73CB
-  JP DrawSprite_40
+  JP DrawRoomSpecials_17
 ; This entry point is used by the routine at UpdateAlien.
 PlayMusic_19:
   LD A,(RoomModeByte)
@@ -10577,12 +10641,12 @@ PlayMusic_19:
   JR Z,PlayMusic_20
   LD A,$FF
   LD ($73CB),A
-  CALL DrawSprite_76
+  CALL DeathSequence_3
   JR PlayMusic_21
 PlayMusic_20:
   LD A,$31
   LD ($73CB),A
-  CALL DrawSprite_76
+  CALL DeathSequence_3
 PlayMusic_21:
   LD HL,AlienActiveFlag
   RET
@@ -10672,7 +10736,7 @@ Auto_B0EF:
   LD HL,DrawSlotIndex
   CP (HL)
   RET NZ
-  CALL DrawSprite_53
+  CALL DrawRoomSpecials_30
   RET
 ; This entry point is used by the routine at ResetCrewTimers.
 Auto_B11A:
@@ -10687,7 +10751,7 @@ Auto_B11A:
 Auto_B12E:
   ADD IX,DE
   DJNZ Auto_B12E
-  CALL DrawSprite_53
+  CALL DrawRoomSpecials_30
   RET
 ; This entry point is used by the routine at XorHAddE.
 Auto_B136:
@@ -10710,7 +10774,7 @@ Auto_B13D:
 Auto_B14F:
   ADD IX,DE
   DJNZ Auto_B14F
-  CALL DrawSprite_53
+  CALL DrawRoomSpecials_30
 Auto_B156:
   POP IX
   RET
@@ -10781,7 +10845,7 @@ Auto_B1B2:
   PUSH IX
   LD HL,$FFFF
   LD (RoomMateA),HL
-  CALL DrawSprite_65
+  CALL DrawRoomSpecials_42
   POP IX
   POP HL
   POP DE
@@ -10795,7 +10859,7 @@ Auto_B1C6:
   LD A,(IX+$06)
   ADD A,$01
   LD (IX+$06),A
-  CALL DrawSprite_53
+  CALL DrawRoomSpecials_30
   LD HL,JonesRoom
   RET
 ; This entry point is used by the routine at UpdateRoomActors.
@@ -10827,7 +10891,7 @@ Auto_B1EC:
 Auto_B206:
   ADD IX,DE
   DJNZ Auto_B206
-  CALL DrawSprite_53
+  CALL DrawRoomSpecials_30
   POP IX
   POP BC
   RET
@@ -10895,14 +10959,14 @@ Auto_B273:
   RET
 ; This entry point is used by the routine at DrawSprite.
 Auto_B27C:
-  CALL DrawSprite_3
+  CALL PrintName
 ; This entry point is used by the routine at DrawSprite.
 Auto_B27F:
   LD HL,DrawScreenPtr
   LD A,(HL)
   AND $1F
   RET Z
-  JP DrawSprite_69
+  JP DrawRoomSpecials_46
 ; This entry point is used by the routine at UpdateRoomActors.
 Auto_B289:
   CP C
