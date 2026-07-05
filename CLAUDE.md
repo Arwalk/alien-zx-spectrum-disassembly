@@ -26,10 +26,14 @@ Uses [skoolkit 10.0](https://github.com/skoolkid/skoolkit) in a local Python ven
 .venv/bin/tap2sna.py alien.tap alien.z80
 .venv/bin/snapmod.py -r pc=36457 alien.z80 alien.z80
 
-# Re-run execution trace (5M instructions) and rebuild control file
+# Extend execution trace (addresses accumulate into alien.map)
 .venv/bin/trace.py -m 5000000 --map alien.map alien.z80
-.venv/bin/sna2ctl.py -m alien.map alien.z80 > alien.ctl
+
+# Regenerate the block-type map after adding/splitting blocks
+.venv/bin/skool2ctl.py -w b alien.skool > alien.ctl
 ```
+
+If `.venv/bin/*.py` scripts are missing, reinstall with `uv pip install --python .venv/bin/python --force-reinstall skoolkit==10.0.0`.
 
 The `html/` directory is gitignored.
 
@@ -37,16 +41,31 @@ The `html/` directory is gitignored.
 
 | File | Role |
 |------|------|
-| `alien.skool` | **Main working document** — annotated disassembly with comments, labels, directives |
-| `alien.ctl` | Control file: classifies every address as code (`c`), data (`b`/`w`), or text |
+| `alien.skool` | **Main working document** — annotated disassembly with comments, labels, directives. Uses **decimal** addresses (e.g. `36457` = `$8E69`) |
+| `alien.ctl` | Generated block-type map (code/data/text per block). Regenerate with `skool2ctl.py -w b alien.skool > alien.ctl` after adding/splitting blocks — do not edit directly |
 | `alien.asm` | Generated plain assembly — do not edit directly |
-| `alien.z80` | Z80 snapshot with PC at game entry (`$8E69`) |
-| `alien.map` | Execution trace bitmap (which addresses were executed) |
-| `alien_raw.bin` | Raw binary extracted from the tape |
+| `alien.z80` | Z80 snapshot built from the tape by `tap2sna.py`, PC forced to game entry (`$8E69`) |
+| `alien.map` | Execution trace: plain-text list of executed addresses, one `$XXXX` per line (accumulates across `trace.py --map` runs) |
+| `alien_raw.bin` | **Gold standard**: the pristine 49152-byte tape load image (`$4000-$FFFF`), extracted via `tap2sna.py`. `skool2bin.py alien.skool` must reproduce it byte-for-byte |
+| `tools_play_trace.py` | Scripted-input gameplay tracer: drives skoolkit's simulator with simulated keypresses through the menus into real gameplay, emitting an exec map (see `--help`) |
+
+## Byte-identity invariant
+
+`alien.skool` is a byte-perfect, address-faithful transcription of the tape.
+After any edit that touches DEFB/DEFM/DEFW data or code bytes, verify:
+
+```bash
+.venv/bin/skool2bin.py alien.skool /tmp/check.bin && cmp /tmp/check.bin alien_raw.bin
+```
+
+The output must be exactly 49152 bytes (`start=16384, end=65536`) and identical
+to `alien_raw.bin`. (A July 2026 audit found and fixed ~30 corrupted bytes, a
+dropped 3-byte instruction and two misrepresented overlapping-instruction
+tricks that had made the rebuilt image drift by 3 bytes.)
 
 ## skool File Format
 
-Lines in `alien.skool` follow this structure:
+Addresses in `alien.skool` are **decimal** (`36457`, not `$8E69`); hex appears only in comments. Lines follow this structure:
 - `cADDR MNEMONIC operands` — code entry point
 - `bADDR DEFB bytes` — data block
 - `wADDR DEFW words` — word (16-bit) data block
@@ -62,9 +81,12 @@ Lines in `alien.skool` follow this structure:
 | `$4000–$57FF` | ZX Spectrum display file (pixel data) |
 | `$5800–$5AFF` | Attribute file (ink/paper colours) |
 | `$6000–$734B` | Sprite pixel data and tile bitmaps |
-| `$6935` | Character bitmap table (8 bytes/tile) |
-| `$6E3D` | Sprite character table (10 bytes/sprite) |
-| `$7386` | Crew data records — 7 × 8 bytes |
+| `$6935` | Character/tile bitmap table (8 bytes/tile, indexed by char code) |
+| `$6E3D` | String/sprite-strip table (10 chars per entry): entries 0–34 = room names, 35+ = item names, actions, UI words; also used as 10-tile sprite strips (51 = Jones) |
+| `$71F3` | `RoomAdjCorridors` — 35 rooms × 5 direction slots, the ship's door/corridor connectivity map |
+| `$72A2` | `RoomAdjDucts` — air-duct network over the same rooms (34 entries, no Narcissus) |
+| `$734C` | `CrewNameTable`: ALIEN, Dallas, Kane, Ripley, Ash, Lambert, Parker, Brett ($FF-separated) |
+| `$737E` | `ActorRecords` — 8 slots × 8 bytes; slot 0 = alien (its +1 byte $737F = alien's current room), slots 1–7 = crew (slot k ↔ name k). +1 = current room (bit 6 = in ducts), +2 = destination room, +4 = strength, +7 = status (0 alive, $FF removed) |
 | `$73BE` | Corridor position table (19 entries) |
 | `$7A00–$7AFF` | Game state RAM variables |
 | `$7A89–$B1FF` | Z80 machine code routines |
@@ -77,19 +99,37 @@ Lines in `alien.skool` follow this structure:
 
 ### Main Loop (each frame, in order)
 
-1. `HandleInput` `$8A0C` — keyboard (keys 5/6/7/8/0), crew movement dispatch
+1. `HandleInput` `$8A0C` — key 6 = advance cursor, 7 = retreat, 5/8 = row moves, **0 = action** (on release, dispatches the current room's handler via `RoomDispatchTable` `$8402` — this opens room action menus)
 2. `FrameTiming` `$9D7F` — ~1/50s wait or play queued sound
-3. `UpdateAlien` `$9F5A` — alien movement and crew-attack logic
+3. `UpdateAlien` `$9F5A` — alien/Android activation logic; the alien kills crew that enter its room (slot 0 byte +1) via `CrewHitsAlien` `$92D0` → kill primitive `$9365`
 4. `UpdateCrewState` — advance per-crew action timers
 5. `UpdateCrewAI` `$90D2` — assign script-sourced action to idle crew
 6. `ProcessAnimQueue` — step corridor animations (×2 passes)
-7. `UpdateRoomMode` — evaluate current room game state
+7. `UpdateJones` `$8FFB` — walk Jones the cat one room per ~5s (room in `$83AA`); draws the cat into corridor cell 14, enqueues msg #0 when seen, avoids the alien's room
 8. `UpdateCorridors` — advance crew along corridor (×2 passes)
 9. `AnimateCrewA` `$88B7` / `AnimateCrewB` `$88E8` — XOR-blit sprite frames
 10. `PlayMusic` `$AF60` — beeper tone phrase
 11. `DrawStatusPanel` `$AD09` — crew-alive portrait column
 
 Key 1 opens `PauseMenu` `$AEF7`; pressing again restarts.
+
+### Screen flow
+
+Intro (any key) → ship map + game-mode menu (1 = Short Game, 2 = Long Game,
+3 = Introduction; **4 = confirm** via `GameModeDispatchTable` `$A87F`) →
+input-device menu (`OptionsScreen`: 1 Kempston / 2 AGF-Protek / 3 Sinclair /
+4 Keyboard, **5 = SELECT**; choosing Keyboard offers Y = redefine keys) →
+gameplay. The Long Game opens with the film's dinner scene (Dallas/Kane/Ripley
+on the bridge, Ash/Lambert/Parker in the Mess, chestburster host picked by ROM
+script); the Short Game is the final act (only Ripley, Lambert, Parker aboard).
+
+### Movement model
+
+Actors move room-to-room on two overlaid graphs: `RoomAdjCorridors` `$71F3`
+(doors) and `RoomAdjDucts` `$72A2` (crawlways; record byte +1 bit 6 = in
+ducts). `PickNextRoom` `$8F6D` chooses a destination by feeding a ROM-script
+nibble through `ScriptNibbleToDirection` `$8F9B` into the actor's current
+room's 5 direction slots (slot value = destination; own ID = no exit).
 
 ### ROM Script System (AI/randomness)
 
@@ -118,7 +158,9 @@ The alien and crew AI consumes a "script" of commands by walking ZX Spectrum ROM
 | `DrawSprite` | `$7BA2` | Blit full 10-column × 8-row sprite |
 | `DrawIntroScreen` | `$A665` | Animated Alien title screen |
 | `DrawShipMap` | `$A785` | Nostromo ship-map / room-selection screen |
-| `OptionsScreen` | `$AA72` | Difficulty selection (keys 1–4) |
+| `OptionsScreen` | `$AA5A` | Input-device menu: 1–4 pick joystick/keyboard, 5 = start; Y = redefine keys |
+| `PickNextRoom` | `$8F6D` | Choose an actor's next room from the adjacency maps |
+| `UpdateJones` | `$8FFB` | Jones the cat's per-move wander/draw/message logic |
 | `ClearDisplay` | `$A5E5` | Zero display file `$4000–$57FF` |
 | `FillAttributes` | `$A5F3` | Flood-fill attribute file `$5800–$5AFF` |
 | `ScreenTransition` | `$ADF1` | Animated top-to-bottom wipe to black |

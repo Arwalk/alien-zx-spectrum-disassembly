@@ -930,15 +930,15 @@ b23296 DEFB 0,0,0,0,0,0,0,0
  23592 DEFB 0,0,0,0,0,0,0,0
  23600 DEFB 0,0,0,0,0,0,0,60
  23608 DEFB 64,0,255,205,1,252,95,0
- 23616 DEFB 0,0,0,0,255,10,0,8
+ 23616 DEFB 0,0,0,0,255,10,0,7
  23624 DEFB 7,0,0,216,94,127,93,182
  23632 DEFB 92,182,92,203,92,191,93,202
- 23640 DEFB 92,223,94,226,94,184,93,245
- 23648 DEFB 94,228,94,228,94,228,94,31
+ 23640 DEFB 92,217,94,220,94,175,93,239
+ 23648 DEFB 94,222,94,222,94,222,94,45
  23656 DEFB 146,92,16,0,0,0,0,0
- 23664 DEFB 0,2,108,216,199,26,0,0
+ 23664 DEFB 0,2,108,216,125,26,0,0
 @label=Auto_5C78
- 23672 DEFB 65,144,0,88,255,0,0,33
+ 23672 DEFB 7,0,0,88,255,0,0,33
  23680 DEFB 0,91,33,23,0,64,224,80
  23688 DEFB 33,24,33,23,1,0,0,7
  23696 DEFB 0,0,0,0,0,0,0,0
@@ -1017,9 +1017,9 @@ b23756 DEFB 0,108,0,234,221,33,0,64
  24252 DEFB 78,58,226,58,236,50,48,14
  24260 DEFB 0,0,20,0,0,13,0,40
  24268 DEFB 10,0,236,51,48,14,0,0
- 24276 DEFB 30,0,0,13,108,0,0,105
- 24284 DEFB 142,0,128,239,34,34,13,128
- 24292 DEFB 0,0,0,0,0,0,0,0
+ 24276 DEFB 30,0,0,13,128,239,34,34
+ 24284 DEFB 13,128,0,0,208,92,0,0
+ 24292 DEFB 0,5,0,0,32,0,0,0
  24300 DEFB 255,95,0,32,32,32,32,32
  24308 DEFB 32,0,0,0,128,0,0,0
  24316 DEFB 65,76,73,69,78,48,32,32
@@ -1050,10 +1050,10 @@ b23756 DEFB 0,108,0,234,221,33,0,64
  24516 DEFB 0,0,0,0,0,0,0,0
  24524 DEFB 0,0,0,0,0,0,0,0
  24532 DEFB 219,2,177,51,222,94,0,203
- 24540 DEFB 155,54,177,51,43,45,0,105
- 24548 DEFB 155,54,101,51,177,51,179,93
- 24556 DEFB 219,2,77,0,228,94,0,0
- 24564 DEFB 223,94,92,0,62,31,118,27
+ 24540 DEFB 155,54,177,51,183,45,222,94
+ 24548 DEFB 1,0,247,92,43,45,101,51
+ 24556 DEFB 0,0,237,16,58,0,82,0
+ 24564 DEFB 93,28,186,205,82,28,118,27
  24572 DEFB 3,19,0,62
 
 ; Data block at #R24576
@@ -1357,10 +1357,10 @@ b26673 DEFB 0,0,0               ; row  0: blank
  26685 DEFB 1,66,128            ; row  4: oval sides
  26688 DEFB 1,66,128            ; row  5
  26691 DEFB 1,66,128            ; row  6
- 26694 DEFB 1,126,128           ; row  7: oval bottom
- 26697 DEFB 1,0,128             ; row  8
- 26700 DEFB 1,255,128           ; row  9: bottom border
- 26703 DEFB 0,0,0               ; row 10: blank
+ 26694 DEFB 1,66,128           ; row  7
+ 26697 DEFB 1,126,128             ; row  8
+ 26700 DEFB 1,0,128           ; row  9
+ 26703 DEFB 1,255,128             ; row 10
  26706 DEFB 0,0,0               ; row 11: blank
 
 ; RoomCursor2
@@ -1757,57 +1757,109 @@ t28221 DEFM "Airlock #1"     ;  0
  29151 DEFM "In Duct   "     ; 93
  29161 DEFM "Body of   "     ; 94
 
-; Data block at #R29171
+; Room adjacency map — corridor/door network
 ;
-@ignoreua
-; 5-byte-per-entry table read by the routine at #R31759 (and three other call
-; sites at $8F70 / $900C / $9831) using `base + crew_id*5`. Contents and
-; purpose still TODO.
-@label=Auto_71F3
-b29171 DEFB 13,13
- 29173 DEFB 0,0,0,13,13,1,1,1
- 29181 DEFB 10,10,10,2,2,4,4,3
- 29189 DEFB 3,3,32,3,14,5,9,4
- 29197 DEFB 4,5,5,5,8,8,8,6
- 29205 DEFB 6,13,13,30,30,7,6,21
- 29213 DEFB 9,23,26,8,4,10,15,12
- 29221 DEFB 9,22,2,17,11,10,10,12
- 29229 DEFB 12,18,9,24,29,19,11,27
- 29237 DEFB 0,7,31,1,4,4,25,25
- 29245 DEFB 14,9,9,15,15,15,32,32
- 29253 DEFB 20,20,16,10,10,17,17,17
- 29261 DEFB 11,11,18,18,18,12,12,19
- 29269 DEFB 19,19,16,16,16,20,20,8
- 29277 DEFB 8,8,21,21,10,10,10,22
- 29285 DEFB 22,8,8,8,23,23,12,12
- 29293 DEFB 12,24,24,14,14,25,25,25
- 29301 DEFB 28,8,27,27,26,26,28,13
- 29309 DEFB 27,27,26,26,27,27,28,12
- 29317 DEFB 12,12,29,29,7,7,30,30
- 29325 DEFB 30,13,13,31,31,31,33,34
- 29333 DEFB 4,16,32,32,32,32,33,33
- 29341 DEFB 32,32,32,34,34,0,30,27
- 29349 DEFB 26,0,27,3,1,28,27,2
- 29357 DEFB 11,11,22,22,33,14,14,3
- 29365 DEFB 3,4,14,14,14,4,5,14
- 29373 DEFB 20,20,5,6,8,8,6,6
- 29381 DEFB 7,18,18,13,13,21,8,23
- 29389 DEFB 6,8,10,10,12,12,9,22
- 29397 DEFB 10,9,21,10,2,18,29,15
- 29405 DEFB 2,9,9,24,23,23,30,7
- 29413 DEFB 31,27,13,3,25,5,4,14
- 29421 DEFB 15,11,11,15,15,16,16,20
- 29429 DEFB 32,32,17,18,18,17,17,17
- 29437 DEFB 7,19,11,25,19,18,18,19
- 29445 DEFB 19,16,5,5,20,20,21,10
- 29453 DEFB 8,8,21,2,10,10,22,22
- 29461 DEFB 8,12,12,23,23,24,12,29
- 29469 DEFB 29,24,25,25,14,18,18,26
- 29477 DEFB 0,28,28,26,0,13,1,27
- 29485 DEFB 27,26,1,1,28,28,29,11
- 29493 DEFB 11,24,29,30,30,13,0,13
- 29501 DEFB 13,13,31,1,31,33,33,16
- 29509 DEFB 32,32,33,3,3,32,32
+; The Nostromo's connectivity, as two 5-byte-per-room tables (this one and
+; the air-duct network at #R29346). Room IDs 0-34 index the room-name table
+; at #R28221. Each room has 5 direction slots holding the destination room
+; reached by leaving in that direction; a slot equal to the room's own ID
+; means "no exit that way". The graph is fully symmetric (every door works
+; both ways).
+;
+; A direction slot is chosen by ScriptNibbleToDirection (#R36763) from the
+; ROM script stream, so AI wandering is a deterministic weighted random
+; walk. Read by the destination picker at #R36717 (which writes an actor's
+; record byte +2), by the alien's own per-move room step inside #R36859,
+; and by the door-exit-list builder inside #R31634 that feeds the room
+; view.
+@label=RoomAdjCorridors
+b29171 DEFB 13,13,0,0,0     ;  0 Airlock #1 -> 13 Corridor#6
+ 29176 DEFB 13,13,1,1,1     ;  1 Airlock #2 -> 13 Corridor#6
+ 29181 DEFB 10,10,10,2,2    ;  2 Armoury    -> 10 Corridor#3
+ 29186 DEFB 4,4,3,3,3       ;  3 Cargopod#1 -> 4 Cargopod#2
+ 29191 DEFB 32,3,14,5,9     ;  4 Cargopod#2 -> 3 Cargopod#1, 5 Cargopod#3, 9 Corridor#2, 14 Corridor#7, 32 ShuttleBay
+ 29196 DEFB 4,4,5,5,5       ;  5 Cargopod#3 -> 4 Cargopod#2
+ 29201 DEFB 8,8,8,6,6       ;  6 CommdCentr -> 8 Corridor#1
+ 29206 DEFB 13,13,30,30,7   ;  7 Computer   -> 13 Corridor#6, 30 Stores #2
+ 29211 DEFB 6,21,9,23,26    ;  8 Corridor#1 -> 6 CommdCentr, 9 Corridor#2, 21 Infirmary, 23 Laboratory, 26 Livng Qtrs
+ 29216 DEFB 8,4,10,15,12    ;  9 Corridor#2 -> 4 Cargopod#2, 8 Corridor#1, 10 Corridor#3, 12 Corridor#5, 15 Cryo Vault
+ 29221 DEFB 9,22,2,17,11    ; 10 Corridor#3 -> 2 Armoury, 9 Corridor#2, 11 Corridor#4, 17 Engine #1, 22 Inf Stores
+ 29226 DEFB 10,10,12,12,18  ; 11 Corridor#4 -> 10 Corridor#3, 12 Corridor#5, 18 Engine #2
+ 29231 DEFB 9,24,29,19,11   ; 12 Corridor#5 -> 9 Corridor#2, 11 Corridor#4, 19 Engine #3, 24 Lab Stores, 29 Stores #1
+ 29236 DEFB 27,0,7,31,1     ; 13 Corridor#6 -> 0 Airlock #1, 1 Airlock #2, 7 Computer, 27 Mess, 31 Stores #3
+ 29241 DEFB 4,4,25,25,14    ; 14 Corridor#7 -> 4 Cargopod#2, 25 Life Suppt
+ 29246 DEFB 9,9,15,15,15    ; 15 Cryo Vault -> 9 Corridor#2
+ 29251 DEFB 32,32,20,20,16  ; 16 Engineerng -> 20 Eng Stores, 32 ShuttleBay
+ 29256 DEFB 10,10,17,17,17  ; 17 Engine #1  -> 10 Corridor#3
+ 29261 DEFB 11,11,18,18,18  ; 18 Engine #2  -> 11 Corridor#4
+ 29266 DEFB 12,12,19,19,19  ; 19 Engine #3  -> 12 Corridor#5
+ 29271 DEFB 16,16,16,20,20  ; 20 Eng Stores -> 16 Engineerng
+ 29276 DEFB 8,8,8,21,21     ; 21 Infirmary  -> 8 Corridor#1
+ 29281 DEFB 10,10,10,22,22  ; 22 Inf Stores -> 10 Corridor#3
+ 29286 DEFB 8,8,8,23,23     ; 23 Laboratory -> 8 Corridor#1
+ 29291 DEFB 12,12,12,24,24  ; 24 Lab Stores -> 12 Corridor#5
+ 29296 DEFB 14,14,25,25,25  ; 25 Life Suppt -> 14 Corridor#7
+ 29301 DEFB 28,8,27,27,26   ; 26 Livng Qtrs -> 8 Corridor#1, 27 Mess, 28 RecrtnArea
+ 29306 DEFB 26,28,13,27,27  ; 27 Mess       -> 13 Corridor#6, 26 Livng Qtrs, 28 RecrtnArea
+ 29311 DEFB 26,26,27,27,28  ; 28 RecrtnArea -> 26 Livng Qtrs, 27 Mess
+ 29316 DEFB 12,12,12,29,29  ; 29 Stores #1  -> 12 Corridor#5
+ 29321 DEFB 7,7,30,30,30    ; 30 Stores #2  -> 7 Computer
+ 29326 DEFB 13,13,31,31,31  ; 31 Stores #3  -> 13 Corridor#6
+ 29331 DEFB 33,34,4,16,32   ; 32 ShuttleBay -> 4 Cargopod#2, 16 Engineerng, 33 Shttlstore, 34 Narcissus
+ 29336 DEFB 32,32,32,33,33  ; 33 Shttlstore -> 32 ShuttleBay
+ 29341 DEFB 32,32,32,34,34  ; 34 Narcissus  -> 32 ShuttleBay
+
+; Room adjacency map — air-duct network
+;
+; Companion table to #R29171 (RoomAdjCorridors): same 5-slot-per-room
+; format, but describing the air-duct/crawlway network that connects the
+; same rooms along different edges (e.g. Mess connects directly to both
+; Airlocks, Computer to Engine #2). Only 34 entries — the Narcissus
+; (room 34) cannot be reached through the ducts.
+;
+; An actor whose record byte +1 has bit 6 set is travelling in this
+; network; destinations fetched from here are stored with bit 6 set too,
+; keeping the actor in duct space until a room handler clears the flag.
+; Read by the duct branch of the destination picker at #R36717, by the
+; grille-list builder inside #R31634 that lists a room's duct openings,
+; and by the duct-entry move inside #R35382 that sends a crew member
+; through a grille. The two one-way links (Airlock #2 -> Cargopod#1 and
+; Stores #3 -> Airlock #2) are present in the original data.
+@label=RoomAdjDucts
+b29346 DEFB 0,30,27,26,0    ;  0 Airlock #1 -> 26 Livng Qtrs, 27 Mess, 30 Stores #2
+ 29351 DEFB 27,3,1,28,27    ;  1 Airlock #2 -> 3 Cargopod#1, 27 Mess, 28 RecrtnArea
+ 29356 DEFB 2,11,11,22,22   ;  2 Armoury    -> 11 Corridor#4, 22 Inf Stores
+ 29361 DEFB 33,14,14,3,3    ;  3 Cargopod#1 -> 14 Corridor#7, 33 Shttlstore
+ 29366 DEFB 4,14,14,14,4    ;  4 Cargopod#2 -> 14 Corridor#7
+ 29371 DEFB 5,14,20,20,5    ;  5 Cargopod#3 -> 14 Corridor#7, 20 Eng Stores
+ 29376 DEFB 6,8,8,6,6       ;  6 CommdCentr -> 8 Corridor#1
+ 29381 DEFB 7,18,18,13,13   ;  7 Computer   -> 13 Corridor#6, 18 Engine #2
+ 29386 DEFB 21,8,23,6,8     ;  8 Corridor#1 -> 6 CommdCentr, 21 Infirmary, 23 Laboratory
+ 29391 DEFB 10,10,12,12,9   ;  9 Corridor#2 -> 10 Corridor#3, 12 Corridor#5
+ 29396 DEFB 22,10,9,21,10   ; 10 Corridor#3 -> 9 Corridor#2, 21 Infirmary, 22 Inf Stores
+ 29401 DEFB 2,18,29,15,2    ; 11 Corridor#4 -> 2 Armoury, 15 Cryo Vault, 18 Engine #2, 29 Stores #1
+ 29406 DEFB 9,9,24,23,23    ; 12 Corridor#5 -> 9 Corridor#2, 23 Laboratory, 24 Lab Stores
+ 29411 DEFB 30,7,31,27,13   ; 13 Corridor#6 -> 7 Computer, 27 Mess, 30 Stores #2, 31 Stores #3
+ 29416 DEFB 3,25,5,4,14     ; 14 Corridor#7 -> 3 Cargopod#1, 4 Cargopod#2, 5 Cargopod#3, 25 Life Suppt
+ 29421 DEFB 15,11,11,15,15  ; 15 Cryo Vault -> 11 Corridor#4
+ 29426 DEFB 16,16,20,32,32  ; 16 Engineerng -> 20 Eng Stores, 32 ShuttleBay
+ 29431 DEFB 17,18,18,17,17  ; 17 Engine #1  -> 18 Engine #2
+ 29436 DEFB 17,7,19,11,25   ; 18 Engine #2  -> 7 Computer, 11 Corridor#4, 17 Engine #1, 19 Engine #3, 25 Life Suppt
+ 29441 DEFB 19,18,18,19,19  ; 19 Engine #3  -> 18 Engine #2
+ 29446 DEFB 16,5,5,20,20    ; 20 Eng Stores -> 5 Cargopod#3, 16 Engineerng
+ 29451 DEFB 21,10,8,8,21    ; 21 Infirmary  -> 8 Corridor#1, 10 Corridor#3
+ 29456 DEFB 2,10,10,22,22   ; 22 Inf Stores -> 2 Armoury, 10 Corridor#3
+ 29461 DEFB 8,12,12,23,23   ; 23 Laboratory -> 8 Corridor#1, 12 Corridor#5
+ 29466 DEFB 24,12,29,29,24  ; 24 Lab Stores -> 12 Corridor#5, 29 Stores #1
+ 29471 DEFB 25,25,14,18,18  ; 25 Life Suppt -> 14 Corridor#7, 18 Engine #2
+ 29476 DEFB 26,0,28,28,26   ; 26 Livng Qtrs -> 0 Airlock #1, 28 RecrtnArea
+ 29481 DEFB 0,13,1,27,27    ; 27 Mess       -> 0 Airlock #1, 1 Airlock #2, 13 Corridor#6
+ 29486 DEFB 26,1,1,28,28    ; 28 RecrtnArea -> 1 Airlock #2, 26 Livng Qtrs
+ 29491 DEFB 29,11,11,24,29  ; 29 Stores #1  -> 11 Corridor#4, 24 Lab Stores
+ 29496 DEFB 30,30,13,0,13   ; 30 Stores #2  -> 0 Airlock #1, 13 Corridor#6
+ 29501 DEFB 13,13,31,1,31   ; 31 Stores #3  -> 1 Airlock #2, 13 Corridor#6
+ 29506 DEFB 33,33,16,32,32  ; 32 ShuttleBay -> 16 Engineerng, 33 Shttlstore
+ 29511 DEFB 33,3,3,32,32    ; 33 Shttlstore -> 3 Cargopod#1, 32 ShuttleBay
 
 ; CrewNameTable
 ;
@@ -1823,37 +1875,66 @@ b29516 DEFB 65,76,73,69,78,255,68,97
  29556 DEFB 107,101,114,255,66,114,101,116
  29564 DEFB 116,255
 
-; Data block at #R29566
-@label=CrewData
-b29566 DEFB 0,0,0,0,0,0,0
-
-; CrewStateTable
+; Actor record array — slot 0: the alien
 ;
-; 6 × 8-byte crew records (initial values for 6 active crew + 1 partial slot
-; for the alien). Per-record layout (read via IX-indexed accesses in the
-; per-frame routines):
-;     +0 = action timer countdown
-;     +1 = crew ID (low 6 bits) | direction flag (bit 6) | flags
-;     +2 = current corridor position (0..18)
-;     +3 = action state (0=dead/none, 1=idle, 2=move, 3=wait, 5=investigate,
-;                       6=move-long, 7=attack)
-;     +4 = unused / pad
-;     +5 = pixel X coordinate
-;     +6 = pixel Y coordinate
-;     +7 = alive flag (0 = dead, non-zero = alive)
-@label=CrewStateTable
-b29573 DEFB 0,64,12,0,0,2,2,2  ; crew 0
-@label=Auto_738D
- 29581 DEFB 0,64,22,0,0,4,4,4  ; crew 1
- 29589 DEFB 0,64,75,0,0,4,2,2  ; crew 2
- 29597 DEFB 0,64,9,0,0,4,4,4   ; crew 3
- 29605 DEFB 0,64,27,0,0,3,4,4  ; crew 4
- 29613 DEFB 0,64,11,0,0,3       ; crew 5 (truncated, 7 bytes)
+; Eight 8-byte actor records (64 bytes in all). Slot k's name
+; is entry k of #R29516 (CrewNameTable): slot 0 = ALIEN, slots 1-7 =
+; Dallas, Kane, Ripley, Ash, Lambert, Parker, Brett. Most per-frame loops
+; start from this base (LD IX,29566) and step 8 bytes per slot; the
+; message renderer at #R37221 passes the slot number straight to the
+; name printer.
+;
+; Per-record field layout (IX-relative):
+;   +0 = sprite index for the actor's current pose (20 = idle; 92 =
+;        blank; 255 = none) — also stepped as an action/frame counter
+;   +1 = current room: bits 0-5 = room ID 0-34 (indexes #R28221 names
+;        and the #R29171 adjacency map), bit 6 set = travelling in the
+;        air-duct network (#R29346). $FF = HostMarker: slot excluded
+;        from normal crew processing
+;   +2 = destination room, written by the picker at #R36717 (bit 6
+;        carries the duct flag along)
+;   +3 = action state (1=idle, 2=move, 3=wait, 5=investigate, 7=attack)
+;   +4 = strength / hit points (initial values 2-6; combat decrements)
+;   +5 = sprite X tile
+;   +6 = sprite Y tile
+;   +7 = status: 0 = alive/normal; 1 = killed (stamped by #R37584's
+;        kill path); 2 = android defeated; $FF = removed from play
+;        (hypersleep, or HostMarker partner of +1=$FF)
+;
+; Slot 0 is the alien: its +1 byte (29566+1) holds the alien's current
+; room at runtime (initialised inside CommonGameInit #R42397, updated
+; inside #R38379; read by CrewHitsAlien's path at #R37490 and by Jones's
+; avoidance check in #R36859). Its +7 byte (#R29573) anchors the status-column scans
+; (+7 column, step 8).
+;
+; The whole array is overwritten at game start by the templates at
+; #R41444 (Long Game) / #R41508 (Short Game); the row values below are
+; the tape-image leftovers.
+@label=ActorRecords
+b29566 DEFB 0,0,0,0,0,0,0      ; slot 0 (+0..+6) — unused
 
-; Data block at #R29619
-@label=CrewStateExtra
-b29619 DEFB 4,4,0,34,19,0,0,4
- 29627 DEFB 2,2,0
+; Actor record array — status column anchor
+;
+; Slot 0's +7 (status) byte. The alive/status scans walk the +7 column
+; from here or from slot 1's +7 (#R29581) in steps of 8.
+@label=ActorStatusColumn
+b29573 DEFB 0
+
+; Actor record array — crew slots 1-7
+;
+; See #R29566 for the field layout. Slot 1's row is split after +6 so
+; that the status byte (#R29581, base of the crew alive-flag scan used
+; by #R44313) keeps its own address and label.
+@label=CrewRecords
+b29574 DEFB 64,12,0,0,2,2,2    ; slot 1 Dallas  +0..+6 — in Corridor#5
+@label=CrewStatusColumn
+ 29581 DEFB 0                  ; slot 1 Dallas  +7 (alive-scan base)
+ 29582 DEFB 64,22,0,0,4,4,4,0  ; slot 2 Kane    — in Inf Stores
+ 29590 DEFB 64,75,0,0,4,2,2,0  ; slot 3 Ripley  — in Corridor#4 duct (bit 6)
+ 29598 DEFB 64,9,0,0,4,4,4,0   ; slot 4 Ash     — in Corridor#2
+ 29606 DEFB 64,27,0,0,3,4,4,0  ; slot 5 Lambert — in Mess
+ 29614 DEFB 64,11,0,0,3,4,4,0  ; slot 6 Parker  — in Corridor#4
+ 29622 DEFB 34,19,0,0,4,2,2,0  ; slot 7 Brett   — in Engine #3
 
 ; CorridorPosTable
 ;
@@ -2167,15 +2248,16 @@ b31232 DEFB 9,9,9,9,9,9,9,45
  31283 DEFB 13,32,245,17,124,1,33,0
  31291 DEFB 96,58,11,122,254,3,202,108
  31299 DEFB 131,254,4,202,7,155,167,40
- 31307 DEFB 4,25,61,32,252,34,27,122
+ 31307 DEFB 4,25,61,32,252
 @label=DrawRoomBackground_0
-*31312 DEFB 33,0,64,34,25,122,14,19
- 31320 DEFB 6,20,197,237,91,27,122,205
- 31328 DEFB 137,122,33,25,122,52,42,27
- 31336 DEFB 122,35,34,27,122,193,16,234
- 31344 DEFB 17,12,0,42,25,122,125,254
- 31352 DEFB 224,56,3,17,12,7,25,34
- 31360 DEFB 25,122,13,32,211,201
+*31312 DEFB 34,27,122,33,0,64,34,25
+ 31320 DEFB 122,14,19,6,20,197,237,91
+ 31328 DEFB 27,122,205,137,122,33,25,122
+ 31336 DEFB 52,42,27,122,35,34,27,122
+ 31344 DEFB 193,16,234,17,12,0,42,25
+ 31352 DEFB 122,125,254,224,56,3,17,12
+ 31360 DEFB 7,25,34,25,122,13,32,211
+ 31368 DEFB 201
 
 ; DrawSpriteRow
 @ignoreua
@@ -2313,10 +2395,11 @@ c31417 XOR A         ; A = 0
  31557 LD A,7        ;
 ; This entry point is used by the routine at #R31577.
 *31559 EX AF,AF'     ;
- 31560 LD HL,(31257) ;
+ 31560 DEFB 42,25     ; first 2 bytes of "LD HL,(draw pointer)": the
+                      ; operand-high byte is the LD A,D at #R31562, so
+                      ; falling through loads HL and continues after it
 
 ; Routine at #R31562
-@label=DrawSpriteFromTable
 @label=NextCorridorEntry
 c31562 LD A,D        ;
  31563 PUSH AF       ;
@@ -2633,7 +2716,7 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31985 CALL Z,32134  ;
 *31988 LD A,(31242)  ;
 @nowarn=33706
-@ssub=LD HL,AlienEventTimer
+@ssub=LD HL,JonesRoom
  31991 LD HL,33706   ;
  31994 CP (HL)       ;
  31995 CALL Z,32109  ;
@@ -3591,7 +3674,7 @@ c33610 PUSH AF       ;
 ;   #R33701 Auto_83A5         pointer to current crew record
 ;   #R33703 AlienTargetID     crew ID being targeted (255=none)
 ;   #R33704 AlienActiveFlag   alien is loose flag
-;   #R33706 AlienEventTimer   countdown to next alien event
+;   #R33706 JonesRoom         Jones the cat's current room (255 = off-map)
 ;   #R33731 SoundReqFlag      pending sound parameters
 ;   #R33734 SprScreenAddrA    crew sprite A destination
 ;   #R33736 SprScreenAddrB    crew sprite B destination
@@ -3639,10 +3722,10 @@ b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D
  33704 DEFB 0                ; Non-zero when the alien is loose in corridors
 @label=Auto_83A9
  33705 DEFB 0                ;
-@label=AlienEventTimer
- 33706 DEFB 6                ; Frames until next alien event (255 = disabled)
-@label=Auto_83AB
- 33707 DEFB 255              ; Secondary alien-event counter
+@label=JonesRoom
+ 33706 DEFB 6                ; Jones the cat's current room (255 = off-map)
+@label=JonesMoveTimer
+ 33707 DEFB 255              ; frames until Jones's next move
 @label=Auto_83AC
  33708 DEFB 0                ;
 @label=Auto_83AD
@@ -3915,37 +3998,42 @@ c34636 CALL 34640    ; scan into AlienFlags
 @ssub=LD HL,AlienFlags
 *34640 LD HL,33682   ; HL points to AlienFlags
  34643 LD (HL),0     ;
- 34645 LD BC,63486   ;
+@ignoreua
+ 34645 LD BC,63486   ; port $F7FE: half-row 1-5
  34648 IN A,(C)      ;
- 34650 LD B,239      ;
-*34652 BIT 4,A       ;
+@ignoreua
+ 34650 LD B,239      ; next read: port $EFFE, half-row 6-0
+*34652 BIT 4,A       ; key 5 pressed? (active low)
  34654 JR NZ,34658   ;
- 34656 SET 1,(HL)    ;
-*34658 IN A,(C)      ;
- 34660 BIT 2,A       ;
+ 34656 SET 1,(HL)    ; bit 1 = key 5
+*34658 IN A,(C)      ; read half-row 6-0
+ 34660 BIT 2,A       ; key 8?
  34662 JR NZ,34666   ;
- 34664 SET 0,(HL)    ;
-*34666 BIT 3,A       ;
+ 34664 SET 0,(HL)    ; bit 0 = key 8
+*34666 BIT 3,A       ; key 7?
  34668 JR NZ,34672   ;
- 34670 SET 2,(HL)    ;
-*34672 BIT 4,A       ;
+ 34670 SET 2,(HL)    ; bit 2 = key 7
+*34672 BIT 4,A       ; key 6?
  34674 JR NZ,34678   ;
- 34676 SET 3,(HL)    ;
-*34678 BIT 0,A       ;
+ 34676 SET 3,(HL)    ; bit 3 = key 6
+*34678 BIT 0,A       ; key 0 (action)?
  34680 RET NZ        ;
- 34681 SET 4,(HL)    ;
+ 34681 SET 4,(HL)    ; bit 4 = action
  34683 RET           ;
 @ignoreua
 
 ; HandleInput
 ;
-; Reads the keyboard and moves the selected crew member. Calls the key-scanner
-; at #R34636 which packs five keys into #R33642: bit 4 = fire/action, bit 3 =
-; move right (key 8), bit 2 = move left (key 5), bits 1-0 = up/down (keys
-; 6/7). If the action key (bit 4) is held, enters a beeper loop toggling port
-; $FE until released. Otherwise dispatches movement: right → #R34743 (move
-; forward along corridor), left → #R34788 (move backward), up/down move the
-; crew between parallel corridor rows.
+; Reads the keyboard and moves the corridor cursor. Calls the key-scanner
+; at #R34636, which packs five keys into #R33682 (set bit = pressed):
+; bit 0 = key 8, bit 1 = key 5, bit 2 = key 7, bit 3 = key 6, bit 4 =
+; key 0 (action). While the action key is held the border flashes
+; yellow/black; on RELEASE control jumps to #R34840, which dispatches
+; through RoomDispatchTable (#R33794) on the current room mode
+; (#R31252) — this is how a room's action handler / menu is opened.
+; Otherwise: key 6 -> #R34743 (advance the cursor along the corridor),
+; key 7 -> #R34788 (retreat), and keys 8/5 move between rows when the
+; room view has more than one row (mode != 0).
 ;
 ; Used by the routine at #R36457.
 @label=HandleInput
@@ -3966,16 +4054,16 @@ c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
 @ssub=LD A,(AlienFlags)
  34701 LD A,(33682)  ; read updated key state
  34704 BIT 4,A       ; action key still held?
- 34706 JP Z,34840    ; released: return to caller
+ 34706 JP Z,34840    ; released: open the room-action dispatch
  34709 EX AF,AF'     ; restore A' border colour
  34710 XOR 6         ; toggle between 0 (black) and 6 (yellow)
  34712 OUT (254),A   ; flash border
  34714 JR 34697      ; repeat until key released
-*34716 BIT 3,A       ; move-right key (key 8)?
- 34718 JR NZ,34743   ; yes: move crew forward along corridor
- 34720 BIT 2,A       ; move-left key (key 5)?
-*34722 JR NZ,34788   ; yes: move crew backward along corridor
- 34724 AND 3         ; up (bit 1) or down (bit 0) key?
+*34716 BIT 3,A       ; key 6 (advance)?
+ 34718 JR NZ,34743   ; yes: advance cursor along the corridor
+ 34720 BIT 2,A       ; key 7 (retreat)?
+*34722 JR NZ,34788   ; yes: retreat cursor along the corridor
+ 34724 AND 3         ; key 5 or key 8 (row movement)?
 *34726 RET Z         ; no directional key: return
 @ignoreua
  34727 LD A,(31252)  ; A = room mode (#R31252)
@@ -4048,19 +4136,19 @@ c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
 *34833 CALL 34882    ;
  34836 CALL 34933    ;
  34839 RET           ;
-*34840 XOR A         ;
- 34841 OUT (254),A   ;
- 34843 LD HL,33794   ;
- 34846 LD A,(31252)  ;
+*34840 XOR A         ; action key released:
+ 34841 OUT (254),A   ; restore black border
+ 34843 LD HL,33794   ; RoomDispatchTable
+ 34846 LD A,(31252)  ; A = current room mode
  34849 LD E,A        ;
  34850 LD D,0        ;
  34852 ADD HL,DE     ;
- 34853 ADD HL,DE     ;
+ 34853 ADD HL,DE     ; HL = table + mode*2
  34854 LD A,(HL)     ;
  34855 INC HL        ;
  34856 LD H,(HL)     ;
  34857 LD L,A        ;
- 34858 JP (HL)       ;
+ 34858 JP (HL)       ; jump to the room's action handler
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
 *34859 LD A,(33683)  ;
@@ -5157,7 +5245,7 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
  36490 CALL 41264    ; TriggerAlienEvent: poll alien event timer
  36493 CALL 37018    ; UpdateCrewAI: give first idle crew member a new action
  36496 CALL 37363    ; TickMessageQueue: tick the queued per-crew animation slots
- 36499 CALL 36859    ; UpdateAlienEventTimer: decrement alien event counter
+ 36499 CALL 36859    ; UpdateJones: walk Jones the cat one room when due
  36502 CALL 35973    ; ResetCrewTimers / corridor pass 1
  36505 CALL 34967    ; AnimateCrewA: XOR-blit crew sprite set A (10-frame)
  36508 CALL 35016    ; AnimateCrewB: XOR-blit cursor / sprite set B (5-frame)
@@ -5273,28 +5361,32 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
  36715 JR 36611      ;
 ; This entry point is used by the routines at #R37018, #R37490, #R38379 and
 ; #R40826.
-*36717 LD A,(IX+1)   ;
- 36720 LD HL,29171   ;
- 36723 BIT 6,A       ;
- 36725 JR Z,36732    ;
- 36727 LD HL,29346   ;
- 36730 AND 63        ;
+; PickNextRoom: choose the destination room for the actor whose record IX
+; points at, and store it in record byte +2. The actor's current room is
+; byte +1; bit 6 of +1 selects which network it is travelling in.
+@label=PickNextRoom
+*36717 LD A,(IX+1)   ; A = actor's current room (bit 6 = duct network)
+ 36720 LD HL,29171   ; assume corridor adjacency map (RoomAdjCorridors)
+ 36723 BIT 6,A       ; travelling in the ducts?
+ 36725 JR Z,36732    ; no: keep corridor map
+ 36727 LD HL,29346   ; yes: use duct map (RoomAdjDucts)
+ 36730 AND 63        ; strip the network flag -> room ID 0-33
 *36732 LD E,A        ;
  36733 LD D,0        ;
  36735 LD B,5        ;
 *36737 ADD HL,DE     ;
- 36738 DJNZ 36737    ;
+ 36738 DJNZ 36737    ; HL = map + room*5 (the room's 5 direction slots)
  36740 PUSH HL       ;
- 36741 CALL 33589    ;
- 36744 CALL 36763    ;
+ 36741 CALL 33589    ; AdvanceScriptPtr: next ROM script nibble
+ 36744 CALL 36763    ; ScriptNibbleToDirection: nibble -> slot 0-4
  36747 LD E,A        ;
  36748 POP HL        ;
  36749 ADD HL,DE     ;
- 36750 LD A,(HL)     ;
- 36751 BIT 6,(IX+1)  ;
+ 36750 LD A,(HL)     ; A = destination room for that direction
+ 36751 BIT 6,(IX+1)  ; moving through the ducts?
  36755 JR Z,36759    ;
- 36757 OR 64         ;
-*36759 LD (IX+2),A   ;
+ 36757 OR 64         ; yes: tag the destination with the duct flag
+*36759 LD (IX+2),A   ; record +2 = destination room
  36762 RET           ;
 ; ScriptNibbleToDirection
 ;
@@ -5303,7 +5395,7 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
 ; 9-11 → 3, 12-15 → 4. Used to translate the deterministic ROM-byte stream
 ; into AI movement decisions.
 ;
-; Used by the routines at #R36859 (UpdateAlienEventTimer), #R37018
+; Used by the routines at #R36859 (UpdateJones), #R37018
 ; (UpdateCrewAI) and #R38379 (UpdateRoomActors).
 @label=ScriptNibbleToDirection
 *36763 CP 3          ; nibble 0..2?
@@ -5359,18 +5451,26 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
  36855 CALL 31634    ;
  36858 RET           ;
 
-; UpdateAlienEventTimer
+; UpdateJones
 ;
-; Decrements the secondary alien-event counter at #R33707 once per frame.
-; When it reaches zero, the timer is reset to 255 and the routine moves on
-; to fetch the next alien-event nibble from the ROM script and update the
-; alien event state (corridor, target, action). If the primary alien-event
-; timer at #R33706 is 255 (disabled), the routine returns immediately.
+; Walks Jones the cat around the ship. #R33706 (JonesRoom) is the cat's
+; current room (255 = off-map / disabled); #R33707 (JonesMoveTimer) is a
+; frame countdown — when it hits zero (every 255 frames, ~5s) Jones takes
+; one step along the corridor adjacency map (#R29171), steered by the ROM
+; script via ScriptNibbleToDirection like every other wanderer.
 ;
-; Used by the routines at #R35578 and #R36457.
-@nowarn=33706
-@label=UpdateAlienEventTimer
-@ssub=LD A,(AlienEventTimer)
+; House-keeping around each step:
+;   - if Jones LEFT the room currently shown in the room view (mode 1),
+;     cell 14 of the corridor strip (#R29630 + 14) is cleared;
+;   - if a living crew member (record +7 = 0) occupies Jones's new room,
+;     message #0 "{actor} sees Jones the cat" is enqueued via #R37176;
+;   - if Jones stepped into the ALIEN's room (slot 0 byte +1), the move
+;     is re-rolled — the cat refuses to share a room with the alien;
+;   - if Jones ENTERED the viewed room, sprite strip 51 (the cat) is
+;     drawn into corridor cell 14.
+;
+@label=UpdateJones
+@ssub=LD A,(JonesRoom)
 c36859 LD A,(33706)  ; A = primary alien-event timer
  36862 CP 255        ; 255 = disabled
  36864 RET Z         ; disabled: do nothing this frame
@@ -5381,94 +5481,94 @@ c36859 LD A,(33706)  ; A = primary alien-event timer
  36872 EX AF,AF'     ; save A for later use
 @nowarn=33706
 @label=Auto_9009
-@ssub=LD A,(AlienEventTimer)
-*36873 LD A,(33706)  ;
- 36876 LD HL,29171   ;
+@ssub=LD A,(JonesRoom)
+*36873 LD A,(33706)  ; A = Jones's current room
+ 36876 LD HL,29171   ; corridor adjacency map (RoomAdjCorridors)
  36879 LD E,A        ;
  36880 LD D,0        ;
  36882 LD B,5        ;
 @label=Auto_9014
 *36884 ADD HL,DE     ;
- 36885 DJNZ 36884    ;
+ 36885 DJNZ 36884    ; HL = map + room*5
  36887 PUSH HL       ;
- 36888 CALL 33589    ;
- 36891 CALL 36763    ;
+ 36888 CALL 33589    ; AdvanceScriptPtr: next ROM script nibble
+ 36891 CALL 36763    ; ScriptNibbleToDirection: nibble -> slot 0-4
  36894 LD E,A        ;
  36895 POP HL        ;
  36896 ADD HL,DE     ;
- 36897 LD A,(HL)     ;
+ 36897 LD A,(HL)     ; A = Jones's destination room
 @nowarn=33706
-@ssub=LD HL,AlienEventTimer
+@ssub=LD HL,JonesRoom
  36898 LD HL,33706   ;
- 36901 LD (HL),A     ;
+ 36901 LD (HL),A     ; JonesRoom = destination
  36902 LD A,(31252)  ;
- 36905 CP 1          ;
- 36907 JR NZ,36941   ;
- 36909 LD HL,31242   ;
- 36912 EX AF,AF'     ;
- 36913 CP (HL)       ;
- 36914 JR NZ,36941   ;
+ 36905 CP 1          ; is the room view in corridor mode 1?
+ 36907 JR NZ,36941   ; no: skip the display update
+ 36909 LD HL,31242   ; HL -> currently viewed room
+ 36912 EX AF,AF'     ; A = Jones's OLD room
+ 36913 CP (HL)       ; did Jones just leave the viewed room?
+ 36914 JR NZ,36941   ; no: nothing to erase
  36916 LD A,255      ;
- 36918 LD (29644),A  ;
+ 36918 LD (29644),A  ; corridor cell 14 (Jones's slot) := empty
  36921 LD HL,18678   ;
- 36924 LD (31257),HL ;
- 36927 CALL 31634    ;
+ 36924 LD (31257),HL ; draw pointer -> cell 14's screen position
+ 36927 CALL 31634    ; blit blank strip (erase the cat)
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
  36930 LD A,(33683)  ;
- 36933 CP 14         ;
- 36935 CALL Z,34743  ;
- 36938 CALL 39670    ;
+ 36933 CP 14         ; player cursor parked on Jones's cell?
+ 36935 CALL Z,34743  ; yes: nudge it forward one position
+ 36938 CALL 39670    ; one-shot Jones (tail) animation
 @nowarn=33706
 @label=Auto_904D
-@ssub=LD A,(AlienEventTimer)
-*36941 LD A,(33706)  ;
- 36944 LD HL,29567   ;
- 36947 LD BC,2048    ;
- 36950 LD DE,8       ;
+@ssub=LD A,(JonesRoom)
+*36941 LD A,(33706)  ; A = Jones's new room
+ 36944 LD HL,29567   ; slot 0 byte +1: walk the +1 (room) column
+ 36947 LD BC,2048    ; B = 8 slots, C = slot counter (0)
+ 36950 LD DE,8       ; record stride
 @label=Auto_9059
-*36953 CP (HL)       ;
+*36953 CP (HL)       ; is this actor in Jones's room?
  36954 JR Z,36961    ;
 @label=Auto_905C
 *36956 INC C         ;
  36957 ADD HL,DE     ;
- 36958 DJNZ 36953    ;
- 36960 RET           ;
+ 36958 DJNZ 36953    ; next slot
+ 36960 RET           ; nobody shares Jones's room
 @label=Auto_9061
 *36961 LD A,C        ;
- 36962 AND A         ;
- 36963 JR Z,36873    ;
+ 36962 AND A         ; slot 0 = the ALIEN's room:
+ 36963 JR Z,36873    ; the cat won't stay - re-roll the move
  36965 PUSH HL       ;
  36966 PUSH DE       ;
  36967 LD E,6        ;
- 36969 ADD HL,DE     ;
+ 36969 ADD HL,DE     ; HL -> the slot's +7 status byte
  36970 XOR A         ;
- 36971 CP (HL)       ;
+ 36971 CP (HL)       ; alive (status 0)?
  36972 POP DE        ;
  36973 POP HL        ;
 @nowarn=33706
-@ssub=LD A,(AlienEventTimer)
+@ssub=LD A,(JonesRoom)
  36974 LD A,(33706)  ;
- 36977 JR NZ,36956   ;
- 36979 XOR A         ;
- 36980 LD L,C        ;
+ 36977 JR NZ,36956   ; not alive: keep scanning
+ 36979 XOR A         ; A = message #0
+ 36980 LD L,C        ; L = witnessing crew slot
  36981 LD H,0        ;
- 36983 CALL 37176    ;
+ 36983 CALL 37176    ; enqueue "{actor} sees Jones the cat"
  36986 LD A,(31252)  ;
- 36989 CP 1          ;
+ 36989 CP 1          ; corridor view mode?
  36991 RET NZ        ;
 @nowarn=33706
-@ssub=LD A,(AlienEventTimer)
+@ssub=LD A,(JonesRoom)
  36992 LD A,(33706)  ;
  36995 LD HL,31242   ;
- 36998 CP (HL)       ;
+ 36998 CP (HL)       ; did Jones walk into the viewed room?
  36999 RET NZ        ;
- 37000 LD HL,18678   ;
+ 37000 LD HL,18678   ; yes: draw pointer -> corridor cell 14
  37003 LD (31257),HL ;
- 37006 LD A,51       ;
- 37008 LD (29644),A  ;
- 37011 CALL 31634    ;
- 37014 CALL 39655    ;
+ 37006 LD A,51       ; sprite strip 51 = Jones the cat
+ 37008 LD (29644),A  ; corridor cell 14 := Jones
+ 37011 CALL 31634    ; blit the cat into the corridor
+ 37014 CALL 39655    ; start the Jones animation from frame 0
  37017 RET           ;
 
 ; UpdateCrewAI
@@ -5824,9 +5924,9 @@ c37363 LD A,(33709)  ; A = current message-visible timer
 @ssub=LD (Auto_83AE),HL
  37485 LD (33710),HL ;
  37488 DEC A         ;
-@nowarn=33708
-@ssub=LD (Auto_83AC),A
- 37489 LD (33708),A  ;
+ 37489 DEFB 50        ; opcode of "LD (msg-head var),A": its operands
+                      ; are the XOR H / ADD A,E at #R37490, so falling
+                      ; through stores A and hits that entry's RET
 
 ; Routine at #R37490
 @label=XorHAddE
@@ -5890,7 +5990,7 @@ c37490 XOR H         ;
 ; After dispatch, CALL #R44924 clears IX+3 (action state) and returns.
 @ignoreua
 @label=CrewAction4_Handler
-*37520 LD A,(29567)  ; A = alien-slot identity byte ($737F)
+*37520 LD A,(29567)  ; A = the alien's current room (slot 0 byte +1)
  37523 CP (IX+1)     ; current actor IS the alien slot?
  37526 JR Z,37547    ; yes → CrewHitsAlien branch
 @nowarn=33704
@@ -5988,7 +6088,7 @@ c37490 XOR H         ;
 ; refers to the alien (slot 0 at $7376) and emits messages #3 / #4
 ; instead of #31 / #32.
 @label=CrewHitsAlien
-*37584 LD A,(29567)  ; A = alien-slot identity byte
+*37584 LD A,(29567)  ; A = the alien's current room (slot 0 byte +1)
  37587 CP (IX+1)     ; re-check: IX is the alien slot
  37590 RET NZ        ; defensive: not the alien → bail
  37591 LD A,(IX+4)   ; A = pixel X-tile
@@ -6873,7 +6973,7 @@ c38379 CALL 38846    ;
  38991 CP C          ;
  38992 JR Z,39023    ;
 @nowarn=33706
-@ssub=LD A,(AlienEventTimer)
+@ssub=LD A,(JonesRoom)
  38994 LD A,(33706)  ;
  38997 JP 45705      ;
 ; This entry point is used by the routine at #R45401.
@@ -7816,7 +7916,7 @@ c40149 LD HL,16384   ; HL = DisplayFile: start of display file
 *40235 ADD HL,DE     ;
  40236 DJNZ 40220    ;
 @nowarn=33706
-@ssub=LD A,(AlienEventTimer)
+@ssub=LD A,(JonesRoom)
  40238 LD A,(33706)  ;
  40241 CP 34         ;
  40243 JR Z,40281    ;
@@ -8194,8 +8294,9 @@ c40757 CALL 37876    ;
 ; the wound counter on its NearestCrewA/B kin and can collapse them
 ; via #R39400 (msg #21 "{actor} has collapsed").
 ;
-; This routine is NOT the alien's own attack — the alien attacks crew
-; directly via a separate per-frame path (not fully mapped here).
+; This routine is NOT the alien's own attack: the alien kills crew that
+; end up in its room (slot 0 record byte +1) — see CrewHitsAlien
+; (#R37584) and the kill primitive at #R37733.
 ;
 ; Used by the routine at #R36457.
 @nowarn=33704
@@ -8637,8 +8738,7 @@ b41358 DEFB 3,4,5,9,10,11,13,14,18,19,20,20,22,24,25,30
 ; HostMarker pattern); that tag is what every "skip this slot during
 ; normal corridor processing" check keys off (e.g. `CP 255` on byte +1
 ; at #R31739 inside SelectSlotByDrawIdx). Values are restricted to
-; {1, 2, 5} so the host is always one of the alien-area slot 1 or the
-; crew slots 2 / 5.
+; {1, 2, 5}, so the host is always Dallas, Kane or Lambert.
 @label=LongGameHostSlotTable
 b41374 DEFB 1,2,5,1,2,5,1,2,5,1,2,5,1,2,5,2
 
@@ -8676,7 +8776,7 @@ b41390 DEFB 1,2,4,6,1,2,4,6,1,2,4,6,1,2,4,6
 ; ($7434) — corridor / animation state for the new game session. The
 ; final two bytes are $FF sentinels.
 @label=CommonInit_AnimTable
-b41406 DEFB 24,21,20,6,6,16,3,16,24,17,18,19,32,2,2,2
+b41406 DEFB 24,21,20,6,6,16,6,16,27,17,18,19,32,2,2,2
  41422 DEFB 24,23,31,20,255,255
 
 ; CommonInit_WorkspaceTable
@@ -8703,16 +8803,13 @@ b41428 DEFB 0,0,0,0,0,0,0,0,3,3,3,3,1,8,8,8
 ;   slot 6 ($73A6): crew[4]     |  $73B6 is initialised separately.
 ;   slot 7 ($73AE): crew[5]    /
 ;
-; Per-record byte layout (offsets inside each 8-byte record):
-;   +0 reserved (zero in both templates)
-;   +1 crew ID + direction flag (bit 6) — stamped to $FF by LongGameInit
-;      on the slot chosen via LongGameHostSlotTable (the HostMarker)
-;   +2 corridor position (0 = unplaced)
-;   +3 action state (0 = uninitialised)
-;   +4 attribute / colour byte: 6 = white, $1B = bright magenta, 0 = N/A
-;   +5 sprite X tile
-;   +6 sprite Y tile
-;   +7 alive flag — also stamped to $FF on the host slot
+; Per-record field layout: see #R29566 (ActorRecords). In particular
+; +1 is the STARTING ROOM (6 = CommdCentr, 27 = Mess) and +4 is the
+; crew member's strength. The Long Game opens with Dallas, Kane and
+; Ripley on the bridge and Ash, Lambert and Parker in the Mess — the
+; film's dinner scene, ready for message #33 "Alien has hatched from
+; {actor}". LongGameInit stamps $FF into +1/+7 of the host slot chosen
+; via LongGameHostSlotTable (the HostMarker).
 ;
 ; All seven crew slots start with non-zero +4/+5/+6, so every crew
 ; member is alive and placed when a Long Game begins. LongGameInit's
@@ -8720,14 +8817,14 @@ b41428 DEFB 0,0,0,0,0,0,0,0,3,3,3,3,1,8,8,8
 ; chestburster host — the only crew whose +1 and +7 will hold $FF
 ; after init.
 @label=LongGameCrewInit
-b41444 DEFB 0,0,0,0,0,0,0,0      ; slot 0: alien header
- 41452 DEFB 0,6,0,0,6,4,4,0      ; slot 1: alien gameplay slot
- 41460 DEFB 0,6,0,0,5,4,4,0      ; slot 2 (crew[0])
- 41468 DEFB 0,6,0,0,4,3,3,0      ; slot 3 (crew[1])
- 41476 DEFB 0,27,0,0,5,4,4,0     ; slot 4 (crew[2])  — attr $1B
- 41484 DEFB 0,27,0,0,6,4,4,0     ; slot 5 (crew[3])  — attr $1B
- 41492 DEFB 0,27,0,0,6,4,4,0     ; slot 6 (crew[4])  — attr $1B
- 41500 DEFB 0,0,0,0,5,3,3,0      ; slot 7 (crew[5])
+b41444 DEFB 0,0,0,0,0,0,0,0      ; slot 0 ALIEN (room written by CommonGameInit)
+ 41452 DEFB 0,6,0,0,6,4,4,0      ; slot 1 Dallas  — CommdCentr, strength 6
+ 41460 DEFB 0,6,0,0,5,4,4,0      ; slot 2 Kane    — CommdCentr, strength 5
+ 41468 DEFB 0,6,0,0,4,3,3,0      ; slot 3 Ripley  — CommdCentr, strength 4
+ 41476 DEFB 0,27,0,0,5,4,4,0     ; slot 4 Ash     — Mess, strength 5
+ 41484 DEFB 0,27,0,0,6,4,4,0     ; slot 5 Lambert — Mess, strength 6
+ 41492 DEFB 0,27,0,0,6,4,4,0     ; slot 6 Parker  — Mess, strength 6
+ 41500 DEFB 0,0,0,0,5,3,3,0      ; slot 7 Brett   — placed separately by init
 
 ; ShortGameCrewInit
 @ignoreua
@@ -8738,719 +8835,127 @@ b41444 DEFB 0,0,0,0,0,0,0,0      ; slot 0: alien header
 ;
 ; Slot occupancy comparison (ShortGameCrewInit vs LongGameCrewInit):
 ;
-;   slot 0 (alien header)  : both all-zero
-;   slot 1 (alien gameplay): both placeholders, but Short has +1=$FF / +7=$FF
-;   slot 2 (crew[0])       : Short has +1=$FF / +7=$FF (HostMarker)
-;   slot 3 (crew[1])       : Short alive (+1=6, +4=4)
-;   slot 4 (crew[2])       : Short has +1=$FF / +7=$FF (HostMarker)
-;   slot 5 (crew[3])       : Short alive (+1=6, +4=4)
-;   slot 6 (crew[4])       : Short alive (+1=6, +4=6)
-;   slot 7 (crew[5])       : Short has +1=$FF / +7=$FF (HostMarker)
+;   slot 0 ALIEN   : all-zero in both
+;   slot 1 Dallas  : Short: $FF in +1/+7 — out of play
+;   slot 2 Kane    : Short: $FF in +1/+7 — out of play
+;   slot 3 Ripley  : alive — starts in CommdCentr (+1=6), strength 4
+;   slot 4 Ash     : Short: $FF in +1/+7 — out of play
+;   slot 5 Lambert : alive — starts in CommdCentr (+1=6), strength 4
+;   slot 6 Parker  : alive — starts in CommdCentr (+1=6), strength 6
+;   slot 7 Brett   : Short: $FF in +1/+7 — out of play
 ;
-; The Short Game starts with FOUR slots already carrying the HostMarker
-; pattern that the Long Game applies to exactly one random slot. The
-; gameplay meaning of the marker here is "skip this slot in normal
-; crew processing" (whatever that means for the abbreviated scenario);
-; the marker doesn't literally mean four chestburster hosts. Combined
+; The Short Game is the film's final act: Dallas, Kane, Ash and Brett
+; are already gone (their slots carry the same $FF removed-from-play
+; pattern the Long Game applies to its single chestburster host), and
+; Ripley, Lambert and Parker start together on the bridge. Combined
 ; with the fixed #R33703 AlienTargetID=9 (which the alien-target guard
-; at #R41274 reads as "no valid target", so the alien never actively
-; hunts), the Short Game has only three "normal" crew members and no
-; alien-host subplot — whereas the Long Game uses script randomisation
-; to pick a single chestburster host plus the alien's first target.
+; at #R41274 reads as "no valid target", so no crew member turns
+; Android), the Short Game is a pure evade-and-escape scenario —
+; whereas the Long Game uses script randomisation to pick a single
+; chestburster host plus the Android.
 @label=ShortGameCrewInit
-b41508 DEFB 0,0,0,0,0,0,0,0      ; slot 0: alien header
- 41516 DEFB 0,255,0,0,0,0,0,255  ; slot 1: alien gameplay slot — tagged
- 41524 DEFB 0,255,0,0,0,0,0,255  ; slot 2 (crew[0]) — tagged
- 41532 DEFB 0,6,6,0,4,3,3,0      ; slot 3 (crew[1])
- 41540 DEFB 0,255,0,0,0,0,0,255  ; slot 4 (crew[2]) — tagged
- 41548 DEFB 0,6,6,0,4,3,3,0      ; slot 5 (crew[3])
- 41556 DEFB 0,6,0,0,6,4,4,0      ; slot 6 (crew[4])
- 41564 DEFB 0,255,0,0,0,0,0,255  ; slot 7 (crew[5]) — tagged
+b41508 DEFB 0,0,0,0,0,0,0,0      ; slot 0 ALIEN (room written by CommonGameInit)
+ 41516 DEFB 0,255,0,0,0,0,0,255  ; slot 1 Dallas  — out of play
+ 41524 DEFB 0,255,0,0,0,0,0,255  ; slot 2 Kane    — out of play
+ 41532 DEFB 0,6,6,0,4,3,3,0      ; slot 3 Ripley  — CommdCentr, strength 4
+ 41540 DEFB 0,255,0,0,0,0,0,255  ; slot 4 Ash     — out of play
+ 41548 DEFB 0,6,6,0,4,3,3,0      ; slot 5 Lambert — CommdCentr, strength 4
+ 41556 DEFB 0,6,0,0,6,4,4,0      ; slot 6 Parker  — CommdCentr, strength 6
+ 41564 DEFB 0,255,0,0,0,0,0,255  ; slot 7 Brett   — out of play
+
+; UI and endgame text bank
+;
+; Plain-text strings for the ship-map legend, the input-device menu
+; ("Select Keyboard or Joystick" - the options screen is device
+; selection, not difficulty), the key-redefinition flow, the encounter
+; epilogue ("The Alien has been killed / is dead / was the Android",
+; "Competence Rating") and the endgame screens. Drawn B characters at a
+; time from DE by the loop at #R44509 via the glyph blitter #R31369.
+;
+; Runtime-patched cells: the Competence Rating digits (#R42066), the
+; destruct countdown minutes and seconds (the blank fields after
+; #R42119), poked by the endgame renderer before drawing.
 @label=Auto_A264
- 41572 LD C,L        ;
- 41573 LD B,C        ;
- 41574 LD D,B        ;
- 41575 LD D,B        ;
- 41576 LD C,C        ;
- 41577 LD C,(HL)     ;
- 41578 LD B,A        ;
- 41579 JR NZ,41664   ;
- 41581 LD E,C        ;
- 41582 LD C,L        ;
- 41583 LD B,D        ;
- 41584 LD C,A        ;
- 41585 LD C,H        ;
- 41586 LD D,E        ;
+t41572 DEFM "MAPPING SYMBOLS"  ; "MAPPING SYMBOLS" (ship-map legend title)
 @label=Auto_A273
- 41587 LD BC,271     ;
- 41590 JR NZ,41650   ;
- 41592 JR NZ,41661   ;
- 41594 LD L,A        ;
- 41595 LD L,(HL)     ;
- 41596 LD L,(HL)     ;
- 41597 LD H,L        ;
- 41598 LD H,E        ;
- 41599 LD (HL),H     ;
- 41600 LD L,C        ;
- 41601 LD L,(HL)     ;
- 41602 LD H,A        ;
- 41603 JR NZ,41673   ;
- 41605 LD L,A        ;
- 41606 LD L,A        ;
- 41607 LD (HL),D     ;
+ 41587 DEFM 1,15,1," : Connecting Door"  ; 1,15,1 + " : Connecting Door" (legend)
 @label=Auto_A288
- 41608 LD A,E        ;
- 41609 JR NZ,41643   ;
- 41611 LD A,(19488)  ;
- 41614 LD H,C        ;
- 41615 LD H,H        ;
- 41616 LD H,H        ;
- 41617 LD H,L        ;
- 41618 LD (HL),D     ;
- 41619 JR NZ,41737   ;
- 41621 LD L,A        ;
- 41622 JR NZ,41692   ;
- 41624 LD H,L        ;
- 41625 LD H,E        ;
- 41626 LD L,E        ;
- 41627 JR NZ,41694   ;
- 41629 LD H,D        ;
- 41630 LD L,A        ;
- 41631 HALT          ;
- 41632 LD H,L        ;
+ 41608 DEFM "{  : Ladder to Deck Above"  ; "{  : Ladder to Deck Above" (legend)
 @label=Auto_A2A1
- 41633 LD A,H        ;
- 41634 JR NZ,41668   ;
- 41636 LD A,(18464)  ;
- 41639 LD H,C        ;
- 41640 LD (HL),H     ;
- 41641 LD H,E        ;
- 41642 LD L,B        ;
-@label=Auto_A2AB
-*41643 LD (HL),A     ;
- 41644 LD H,C        ;
- 41645 LD A,C        ;
- 41646 JR NZ,41764   ;
- 41648 LD L,A        ;
- 41649 JR NZ,41719   ;
- 41651 LD H,L        ;
- 41652 LD H,E        ;
- 41653 LD L,E        ;
- 41654 JR NZ,41722   ;
- 41656 LD H,L        ;
- 41657 LD L,H        ;
- 41658 LD L,A        ;
- 41659 LD (HL),A     ;
+ 41633 DEFM "|  : Hatchway to Deck Below"  ; "|  : Hatchway to Deck Below" (legend)
 @label=Auto_A2BC
- 41660 LD A,(21280)  ;
- 41663 LD (HL),L     ;
-@label=Auto_A2C0
-*41664 LD H,D        ;
- 41665 LD L,D        ;
- 41666 LD H,L        ;
- 41667 LD H,E        ;
-@label=Auto_A2C4
-*41668 LD (HL),H     ;
- 41669 JR NZ,41744   ;
- 41671 LD L,(HL)     ;
- 41672 LD H,H        ;
-@label=Auto_A2C9
-*41673 LD L,C        ;
- 41674 LD H,E        ;
- 41675 LD H,C        ;
- 41676 LD (HL),H     ;
- 41677 LD L,A        ;
- 41678 LD (HL),D     ;
+ 41660 DEFM ": Subject Indicator"  ; ": Subject Indicator" (legend)
 @label=Auto_A2CF
- 41679 LD A,(21024)  ;
- 41682 LD L,A        ;
- 41683 LD L,A        ;
- 41684 LD L,L        ;
- 41685 JR NZ,41760   ;
- 41687 LD L,(HL)     ;
- 41688 LD H,H        ;
- 41689 LD L,C        ;
- 41690 LD H,E        ;
- 41691 LD H,C        ;
-@label=Auto_A2DC
-*41692 LD (HL),H     ;
- 41693 LD L,A        ;
-@label=Auto_A2DE
-*41694 LD (HL),D     ;
+ 41679 DEFM ": Room Indicator"  ; ": Room Indicator" (legend)
 @label=Auto_A2DF
- 41695 LD A,L        ;
- 41696 JR NZ,41730   ;
- 41698 LD A,(18208)  ;
- 41701 LD (HL),D     ;
- 41702 LD L,C        ;
- 41703 LD L,H        ;
- 41704 LD L,H        ;
- 41705 LD H,L        ;
- 41706 JR NZ,41824   ;
- 41708 LD L,A        ;
- 41709 JR NZ,41779   ;
- 41711 LD (HL),L     ;
- 41712 LD H,E        ;
- 41713 LD (HL),H     ;
- 41714 LD L,C        ;
- 41715 LD L,(HL)     ;
- 41716 LD H,A        ;
+ 41695 DEFM "}  : Grille to Ducting"  ; "}  : Grille to Ducting" (legend)
 @label=Auto_A2F5
- 41717 LD D,E        ;
- 41718 LD H,L        ;
-@label=Auto_A2F7
-*41719 LD L,H        ;
- 41720 LD H,L        ;
- 41721 LD H,E        ;
-@label=Auto_A2FA
-*41722 LD (HL),H     ;
- 41723 JR NZ,41800   ;
- 41725 LD H,L        ;
- 41726 LD A,C        ;
- 41727 LD H,D        ;
- 41728 LD L,A        ;
- 41729 LD H,C        ;
-@label=Auto_A302
-*41730 LD (HL),D     ;
- 41731 LD H,H        ;
- 41732 JR NZ,41845   ;
- 41734 LD (HL),D     ;
- 41735 JR NZ,41843   ;
-@label=Auto_A309
-*41737 LD L,A        ;
- 41738 LD A,C        ;
- 41739 LD (HL),E     ;
- 41740 LD (HL),H     ;
- 41741 LD L,C        ;
- 41742 LD H,E        ;
- 41743 LD L,E        ;
+ 41717 DEFM "Select Keyboard or joystick"  ; "Select Keyboard or Joystick" (options title)
 @label=Auto_A310
-*41744 LD SP,14880   ;
- 41747 JR NZ,41824   ;
- 41749 LD B,L        ;
- 41750 LD C,L        ;
- 41751 LD D,B        ;
- 41752 LD D,E        ;
- 41753 LD D,H        ;
- 41754 LD C,A        ;
- 41755 LD C,(HL)     ;
+ 41744 DEFM "1 : KEMPSTON"  ; "1 : KEMPSTON"
 @label=Auto_A31C
- 41756 LD (14880),A  ;
- 41759 JR NZ,41826   ;
- 41761 LD B,A        ;
- 41762 LD B,(HL)     ;
- 41763 SUB B         ;
-@label=Auto_A324
-*41764 LD D,B        ;
- 41765 LD D,D        ;
- 41766 LD C,A        ;
- 41767 LD D,H        ;
- 41768 LD B,L        ;
- 41769 LD C,E        ;
+ 41756 DEFM "2 : AGF",144,"PROTEK"  ; "2 : AGF/PROTEK"
 @label=Auto_A32A
- 41770 INC SP        ;
- 41771 JR NZ,41831   ;
- 41773 JR NZ,41858   ;
- 41775 LD C,C        ;
- 41776 LD C,(HL)     ;
- 41777 LD B,E        ;
- 41778 LD C,H        ;
-@label=Auto_A333
-*41779 LD B,C        ;
- 41780 LD C,C        ;
- 41781 LD D,D        ;
+ 41770 DEFM "3 : SINCLAIR"  ; "3 : SINCLAIR"
 @label=Auto_A336
- 41782 INC (HL)      ;
- 41783 JR NZ,41843   ;
- 41785 JR NZ,41862   ;
- 41787 LD B,L        ;
- 41788 LD E,C        ;
- 41789 LD B,D        ;
- 41790 LD C,A        ;
- 41791 LD B,C        ;
- 41792 LD D,D        ;
- 41793 LD B,H        ;
+ 41782 DEFM "4 : KEYBOARD"  ; "4 : KEYBOARD"
 @label=Auto_A342
- 41794 DEC (HL)      ;
- 41795 JR NZ,41855   ;
- 41797 JR NZ,41882   ;
- 41799 LD B,L        ;
-@label=Auto_A348
-*41800 LD C,H        ;
- 41801 LD B,L        ;
- 41802 LD B,E        ;
- 41803 LD D,H        ;
+ 41794 DEFM "5 : SELECT"  ; "5 : SELECT"
 @label=Auto_A34C
- 41804 LD D,B        ;
- 41805 LD D,D        ;
- 41806 LD B,L        ;
- 41807 LD D,E        ;
- 41808 LD D,E        ;
- 41809 JR NZ,41876   ;
- 41811 LD D,B        ;
- 41812 LD D,B        ;
- 41813 LD D,D        ;
- 41814 LD C,A        ;
- 41815 LD D,B        ;
- 41816 LD D,D        ;
- 41817 LD C,C        ;
- 41818 LD B,C        ;
- 41819 LD D,H        ;
- 41820 LD B,L        ;
- 41821 JR NZ,41898   ;
- 41823 LD B,L        ;
-@label=Auto_A360
-*41824 LD E,C        ;
+ 41804 DEFM "PRESS APPROPRIATE KEY"  ; "PRESS APPROPRIATE KEY"
 @label=Auto_A361
- 41825 LD B,H        ;
-@label=Auto_A362
-*41826 LD (HL),L     ;
- 41827 LD (HL),D     ;
- 41828 LD L,C        ;
- 41829 LD L,(HL)     ;
- 41830 LD H,A        ;
-@label=Auto_A367
-*41831 JR NZ,41904   ;
- 41833 LD H,C        ;
- 41834 LD L,L        ;
- 41835 LD H,L        ;
- 41836 JR NZ,41918   ;
- 41838 LD (HL),D     ;
- 41839 LD H,L        ;
- 41840 LD (HL),E     ;
- 41841 LD (HL),E     ;
- 41842 JR NZ,41893   ;
- 41844 JR NZ,41962   ;
- 41846 LD L,A        ;
- 41847 JR NZ,41929   ;
- 41849 LD H,C        ;
- 41850 LD (HL),L     ;
- 41851 LD (HL),E     ;
- 41852 LD H,L        ;
+ 41825 DEFM "During Game Press 1 to Pause"  ; "During Game Press 1 to Pause"
 @label=Auto_A37D
- 41853 LD D,H        ;
- 41854 LD L,B        ;
-@label=Auto_A37F
-*41855 LD H,L        ;
- 41856 JR NZ,41965   ;
-@label=Auto_A382
-*41858 LD H,L        ;
- 41859 LD A,C        ;
- 41860 LD H,D        ;
- 41861 LD L,A        ;
-@label=Auto_A386
-*41862 LD H,C        ;
- 41863 LD (HL),D     ;
- 41864 LD H,H        ;
- 41865 JR NZ,41972   ;
- 41867 LD (HL),E     ;
- 41868 JR NZ,41987   ;
- 41870 LD (HL),E     ;
- 41871 LD H,L        ;
- 41872 LD (HL),D     ;
- 41873 JR NZ,41975   ;
- 41875 LD H,L        ;
-@label=Auto_A394
-*41876 LD H,(HL)     ;
- 41877 LD L,C        ;
- 41878 LD L,(HL)     ;
- 41879 LD H,C        ;
- 41880 LD H,D        ;
- 41881 LD L,H        ;
-@label=Auto_A39A
-*41882 LD H,L        ;
+ 41853 DEFM "The keyboard is user definable"  ; "The keyboard is user definable"
 @label=Auto_A39B
- 41883 LD D,B        ;
- 41884 LD (HL),D     ;
- 41885 LD H,L        ;
- 41886 LD (HL),E     ;
- 41887 LD (HL),E     ;
- 41888 JR NZ,41979   ;
- 41890 JR NZ,42008   ;
- 41892 LD L,A        ;
-@label=Auto_A3A5
-*41893 JR NZ,42009   ;
- 41895 LD H,L        ;
- 41896 LD H,H        ;
- 41897 LD H,L        ;
-@label=Auto_A3AA
-*41898 LD H,(HL)     ;
- 41899 LD L,C        ;
- 41900 LD L,(HL)     ;
- 41901 LD H,L        ;
- 41902 JR NZ,42011   ;
-@label=Auto_A3B0
-*41904 LD H,L        ;
- 41905 LD A,C        ;
- 41906 LD (HL),E     ;
+ 41883 DEFM "Press Y to redefine keys"  ; "Press Y to redefine keys"
 @label=Auto_A3B3
- 41907 LD B,C        ;
- 41908 LD L,(HL)     ;
- 41909 LD A,C        ;
- 41910 JR NZ,42023   ;
- 41912 LD (HL),H     ;
- 41913 LD L,B        ;
- 41914 LD H,L        ;
- 41915 LD (HL),D     ;
- 41916 JR NZ,42025   ;
-@label=Auto_A3BE
-*41918 LD H,L        ;
- 41919 LD A,C        ;
- 41920 JR NZ,42038   ;
- 41922 LD L,A        ;
- 41923 JR NZ,42024   ;
- 41925 LD L,A        ;
- 41926 LD L,(HL)     ;
- 41927 LD (HL),H     ;
- 41928 LD L,C        ;
-@label=Auto_A3C9
-*41929 LD L,(HL)     ;
- 41930 LD (HL),L     ;
- 41931 LD H,L        ;
+ 41907 DEFM "Any other key to continue"  ; "Any other key to continue"
 @label=Auto_A3CC
- 41932 LD D,A        ;
- 41933 LD L,B        ;
- 41934 LD L,C        ;
- 41935 LD H,E        ;
- 41936 LD L,B        ;
- 41937 JR NZ,42046   ;
- 41939 LD H,L        ;
- 41940 LD A,C        ;
- 41941 JR NZ,42043   ;
- 41943 LD L,A        ;
- 41944 JR NZ,42067   ;
- 41946 LD L,A        ;
-@label=Auto_A3DB
-*41947 LD (HL),L     ;
- 41948 JR NZ,42069   ;
- 41950 LD L,C        ;
- 41951 LD (HL),E     ;
- 41952 LD L,B        ;
- 41953 JR NZ,42071   ;
- 41955 LD L,A        ;
+ 41932 DEFM "Which key do you wish to"  ; "Which key do you wish to"
 @label=Auto_A3E4
- 41956 LD (HL),L     ;
- 41957 LD (HL),E     ;
- 41958 LD H,L        ;
- 41959 JR NZ,42063   ;
- 41961 LD L,A        ;
-@label=Auto_A3EA
-*41962 LD (HL),D     ;
- 41963 LD A,(21792)  ;
- 41966 LD D,B        ;
+ 41956 DEFM "use for: UP"  ; "use for: UP"
 @label=Auto_A3EF
- 41967 LD B,H        ;
- 41968 LD C,A        ;
- 41969 LD D,A        ;
- 41970 LD C,(HL)     ;
+ 41967 DEFM "DOWN"  ; "DOWN"
 @label=Auto_A3F3
- 41971 LD B,(HL)     ;
-@label=Auto_A3F4
-*41972 LD C,C        ;
- 41973 LD D,D        ;
- 41974 LD B,L        ;
+ 41971 DEFM "FIRE"  ; "FIRE"
 @label=Auto_A3F7
-*41975 LD D,D        ;
- 41976 LD H,L        ;
- 41977 LD (HL),H     ;
- 41978 LD (HL),L     ;
-@label=Auto_A3FB
-*41979 LD (HL),D     ;
- 41980 LD L,(HL)     ;
- 41981 JR NZ,42099   ;
- 41983 LD L,A        ;
- 41984 JR NZ,42067   ;
- 41986 LD D,L        ;
-@label=Auto_A403
-*41987 LD C,C        ;
- 41988 LD D,H        ;
+ 41975 DEFM "Return to "  ; "Return to " prefix
+ 41985 DEFM "QUIT"  ; "QUIT" + glyph codes
 @label=Auto_A405
- 41989 LD C,L        ;
- 41990 AND C         ;
- 41991 LD D,B        ;
- 41992 ADD A,A       ;
- 41993 LD L,B        ;
- 41994 AND C         ;
- 41995 ADD HL,BC     ;
- 41996 XOR H         ;
+ 41989 DEFM "M",161,"P",135,"h",161,9,172  ; glyph codes (encounter epilogue art?)
 @label=Auto_A40D
- 41997 LD D,H        ;
- 41998 LD L,B        ;
- 41999 LD H,L        ;
- 42000 JR NZ,42067   ;
- 42002 LD L,H        ;
- 42003 LD L,C        ;
- 42004 LD H,L        ;
- 42005 LD L,(HL)     ;
- 42006 JR NZ,42112   ;
-@label=Auto_A418
-*42008 LD H,C        ;
-@label=Auto_A419
-*42009 LD (HL),E     ;
- 42010 JR NZ,42110   ;
- 42012 LD H,L        ;
- 42013 LD H,L        ;
- 42014 LD L,(HL)     ;
- 42015 JR NZ,42124   ;
- 42017 LD L,C        ;
- 42018 LD L,H        ;
- 42019 LD L,H        ;
- 42020 LD H,L        ;
- 42021 LD H,H        ;
+ 41997 DEFM "The Alien has been killed"  ; "The Alien has been kil"
 @label=Auto_A426
- 42022 JR NZ,42129   ;
-@label=Auto_A428
-*42024 LD (HL),E     ;
-@label=Auto_A429
-*42025 JR NZ,42127   ;
- 42027 LD H,L        ;
- 42028 LD H,C        ;
- 42029 LD H,H        ;
+ 42022 DEFM " is dead"  ; "led" / " is dead"
 @label=Auto_A42E
- 42030 JR NZ,42151   ;
- 42032 LD H,C        ;
- 42033 LD (HL),E     ;
- 42034 JR NZ,42152   ;
- 42036 LD L,B        ;
- 42037 LD H,L        ;
-@label=Auto_A436
-*42038 JR NZ,42105   ;
- 42040 LD L,(HL)     ;
- 42041 LD H,H        ;
- 42042 LD (HL),D     ;
-@label=Auto_A43B
-*42043 LD L,A        ;
- 42044 LD L,C        ;
- 42045 LD H,H        ;
+ 42030 DEFM " was the Android"  ; " was the Android"
 @label=Auto_A43E
-*42046 LD B,E        ;
- 42047 LD L,A        ;
- 42048 LD L,L        ;
- 42049 LD (HL),B     ;
- 42050 LD H,L        ;
- 42051 LD (HL),H     ;
- 42052 LD H,L        ;
- 42053 LD L,(HL)     ;
- 42054 LD H,E        ;
- 42055 LD H,L        ;
- 42056 JR NZ,42140   ;
- 42058 LD H,C        ;
- 42059 LD (HL),H     ;
- 42060 LD L,C        ;
- 42061 LD L,(HL)     ;
- 42062 LD H,A        ;
-@label=Auto_A44F
-*42063 LD A,(12320)  ;
+ 42046 DEFM "Competence Rating: 0"  ; "Competence Rating: "
 @label=Auto_A452
- 42066 JR NC,41947   ;
+ 42066 DEFM "0",135  ; rating digits "00" (runtime-patched)
 @label=Auto_A454
- 42068 LD D,H        ;
-@label=Auto_A455
-*42069 LD L,B        ;
- 42070 LD H,L        ;
-@label=Auto_A457
-*42071 JR NZ,42151   ;
- 42073 LD H,C        ;
- 42074 LD (HL),D     ;
- 42075 LD H,E        ;
- 42076 LD L,C        ;
- 42077 LD (HL),E     ;
- 42078 LD (HL),E     ;
- 42079 LD (HL),L     ;
- 42080 LD (HL),E     ;
- 42081 JR NZ,42188   ;
- 42083 LD (HL),E     ;
- 42084 JR NZ,42194   ;
- 42086 LD H,C        ;
- 42087 LD (HL),L     ;
- 42088 LD L,(HL)     ;
- 42089 LD H,E        ;
- 42090 LD L,B        ;
- 42091 LD H,L        ;
- 42092 LD H,H        ;
+ 42068 DEFM "The Narcissus is launched"  ; "The Narcissus is launched" (escape ending)
 @label=Auto_A46D
- 42093 LD D,H        ;
- 42094 LD L,B        ;
- 42095 LD H,L        ;
- 42096 JR NZ,42176   ;
- 42098 LD L,A        ;
-@label=Auto_A473
-*42099 LD (HL),E     ;
- 42100 LD (HL),H     ;
- 42101 LD (HL),D     ;
- 42102 LD L,A        ;
- 42103 LD L,L        ;
- 42104 LD L,A        ;
-@label=Auto_A479
-*42105 JR NZ,42226   ;
- 42107 LD L,C        ;
- 42108 LD L,H        ;
- 42109 LD L,H        ;
-@label=Auto_A47E
-*42110 JR NZ,42213   ;
-@label=Auto_A480
-*42112 LD A,B        ;
- 42113 LD (HL),B     ;
- 42114 LD L,H        ;
- 42115 LD L,A        ;
- 42116 LD H,H        ;
- 42117 LD H,L        ;
- 42118 JR NZ,42225   ;
- 42120 LD L,(HL)     ;
- 42121 JR NZ,42155   ;
- 42123 JR NZ,42234   ;
- 42125 LD L,C        ;
- 42126 LD L,(HL)     ;
-@label=Auto_A48F
-*42127 LD (HL),L     ;
- 42128 LD (HL),H     ;
-@label=Auto_A491
-*42129 LD H,L        ;
- 42130 LD (HL),E     ;
- 42131 JR NZ,42165   ;
- 42133 JR NZ,42167   ;
- 42135 LD (HL),E     ;
- 42136 LD H,L        ;
- 42137 LD H,E        ;
- 42138 LD L,A        ;
- 42139 LD L,(HL)     ;
-@label=Auto_A49C
-*42140 LD H,H        ;
- 42141 LD (HL),E     ;
+ 42093 DEFM "The Nostromo will explode "  ; "The Nostromo will explode "
+@label=DestructTextIn
+ 42119 DEFM "in"  ; "in"
+ 42121 DEFM "   "  ; destruct minutes field (runtime-patched)
+ 42124 DEFM "minutes"  ; "minutes"
+ 42131 DEFM "   "  ; destruct seconds field (runtime-patched)
+ 42134 DEFM " seconds"  ; " seconds"
 @label=Auto_A49E
- 42142 LD D,H        ;
- 42143 LD L,B        ;
- 42144 LD H,L        ;
- 42145 JR NZ,42212   ;
- 42147 LD L,H        ;
- 42148 LD L,C        ;
- 42149 LD H,L        ;
- 42150 LD L,(HL)     ;
-@label=Auto_A4A7
-*42151 JR NZ,42272   ;
- 42153 LD L,C        ;
- 42154 LD L,H        ;
-@label=Auto_A4AB
-*42155 LD L,H        ;
- 42156 JR NZ,42256   ;
- 42158 LD H,L        ;
- 42159 JR NZ,42278   ;
- 42161 LD L,(HL)     ;
- 42162 LD L,H        ;
- 42163 LD H,L        ;
- 42164 LD H,C        ;
-@label=Auto_A4B5
-*42165 LD (HL),E     ;
- 42166 LD L,B        ;
-@label=Auto_A4B7
-*42167 LD H,L        ;
- 42168 LD H,H        ;
+ 42142 DEFM "The Alien will be unleashed"  ; "The Alien will be unleashed" (no-destruct ending)
 @label=Auto_A4B9
- 42169 LD (HL),L     ;
- 42170 LD (HL),B     ;
- 42171 LD L,A        ;
- 42172 LD L,(HL)     ;
- 42173 JR NZ,42291   ;
- 42175 LD L,B        ;
-@label=Auto_A4C0
-*42176 LD H,L        ;
- 42177 JR NZ,42248   ;
- 42179 LD H,C        ;
- 42180 LD (HL),D     ;
- 42181 LD (HL),H     ;
- 42182 LD L,B        ;
+ 42169 DEFM "upon the Earth"  ; "upon the Earth"
 @label=Auto_A4C7
- 42183 LD C,(HL)     ;
- 42184 LD L,A        ;
- 42185 LD (HL),E     ;
- 42186 LD (HL),H     ;
- 42187 LD (HL),D     ;
-@label=Auto_A4CC
-*42188 LD L,A        ;
- 42189 LD L,L        ;
- 42190 LD L,A        ;
- 42191 JR NZ,42297   ;
- 42193 LD H,C        ;
-@label=Auto_A4D2
-*42194 LD (HL),E     ;
- 42195 JR NZ,42298   ;
- 42197 LD A,B        ;
- 42198 LD (HL),B     ;
- 42199 LD L,H        ;
- 42200 LD L,A        ;
- 42201 LD H,H        ;
- 42202 LD H,L        ;
- 42203 LD H,H        ;
+ 42183 DEFM "Nostromo has exploded"  ; "Nostromo has exploded" (destruct ending)
 @label=Auto_A4DC
- 42204 LD C,H        ;
- 42205 LD L,C        ;
- 42206 LD H,(HL)     ;
- 42207 LD H,L        ;
- 42208 JR NZ,42293   ;
- 42210 LD (HL),L     ;
- 42211 LD (HL),B     ;
-@label=Auto_A4E4
-*42212 LD (HL),B     ;
-@label=Auto_A4E5
-*42213 LD L,A        ;
- 42214 LD (HL),D     ;
- 42215 LD (HL),H     ;
- 42216 JR NZ,42301   ;
- 42218 LD A,C        ;
- 42219 LD (HL),E     ;
- 42220 LD (HL),H     ;
- 42221 LD H,L        ;
- 42222 LD L,L        ;
- 42223 LD (HL),E     ;
- 42224 JR NZ,42327   ;
-@label=Auto_A4F2
-*42226 LD A,B        ;
- 42227 LD L,B        ;
- 42228 LD H,C        ;
- 42229 LD (HL),L     ;
- 42230 LD (HL),E     ;
- 42231 LD (HL),H     ;
- 42232 LD H,L        ;
- 42233 LD H,H        ;
+ 42204 DEFM "Life Support Systems exhausted"  ; "Life Support Systems exhausted"
 @label=Auto_A4FA
-*42234 LD C,B        ;
- 42235 LD (HL),L     ;
- 42236 LD L,L        ;
- 42237 LD H,C        ;
- 42238 LD L,(HL)     ;
- 42239 LD L,A        ;
- 42240 LD L,C        ;
- 42241 LD H,H        ;
- 42242 JR NZ,42352   ;
- 42244 LD L,C        ;
- 42245 LD H,(HL)     ;
- 42246 LD H,L        ;
- 42247 JR NZ,42357   ;
- 42249 LD H,L        ;
- 42250 HALT          ;
- 42251 LD H,L        ;
- 42252 LD L,H        ;
- 42253 LD (HL),E     ;
- 42254 JR NZ,42365   ;
-@label=Auto_A510
-*42256 LD L,C        ;
- 42257 LD L,(HL)     ;
- 42258 LD L,C        ;
- 42259 LD L,L        ;
- 42260 LD H,C        ;
- 42261 LD L,H        ;
- 42262 JR NZ,42344   ;
- 42264 LD D,D        ;
- 42265 LD B,L        ;
- 42266 LD D,E        ;
- 42267 LD D,E        ;
- 42268 JR NZ,42335   ;
- 42270 LD C,(HL)     ;
- 42271 LD E,C        ;
-@label=Auto_A520
-*42272 JR NZ,42349   ;
- 42274 LD B,L        ;
- 42275 LD E,C        ;
+ 42234 DEFM "Humanoid life levels minimal "  ; "Humanoid life levels minimal"
+@label=PressAnyKeyText
+ 42263 DEFM "PRESS ANY KEY"  ; "PRESS ANY KEY"
 
 ; LongGameInit
 @ignoreua
@@ -9481,9 +8986,9 @@ b41508 DEFB 0,0,0,0,0,0,0,0      ; slot 0: alien header
 ; CrewAction7_Handler (#R40757), named in status-bar dialogue (msg
 ; #30 "{Android} is attacking {target}"). When other crew fight it in
 ; combat state 4, CrewHitsAndroid (#R40941, msg #32 "{actor} hits the
-; Android") logs the response. The alien itself attacks crew directly
-; through a separate (still un-annotated) per-frame path — that
-; behaviour is independent of this Android subplot.
+; Android") logs the response. The alien itself kills crew that share
+; its room via CrewHitsAlien (#R37584) and the kill primitive at
+; #R37733 — independent of this Android subplot.
 ;
 @ignoreua
 ; Steps:
@@ -9668,7 +9173,7 @@ c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
  42449 OR 64         ; set direction bit (bit 6)
 @label=Auto_A5D3
 @ignoreua
- 42451 LD (29567),A  ; alien slot's ID/heading byte ($737F)
+ 42451 LD (29567),A  ; set the alien's starting room (slot 0 byte +1)
 @nowarn=41428
 @label=Auto_A5D6
 @ssub=LD HL,CommonInit_WorkspaceTable
@@ -10146,14 +9651,14 @@ c42821 LD A,4        ; A = 4 (green border)
 ;                    That crew is the chestburster host — message #33
 ;                    enqueued at startup ("Alien has hatched from
 ;                    {actor}") substitutes this crew's name in.
-;     - Short Game = FOUR pre-stamped slots (1, 2, 4, 7) in the template.
-;                    Here the marker means "skip in normal crew
-;                    processing" — the abbreviated scenario simply runs
-;                    with 3 active crew members and no host subplot.
+;     - Short Game = FOUR pre-stamped slots in the template: Dallas (1),
+;                    Kane (2), Ash (4) and Brett (7) are out of play,
+;                    leaving only Ripley, Lambert and Parker — the
+;                    film's final act — and no host subplot.
 ;
-; (The in-game "Android" referenced by message #32 "{actor} hits the
-; Android" is a separate concept whose backing state has not yet been
-; located in the disassembly.)
+; (The in-game "Android" of message #32 "{actor} hits the Android" is
+; the crew slot selected into AlienTargetID #R33703 — see the notes at
+; #R41390 and the activation logic in #R40826.)
 ;
 @ignoreua
 ;   Starting crew/alien record state at $7376:
@@ -10843,7 +10348,7 @@ c43610 CALL 42501    ; ClearDisplay
 ;
 ; Used by the routine at #R36457.
 @label=DrawStatusPanel
-c44313 LD HL,29581   ; HL = #R29581 (alive-flag byte of first crew record)
+c44313 LD HL,29581   ; HL = slot 1's +7 status byte (#R29581)
  44316 XOR A         ; A = 0
  44317 LD BC,1793    ; B=7 (7 crew members), C=1 (crew index, 1-based)
  44320 LD DE,8       ; DE = 8 (crew record stride)
@@ -11662,7 +11167,7 @@ c45401 LD IX,29574   ;
  45523 LD (IX+6),A   ;
  45526 CALL 32385    ;
 @nowarn=33706
-@ssub=LD HL,AlienEventTimer
+@ssub=LD HL,JonesRoom
  45529 LD HL,33706   ;
  45532 RET           ;
 ; This entry point is used by the routine at #R38379.
