@@ -123,6 +123,21 @@ gameplay. The Long Game opens with the film's dinner scene (Dallas/Kane/Ripley
 on the bridge, Ash/Lambert/Parker in the Mess, chestburster host picked by ROM
 script); the Short Game is the final act (only Ripley, Lambert, Parker aboard).
 
+### Ship simulation (inside `UpdateRoomActors` `$95EB`)
+
+Corridor-strip cell values are the interaction vocabulary: 53/54 = closed
+airlock doors (action = BlowLock: kills everyone in the room, may eject the
+alien — it can die or re-enter via ShuttleBay), 55/56 = blown doors (action =
+SealLock), 70/72 = destruct lever off/armed (ASCII 5:00 countdown at
+`DestructMinutes`/`DestructSeconds` `$95CC+`, BOOM at expiry), 74 = hypersleep
+pod, 76 = fire (extinguisher charges per position), 78 = Narcissus launch
+console (`LaunchGate` `$9D14`: all living crew + Jones must be aboard).
+Per-room damage meters are ASCII pairs at `RoomDamageDigits` `$7536`
+(`AddRoomDamage` `$9532`); thresholds raise alarms #22–#25, engine states
+live in `ShipSystemFlags` bits 3–5, oxygen is an ASCII clock at `$95DE`.
+All 34 status-message triggers are documented at the `MessageTextTable`
+header (`$8464`).
+
 ### Movement model
 
 Actors move room-to-room on two overlaid graphs: `RoomAdjCorridors` `$71F3`

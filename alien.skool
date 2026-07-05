@@ -1995,6 +1995,11 @@ b29630 DEFB 73,255,255,255,255,255,255,74
  29990 DEFB 0,0,1,1,1,1,2,2
  29998 DEFB 2,2,0,0,1,1,1,1
 @label=Auto_7536
+; Per-room damage meters: 2-digit ASCII pairs ("00"), one per room
+; (base + room*2, rooms 0-34, 70 bytes). Incremented by AddRoomDamage
+; (#R38186); the tens digit is the severity the engine scan compares
+; against; crossing "30" raises alarms #22-#25.
+@label=RoomDamageDigits
  30006 DEFB 48,48,48
 
 ; Data block at #R30009
@@ -2207,10 +2212,20 @@ b30720 DEFB 20,2
 ;
 ; Variables:
 ;   #R31232 GameStateBase    9-byte status block (crew alive flags?)
-;   #R31241 ScreenDrawPtr    screen draw position (low byte first)
+;   #R31241 DrawSlotIndex    actor slot (0-7) currently drawn/processed
+;   #R31242 CurrentRoom      room of that actor; "the viewed room"
 ;   #R31243 RoomTypeByte     current room type id
-;   #R31248 GameState_7A10   reserved (initial $FFFFFFFF)
+;   #R31244 RoomAttrStep     word: attr-cursor stride for door drawing
+;   #R31246 RoomCellStep     word: cell-grid stride for door drawing
+;   #R31248 ActorCellFront   corridor-strip cell of the id+160 marker
+;   #R31249 ActorCellBack    corridor-strip cell of the id+128 marker
+;   #R31250 RoomMateA        first other actor in the room (255 = none)
+;   #R31251 RoomMateB        second other actor in the room (255 = none)
 ;   #R31252 RoomModeByte     current room mode (drives RoomDispatchTable)
+;   #R31253 ShipSystemFlags  bit 0 destruct armed; bits 3-5 engine state
+;   #R31255 RoomAttrCursor   word: attribute-file cursor (room drawing)
+;   #R31257 DrawScreenPtr    word: THE display-file draw pointer (~120 refs)
+;   #R31259 RoomCellCursor   word: 20-wide room-cell-grid cursor
 ;   #R31261 CorridorTilePtr  pointer into corridor tile source
 ;   #R31263 CrewAnimFlags    XOR-blit toggle for crew sprite set A
 ;   #R31264 AnimFramePhase   XOR-blit toggle for set B / cursor
@@ -2223,17 +2238,43 @@ b30720 DEFB 20,2
 @label=GameStateBase
 b31232 DEFB 9,9,9,9,9,9,9,45
  31240 DEFB 45
-@label=ScreenDrawPtr
+@label=DrawSlotIndex
  31241 DEFB 5
-@label=CurrentSlotID
- 31242 DEFB 6              ; slot.byte+1 cached by SelectSlotByDrawIdx (#R31721)
+@label=CurrentRoom
+ 31242 DEFB 6              ; room of the actor being processed (record
+                           ; byte +1, cached by SelectSlotByDrawIdx #R31721);
+                           ; doubles as "the viewed room" in encounter checks
 @label=RoomTypeByte
- 31243 DEFB 1,0,0,0,0
-@label=GameState_7A10
- 31248 DEFB 255,255,255,255
+ 31243 DEFB 1
+@label=RoomAttrStep
+ 31244 DEFB 0,0            ; word: attribute-cursor stride for door drawing
+@label=RoomCellStep
+ 31246 DEFB 0,0            ; word: room-cell-grid stride for door drawing
+@label=ActorCellFront
+ 31248 DEFB 255            ; corridor-strip cell (0-21) of the actor's id+160
+                           ; marker; 12 = the alien's lair cell (see #R31823)
+@label=ActorCellBack
+ 31249 DEFB 255            ; corridor-strip cell of the actor's id+128 marker
+@label=RoomMateA
+ 31250 DEFB 255            ; slots of up to two OTHER actors in the current
+@label=RoomMateB
+ 31251 DEFB 255            ; room (255 = none) - printed as "Also here" /
+                           ; "Also Bodies of"; found by #R36187
 @label=RoomModeByte
- 31252 DEFB 0,0,0,0
- 31256 DEFB 88,0,64,0,96
+ 31252 DEFB 0
+@label=ShipSystemFlags
+ 31253 DEFB 0              ; bit 0 = self-destruct armed; bits 3-5 = Engine
+                           ; #1/#2/#3 state (ship-systems tick at #R39041)
+ 31254 DEFB 0
+@label=RoomAttrCursor
+ 31255 DEFB 0,88           ; word: attribute-file cursor for room/door
+                           ; drawing (initially the attr-file base)
+@label=DrawScreenPtr
+ 31257 DEFB 0,64           ; word: THE main display-file draw pointer used by
+                           ; every blit routine (initially the display file)
+@label=RoomCellCursor
+ 31259 DEFB 0,96           ; word: cursor into the 20-cell-wide room grid,
+                           ; walked in step with RoomAttrCursor
 @label=CorridorTilePtr
  31261 DEFB 0,0
 @label=CrewAnimFlags
@@ -2269,7 +2310,7 @@ b31232 DEFB 9,9,9,9,9,9,9,45
 ; #R31241 (INC H steps through ZX Spectrum display rows within the same
 ; character cell column).
 ;
-; Input:  (DE) = tile/character index; (#R31241) = screen destination address
+; Input:  (DE) = tile/character index; (#R31257) = screen destination address
 ; Output: screen updated; DE advanced; H incremented 8 times
 ;
 ; Used by the routines at #R31634, #R37018, #R38379, #R42581 and #R44313.
@@ -2286,7 +2327,7 @@ c31369 LD A,(DE)     ; read tile index from source pointer
  31379 ADD HL,BC     ; HL = address of first row of tile bitmap
  31380 EX DE,HL      ; DE = bitmap source; HL = old DE (tile index ptr)
 @ignoreua
- 31381 LD HL,(31257) ; HL = screen destination (#R31241)
+ 31381 LD HL,(31257) ; HL = screen destination (DrawScreenPtr)
  31384 LD B,8        ; 8 pixel rows per character
 *31386 LD A,(DE)     ; read bitmap byte for this pixel row
  31387 LD (HL),A     ; write to display file
@@ -2475,7 +2516,7 @@ c31626 LD HL,(31261) ; HL = corridor tile-source pointer (#R31261)
 ; character row accounting for the ZX Spectrum display-file row wrapping.
 ;
 ; Input:  A = text/label index (255 → use blank label, entry 92)
-;         (#R31241) = screen destination address
+;         (#R31257) = screen destination address
 ;
 ; Used by the routines at #R31417, #R33610, #R35290, #R35451, #R35578, #R36457,
 ; #R36859, #R37018, #R37490, #R38379, #R40826, #R44880 and #R45401.
@@ -2637,7 +2678,14 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31854 DJNZ 31834    ;
  31856 RET           ;
 ; This entry point is used by the routines at #R35451, #R35578 and #R37490.
-*31857 LD E,35       ;
+; CellToItemString: map a corridor cell (in A) to the string index of
+; the item stored at that shelf position: cells 0-2 -> 35 Elctrc Prd,
+; 3-5 -> 36 Incineratr, 6-7 -> 37 Tracker, 8-11 -> 38 Fire Extng, 12 ->
+; 39 Harpn Gun, 13-15 -> 40 Laser Pist, 16 -> 41 Net, 17 -> 42 Cat Box,
+; 18+ -> 43 Spanner; special cells 20/21 -> strings 68/69. Items thus
+; live at fixed positions within rooms.
+@label=CellToItemString
+*31857 LD E,35       ; E = first item string ("Elctrc Prd")
  31859 CP 3          ;
  31861 JR C,31899    ;
  31863 INC E         ;
@@ -2671,32 +2719,39 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31911 LD E,69       ;
 *31913 LD A,E        ;
  31914 RET           ;
-*31915 LD C,255      ;
- 31917 LD HL,29638   ;
- 31920 LD A,(31248)  ;
+; BuildItemMenu: fill the action-menu buffer (corridor table + 8) with
+; up to four
+; string indexes for the current standing position: the item names at
+; the actor's two cells, then "Get Item" (47) when the held-item slot
+; is loaded and the back cell is empty, and "Leave Item" (48)
+; when the front cell is empty.
+@label=BuildItemMenu
+*31915 LD C,255      ; C = "empty" sentinel
+ 31917 LD HL,29638   ; menu buffer
+ 31920 LD A,(31248)  ; item at the actor's front cell
  31923 CP C          ;
- 31924 CALL NZ,31857 ;
+ 31924 CALL NZ,31857 ; -> item string index
  31927 LD (HL),A     ;
  31928 INC HL        ;
- 31929 LD A,(31249)  ;
+ 31929 LD A,(31249)  ; item at the actor's back cell
  31932 CP C          ;
  31933 CALL NZ,31857 ;
  31936 LD (HL),A     ;
  31937 INC HL        ;
- 31938 LD DE,29962   ;
+ 31938 LD DE,29962   ; held-item slot
  31941 LD A,(DE)     ;
  31942 CP C          ;
  31943 JR Z,31954    ;
  31945 LD A,(31249)  ;
  31948 CP C          ;
  31949 JR NZ,31954   ;
- 31951 LD A,47       ;
+ 31951 LD A,47       ; offer "Get Item"
  31953 LD (HL),A     ;
 *31954 INC HL        ;
  31955 LD A,(31248)  ;
  31958 CP C          ;
  31959 RET Z         ;
- 31960 LD A,48       ;
+ 31960 LD A,48       ; offer "Leave Item"
  31962 LD (HL),A     ;
  31963 RET           ;
 @nowarn=33703
@@ -3832,6 +3887,34 @@ w33794 DEFW 35314,35314,35338,35338
 ;       name, 253 = target name, 252 = room name, 145 = apostrophe glyph.
 ;       Walked and rendered by the routine at #R37221.
 ;
+;       Triggers (message # -> firing condition):
+;         0  Jones enters a living crew member's room (#R36859)
+;         1  alien attack tick, victim strength still >= 4
+;         2  Get Jones action succeeds (JonesRoom := 255 = carried)
+;         3/4  crew nets / hits the alien (CrewHitsAlien outcomes)
+;         5/6/7  weapon spent: Tracker / extinguisher (also fire handler
+;                with no charges) / Laser
+;         8  room damage event, cell value 55
+;         9  fire breaks out in a room
+;         10 alien attack tick, victim strength 2-3
+;         11/12 hypersleep pod entered (#R38379) / completed (#R38784)
+;         13/14 destruct lever armed / aborted (DestructArm/DestructAbort)
+;         15 engine-room fire fully extinguished
+;         16/17 airlock blown (BlowLock) / resealed (SealLock)
+;         18 alien re-enters via ShuttleBay after surviving an airlock
+;            blow
+;         19 actor stands beside Jones's strip cells 20/21
+;         20 actor shares a room with a dead crew member
+;         21 victim strength exhausted - collapse
+;         22/23/24/25 accumulated room damage crosses the '3x' threshold
+;            in CommdCentr / Computer / Life Suppt / Narcissus (AddRoomDamage
+;            #R38186, damage digits at #R30006)
+;         26 oxygen clock reaches "05:00"
+;         27/28 launch check: Jones missing / crew not all aboard
+;            (LaunchGate #R40212)
+;         29/30/31/32 Android combat set (UpdateAlien / CrewHitsAndroid)
+;         33 Long Game opening: chestburster host named (LongGameInit)
+;
 @ignoreua
 @label=RoomDispatchTailExtra
 b33862 DEFW 35725,35448,35787,35845  ; 7 × 16-bit pointers (room-handler tail)
@@ -4871,8 +4954,8 @@ c35578 LD A,(33685)  ;
  35957 CALL 34743    ;
  35960 CALL 39670    ;
  35963 LD A,(31241)  ;
- 35966 LD L,A        ;
- 35967 LD A,2        ;
+ 35966 LD L,A        ; L = capturing crew slot
+ 35967 LD A,2        ; msg #2 "{actor} has captured Jones"
  35969 CALL 37176    ;
  35972 RET           ;
 
@@ -5141,8 +5224,8 @@ c35973 PUSH IX       ;
 @nowarn=33695
 @ssub=LD A,(Auto_839F)
  36354 LD A,(33695)  ;
- 36357 LD L,A        ;
- 36358 LD A,20       ;
+ 36357 LD L,A        ; L = the discovering crew slot
+ 36358 LD A,20       ; msg #20 "{actor} finds {target}'s body"
  36360 CALL 37176    ;
  36363 INC (IX+7)    ;
 @nowarn=33698
@@ -6504,14 +6587,19 @@ c37490 XOR H         ;
  38185 LD E,(HL)     ;
 ; This entry point is used by the routines at #R38379 and #R40826.
 @label=Auto_952A
-*38186 BIT 6,E       ;
+; AddRoomDamage: add A damage points to room E's damage meter — a
+; 2-digit ASCII pair in RoomDamageDigits (#R30006; tens digit is
+; the severity the engine scan at #R39041 compares against). Crossing
+; "30" raises the room-specific alarm messages #22-#25.
+@label=AddRoomDamage
+*38186 BIT 6,E       ; no damage meters in the duct network
  38188 RET NZ        ;
- 38189 LD HL,30006   ;
+ 38189 LD HL,30006   ; per-room ASCII damage digits (tens,units)
  38192 LD D,0        ;
  38194 ADD HL,DE     ;
  38195 ADD HL,DE     ;
- 38196 INC HL        ;
- 38197 LD B,A        ;
+ 38196 INC HL        ; HL -> units digit
+ 38197 LD B,A        ; B = damage points to add
 @label=Auto_9536
 *38198 PUSH BC       ;
  38199 PUSH HL       ;
@@ -6528,20 +6616,20 @@ c37490 XOR H         ;
  38214 LD A,(HL)     ;
  38215 CP 51         ;
  38217 JR NZ,38281   ;
- 38219 LD A,E        ;
- 38220 CP 6          ;
+ 38219 LD A,E        ; damage tens digit reached '3': room alarms
+ 38220 CP 6          ; CommdCentr?
  38222 JR NZ,38228   ;
- 38224 LD A,22       ;
+ 38224 LD A,22       ; msg #22 "Partial loss of control systems"
  38226 JR 38288      ;
 @label=Auto_9554
-*38228 CP 7          ;
+*38228 CP 7          ; Computer room?
  38230 JR NZ,38236   ;
- 38232 LD A,23       ;
+ 38232 LD A,23       ; msg #23 "Computer Malfunction detected"
  38234 JR 38288      ;
 @label=Auto_955C
-*38236 CP 25         ;
+*38236 CP 25         ; Life Support?
  38238 JR NZ,38244   ;
- 38240 LD A,24       ;
+ 38240 LD A,24       ; msg #24 "Environmental irregularities"
  38242 JR 38288      ;
 @label=Auto_9564
 *38244 CP 34         ;
@@ -6562,15 +6650,15 @@ c37490 XOR H         ;
  38268 LD HL,31253   ;
  38271 OR (HL)       ;
  38272 LD (HL),A     ;
- 38273 LD L,E        ;
- 38274 LD A,9        ;
+ 38273 LD L,E        ; L = room for the [251] room-name field
+ 38274 LD A,9        ; msg #9 "WARNING: Fire in {room}"
  38276 CALL 37176    ;
  38279 JR 38298      ;
 @label=Auto_9589
 *38281 CP 55         ;
  38283 JR NZ,38293   ;
- 38285 LD L,E        ;
- 38286 LD A,8        ;
+ 38285 LD L,E        ; L = room
+ 38286 LD A,8        ; msg #8 "Structural Damage in {room}"
 @label=Auto_9590
 *38288 CALL 37176    ;
  38291 JR 38298      ;
@@ -6610,76 +6698,98 @@ c37490 XOR H         ;
  38346 POP AF        ;
  38347 POP BC        ;
  38348 JP 44524      ;
-@label=Auto_95CF
- 38351 NOP           ;
- 38352 NOP           ;
- 38353 NOP           ;
-@label=Auto_95D2
- 38354 LD (3),A      ;
-@label=Auto_95D5
- 38357 LD A,(BC)     ;
-@label=Auto_95D6
- 38358 LD D,H        ;
- 38359 LD C,C        ;
- 38360 LD C,L        ;
- 38361 LD B,L        ;
- 38362 LD A,(32)     ;
- 38365 LD A,(0)      ;
-@label=Auto_95E0
- 38368 LD D,H        ;
- 38369 LD C,A        ;
- 38370 LD C,A        ;
- 38371 LD C,B        ;
- 38372 LD A,(14112)  ;
- 38375 DEC (HL)      ;
-@label=Auto_95E8
- 38376 JR NC,38426   ;
-@label=Auto_95EA
- 38378 NOP           ;
+; Ship-status dashboard: counters and ASCII digit cells (previously
+; mis-disassembled as code). The digit cells double as the source text
+; drawn on the status bar, and the endgame renderer copies them into
+; the "The Nostromo will explode in .. minutes .. seconds" screen.
+@label=EngineFixCounts
+ 38351 DEFB 0,0,0    ; per-engine-room (17/18/19) fire-fighting progress,
+                     ; +1 per extinguisher squirt (fire handler, #R38379)
+@label=ShipTickCounter
+ 38354 DEFB 50       ; ship-systems tick countdown (reloaded with 100 by
+                     ; the engine-state scan at #R39041)
+@label=DestructTickCounter
+ 38355 DEFB 3        ; destruct-second countdown (reloaded with 20 by the
+                     ; ticker at #R38846)
+@label=AdjTestRoom
+ 38356 DEFB 0        ; scratch: room of the actor under adjacency test
+@label=OxygenTickInit
+ 38357 DEFB 10       ; oxygen tick reload value
+@label=DestructTimeText
+ 38358 DEFM "TIME: " ; status-bar label for the destruct countdown
+@label=DestructMinutes
+ 38364 DEFB 0        ; minutes digit, ASCII ('5' when armed at #R38454)
+ 38365 DEFM ":"
+@label=DestructSeconds
+ 38366 DEFB 0,0      ; seconds digits, ASCII ("00" when armed); the low
+                     ; digit also drives the border flicker while armed
+@label=OxygenText
+ 38368 DEFM "TOOH: " ; oxygen label as stored on the tape (sic)
+@label=OxygenHi
+ 38374 DEFM "75"     ; oxygen level, ASCII, counting down; msg #26
+@label=OxygenLo
+ 38376 DEFM "00"     ; "Oxygen status CRITICAL" fires at "05"+"00"
+@label=EventPaceCounter
+ 38378 DEFB 0        ; free-running pace counter gating an event every
+                     ; 8 ticks (inside #R38379)
 
-; Routine at #R38379
+; UpdateRoomActors — per-frame ship-simulation driver
+;
+; Despite the old name, this block is the SHIP-SIMULATION layer: it
+; drives the destruct countdown, fixture proximity events, the oxygen
+; clock, engine states and the alien encounter animation, and hosts
+; the fixture-action handlers (destruct lever, hypersleep pods, fires,
+; airlocks, launch console) that the action key dispatches into.
 ;
 ; Used by the routine at #R36457.
 @label=UpdateRoomActors
-c38379 CALL 38846    ;
- 38382 CALL 38903    ;
- 38385 CALL 39531    ;
- 38388 CALL 39171    ;
- 38391 CALL 39041    ;
- 38394 CALL 39718    ;
+c38379 CALL 38846    ; DestructTicker: countdown + border flash
+ 38382 CALL 38903    ; fixture-proximity checks on strip cells 6/7/20
+ 38385 CALL 39531    ; oxygen clock / status line
+ 38388 CALL 39171    ; event pacing / ambient events
+ 38391 CALL 39041    ; EngineStateScan: engine damage/repair states
+ 38394 CALL 39718    ; alien encounter animation layers
  38397 RET           ;
- 38398 CALL 45846    ;
- 38401 LD HL,29630   ;
+; FixtureAction: the action-key (key 0) handler for corridor fixtures,
+; dispatched via the RoomDispatchTable tail. Reads the corridor cell
+; under the cursor and dispatches on the CELL VALUE:
+;   70 -> arm self-destruct     72 -> abort self-destruct
+;   74 -> enter hypersleep pod  76 -> fight fire (engine rooms)
+;   78 -> Narcissus launch      53/54 -> blow airlock #1/#2
+;   55/56 -> seal airlock #1/#2
+@label=FixtureAction
+*38398 CALL 45846    ;
+ 38401 LD HL,29630   ; corridor position table
  38404 LD E,A        ;
  38405 LD D,0        ;
  38407 ADD HL,DE     ;
- 38408 LD A,(HL)     ;
+ 38408 LD A,(HL)     ; A = cell value under the cursor
  38409 LD (33685),A  ;
- 38412 CP 70         ;
+ 38412 CP 70         ; destruct lever (off)?
  38414 JR Z,38454    ;
- 38416 CP 72         ;
+ 38416 CP 72         ; destruct lever (armed)?
  38418 JR Z,38483    ;
- 38420 CP 74         ;
+ 38420 CP 74         ; hypersleep pod?
  38422 JR Z,38529    ;
- 38424 CP 76         ;
+ 38424 CP 76         ; fire?
 ; This entry point is used by the routine at #R37490.
 @label=Auto_961A
 *38426 JR Z,38546    ;
- 38428 CP 78         ;
+ 38428 CP 78         ; launch console?
  38430 JP Z,40212    ;
- 38433 CP 53         ;
- 38435 JP Z,38645    ;
- 38438 CP 54         ;
- 38440 JP Z,38645    ;
- 38443 CP 55         ;
- 38445 JP Z,38588    ;
- 38448 CP 56         ;
- 38450 JP Z,38588    ;
- 38453 RET           ;
-@label=Auto_9636
-*38454 LD A,13       ;
+ 38433 CP 53         ; airlock #1 door (closed)?
+ 38435 JP Z,38645    ; blow it
+ 38438 CP 54         ; airlock #2 door (closed)?
+ 38440 JP Z,38645    ; blow it
+ 38443 CP 55         ; airlock #1 door (blown)?
+ 38445 JP Z,38588    ; seal it
+ 38448 CP 56         ; airlock #2 door (blown)?
+ 38450 JP Z,38588    ; seal it
+ 38453 RET           ; anything else: no action
+@label=DestructArm
+*38454 LD A,13       ; msg #13 "DESTRUCT SEQUENCE INITIATED"
  38456 CALL 37176    ;
- 38459 LD A,72       ;
+ 38459 LD A,72       ; cells 15/16 := armed lever sprites 72/73
  38461 LD (29645),A  ;
  38464 LD HL,20502   ;
  38467 LD (31257),HL ;
@@ -6688,10 +6798,10 @@ c38379 CALL 38846    ;
  38475 LD (29646),A  ;
  38478 CALL 31634    ;
  38481 JR 38510      ;
-@label=Auto_9653
-*38483 LD A,14       ;
+@label=DestructAbort
+*38483 LD A,14       ; msg #14 "DESTRUCT SEQUENCE ABORTED"
  38485 CALL 37176    ;
- 38488 LD A,70       ;
+ 38488 LD A,70       ; cells 15/16 := off lever sprites 70/71
  38490 LD (29645),A  ;
  38493 LD HL,20502   ;
  38496 LD (31257),HL ;
@@ -6699,26 +6809,28 @@ c38379 CALL 38846    ;
  38502 LD A,71       ;
  38504 LD (29646),A  ;
  38507 CALL 31634    ;
-@label=Auto_966E
-*38510 LD HL,12336   ;
- 38513 LD (38366),HL ;
+@label=DestructSetTimer
+*38510 LD HL,12336   ; HL = "00" in ASCII
+@nowarn=38366
+ 38513 LD (38366),HL ; DestructSeconds := "00"
+@nowarn=38364
  38516 LD HL,38364   ;
- 38519 LD (HL),53    ;
+ 38519 LD (HL),53    ; DestructMinutes := '5' -> 5:00 countdown
  38521 LD HL,31253   ;
  38524 LD A,(HL)     ;
- 38525 XOR 1         ;
+ 38525 XOR 1         ; toggle ShipSystemFlags bit 0 (destruct armed)
  38527 LD (HL),A     ;
  38528 RET           ;
-@label=Auto_9681
-*38529 LD (IX+3),6   ;
+@label=HypersleepStart
+*38529 LD (IX+3),6   ; action state 6 = entering hypersleep
  38533 LD (IX+0),255 ;
- 38537 LD A,11       ;
+ 38537 LD A,11       ; msg #11 "{actor} prepares for hypersleep"
  38539 LD HL,(31241) ;
  38542 CALL 37176    ;
  38545 RET           ;
-@label=Auto_9692
-*38546 LD A,(31248)  ;
- 38549 CP 8          ;
+@label=FightFire
+*38546 LD A,(31248)  ; A = actor's corridor cell
+ 38549 CP 8          ; fire cells occupy positions 8-11
  38551 RET C         ;
  38552 CP 12         ;
  38554 RET NC        ;
@@ -6727,97 +6839,97 @@ c38379 CALL 38846    ;
 @nowarn=33746
 @ssub=LD HL,Auto_83D2
  38558 LD HL,33746   ;
- 38561 ADD HL,DE     ;
+ 38561 ADD HL,DE     ; HL -> extinguisher charges for this position
  38562 XOR A         ;
  38563 CP (HL)       ;
  38564 JR NZ,38575   ;
- 38566 LD HL,(31241) ;
- 38569 LD A,6        ;
+ 38566 LD HL,(31241) ; empty:
+ 38569 LD A,6        ; msg #6 "{actor}'s extinguisher is empty"
  38571 CALL 37176    ;
  38574 RET           ;
-@label=Auto_96AF
-*38575 DEC (HL)      ;
+@label=FightFireSquirt
+*38575 DEC (HL)      ; use one extinguisher charge
  38576 LD A,(31242)  ;
- 38579 SUB 17        ;
+ 38579 SUB 17        ; engine-room index 0-2 (rooms 17/18/19)
  38581 LD E,A        ;
 @nowarn=38351
-@ssub=LD HL,Auto_95CF
+@ssub=LD HL,EngineFixCounts
  38582 LD HL,38351   ;
  38585 ADD HL,DE     ;
- 38586 INC (HL)      ;
+ 38586 INC (HL)      ; bump this engine room's fire-fighting progress
  38587 RET           ;
-@label=Auto_96BC
-*38588 LD HL,31253   ;
+@label=SealLock
+*38588 LD HL,31253   ; SealLock: repressurise an airlock
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
  38591 LD A,(33683)  ;
- 38594 SUB 15        ;
+ 38594 SUB 15        ; cursor cell - 15 -> 0 = airlock #1, 1 = #2
  38596 AND A         ;
  38597 JR Z,38617    ;
- 38599 RES 2,(HL)    ;
- 38601 LD A,54       ;
+ 38599 RES 2,(HL)    ; clear "airlock #2 blown" flag
+ 38601 LD A,54       ; cell := closed-door sprite 54
  38603 LD (29646),A  ;
  38606 LD HL,20534   ;
  38609 LD (31257),HL ;
  38612 CALL 31634    ;
  38615 JR 38633      ;
-@label=Auto_96D9
-*38617 RES 1,(HL)    ;
- 38619 LD A,53       ;
+@label=SealLock1
+*38617 RES 1,(HL)    ; clear "airlock #1 blown" flag
+ 38619 LD A,53       ; cell := closed-door sprite 53
  38621 LD (29645),A  ;
  38624 LD HL,20502   ;
  38627 LD (31257),HL ;
  38630 CALL 31634    ;
 @nowarn=33683
-@label=Auto_96E9
+@label=SealLockMsg
 @ssub=LD A,(CorridorCursor)
 *38633 LD A,(33683)  ;
  38636 SUB 15        ;
- 38638 LD L,A        ;
- 38639 LD A,17       ;
+ 38638 LD L,A        ; L = airlock room (0/1) for the {sprite} field
+ 38639 LD A,17       ; msg #17 "{room} PRESSURE RESTORED"
  38641 CALL 37176    ;
  38644 RET           ;
-@label=Auto_96F5
-*38645 LD HL,31253   ;
+@label=BlowLock
+*38645 LD HL,31253   ; BlowLock: blow an airlock open
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
  38648 LD A,(33683)  ;
- 38651 SUB 15        ;
+ 38651 SUB 15        ; cursor cell - 15 -> 0 = airlock #1, 1 = #2
  38653 AND A         ;
  38654 JR Z,38674    ;
- 38656 SET 2,(HL)    ;
- 38658 LD A,56       ;
+ 38656 SET 2,(HL)    ; set "airlock #2 blown" flag
+ 38658 LD A,56       ; cell := blown-door sprite 56
  38660 LD (29646),A  ;
  38663 LD HL,20534   ;
  38666 LD (31257),HL ;
  38669 CALL 31634    ;
  38672 JR 38690      ;
-@label=Auto_9712
-*38674 LD A,55       ;
- 38676 SET 1,(HL)    ;
+@label=BlowLock1
+*38674 LD A,55       ; cell := blown-door sprite 55
+ 38676 SET 1,(HL)    ; set "airlock #1 blown" flag
  38678 LD (29645),A  ;
  38681 LD HL,20502   ;
  38684 LD (31257),HL ;
  38687 CALL 31634    ;
 @nowarn=33683
-@label=Auto_9722
+@label=BlowLockSweep
 @ssub=LD A,(CorridorCursor)
 *38690 LD A,(33683)  ;
- 38693 SUB 15        ;
+ 38693 SUB 15        ; A = the depressurised room (0/1)
  38695 PUSH IX       ;
- 38697 LD B,8        ;
+ 38697 LD B,8        ; sweep all 8 actor slots (alien included!)
  38699 LD IX,29566   ;
  38703 LD DE,8       ;
 @label=Auto_9732
-*38706 CP (IX+1)     ;
+*38706 CP (IX+1)     ; actor in the depressurised room?
  38709 JR NZ,38719   ;
- 38711 LD (IX+1),255 ;
- 38715 LD (IX+7),1   ;
+ 38711 LD (IX+1),255 ; yes: swept into space - room := none,
+ 38715 LD (IX+7),1   ; status := dead
 @label=Auto_973F
 *38719 ADD IX,DE     ;
  38721 DJNZ 38706    ;
  38723 POP IX        ;
- 38725 LD HL,29940   ;
+ 38725 LD HL,29940   ; clear their markers from the corridor strip
  38728 LD B,22       ;
 @label=Auto_974A
 *38730 CP (HL)       ;
@@ -6827,25 +6939,25 @@ c38379 CALL 38846    ;
 *38735 INC HL        ;
  38736 DJNZ 38730    ;
  38738 LD L,A        ;
- 38739 LD A,16       ;
+ 38739 LD A,16       ; msg #16 "WARNING: {room} DEPRESSURISED"
  38741 CALL 37176    ;
- 38744 LD HL,29567   ;
+ 38744 LD HL,29567   ; was the ALIEN in there?
  38747 LD A,255      ;
- 38749 CP (HL)       ;
+ 38749 CP (HL)       ; alien's room = 255 means it was swept out
  38750 RET NZ        ;
- 38751 LD A,(29570)  ;
+ 38751 LD A,(29570)  ; alien already wounded 3+ times:
  38754 CP 3          ;
- 38756 JP NC,44125   ;
- 38759 CALL 33589    ;
+ 38756 JP NC,44125   ; it dies in space -> endgame/rating screen
+ 38759 CALL 33589    ; else ROM-script roll: nibble >= 2
  38762 CP 2          ;
- 38764 JP NC,44125   ;
- 38767 LD A,32       ;
- 38769 LD (29567),A  ;
+ 38764 JP NC,44125   ; (14 in 16): the alien dies -> endgame
+ 38767 LD A,32       ; survived! it crawls back in:
+ 38769 LD (29567),A  ; alien's room := 32 (ShuttleBay)
  38772 LD L,A        ;
- 38773 LD A,18       ;
+ 38773 LD A,18       ; msg #18 "INTRUDER ENTERING {ShuttleBay}"
  38775 CALL 37176    ;
  38778 LD HL,29566   ;
- 38781 LD (HL),0     ;
+ 38781 LD (HL),0     ; reset the alien's action byte
  38783 RET           ;
 ; CrewAction6_Handler — dispatched via CrewActionDispatch entry 6.
 @label=CrewAction6_Handler
@@ -6887,34 +6999,39 @@ c38379 CALL 38846    ;
  38841 JP 45676      ;
  38844 NOP           ;
  38845 NOP           ;
-@label=Auto_97BE
-*38846 LD HL,31253   ;
- 38849 BIT 0,(HL)    ;
- 38851 RET Z         ;
- 38852 LD A,(38367)  ;
+@label=DestructTicker
+*38846 LD HL,31253   ; DestructTicker (per frame)
+ 38849 BIT 0,(HL)    ; destruct armed?
+ 38851 RET Z         ; no: done
+ 38852 LD A,(38367)  ; flash the border from the seconds digit
  38855 AND 3         ;
  38857 OUT (254),A   ;
+@nowarn=38355
  38859 LD HL,38355   ;
  38862 DEC (HL)      ;
  38863 RET NZ        ;
- 38864 LD (HL),20    ;
- 38866 LD A,47       ;
- 38868 LD HL,(38366) ;
+ 38864 LD (HL),20    ; every 20 frames = one game second
+ 38866 LD A,47       ; '/' = '0'-1: ASCII underflow sentinel
+@nowarn=38366
+ 38868 LD HL,(38366) ; L = seconds tens, H = seconds units
  38871 DEC H         ;
  38872 CP H          ;
  38873 JR NZ,38897   ;
- 38875 LD H,57       ;
+ 38875 LD H,57       ; units wrapped: back to '9'
  38877 DEC L         ;
  38878 CP L          ;
  38879 JR NZ,38897   ;
- 38881 LD L,53       ;
+ 38881 LD L,53       ; tens wrapped: back to '5' (fresh :59..:50)
+@nowarn=38366
  38883 LD (38366),HL ;
+@nowarn=38364
  38886 LD HL,38364   ;
- 38889 DEC (HL)      ;
+ 38889 DEC (HL)      ; borrow into the minutes digit
  38890 CP (HL)       ;
- 38891 JP Z,38317    ;
- 38894 JP 39572      ;
+ 38891 JP Z,38317    ; minutes below '0': BOOM - flash + game over
+ 38894 JP 39572      ; redraw countdown / oxygen status
 @label=Auto_97F1
+@nowarn=38366
 *38897 LD (38366),HL ;
  38900 JP 39572      ;
 @nowarn=33692
@@ -6949,6 +7066,7 @@ c38379 CALL 38846    ;
  38953 LD HL,29567   ;
  38956 ADD HL,DE     ;
  38957 LD A,(HL)     ;
+@nowarn=38356
  38958 LD (38356),A  ;
  38961 LD BC,29171   ;
  38964 BIT 6,A       ;
@@ -6969,6 +7087,7 @@ c38379 CALL 38846    ;
 *38985 PUSH BC       ;
  38986 PUSH HL       ;
  38987 LD C,(HL)     ;
+@nowarn=38356
  38988 LD A,(38356)  ;
  38991 CP C          ;
  38992 JR Z,39023    ;
@@ -7002,6 +7121,7 @@ c38379 CALL 38846    ;
  39025 POP BC        ;
  39026 DJNZ 38985    ;
  39028 POP HL        ;
+@nowarn=38356
  39029 LD A,(38356)  ;
  39032 LD (HL),A     ;
  39033 RET           ;
@@ -7014,7 +7134,7 @@ c38379 CALL 38846    ;
  39037 POP HL        ;
  39038 LD (HL),255   ;
  39040 RET           ;
-@label=Auto_9881
+@label=EngineStateScan
 *39041 LD D,8        ;
  39043 LD A,(31253)  ;
  39046 LD E,17       ;
@@ -7029,7 +7149,7 @@ c38379 CALL 38846    ;
  39064 BIT 5,A       ;
  39066 CALL NZ,39077 ;
 @nowarn=38354
-@ssub=LD HL,Auto_95D2
+@ssub=LD HL,ShipTickCounter
  39069 LD HL,38354   ;
  39072 DEC (HL)      ;
  39073 RET NZ        ;
@@ -7077,14 +7197,14 @@ c38379 CALL 38846    ;
 @label=Auto_98ED
 *39149 POP HL        ;
  39150 PUSH HL       ;
- 39151 LD A,15       ;
+ 39151 LD A,15       ; msg #15 "Fire extinguished in {room}"
  39153 CALL 37176    ;
  39156 POP DE        ;
  39157 POP AF        ;
  39158 RET           ;
 @nowarn=38354
 @label=Auto_98F7
-@ssub=LD A,(Auto_95D2)
+@ssub=LD A,(ShipTickCounter)
 *39159 LD A,(38354)  ;
  39162 DEC A         ;
  39163 LD A,1        ;
@@ -7122,7 +7242,7 @@ c38379 CALL 38846    ;
  39214 CP 255        ;
  39216 RET NZ        ;
 @nowarn=38378
-@ssub=LD HL,Auto_95EA
+@ssub=LD HL,EventPaceCounter
  39217 LD HL,38378   ;
  39220 INC (HL)      ;
  39221 LD A,(HL)     ;
@@ -7134,8 +7254,8 @@ c38379 CALL 38846    ;
  39229 CP 255        ;
  39231 RET NZ        ;
  39232 LD A,(31242)  ;
- 39235 LD L,A        ;
- 39236 LD A,19       ;
+ 39235 LD L,A        ; L = current room
+ 39236 LD A,19       ; msg #19 "Jones is looking uneasy"
  39238 CALL 37176    ;
  39241 RET           ;
 ; This entry point is used by the routine at #R42821.
@@ -7213,20 +7333,20 @@ c38379 CALL 38846    ;
  39342 JP NZ,39459   ;
  39345 DEC HL        ;
  39346 DEC HL        ;
- 39347 DEC HL        ;
- 39348 DEC (HL)      ;
+ 39347 DEC HL        ; HL -> victim's +4 strength
+ 39348 DEC (HL)      ; the alien drains one strength point
  39349 LD A,(HL)     ;
- 39350 CP 2          ;
+ 39350 CP 2          ; below 2: victim collapses
  39352 JR C,39400    ;
- 39354 CP 4          ;
+ 39354 CP 4          ; 2-3: wounded
  39356 JR C,39365    ;
- 39358 LD L,C        ;
- 39359 LD A,1        ;
+ 39358 LD L,C        ; still healthy:
+ 39359 LD A,1        ; msg #1 "The ALIEN is attacking {actor}"
  39361 CALL 37176    ;
  39364 RET           ;
 @label=Auto_99C5
 *39365 LD L,C        ;
- 39366 LD A,10       ;
+ 39366 LD A,10       ; msg #10 "{actor} is being wounded"
  39368 CALL 37176    ;
  39371 LD A,(31252)  ;
  39374 CP 1          ;
@@ -7279,7 +7399,7 @@ c38379 CALL 38846    ;
  39446 LD A,(31241)  ;
  39449 CP L          ;
  39450 RET NZ        ;
- 39451 LD A,21       ;
+ 39451 LD A,21       ; msg #21 "{actor} has collapsed"
  39453 CALL 37176    ;
  39456 JP 31417      ;
 @label=Auto_9A23
@@ -7327,7 +7447,7 @@ c38379 CALL 38846    ;
  39530 RET           ;
 @nowarn=38357
 @label=Auto_9A6B
-@ssub=LD HL,Auto_95D5
+@ssub=LD HL,OxygenTickInit
 *39531 LD HL,38357   ;
  39534 DEC (HL)      ;
  39535 RET NZ        ;
@@ -7345,7 +7465,7 @@ c38379 CALL 38846    ;
  39553 LD A,C        ;
  39554 ADD A,A       ;
 @nowarn=38357
-@ssub=LD (Auto_95D5),A
+@ssub=LD (OxygenTickInit),A
  39555 LD (38357),A  ;
  39558 LD A,47       ;
  39560 LD HL,38377   ;
@@ -7358,6 +7478,7 @@ c38379 CALL 38846    ;
  39570 JR 39563      ;
 ; This entry point is used by the routines at #R31577 and #R31634.
 @label=Auto_9A94
+@nowarn=38374
 *39572 LD HL,(38374) ;
  39575 LD A,L        ;
  39576 CP 48         ;
@@ -7366,7 +7487,7 @@ c38379 CALL 38846    ;
  39581 CP 53         ;
  39583 JR NZ,39601   ;
 @nowarn=38376
-@ssub=LD HL,(Auto_95E8)
+@ssub=LD HL,(OxygenLo)
  39585 LD HL,(38376) ;
  39588 LD A,48       ;
  39590 CP L          ;
@@ -7898,7 +8019,13 @@ c40149 LD HL,16384   ; HL = DisplayFile: start of display file
  40209 JR NZ,40200   ;
  40211 RET           ;
 @label=Auto_9D14
-*40212 LD HL,29581   ;
+; LaunchGate: fixture 78 (Narcissus launch console). The launch is
+; COUNTERMANDED (msg #28) unless every living crew member's room is 34
+; (Narcissus); then Jones must be aboard too (JonesRoom = 34, or the
+; cat present in the shuttle strip cells) or msg #27 "BioUnit Jones
+; not present" fires first.
+@label=LaunchGate
+*40212 LD HL,29581   ; walk the +7 status column of all 7 crew
  40215 LD DE,8       ;
  40218 LD B,7        ;
 @label=Auto_9D1C
@@ -9191,9 +9318,10 @@ c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
  42476 LDIR          ;
  42478 LD HL,12336   ;
 @nowarn=38376
-@ssub=LD (Auto_95E8),HL
+@ssub=LD (OxygenLo),HL
  42481 LD (38376),HL ;
  42484 LD HL,13623   ;
+@nowarn=38374
  42487 LD (38374),HL ;
  42490 LD A,32       ;
  42492 LD (38373),A  ;
@@ -10278,8 +10406,10 @@ c43610 CALL 42501    ; ClearDisplay
  44185 JR NZ,44193   ;
  44187 CALL 44622    ;
  44190 JP 44144      ;
+@nowarn=38364
 *44193 LD A,(38364)  ;
  44196 LD (42122),A  ;
+@nowarn=38366
  44199 LD HL,(38366) ;
  44202 LD (42132),HL ;
  44205 LD HL,16451   ;
@@ -10606,6 +10736,7 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
  44718 LD (40503),A  ;
  44721 RET           ;
 ; This entry point is used by the routine at #R43610.
+@nowarn=38374
 *44722 LD A,(38374)  ;
  44725 SUB 48        ;
  44727 SLA A         ;
@@ -11269,6 +11400,7 @@ c45401 LD IX,29574   ;
 @label=Auto_B273
 *45683 LD BC,29346   ;
  45686 AND 63        ;
+@nowarn=38356
  45688 LD (38356),A  ;
  45691 RET           ;
 ; This entry point is used by the routine at #R31634.
