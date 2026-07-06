@@ -107,7 +107,7 @@ Addresses in `alien.skool` are **decimal** (`36457`, not `$8E69`); hex appears o
 
 ### Main Loop (each frame, in order)
 
-1. `HandleInput` `$877C` — key 6 = advance cursor, 7 = retreat, 5/8 = row moves, **0 = action** (on release, dispatches `RoomDispatchTable[$8402]` by room mode `$7A14`; modes 0/1 re-dispatch on the cursor ROW through overlapping halves of the same table — full row map at the `RoomDispatchTable` header)
+1. `HandleInput` `$877C` — key 6 = advance cursor, 7 = retreat, 5/8 = row moves, **0 = action** (on release, dispatches `RoomDispatchTable[$8402]` by room mode `$7A14`; modes 0/1 re-dispatch on the cursor ROW through overlapping halves of the same table — full row map at the `RoomDispatchTable` header). Before the row dispatch, `PreDispatchHook` `$B2B9` forces the special row to "ATTACK" (52) when the alien/Android is in the viewed room; 238 in `CursorCellValue` marks a press that landed on "RmveGrille" during that same swap, so the grille job still starts (see the `$B2B9` header). The chosen input device patches the scanner CALL operand at `$874D` from the vector table at `$A405` (Kempston/AGF/Sinclair/Keyboard)
 2. `FrameTiming` `$9D7F` — ~1/50s wait or play queued sound
 3. `UpdateAlien` `$9F5A` — alien/Android activation logic; the alien kills crew that enter its room (slot 0 byte +1) via `CrewHitsAlien` `$92D0` (a weapon-effect dispatch on the attacker's front-hand item: Net disables the alien, Harpoon Gun fires the kill primitive `$9365`, prods/spanners wound it, trackers break, extinguishers/lasers lose charge)
 4. `UpdateCrewState` — advance per-crew action timers
@@ -181,7 +181,7 @@ The alien and crew AI consumes a "script" of commands by walking ZX Spectrum ROM
 | `IX+0` | Sprite index |
 | `IX+1` | Crew ID (bits 0–5) + direction flag (bit 6) |
 | `IX+2` | Current corridor position |
-| `IX+3` | Action state (1=idle, 2=move, 3=remove grille, 5=investigate, 7=attack) |
+| `IX+3` | Action state (1=idle, 2=move, 3=remove grille, 4=combat/ATTACK order, 5=investigate, 7=Android attack) |
 | `IX+5` | Pixel X coordinate |
 | `IX+6` | Pixel Y coordinate |
 | `IX+7` | Alive flag (0 = dead) |

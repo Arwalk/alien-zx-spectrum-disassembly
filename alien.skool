@@ -4071,14 +4071,24 @@ b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D
  33746 DEFB 0,0,0,0,0,0,0,0  ; Reserved scratch (8 bytes zero on load)
 @label=Auto_83DA
  33754 DEFB 3,3,3,3,1,8,8,8  ;
-@label=Auto_83E2
- 33762 DEFB 0,14,14,13,13,13,15,14 ;
-@label=Auto_83EA
- 33770 DEFB 0,100,120,180,100,180,80,80 ;
-@label=Auto_83F2
- 33778 DEFB 0,0,48,16,0,0,0,0 ;
-@label=Auto_83FA
- 33786 DEFB 0,7,5,0,7,3      ;
+@label=JonesCatchBySlot
+@ignoreua
+ 33762 DEFB 0,14,14,13,13,13,15,14 ; per-slot Get Jones threshold: the catch succeeds
+                             ; when the next script nibble beats it ($8C13; -4
+                             ; when using the Net rather than the Cat Box)
+@label=GrilleTimeBySlot
+@ignoreua
+ 33770 DEFB 0,100,120,180,100,180,80,80 ; per-slot RmveGrille base time in frames
+                             ; (StartGrilleRemoval $8BD3): Dallas 100, Kane 120,
+                             ; Ripley 180, Ash 100, Lambert 180, Parker/Brett 80
+@label=ActionTimeByStrength
+@ignoreua
+ 33778 DEFB 0,0,48,16,0,0,0,0 ; SetActionTimer ($8BE6) adjustment by strength
+                             ; (IX+4)&7: Wounded (2) +48, strength 3 +16, else +0
+@label=ActionTimeBySlot
+ 33786 DEFB 0,7,5,0,7,3      ; SetActionTimer per-slot adjustment. Only 6 bytes:
+                             ; slots 6-7 read past the end into TileTableBounds
+                             ; (10 and 5)
 
 ; Data block at #R33792
 @label=TileTableBounds
@@ -4114,12 +4124,20 @@ b33792 DEFB 10,5
 ;    1     "Grille" (open duct)  -> MoveThroughGrille (#R35560)
 ;    2-6   exit rooms            -> MoveToRoom (#R35382)
 ;    7     " use:" header        -> nop
-;    8     front-hand item       -> RoomHandlerNop2 (#R35449)
+;    8     front-hand item       -> RoomHandlerNop2 (#R35449); but the
+;                                   pre-dispatch hook ($B2C0) zeroes the
+;                                   actor's action countdown — pressing
+;                                   the held-item row cancels a pending
+;                                   timed job
 ;    9     back-hand item        -> SwapHeldItems (#R35451)
 ;    10    "Get Item"            -> GetItemMenu (#R35638)
 ;    11    "Leave Item"          -> LeaveItemHandler (#R35725)
 ;    12    "Special" header      -> nop
-;    13    special action        -> $8BC3 (ATTACK / RmveGrille ...)
+;    13    special action        -> $8BCB -> SpecialRowAction ($B306):
+;                                   52 ATTACK / 49 RmveGrille / 238 =
+;                                   RmveGrille swapped to ATTACK under
+;                                   the cursor (hostile in the room —
+;                                   see PreDispatchHook $B2B9)
 ;    14    "Get Jones"           -> $8C05 (needs Net or Cat Box)
 ;    15-16 fixture actions       -> FixtureAction (#R38398)
 ;    17    "   QUIT   "          -> QuitRoomView (#R35440)
@@ -4346,10 +4364,13 @@ b33862 DEFW 35725,35448,35787,35845  ; 7 × 16-bit pointers (room-handler tail)
 ;
 @ignoreua
 @label=KeyboardScanner
-c34636 CALL 34640    ; scan into AlienFlags
- 34639 RET           ;
+c34636 CALL 34640    ; scan into AlienFlags via the selected device's
+@ignoreua
+ 34639 RET           ; scanner (the CALL operand at $874D is patched
+                     ; from InputScannerTable by OptionsScreen)
 @nowarn=33682
 @ssub=LD HL,AlienFlags
+@label=DefaultKeyScanner
 *34640 LD HL,33682   ; HL points to AlienFlags
  34643 LD (HL),0     ;
 @ignoreua
@@ -5247,41 +5268,49 @@ c35578 LD A,(33685)  ; row value under the cursor
 *35782 LD E,A        ; E = back item id (no nudge to undo)
  35783 LD D,0        ;
  35785 JR 35770      ;
-; Special-row handler (13) — via #R45830: ATTACK/RmveGrille etc.
+@ignoreua
+; Special-row handler (row 13, from RoomDispatchTailExtra): the shim
+; at $B306 sorts out the 238 marker first, then re-enters below.
+@label=SpecialRowJump
 *35787 JP 45830      ;
 ; This entry point is used by the routine at #R45401.
-@label=Auto_8BCE
+@label=SpecialRowNormal
 *35790 CP 52         ; "  ATTACK  " selected?
  35792 JP Z,37493    ; yes: attack handler
 ; This entry point is used by the routine at #R45401.
-@label=Auto_8BD3
-*35795 LD A,(31241)  ; timed special action (RmveGrille):
- 35798 LD E,A        ; per-slot timer base from the table
+; StartGrilleRemoval: queue the timed RmveGrille job — action state 3
+; fires CrewAction3_RemoveGrille (#R36150) when the countdown expires.
+@label=StartGrilleRemoval
+*35795 LD A,(31241)  ; base time = GrilleTimeBySlot[slot]
+ 35798 LD E,A        ; (100-180 frames, crew-dependent)
 @ignoreua
- 35799 LD D,0        ; at $83EA
+ 35799 LD D,0        ;
  35801 LD HL,33770   ;
  35804 ADD HL,DE     ;
  35805 LD A,(HL)     ;
- 35806 CALL 35814    ; set the action timer
+ 35806 CALL 35814    ; set the action countdown
  35809 LD (IX+3),3   ; action state = 3 (remove the grille)
  35813 RET           ;
 ; This entry point is used by the routines at #R35382, #R35560, #R36457 and
 ; #R37490.
-@label=Auto_8BE6
-*35814 PUSH AF       ;
+; SetActionTimer: (IX+0) = A + ActionTimeBySlot[slot] +
+; ActionTimeByStrength[(IX+4) & 7] — the shared countdown formula for
+; every queued crew action (move, grille, attack, ...).
+@label=SetActionTimer
+*35814 PUSH AF       ; A = base time from the caller
 @nowarn=33786
-@ssub=LD HL,Auto_83FA
+@ssub=LD HL,ActionTimeBySlot
  35815 LD HL,33786   ;
- 35818 LD A,(31241)  ;
+ 35818 LD A,(31241)  ; + per-slot adjustment
  35821 LD D,0        ;
  35823 LD E,A        ;
  35824 ADD HL,DE     ;
  35825 LD C,(HL)     ;
- 35826 LD A,(IX+4)   ;
- 35829 AND 7         ;
+ 35826 LD A,(IX+4)   ; + per-strength adjustment
+ 35829 AND 7         ; (Wounded +48, strength 3 +16, else +0)
  35831 LD E,A        ;
 @nowarn=33778
-@ssub=LD HL,Auto_83F2
+@ssub=LD HL,ActionTimeByStrength
  35832 LD HL,33778   ;
  35835 ADD HL,DE     ;
  35836 LD A,(HL)     ;
@@ -5289,7 +5318,7 @@ c35578 LD A,(33685)  ; row value under the cursor
  35838 LD C,A        ;
  35839 POP AF        ;
  35840 ADD A,C       ;
- 35841 LD (IX+0),A   ;
+ 35841 LD (IX+0),A   ; arm the countdown
  35844 RET           ;
  35845 LD (IX+0),0   ;
  35849 LD A,(31248)  ;
@@ -5302,7 +5331,7 @@ c35578 LD A,(33685)  ; row value under the cursor
  35862 LD E,A        ;
  35863 LD D,0        ;
 @nowarn=33762
-@ssub=LD HL,Auto_83E2
+@ssub=LD HL,JonesCatchBySlot
  35865 LD HL,33762   ;
  35868 ADD HL,DE     ;
  35869 LD E,(HL)     ;
@@ -6417,17 +6446,24 @@ c37363 LD A,(33709)  ; A = current message-visible timer
 c37490 XOR H         ;
  37491 ADD A,E       ;
  37492 RET           ;
+@ignoreua
 ; This entry point is used by the routine at #R35578.
-@label=Auto_9275
-*37493 LD A,40       ;
- 37495 CALL 35814    ;
- 37498 LD (IX+3),4   ;
- 37502 LD A,255      ;
- 37504 CALL 45240    ;
- 37507 LD HL,18646   ;
+; StartAttack — action on the "  ATTACK  " row: queue the combat job —
+; action state 4 (CrewAction4_Handler -> CrewHitsAlien /
+; CrewHitsAndroid) with base countdown 40, replacing any pending
+; action. Then put the special row back to what the room warrants
+; (49 "RmveGrille" or blank, via the grille-state refresh at $B0B8)
+; and move the cursor on.
+@label=StartAttack
+*37493 LD A,40       ; base countdown 40
+ 37495 CALL 35814    ; arm it (SetActionTimer)
+ 37498 LD (IX+3),4   ; action state = 4 (combat)
+ 37502 LD A,255      ; (dead: A is overwritten inside the call)
+ 37504 CALL 45240    ; cell 13 = 49 or blank per RoomGrilleState
+ 37507 LD HL,18646   ; and redraw the special row
  37510 LD (31257),HL ;
  37513 CALL 31634    ;
- 37516 CALL 34743    ;
+ 37516 CALL 34743    ; advance the cursor off the row
  37519 RET           ;
 @ignoreua
 ; CrewAction4_Handler — dispatched via CrewActionDispatch entry 4 (combat).
@@ -9436,9 +9472,17 @@ t41572 DEFM "MAPPING SYMBOLS"  ; "MAPPING SYMBOLS" (ship-map legend title)
  41971 DEFM "FIRE"  ; "FIRE"
 @label=Auto_A3F7
  41975 DEFM "Return to "  ; "Return to " prefix
- 41985 DEFM "QUIT"  ; "QUIT" + glyph codes
-@label=Auto_A405
- 41989 DEFM "M",161,"P",135,"h",161,9,172  ; glyph codes (encounter epilogue art?)
+ 41985 DEFM "QUIT"  ; "QUIT"
+@ignoreua
+; Input-scanner vector table: 4 words indexed by the options-screen
+; device choice (0-3). OptionsScreen ($AA5A) patches the chosen word
+; into the CALL operand at $874D, so KeyboardScanner's first CALL goes
+; to the device's scanner: 41293 Kempston (port 31), 34640 AGF-Protek
+; (cursor-joystick keys 5/6/7/8/0 = the keyboard default), 41320
+; Sinclair (port $EFFE), 44041 redefinable Keyboard.
+@label=InputScannerTable
+@ignoreua
+ 41989 DEFM "M",161,"P",135,"h",161,9,172  ; DEFW 41293,34640,41320,44041
 @label=Auto_A40D
  41997 DEFM "The Alien has been killed"  ; "The Alien has been kil"
 @label=Auto_A426
@@ -10602,7 +10646,7 @@ c43610 CALL 42501    ; ClearDisplay
  43811 LD E,A        ;
  43812 LD D,0        ;
 @nowarn=41989
-@ssub=LD HL,Auto_A405
+@ssub=LD HL,InputScannerTable
  43814 LD HL,41989   ;
  43817 ADD HL,DE     ;
  43818 LD A,(HL)     ;
@@ -11500,6 +11544,7 @@ c44880 LD A,(33705)  ; A = sound-pending flag (queued by e.g.
  45237 POP IX        ;
  45239 RET           ;
 ; This entry point is used by the routine at #R37490.
+@label=RefreshSpecialRow
 *45240 LD A,(31242)  ; refresh the menu's Special slot from
  45243 AND 63        ; RoomGrilleState[viewed room]:
  45245 LD E,A        ;
@@ -11512,6 +11557,7 @@ c44880 LD A,(33705)  ; A = sound-pending flag (queued by e.g.
  45257 LD A,255      ; grille removed: clear the Special slot
  45259 LD (29643),A  ;
  45262 RET           ;
+@label=RefreshSpecialRow_InPlace
 *45263 LD A,49       ; grille in place: offer "RmveGrille"
  45265 LD (29643),A  ;
  45268 RET           ;
@@ -11832,62 +11878,100 @@ c45401 LD IX,29574   ;
  45748 CP D          ;
  45749 RET NZ        ;
  45750 JP 31417      ;
+@ignoreua
 ; This entry point is used by the routine at #R35314.
-@label=Auto_B2B9
-*45753 CALL 45760    ;
- 45756 LD A,(31252)  ;
+; The hostile-in-room ATTACK-row swap and the 238 marker
+;
+; PreDispatchHook is called by RoomModeDispatch (#R35314) at the start
+; of EVERY action-key dispatch in room modes 0/1, before the row
+; handler runs. In the room view it forces the special-action row
+; (cell 13) to 52 "  ATTACK  " whenever a hostile is in the viewed
+; room. The subtlety is a press that was aimed at 49 "RmveGrille":
+; the row is swapped to ATTACK by this very hook, inside the same
+; key release that dispatches the row — so the hook leaves the value
+; 238 in CursorCellValue ($8395) as a marker meaning "this press was
+; made while the row still read RmveGrille". The special-row shim at
+; $B306 then honours the player's original intent: it restores the
+; mirror to 52 (matching the now-displayed ATTACK) but still starts
+; the timed grille removal. Only the NEXT press, taken with the row
+; visibly reading ATTACK, goes down the attack path.
+;
+; (Verified in the simulator: press 1 with the alien in the room ->
+; mirror 49->238->52, cell 13 -> 52, actor gets action state 3 with
+; its full grille timer; press 2 -> attack handler #R37493, action
+; state 4 timer 40, replacing the pending grille job.)
+@label=PreDispatchHook
+*45753 CALL 45760    ; run the hostile-row check, then
+ 45756 LD A,(31252)  ; return the room mode to the dispatcher
  45759 RET           ;
-@label=Auto_B2C0
-*45760 LD A,(31252)  ;
+@ignoreua
+; ForceAttackRowIfHostile: room view only, and never on the QUIT row.
+; A press on row 8 (the front-hand item) zeroes the actor's action
+; countdown (+0), cancelling any pending timed job — the countdown
+; only fires its action when it decrements to zero in ResetCrewTimers
+; (#R35973). Then, if the alien (slot 0) is in the viewed actor's
+; room — or, once the alien is active (flag $FF), the alien-target /
+; Android slot (pointer at $83A5) is — swap the special row to ATTACK.
+@label=ForceAttackRowIfHostile
+*45760 LD A,(31252)  ; room view (mode 1)?
  45763 CP 1          ;
- 45765 RET NZ        ;
+ 45765 RET NZ        ; no: nothing to do
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
  45766 LD A,(33683)  ;
- 45769 CP 17         ;
- 45771 RET Z         ;
- 45772 CP 8          ;
+ 45769 CP 17         ; cursor on the QUIT row?
+ 45771 RET Z         ; yes: leave everything alone
+ 45772 CP 8          ; cursor on the front-hand item row?
  45774 JR NZ,45780   ;
- 45776 LD (IX+0),0   ;
-@label=Auto_B2D4
-*45780 LD A,(29567)  ;
- 45783 CP (IX+1)     ;
- 45786 JR Z,45803    ;
+ 45776 LD (IX+0),0   ; yes: cancel the actor's pending countdown
+@label=ForceAttack_RoomCheck
+*45780 LD A,(29567)  ; alien (slot 0) in the viewed actor's room?
+ 45783 CP (IX+1)     ; (raw compare, so the duct bit must match too)
+ 45786 JR Z,45803    ; yes: hostile present
 @nowarn=33704
 @ssub=LD A,(AlienActiveFlag)
- 45788 LD A,(33704)  ;
+ 45788 LD A,(33704)  ; alien active ($FF, set by TriggerAlienEvent)?
  45791 CP 255        ;
- 45793 RET NZ        ;
- 45794 LD HL,(33701) ;
+ 45793 RET NZ        ; no: done
+ 45794 LD HL,(33701) ; the alien-target / Android record:
  45797 INC HL        ;
- 45798 LD A,(HL)     ;
- 45799 CP (IX+1)     ;
- 45802 RET NZ        ;
-@label=Auto_B2EB
-*45803 LD A,(33685)  ;
+ 45798 LD A,(HL)     ; its current room (+1)
+ 45799 CP (IX+1)     ; in the viewed actor's room?
+ 45802 RET NZ        ; no: done
+@label=ForceAttack_HostilePresent
+*45803 LD A,(33685)  ; is the press landing on 49 "RmveGrille"?
  45806 CP 49         ;
  45808 JR NZ,45815   ;
- 45810 LD A,238      ;
- 45812 LD (33685),A  ;
-@label=Auto_B2F7
-*45815 LD A,52       ;
+ 45810 LD A,238      ; yes: mark the mirror with 238 so the
+ 45812 LD (33685),A  ; special-row shim honours the grille press
+@label=ForceAttack_ShowAttack
+*45815 LD A,52       ; special row (cell 13) = 52 "  ATTACK  "
  45817 LD (29643),A  ;
- 45820 LD HL,18646   ;
+ 45820 LD HL,18646   ; and redraw it (screen row 14, column 22)
  45823 LD (31257),HL ;
  45826 CALL 31634    ;
  45829 RET           ;
-; This entry point is used by the routine at #R35578.
-@label=Auto_B306
-*45830 LD A,(33685)  ; special-row action: 238 marks a
- 45833 CP 238        ; RmveGrille row shown as ATTACK because
 @ignoreua
- 45835 JP NZ,35790   ; the alien is here (see $B2EB); other
- 45838 LD A,52       ; values: plain ATTACK check / timed
- 45840 LD (33685),A  ; action. Restore the visible value (52)
- 45843 JP 35795      ; and start the timed action
+; This entry point is used by the routine at #R35578.
+; SpecialRowAction: the special-row (13) handler, reached via the JP
+; at $8BCB. 238 -> the press was aimed at RmveGrille before the swap
+; above: restore the visible value 52 and start the timed grille
+; removal anyway. Anything else goes to the normal path at $8BCE
+; (52 -> attack, 49 -> timed grille removal).
+@label=SpecialRowAction
+*45830 LD A,(33685)  ; A = value the press landed on
+ 45833 CP 238        ; swapped-under-the-cursor marker?
+@ignoreua
+ 45835 JP NZ,35790   ; no: normal ATTACK / RmveGrille handling
+ 45838 LD A,52       ; yes: mirror = 52 to match the displayed
+ 45840 LD (33685),A  ; ATTACK row,
+ 45843 JP 35795      ; but still start the timed grille removal
 ; This entry point is used by the routine at #R38379.
+; CancelActionTimer: zero the actor's action countdown (+0); a
+; countdown parked at 0 never fires (ResetCrewTimers only dispatches
+; on the 1 -> 0 transition).
 @nowarn=33683
-@label=Auto_B316
+@label=CancelActionTimer
 @ssub=LD A,(CorridorCursor)
 *45846 LD A,(33683)  ;
  45849 LD (IX+0),0   ;
