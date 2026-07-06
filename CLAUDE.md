@@ -88,7 +88,7 @@ Addresses in `alien.skool` are **decimal** (`36457`, not `$8E69`); hex appears o
 | `$734C` | `CrewNameTable`: ALIEN, Dallas, Kane, Ripley, Ash, Lambert, Parker, Brett ($FF-separated) |
 | `$737E` | `ActorRecords` — 8 slots × 8 bytes; slot 0 = alien (its +1 byte $737F = alien's current room), slots 1–7 = crew (slot k ↔ name k). +1 = current room (bit 6 = in ducts), +2 = destination room, +4 = strength (injury 0–3+: Dead/Collapsed/Wounded/OK), +6 = morale (0–4: Broken…Confident), +7 = status (0 alive, $FF removed) |
 | `$73BE` | `CorridorPosTable` — the 19-cell strip that is both the corridor row and the action-menu rows; cell value under the cursor is mirrored to `CursorCellValue` `$8395` and is what the action key dispatches on. In the Indicate Location list (modes 2/3) it holds room ids 0–16/17–33 framed by 62 "Other List" and 61 "QUIT" |
-| `$74D1` | `RoomTypeTable` — per-room map-layout type (0–2 pick the templates at `$6474`/`$64EB`/`$658C`, 3 = Narcissus) |
+| `$74D1` | `RoomTypeTable` — per-room view type: 0–2 = the room's deck (`DrawRoomBackground` `$7A23` draws that deck of `ShipMapData` as the view background, and the room template comes from `$6474`/`$64EB`/`$658C`), 3 = Narcissus (`NarcissusBackground` `$836C` expands the RLE layout at `$7800` with attrs at `$788D`), 4 = alien-encounter screen (runtime-only) |
 | `$74F4` | `ItemLocations` — one byte per portable item (ids 0–21): room where it lies (bit 6 = in ducts), or 160+slot / 128+slot = held in that actor's front/back hand, 255 = nonexistent. THE item-system state |
 | `$750A` | `RoomItemList` — item ids lying in the viewed room (built by `BuildRoomItemList` `$7C34`) |
 | `$7520` | `ItemCourageBonus` — per-item courage/morale bonus applied while carried in the front hand (weapons embolden the crew: prods/extinguishers/spanners +1, incinerators/harpoon/lasers +2) |
@@ -96,7 +96,7 @@ Addresses in `alien.skool` are **decimal** (`36457`, not `$8E69`); hex appears o
 | `$757C` | `RoomGrilleState` — per-room duct-grille byte (255 = in place, 0 = removed; room 13 starts removed, room 33's byte is always 0) |
 | `$759E` | `CrewInjuryText`/`CrewMoraleText` — "NAME is Dead and Broken" strings |
 | `$75E2` | `ActionMenuTemplate` — 19-byte menu skeleton (cell 0 "move to:", 7 " use:", 12 "Special", 17 "QUIT") copied to `CorridorPosTable` by `ResetActionMenu` `$7FAC` |
-| `$7A00–$7AFF` | Game state RAM variables |
+| `$7A09–$7AFF` | Game state RAM variables (`$7A00–$7A08` is the tail of the Narcissus attribute map at `$788D`) |
 | `$7A89–$B1FF` | Z80 machine code routines |
 | `$8E69` | **Game entry point** (`GameEntry`) |
 | `$9E38` | Intro screen tile map (15 × 11 entries) |
@@ -117,7 +117,7 @@ Addresses in `alien.skool` are **decimal** (`36457`, not `$8E69`); hex appears o
 8. `UpdateCorridors` — advance crew along corridor (×2 passes)
 9. `AnimateCrewA` `$88A7` / `AnimateCrewB` `$88D8` — animate the two map markers: channel A = walking crew figure on the viewed room, channel B = blinking box on a candidate room (XOR-blit)
 10. `PlayMusic` `$AF60` — beeper tone phrase
-11. `DrawStatusPanel` `$AD09` — crew-alive portrait column
+11. `CheckCrewAlive` `$AD19` — end the game (Endgame_CrewLost) if no human crew member is left alive; the Android's slot doesn't count
 
 Key 1 opens `PauseMenu` `$AF0F`; pressing 1 again restarts.
 
@@ -131,7 +131,7 @@ gameplay. The Long Game opens with the film's dinner scene (Dallas/Kane/Ripley
 on the bridge, Ash/Lambert/Parker in the Mess, chestburster host picked by ROM
 script); the Short Game is the final act (only Ripley, Lambert, Parker aboard).
 
-### Ship simulation (inside `UpdateRoomActors` `$95EB`)
+### Ship simulation (driven by `UpdateRoomActors` `$95EB`; the fixture handlers follow it as their own routines from `FixtureAction` `$95FE`)
 
 Corridor-strip cell values are the interaction vocabulary: 53/54 = closed
 airlock doors (action = BlowLock: kills everyone in the room, may eject the
