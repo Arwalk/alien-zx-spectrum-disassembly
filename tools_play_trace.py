@@ -141,7 +141,7 @@ def main():
         (43038, '4', 6),              # ship map: key 4 = confirm (GameModeJump)
         (43737, args.difficulty, 6),  # options: keys 1-5
         (43737, args.confirm, 6),     # options again: confirm/start?
-        (43896, 'Y', 8),              # Y-prompt poll (port $DFFE bit 4)
+        (44096, 'Z', 6),              # any-key wait before the Y-redefine prompt; Z = don't redefine
     ]
     gameplay_keys = [k for k in args.gameplay_keys.split(',') if k]
     script = ScriptedKeyboard(stages, gameplay_keys, args.seed)

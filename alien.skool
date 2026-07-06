@@ -1871,98 +1871,196 @@ b29574 DEFB 64,12,0,0,2,2,2    ; slot 1 Dallas  +0..+6 — in Corridor#5
  29614 DEFB 64,11,0,0,3,4,4,0  ; slot 6 Parker  — in Corridor#4
  29622 DEFB 34,19,0,0,4,2,2,0  ; slot 7 Brett   — in Engine #3
 
-; CorridorPosTable
+; CorridorPosTable — the 19-cell strip / action-menu rows
 ;
-; 19-byte corridor segment table indexed by CorridorCursor (#R33683, range
-; 0..18). Each byte is the room/junction ID at that position along the
-; corridor; 255 marks an empty segment. Updated by room-init code (e.g.
-; RoomHandler_OverflowInit at #R35638 rebuilds it from a template). Read
-; by the movement helpers around HandleInput at #R34684.
+@ignoreua
+; 19 bytes indexed by CorridorCursor (#R33683, range 0..18); the cell
+; value under the cursor is mirrored to $836D and is what the action
+; key dispatches on. Its meaning depends on the view: in the room
+; view each cell holds a string index for the menu row drawn at that
+; position (ResetActionMenu (#R32684) loads the skeleton from
+; ActionMenuTemplate (#R30178); the load image holds a hypersleep-
+; room variant: 73 " Destruct ", 74 "  Enter   ", 75 "Hypersleep");
+; in the orders/corridor views it holds position or room codes (e.g.
+; RoomHandler_13 (#R35222) fills it with room numbers). Read by the
+; cursor-movement helpers around HandleInput at #R34684.
 @ignoreua
 @label=CorridorPosTable
 b29630 DEFB 73,255,255,255,255,255,255,74
-@label=Auto_73C6
+; (cells 8-15; cell 8 = first " use:" row, written by BuildItemMenu)
+@label=MenuUseRows
  29638 DEFB 255,255,255,255,75,255,255,255
-@label=Auto_73CE
- 29646 DEFB 255,255,255,0,0,0,0,0
- 29654 DEFB 0,0,0,0,0,0,0,0
- 29662 DEFB 0,0,0,0,0,0,0,0
- 29670 DEFB 0,0,0,0,0,0,0,0
- 29678 DEFB 0,0,0,0,0,0,0,0
- 29686 DEFB 0,0,0,0,0,0,0,0
- 29694 DEFB 0,0,0,0,0,0,0,0
- 29702 DEFB 0,0,0,0,0,0,0,0
- 29710 DEFB 0,0,0,0,0,0,0,0
- 29718 DEFB 0,0,0,0,0,0,0,0
- 29726 DEFB 0,0,0,0,0,0,0,0
- 29734 DEFB 0,0,0,0,0,0,0,0
- 29742 DEFB 0,0,0,0,0,0,0,0
- 29750 DEFB 0,0,0,0,0,0,0,0
- 29758 DEFB 0,0,0,0,0,0,0,0
- 29766 DEFB 0,0,0,0,0,0,0,0
- 29774 DEFB 0,0,0,0,0,0,0,0
- 29782 DEFB 0,0,0,0,0,0,0,0
- 29790 DEFB 0,0,0,0,0,0,0,0
- 29798 DEFB 0,0,0,0,0,0,0,0
- 29806 DEFB 0,0,0,0,0,0,0,0
- 29814 DEFB 0,0,0,0,0,0,0,0
- 29822 DEFB 0,0,0,0,0,0,0,0
- 29830 DEFB 0,0,0,0,0,0,0,0
- 29838 DEFB 0,0,0,0,0,0,0,0
- 29846 DEFB 0,0,0,0,0,0,0,0
- 29854 DEFB 0,0,0,0,0,0,0,0
- 29862 DEFB 0,0,0,0,0,0,0,0
- 29870 DEFB 0,0,0,0,0,0,0,0
- 29878 DEFB 0,0,0,0,0,0,0,0
- 29886 DEFB 0,0,0,0,0,0,0,0
- 29894 DEFB 0,0,0,0,0,0,0,0
- 29902 DEFB 0,0,0,0,0,1,2,2
- 29910 DEFB 2,1,0,1,1,1,1,1
- 29918 DEFB 0,2,1,2,1,1,1,2
- 29926 DEFB 1,1,1,1,2,0,0,0
- 29934 DEFB 1,0,0,2,2,3,24,21
- 29942 DEFB 20,6,6,16,6,16,27,17
- 29950 DEFB 18,19,32,2,2,2,24,23
- 29958 DEFB 31,20,255,255,0,0,0,0
- 29966 DEFB 0,0,0,0,0,0,0,0
- 29974 DEFB 0,0,0,0,0,0,0,0
- 29982 DEFB 0,0,1,1,1,2,2,2
- 29990 DEFB 0,0,1,1,1,1,2,2
- 29998 DEFB 2,2,0,0,1,1,1,1
-@label=Auto_7536
-; Per-room damage meters: 2-digit ASCII pairs ("00"), one per room
-; (base + room*2, rooms 0-34, 70 bytes). Incremented by AddRoomDamage
-; (#R38186); the tens digit is the severity the engine scan compares
-; against; crossing "30" raises alarms #22-#25.
-@label=RoomDamageDigits
- 30006 DEFB 48,48,48
+; (cells 16-18; cell 16 = second fixture row, written by FixtureAction)
+@label=MenuFixtureRow
+ 29646 DEFB 255,255,255
+; 256 bytes of workspace/padding (zero in the load image)
+ 29649 DEFB 0,0,0,0,0,0,0,0
+ 29657 DEFB 0,0,0,0,0,0,0,0
+ 29665 DEFB 0,0,0,0,0,0,0,0
+ 29673 DEFB 0,0,0,0,0,0,0,0
+ 29681 DEFB 0,0,0,0,0,0,0,0
+ 29689 DEFB 0,0,0,0,0,0,0,0
+ 29697 DEFB 0,0,0,0,0,0,0,0
+ 29705 DEFB 0,0,0,0,0,0,0,0
+ 29713 DEFB 0,0,0,0,0,0,0,0
+ 29721 DEFB 0,0,0,0,0,0,0,0
+ 29729 DEFB 0,0,0,0,0,0,0,0
+ 29737 DEFB 0,0,0,0,0,0,0,0
+ 29745 DEFB 0,0,0,0,0,0,0,0
+ 29753 DEFB 0,0,0,0,0,0,0,0
+ 29761 DEFB 0,0,0,0,0,0,0,0
+ 29769 DEFB 0,0,0,0,0,0,0,0
+ 29777 DEFB 0,0,0,0,0,0,0,0
+ 29785 DEFB 0,0,0,0,0,0,0,0
+ 29793 DEFB 0,0,0,0,0,0,0,0
+ 29801 DEFB 0,0,0,0,0,0,0,0
+ 29809 DEFB 0,0,0,0,0,0,0,0
+ 29817 DEFB 0,0,0,0,0,0,0,0
+ 29825 DEFB 0,0,0,0,0,0,0,0
+ 29833 DEFB 0,0,0,0,0,0,0,0
+ 29841 DEFB 0,0,0,0,0,0,0,0
+ 29849 DEFB 0,0,0,0,0,0,0,0
+ 29857 DEFB 0,0,0,0,0,0,0,0
+ 29865 DEFB 0,0,0,0,0,0,0,0
+ 29873 DEFB 0,0,0,0,0,0,0,0
+ 29881 DEFB 0,0,0,0,0,0,0,0
+ 29889 DEFB 0,0,0,0,0,0,0,0
+ 29897 DEFB 0,0,0,0,0,0,0,0
 
-; Data block at #R30009
-@label=SpriteScanData
-b30009 DEFB 48,48,48,48,48,48,48,48
- 30017 DEFB 48,48,48,48,48,48,48,48
- 30025 DEFB 48,48,48,48,48,48,48,48
- 30033 DEFB 48,48,48,48,48,48,48,48
- 30041 DEFB 48,48,48,48,48,48,48,48
- 30049 DEFB 48,48,48,48,48,48,48,48
- 30057 DEFB 48,48,48,48,48,48,48,48
- 30065 DEFB 48,48,48,48,48,48,48,48
- 30073 DEFB 48,48,48,0,0,0,0,0
- 30081 DEFB 0,0,0,0,0,0,0,0
- 30089 DEFB 0,0,0,0,0,0,0,0
- 30097 DEFB 0,0,0,0,0,0,0,0
- 30105 DEFB 0,0,0,0,0,68,101,97
- 30113 DEFB 100,32,255,67,111,108,108,97
- 30121 DEFB 112,115,101,100,32,255,87,111
- 30129 DEFB 117,110,100,101,100,32,255,79
- 30137 DEFB 75,32,255,66,114,111,107,101
- 30145 DEFB 110,255,83,104,97,107,101,110
- 30153 DEFB 255,85,110,101,97,115,121,255
- 30161 DEFB 83,116,97,98,108,101,255,67
- 30169 DEFB 111,110,102,105,100,101,110,116
- 30177 DEFB 255,86,255,255,255,255,255,255
- 30185 DEFB 87,255,255,255,255,88,255,255
- 30193 DEFB 255,255,61,255
+; Per-room type table
+;
+; One byte per room (0-34): the map-view layout type fed to
+; RoomTypeByte (#R31243) — 0/1/2 pick the layout templates at
+; #R25716, #R25835 and #R25996; 3 = the Narcissus. Read by
+; RoomHandler_2 (#R35338) when a room is picked from a strip.
+@label=RoomTypeTable
+b29905 DEFB 0,0,1,2,2,2,1 ; rooms 0-6
+ 29912 DEFB 0,1,1,1,1,1,0 ; rooms 7-13
+ 29919 DEFB 2,1,2,1,1,1,2 ; rooms 14-20
+ 29926 DEFB 1,1,1,1,2,0,0 ; rooms 21-27
+ 29933 DEFB 0,1,0,0,2,2,3 ; rooms 28-34
+
+; Item location table
+;
+@ignoreua
+; One byte per portable item (ids 0-21, names via ItemIdToString
+; (#R31857)): the room where the item lies (bit 6 = inside the duct
+; network), or a carry marker — 160+slot = held in that actor slot's
+; front hand, 128+slot = back hand; 255 = does not exist (the two
+; "Cat in ..." items are created when Jones is caught). Re-seeded
+; from InitialItemRooms (#R41406) at game init. The Get Item picker
+; handler ($8B22), LeaveItemHandler ($8BBA) and SwapHeldItems
+; (#R35451) transfer items by rewriting these bytes.
+@label=ItemLocations
+b29940 DEFB 24,21,20 ; 0-2: Elctrc Prd in Lab Stores/Infirmary/Eng Stores
+ 29943 DEFB 6,6,16 ; 3-5: Incineratr in CommdCentr x2, Engineerng
+@label=TrackerLocations
+ 29946 DEFB 6,16 ; 6-7: Tracker in CommdCentr, Engineerng
+ 29948 DEFB 27,17,18,19 ; 8-11: Fire Extng in Mess, Engine #1-#3
+ 29952 DEFB 32 ; 12: Harpn Gun in ShuttleBay
+ 29953 DEFB 2,2,2 ; 13-15: Laser Pist in Armoury x3
+ 29956 DEFB 24 ; 16: Net in Lab Stores
+ 29957 DEFB 23 ; 17: Cat Box in Laboratory
+ 29958 DEFB 31,20 ; 18-19: Spanner in Stores #3, Eng Stores
+@label=CatItemLocations
+ 29960 DEFB 255,255 ; 20-21: Cat in Net / Cat in Box (not created)
+
+; Viewed room's item list
+;
+; Item ids present in the viewed room (built by BuildRoomItemList
+; (#R31796) scanning ItemLocations top-down, so ids appear in
+; descending order); 255-filled by ResetActionMenu (#R32684). The
+; "Get Item" handler (#R35638) turns it into a selection strip and
+; GetItemPick (#R35578) moves the chosen item into the actor's hand.
+@label=RoomItemList
+b29962 DEFB 0,0,0,0,0,0,0,0,0,0,0
+ 29973 DEFB 0,0,0,0,0,0,0,0,0,0,0
+
+; Per-item carry nudge
+;
+@ignoreua
+; Pixel offset added to the carrier's sprite X and Y while the item
+; is held in the front hand (applied on Get at $8B26, removed on
+; Leave at $8BAB and on Swap by SwapHeldItems (#R35451)).
+@label=ItemCarryNudge
+b29984 DEFB 1,1,1 ; Elctrc Prd
+ 29987 DEFB 2,2,2 ; Incineratr
+ 29990 DEFB 0,0 ; Tracker
+ 29992 DEFB 1,1,1,1 ; Fire Extng
+ 29996 DEFB 2 ; Harpn Gun
+ 29997 DEFB 2,2,2 ; Laser Pist
+ 30000 DEFB 0,0 ; Net, Cat Box
+ 30002 DEFB 1,1 ; Spanner
+ 30004 DEFB 1,1 ; Cat in Net / Cat in Box
+
+; Per-room damage meters
+;
+; 2-digit ASCII pairs ("00"), one per room (base + room*2, rooms 0-34,
+; 70 bytes). Incremented by AddRoomDamage (#R38186); the tens digit is
+; the severity the engine scan compares against; crossing "30" raises
+; alarms #22-#25.
+@label=RoomDamageDigits
+b30006 DEFB 48,48,48,48,48,48,48,48,48,48 ; rooms 0-4
+ 30016 DEFB 48,48,48,48,48,48,48,48,48,48 ; rooms 5-9
+ 30026 DEFB 48,48,48,48,48,48,48,48,48,48 ; rooms 10-14
+ 30036 DEFB 48,48,48,48,48,48,48,48,48,48 ; rooms 15-19
+ 30046 DEFB 48,48,48,48,48,48,48,48,48,48 ; rooms 20-24
+ 30056 DEFB 48,48,48,48,48,48,48,48,48,48 ; rooms 25-29
+ 30066 DEFB 48,48,48,48,48,48,48,48,48,48 ; rooms 30-34
+
+; Per-room duct-grille state
+;
+@ignoreua
+; One byte per room (rooms 0-33; the Narcissus, room 34, has no
+; grille): 255 = grille in place, 0 = removed. Game init ($A5A8,
+; within #R42397) re-arms only the first 33 entries with 255 and then
+; clears entry 13, so Corridor#6 (13) starts with its grille removed,
+; and room 33's byte at $759D keeps its load-image value 0
+; (Shttlstore's grille is always open). Removed by crew action 3
+; (#R36150, a 50-frame job queued by the AI at $90EE or by picking
+; "RmveGrille" from the action menu). While in place the room view
+; offers string 49 "RmveGrille" in the menu's Special slot
+; (CorridorPosTable cell 13); once removed the room shows "Grille
+; removed" and string 50 "Grille" becomes a move-to target (cell 1)
+; leading into the duct network. Read at $7E58 (DrawItemsAndGrille),
+; $90E5, $B073 and #R45240.
+@label=RoomGrilleState
+b30076 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ 30093 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+; Crew-condition strings
+;
+; 255-terminated descriptions printed after "NAME is " by the
+; room-info panel (DrawCrewCondition, #R32385): four injury states
+; selected by actor strength (record byte +4), then five morale states
+; selected by record byte +6.
+@label=CrewInjuryText
+t30110 DEFM "Dead ",255
+ 30116 DEFM "Collapsed ",255
+ 30127 DEFM "Wounded ",255
+ 30136 DEFM "OK ",255
+@label=CrewMoraleText
+ 30140 DEFM "Broken",255
+ 30147 DEFM "Shaken",255
+ 30154 DEFM "Uneasy",255
+ 30161 DEFM "Stable",255
+ 30168 DEFM "Confident",255
+
+; Action-menu strip template
+;
+; 19-byte skeleton of the room-view action menu, copied to the strip
+; at #R29630 by #R32684 whenever the room view is rebuilt. Cell values
+; are string indexes into #R28221; 255 = empty slot. Layout: cell 0 =
+; header 86 "move to:" (destinations fill cells 1-6: exits from
+; BuildExitList (#R31759) at 2-6, the open duct "Grille" at 1); cell 7
+; = header 87 " use:" (items from BuildItemMenu (#R31915) fill 8-11);
+; cell 12 = header 88 "Special" (room actions fill 13-16, e.g.
+; "RmveGrille"/"  ATTACK  " at 13); cell 17 = 61 "   QUIT   ".
+@label=ActionMenuTemplate
+b30178 DEFB 86,255,255,255,255,255,255 ; "move to:" + 6 destination slots
+ 30185 DEFB 87,255,255,255,255         ; " use:" + 4 item slots
+ 30190 DEFB 88,255,255,255,255         ; "Special" + 4 action slots
+ 30195 DEFB 61,255                     ; "QUIT"
 
 ; Corridor position template
 ;
@@ -2153,8 +2251,8 @@ b30720 DEFB 20,2
 ;   #R31243 RoomTypeByte     current room type id
 ;   #R31244 RoomAttrStep     word: attr-cursor stride for door drawing
 ;   #R31246 RoomCellStep     word: cell-grid stride for door drawing
-;   #R31248 ActorCellFront   corridor-strip cell of the id+160 marker
-;   #R31249 ActorCellBack    corridor-strip cell of the id+128 marker
+;   #R31248 HeldItemFront    item id in the actor's front hand (255 = none)
+;   #R31249 HeldItemBack     item id in the actor's back hand (255 = none)
 ;   #R31250 RoomMateA        first other actor in the room (255 = none)
 ;   #R31251 RoomMateB        second other actor in the room (255 = none)
 ;   #R31252 RoomModeByte     current room mode (drives RoomDispatchTable)
@@ -2186,10 +2284,10 @@ b31232 DEFB 9,9,9,9,9,9,9,45
  31244 DEFB 0,0            ; word: attribute-cursor stride for door drawing
 @label=RoomCellStep
  31246 DEFB 0,0            ; word: room-cell-grid stride for door drawing
-@label=ActorCellFront
+@label=HeldItemFront
  31248 DEFB 255            ; corridor-strip cell (0-21) of the actor's id+160
                            ; marker; 12 = the alien's lair cell (see #R31823)
-@label=ActorCellBack
+@label=HeldItemBack
  31249 DEFB 255            ; corridor-strip cell of the actor's id+128 marker
 @label=RoomMateA
  31250 DEFB 255            ; slots of up to two OTHER actors in the current
@@ -2419,12 +2517,16 @@ c31577 LD DE,1824    ; stride to next character row in attribute area
  31611 RET           ;
 ; This entry point is used by the routines at #R31417, #R31634, #R34684,
 ; #R35222 and #R35578.
-*31612 LD DE,22      ;
-*31615 LD B,10       ;
+; FillAttrColumn: paint a 10-cell-wide attribute block — C rows of
+; attribute A starting at HL (stride 22 = 32-10 to the next row).
+; Used to colour the menu rows.
+@label=FillAttrColumn
+*31612 LD DE,22      ; row stride remainder (32 - 10)
+*31615 LD B,10       ; 10 attribute cells per row
 *31617 LD (HL),A     ;
  31618 INC HL        ;
  31619 DJNZ 31617    ;
- 31621 ADD HL,DE     ;
+ 31621 ADD HL,DE     ; next row
  31622 DEC C         ;
  31623 JR NZ,31615   ;
  31625 RET           ;
@@ -2505,21 +2607,21 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
 @label=PrintName
 c31690 LD DE,29516   ; CrewNameTable
 ; This entry point is used by the routine at #R42821.
-*31693 AND A         ;
+*31693 AND A         ; name 0: draw from the list head
  31694 JR Z,31705    ;
- 31696 LD B,A        ;
+ 31696 LD B,A        ; skip A 255-terminated names
 *31697 LD A,(DE)     ;
  31698 INC DE        ;
  31699 CP 255        ;
  31701 JR NZ,31697   ;
  31703 DJNZ 31697    ;
-*31705 PUSH DE       ;
+*31705 PUSH DE       ; draw one glyph via DrawSpriteRow
  31706 CALL 31369    ;
  31709 POP DE        ;
  31710 INC DE        ;
- 31711 LD HL,31257   ;
+ 31711 LD HL,31257   ; draw pointer right one column
  31714 INC (HL)      ;
- 31715 LD A,(DE)     ;
+ 31715 LD A,(DE)     ; until the 255 terminator
  31716 CP 255        ;
  31718 JR NZ,31705   ;
  31720 RET           ;
@@ -2555,7 +2657,7 @@ c31721 LD A,(31241)  ; A = current draw index (slot 0..7)
  31745 AND 63        ; mask off direction bit → raw crew ID (0..63)
  31747 LD E,A        ;
  31748 LD D,0        ;
- 31750 LD HL,29905   ;
+ 31750 LD HL,29905   ; RoomTypeTable[crew's room]
  31753 ADD HL,DE     ;
  31754 LD A,(HL)     ;
  31755 LD (31243),A  ; RoomTypeByte for this crew
@@ -2593,15 +2695,19 @@ c31759 LD A,(31242)  ; A = current room
 *31792 INC HL        ;
  31793 DJNZ 31779    ;
  31795 RET           ;
-*31796 LD A,(31242)  ;
+; BuildRoomItemList: list the item ids lying in the current room —
+; scan ItemLocations (#R29940) from the top down for entries equal to
+; the room number, appending each match to RoomItemList (#R29962).
+@label=BuildRoomItemList
+*31796 LD A,(31242)  ; C = current room
  31799 LD C,A        ;
- 31800 LD HL,29961   ;
- 31803 LD DE,29962   ;
+ 31800 LD HL,29961   ; scan ItemLocations from item 21 down
+ 31803 LD DE,29962   ; DE -> RoomItemList write pointer
  31806 LD B,22       ;
-*31808 LD A,(HL)     ;
- 31809 CP C          ;
+*31808 LD A,(HL)     ; item's location
+ 31809 CP C          ; lying in this room?
  31810 JR NZ,31816   ;
- 31812 LD A,B        ;
+ 31812 LD A,B        ; yes: append its id (= B-1) to the list
  31813 DEC A         ;
  31814 LD (DE),A     ;
  31815 INC DE        ;
@@ -2609,32 +2715,35 @@ c31759 LD A,(31242)  ; A = current room
  31817 DJNZ 31808    ;
  31819 RET           ;
 ; This entry point is used by the routines at #R35451, #R35578 and #R44880.
+; RefreshHeldItems: find what the current actor (#R31241) holds.
+@label=RefreshHeldItems
 *31820 LD A,(31241)  ;
 
-; FindActorCells
+; FindHeldItems
 ;
-; Finds where actor A stands in the 22-cell corridor strip:
-; scans for the id+160 marker into ActorCellFront (#R31248) and the
-; id+128 marker into ActorCellBack (#R31249).
+; Finds what actor A is carrying: scans ItemLocations (#R29940) for
+; the slot+160 marker (front hand) into HeldItemFront (#R31248) and
+; the slot+128 marker (back hand) into HeldItemBack (#R31249). The
+; item id is the table position where the marker sits.
 ;
 ; Used by the routines at #R37490 and #R40826.
-@label=FindActorCells
-c31823 ADD A,128     ; C = id + 128, E = id + 160
+@label=FindHeldItems
+c31823 ADD A,128     ; C = slot + 128, E = slot + 160
  31825 LD C,A        ;
  31826 ADD A,32      ;
  31828 LD E,A        ;
- 31829 LD HL,29961   ;
+ 31829 LD HL,29961   ; scan ItemLocations from item 21 down
  31832 LD B,22       ;
 *31834 LD A,(HL)     ;
- 31835 CP C          ;
+ 31835 CP C          ; back-hand marker?
  31836 JR NZ,31845   ;
- 31838 LD A,B        ;
+ 31838 LD A,B        ; yes: HeldItemBack = item id (B-1)
  31839 DEC A         ;
  31840 LD (31249),A  ;
  31843 JR 31853      ;
-*31845 CP E          ;
+*31845 CP E          ; front-hand marker?
  31846 JR NZ,31853   ;
- 31848 LD A,B        ;
+ 31848 LD A,B        ; yes: HeldItemFront = item id
  31849 DEC A         ;
  31850 LD (31248),A  ;
 *31853 DEC HL        ;
@@ -2642,15 +2751,14 @@ c31823 ADD A,128     ; C = id + 128, E = id + 160
  31856 RET           ;
 ; This entry point is used by the routines at #R35451, #R35578 and #R37490.
 
-; CellToItemString
+; ItemIdToString
 ;
-; Maps a corridor cell (in A) to the string index of
-; the item stored at that shelf position: cells 0-2 -> 35 Elctrc Prd,
-; 3-5 -> 36 Incineratr, 6-7 -> 37 Tracker, 8-11 -> 38 Fire Extng, 12 ->
-; 39 Harpn Gun, 13-15 -> 40 Laser Pist, 16 -> 41 Net, 17 -> 42 Cat Box,
-; 18+ -> 43 Spanner; special cells 20/21 -> strings 68/69. Items thus
-; live at fixed positions within rooms.
-@label=CellToItemString
+; Maps an item id (in A) to its name's string index:
+; ids 0-2 -> 35 Elctrc Prd, 3-5 -> 36 Incineratr, 6-7 -> 37 Tracker,
+; 8-11 -> 38 Fire Extng, 12 -> 39 Harpn Gun, 13-15 -> 40 Laser Pist,
+; 16 -> 41 Net, 17 -> 42 Cat Box, 18-19 -> 43 Spanner; ids 20/21
+; (Jones captured) -> strings 68 "Cat in Net" / 69 "Cat in Box".
+@label=ItemIdToString
 c31857 LD E,35       ; E = first item string ("Elctrc Prd")
  31859 CP 3          ;
  31861 JR C,31899    ;
@@ -2688,39 +2796,38 @@ c31857 LD E,35       ; E = first item string ("Elctrc Prd")
 
 ; BuildItemMenu
 ;
-; Fills the action-menu buffer (corridor table + 8) with
-; up to four
-; string indexes for the current standing position: the item names at
-; the actor's two cells, then "Get Item" (47) when the held-item slot
-; is loaded and the back cell is empty, and "Leave Item" (48)
-; when the front cell is empty.
+; Fills the action menu's " use:" rows (strip cells 8-11) for the
+; current actor: row 8 = name of the front-hand item, row 9 = name of
+; the back-hand item, row 10 = "Get Item" (47) when the room has items
+; lying about and the back hand is free, row 11 = "Leave Item" (48)
+; when the front hand is loaded.
 @label=BuildItemMenu
 c31915 LD C,255      ; C = "empty" sentinel
- 31917 LD HL,29638   ; menu buffer
- 31920 LD A,(31248)  ; item at the actor's front cell
+ 31917 LD HL,29638   ; menu strip cell 8
+ 31920 LD A,(31248)  ; front-hand item
  31923 CP C          ;
- 31924 CALL NZ,31857 ; -> item string index
- 31927 LD (HL),A     ;
+ 31924 CALL NZ,31857 ; -> item name string
+ 31927 LD (HL),A     ; row 8
  31928 INC HL        ;
- 31929 LD A,(31249)  ; item at the actor's back cell
+ 31929 LD A,(31249)  ; back-hand item
  31932 CP C          ;
  31933 CALL NZ,31857 ;
- 31936 LD (HL),A     ;
+ 31936 LD (HL),A     ; row 9
  31937 INC HL        ;
- 31938 LD DE,29962   ; held-item slot
+ 31938 LD DE,29962   ; any items lying in this room?
  31941 LD A,(DE)     ;
  31942 CP C          ;
  31943 JR Z,31954    ;
- 31945 LD A,(31249)  ;
+ 31945 LD A,(31249)  ; and the back hand free?
  31948 CP C          ;
  31949 JR NZ,31954   ;
- 31951 LD A,47       ; offer "Get Item"
+ 31951 LD A,47       ; yes: row 10 = "Get Item"
  31953 LD (HL),A     ;
 *31954 INC HL        ;
- 31955 LD A,(31248)  ;
+ 31955 LD A,(31248)  ; front hand loaded?
  31958 CP C          ;
  31959 RET Z         ;
- 31960 LD A,48       ; offer "Leave Item"
+ 31960 LD A,48       ; yes: row 11 = "Leave Item"
  31962 LD (HL),A     ;
  31963 RET           ;
 
@@ -2818,6 +2925,10 @@ c31964 LD A,(33703)  ; Android slot chosen for this run
  32105 LD A,56       ;
 *32107 LD (DE),A     ;
  32108 RET           ;
+@ignoreua
+; Jones is in the viewed room: menu Special row 14 ($73CC) offers
+; string 51 "Get Jones " (its handler needs the Net or the Cat Box),
+; and the cat is drawn.
 *32109 PUSH AF       ;
  32110 LD DE,29644   ;
  32113 LD A,51       ;
@@ -2825,10 +2936,11 @@ c31964 LD A,(33703)  ; Android slot chosen for this run
  32116 CALL 39655    ;
  32119 POP AF        ;
  32120 RET           ;
+; The alien is in the viewed room: draw it and offer "  ATTACK  ".
 *32121 PUSH AF       ;
  32122 JP 44996      ;
 ; This entry point is used by the routine at #R44880.
-*32125 LD A,52       ;
+*32125 LD A,52       ; menu row = "  ATTACK  "
  32127 LD (DE),A     ;
  32128 XOR A         ;
 @nowarn=39741
@@ -2837,37 +2949,41 @@ c31964 LD A,(33703)  ; Android slot chosen for this run
 ; This entry point is used by the routine at #R44880.
 *32132 POP AF        ;
  32133 RET           ;
+; The activated Android is in the viewed room: draw it, offer ATTACK.
 *32134 PUSH AF       ;
  32135 JP 45125      ;
 ; This entry point is used by the routine at #R44880.
-*32138 LD A,52       ;
+*32138 LD A,52       ; menu row = "  ATTACK  "
  32140 LD (DE),A     ;
 ; This entry point is used by the routine at #R44880.
 *32141 POP AF        ;
  32142 RET           ;
 ; This entry point is used by the routine at #R37490.
-*32143 LD A,(31242)  ;
- 32146 BIT 6,A       ;
+; DrawRoomTitle: the panel's top line — the room name (or "In Duct")
+; and, for rooms, "Damage" plus the two ASCII damage digits.
+@label=DrawRoomTitle
+*32143 LD A,(31242)  ; room-name string = room number,
+ 32146 BIT 6,A       ; or 93 "In Duct" inside the ducts
  32148 JR Z,32152    ;
  32150 LD A,93       ;
-*32152 LD HL,20576   ;
+*32152 LD HL,20576   ; draw pointer -> title row
  32155 LD (31257),HL ;
  32158 CALL 31634    ;
- 32161 LD HL,31242   ;
+ 32161 LD HL,31242   ; in the ducts: no damage meter
  32164 BIT 6,(HL)    ;
  32166 RET NZ        ;
- 32167 LD HL,20587   ;
+ 32167 LD HL,20587   ; "Damage    " (89)
  32170 LD (31257),HL ;
  32173 LD A,89       ;
  32175 CALL 31634    ;
- 32178 LD A,(31242)  ;
+ 32178 LD A,(31242)  ; DE -> RoomDamageDigits[room]
  32181 ADD A,A       ;
  32182 LD L,A        ;
  32183 LD H,0        ;
  32185 LD DE,30006   ;
  32188 ADD HL,DE     ;
  32189 EX DE,HL      ;
- 32190 LD HL,20594   ;
+ 32190 LD HL,20594   ; draw the two ASCII digits
  32193 LD (31257),HL ;
  32196 PUSH DE       ;
  32197 CALL 31369    ;
@@ -2878,131 +2994,117 @@ c31964 LD A,(33703)  ; Android slot chosen for this run
  32206 CALL 31369    ;
  32209 LD HL,31257   ;
  32212 INC (HL)      ;
- 32213 LD A,135      ;
+ 32213 LD A,135      ; damage-meter icon glyph
  32215 CALL 31370    ;
  32218 RET           ;
-@label=Auto_7DDB
- 32219 LD C,C        ;
- 32220 LD (HL),H     ;
- 32221 LD H,L        ;
- 32222 LD L,L        ;
- 32223 LD (HL),E     ;
- 32224 JR NZ,32306   ;
- 32226 LD (HL),D     ;
- 32227 LD H,L        ;
- 32228 LD (HL),E     ;
- 32229 LD H,L        ;
- 32230 LD L,(HL)     ;
- 32231 LD (HL),H     ;
-@label=Auto_7DE8
- 32232 LD B,A        ;
- 32233 LD (HL),D     ;
- 32234 LD L,C        ;
- 32235 LD L,H        ;
- 32236 LD L,H        ;
- 32237 LD H,L        ;
-@label=Auto_7DEE
- 32238 JR NZ,32345   ;
- 32240 LD (HL),E     ;
- 32241 JR NZ,32123   ;
- 32243 JR NZ,32310   ;
- 32245 LD L,H        ;
- 32246 LD (HL),E     ;
- 32247 LD L,A        ;
- 32248 JR NZ,32354   ;
- 32250 LD H,L        ;
- 32251 LD (HL),D     ;
- 32252 LD H,L        ;
- 32253 JR NZ,32352   ;
- 32255 LD L,(HL)     ;
- 32256 LD H,H        ;
- 32257 JR NZ,32357   ;
- 32259 LD (HL),L     ;
- 32260 LD (HL),H     ;
- 32261 JR NZ,32328   ;
- 32263 LD L,H        ;
- 32264 LD (HL),E     ;
- 32265 LD L,A        ;
- 32266 JR NZ,32334   ;
- 32268 LD L,A        ;
- 32269 LD H,H        ;
- 32270 LD L,C        ;
- 32271 LD H,L        ;
- 32272 LD (HL),E     ;
- 32273 JR NZ,32386   ;
- 32275 LD H,(HL)     ;
- 32276 JR NZ,32310   ;
- 32278 ADC A,B       ;
- 32279 JR NZ,32314   ;
- 32281 LD A,(BC)     ;
- 32282 LD (HL),L     ;
- 32283 LD A,(HL)     ;
+; Room-info panel text fragments (was mis-disassembled as code):
+; ASCII strings drawn one glyph at a time by the panel routines below.
+; Byte 136 is the grille-icon UDG.
+@label=ItemsPresentText
+ 32219 DEFM "Items Present"
+@label=GrilleText
+ 32232 DEFM "Grille"
+@label=IsText
+ 32238 DEFM " is ",136," "
+@label=AlsoHereText
+ 32244 DEFM "Also here "
+@label=AndText
+ 32254 DEFM "and "
+@label=ButText
+ 32258 DEFM "but "
+@label=AlsoText
+ 32262 DEFM "Also "
+@label=BodiesOfText
+ 32267 DEFM "Bodies of "
+@label=GrilleIconText
+ 32277 DEFM " ",136," "
+@ignoreua
+; DrawItemsAndGrille: room-info panel section under the room name.
+; Draws the "Items Present" header when the viewed room's item list
+; ($750A) is non-empty, then (except aboard the Narcissus, room 34)
+; prints "Grille" plus its state (" in place "/" removed ") from
+; RoomGrilleState (#R30076) and plants the matching action-menu entry:
+; string 49 "RmveGrille" in the Special slot (strip cell 13) while in
+; place, or string 50 "Grille" as a move-to target (strip cell 1) once
+; removed.
+;
+; Used by the routine at #R32719.
+@label=DrawItemsAndGrille
+*32280 LD HL,29962   ; HL -> viewed room's item list
+ 32283 LD A,(HL)     ; first entry: 255 = no items here
  32284 CP 255        ;
- 32286 JR Z,32313    ;
- 32288 LD HL,20608   ;
+ 32286 JR Z,32313    ; no items: skip the header
+ 32288 LD HL,20608   ; draw pointer -> items header row
  32291 LD (31257),HL ;
 @nowarn=32219
-@ssub=LD DE,Auto_7DDB
- 32294 LD DE,32219   ;
- 32297 LD B,13       ;
+@ssub=LD DE,ItemsPresentText
+ 32294 LD DE,32219   ; "Items Present"
+ 32297 LD B,13       ; 13 characters
 *32299 PUSH BC       ;
  32300 PUSH DE       ;
- 32301 CALL 31369    ;
+ 32301 CALL 31369    ; DrawSpriteRow: one glyph
  32304 POP DE        ;
  32305 POP BC        ;
-*32306 INC DE        ;
+ 32306 INC DE        ; next character
  32307 LD HL,31257   ;
-*32310 INC (HL)      ;
+ 32310 INC (HL)      ; draw pointer right one column
  32311 DJNZ 32299    ;
-*32313 LD A,(31242)  ;
- 32316 CP 34         ;
+*32313 LD A,(31242)  ; A = viewed room
+ 32316 CP 34         ; Narcissus: no grille aboard the shuttle
  32318 RET Z         ;
 @nowarn=32232
-@ssub=LD DE,Auto_7DE8
- 32319 LD DE,32232   ;
- 32322 LD HL,20624   ;
+@ssub=LD DE,GrilleText
+ 32319 LD DE,32232   ; "Grille"
+ 32322 LD HL,20624   ; draw pointer -> grille status row
  32325 LD (31257),HL ;
-*32328 LD B,6        ;
+ 32328 LD B,6        ; 6 characters
 *32330 PUSH BC       ;
  32331 PUSH DE       ;
- 32332 CALL 31369    ;
+ 32332 CALL 31369    ; DrawSpriteRow: one glyph
  32335 POP DE        ;
  32336 POP BC        ;
  32337 INC DE        ;
  32338 LD HL,31257   ;
  32341 INC (HL)      ;
  32342 DJNZ 32330    ;
- 32344 LD A,(31242)  ;
- 32347 AND 63        ;
+ 32344 LD A,(31242)  ; index RoomGrilleState by room number
+ 32347 AND 63        ; (mask off the in-ducts flag, bit 6)
  32349 LD L,A        ;
  32350 LD H,0        ;
-*32352 LD DE,30076   ;
+ 32352 LD DE,30076   ;
  32355 ADD HL,DE     ;
  32356 LD A,(HL)     ;
-*32357 CP 255        ;
+ 32357 CP 255        ; 255 = grille still in place
  32359 JR Z,32373    ;
- 32361 LD A,91       ;
+ 32361 LD A,91       ; removed: print strip 91 " removed  "
  32363 CALL 31634    ;
- 32366 LD DE,29631   ;
- 32369 LD A,50       ;
+ 32366 LD DE,29631   ; menu strip cell 1 (a move-to target):
+ 32369 LD A,50       ; string 50 "Grille" = enter the open duct
  32371 LD (DE),A     ;
  32372 RET           ;
-*32373 LD A,90       ;
+*32373 LD A,90       ; in place: print strip 90 " in place "
  32375 CALL 31634    ;
- 32378 LD DE,29643   ;
- 32381 LD A,49       ;
+ 32378 LD DE,29643   ; menu strip cell 13 (the Special slot):
+ 32381 LD A,49       ; string 49 "RmveGrille"
  32383 LD (DE),A     ;
  32384 RET           ;
+; DrawCrewCondition: prints the room-info line "NAME is <injury> and/
+; but <morale>" for the selected crew member (slot in #R31241), using
+; CrewInjuryText (#R30110, index = strength clamped to 0-3) and
+; CrewMoraleText (#R30140, index = morale byte clamped to 0-4); "but"
+; is picked when injury and morale disagree.
+;
 ; This entry point is used by the routines at #R35451, #R38379, #R45290 and
 ; #R45401.
-*32385 LD A,(31241)  ;
- 32388 LD HL,20640   ;
+@label=DrawCrewCondition
+*32385 LD A,(31241)  ; A = selected crew slot
+ 32388 LD HL,20640   ; draw pointer -> condition row
  32391 LD (31257),HL ;
- 32394 CALL 31690    ;
+ 32394 CALL 31690    ; PrintName
 @nowarn=32238
-@ssub=LD DE,Auto_7DEE
- 32397 LD DE,32238   ;
- 32400 LD B,4        ;
+@ssub=LD DE,IsText
+ 32397 LD DE,32238   ; " is " (shared tail of the grille text)
+ 32400 LD B,4        ; 4 characters
 *32402 PUSH BC       ;
  32403 PUSH DE       ;
  32404 CALL 31369    ;
@@ -3012,27 +3114,31 @@ c31964 LD A,(33703)  ; Android slot chosen for this run
  32412 INC (HL)      ;
  32413 POP BC        ;
  32414 DJNZ 32402    ;
- 32416 LD A,(IX+4)   ;
- 32419 CP 3          ;
- 32421 JR C,32429    ;
+ 32416 LD A,(IX+4)   ; injury index from strength:
+ 32419 CP 3          ; 0/1/2 as-is (Dead/Collapsed/Wounded),
+ 32421 JR C,32429    ; 3 -> 2 (Wounded), >3 -> 3 (OK)
  32423 LD A,3        ;
  32425 JR NZ,32429   ;
  32427 LD A,2        ;
-*32429 LD DE,30110   ;
+*32429 LD DE,30110   ; print CrewInjuryText[A]
  32432 CALL 31693    ;
- 32435 LD DE,32254   ;
- 32438 LD A,(IX+4)   ;
- 32441 CP 4          ;
- 32443 JR C,32454    ;
- 32445 LD A,(IX+6)   ;
+@nowarn=32254
+@ssub=LD DE,AndText
+ 32435 LD DE,32254   ; "and "
+ 32438 LD A,(IX+4)   ; pick the conjunction: "but " when
+ 32441 CP 4          ; injury and morale disagree (healthy
+ 32443 JR C,32454    ; but low morale, or hurt but high
+ 32445 LD A,(IX+6)   ; morale), else "and "
  32448 CP 3          ;
  32450 JR NC,32464   ;
  32452 JR 32461      ;
 *32454 LD A,(IX+6)   ;
  32457 CP 3          ;
  32459 JR C,32464    ;
-*32461 LD DE,32258   ;
-*32464 LD B,4        ;
+@nowarn=32258
+@ssub=LD DE,ButText
+*32461 LD DE,32258   ; "but "
+*32464 LD B,4        ; draw the 4-character conjunction
 *32466 PUSH BC       ;
  32467 PUSH DE       ;
  32468 CALL 31369    ;
@@ -3042,30 +3148,34 @@ c31964 LD A,(33703)  ; Android slot chosen for this run
  32476 INC (HL)      ;
  32477 POP BC        ;
  32478 DJNZ 32466    ;
- 32480 LD A,(IX+6)   ;
+ 32480 LD A,(IX+6)   ; morale index, clamped to 0-4
  32483 CP 5          ;
  32485 JR C,32489    ;
  32487 LD A,4        ;
-*32489 LD DE,30140   ;
+*32489 LD DE,30140   ; print CrewMoraleText[A]
  32492 CALL 31693    ;
  32495 JP 45695      ;
-*32498 LD HL,29575   ;
- 32501 LD DE,31250   ;
- 32504 LD BC,1793    ;
- 32507 LD A,(31241)  ;
+; FindRoomMates: scan ActorRecords' +1 room bytes for other actors in
+; the current room, storing the first two slot numbers found into
+; RoomMateA/RoomMateB (31250/31251).
+@label=FindRoomMates
+*32498 LD HL,29575   ; HL -> slot 1's +1 (room) byte
+ 32501 LD DE,31250   ; DE -> RoomMateA
+ 32504 LD BC,1793    ; B = 7 slots, C = slot number 1
+ 32507 LD A,(31241)  ; A' = the selected actor (excluded)
  32510 EX AF,AF'     ;
- 32511 LD A,(31242)  ;
-*32514 CP (HL)       ;
+ 32511 LD A,(31242)  ; A = the viewed room
+*32514 CP (HL)       ; same room?
  32515 JR NZ,32526   ;
- 32517 EX AF,AF'     ;
+ 32517 EX AF,AF'     ; and not the selected actor itself?
  32518 CP C          ;
  32519 JR Z,32525    ;
- 32521 EX DE,HL      ;
+ 32521 EX DE,HL      ; store the slot number
  32522 LD (HL),C     ;
  32523 EX DE,HL      ;
  32524 INC DE        ;
 *32525 EX AF,AF'     ;
-*32526 PUSH DE       ;
+*32526 PUSH DE       ; next 8-byte record
  32527 LD DE,8       ;
  32530 ADD HL,DE     ;
  32531 POP DE        ;
@@ -3073,17 +3183,23 @@ c31964 LD A,(33703)  ; Android slot chosen for this run
  32533 DJNZ 32514    ;
  32535 RET           ;
 ; This entry point is used by the routines at #R36457 and #R45401.
-*32536 CALL 32498    ;
- 32539 LD HL,20672   ;
+; DrawRoomMates: the "Also here NAME" / "Also Bodies of NAME" panel
+; line. FindRoomMates fills RoomMateA/B; if every listed mate is dead
+; (ActorRecords byte +7 != 0) the line reads "Also Bodies of", else
+; "Also here" with the first mate's name (dead mates get the strip-94
+; overprint from DrawCrewStatusHalf, #R33610).
+@label=DrawRoomMates
+*32536 CALL 32498    ; FindRoomMates -> RoomMateA/B
+ 32539 LD HL,20672   ; draw pointer -> "Also here" row
  32542 LD (31257),HL ;
- 32545 LD BC,512     ;
- 32548 LD DE,31250   ;
+ 32545 LD BC,512     ; B = 2 mates to check, C = 0
+ 32548 LD DE,31250   ; DE -> RoomMateA
 *32551 PUSH BC       ;
  32552 PUSH DE       ;
- 32553 LD A,(DE)     ;
+ 32553 LD A,(DE)     ; no (more) mates: alive path
  32554 CP 255        ;
  32556 JR Z,32607    ;
- 32558 ADD A,A       ;
+ 32558 ADD A,A       ; HL -> that slot's +7 status byte
  32559 ADD A,A       ;
  32560 ADD A,A       ;
  32561 LD E,A        ;
@@ -3091,31 +3207,37 @@ c31964 LD A,(33703)  ; Android slot chosen for this run
  32563 LD D,A        ;
  32564 LD HL,29573   ;
  32567 ADD HL,DE     ;
- 32568 CP (HL)       ;
+ 32568 CP (HL)       ; still alive? -> alive path
  32569 JR Z,32607    ;
- 32571 POP DE        ;
+ 32571 POP DE        ; this one is dead; check the next
  32572 INC DE        ;
  32573 POP BC        ;
  32574 DJNZ 32551    ;
- 32576 LD DE,32262   ;
- 32579 LD B,15       ;
- 32581 CALL 44509    ;
- 32584 LD A,(31250)  ;
+@nowarn=32262
+@ssub=LD DE,AlsoText
+ 32576 LD DE,32262   ; "Also Bodies of " (15 contiguous chars)
+ 32579 LD B,15       ; all mates dead:
+ 32581 CALL 44509    ; draw "Also Bodies of "
+ 32584 LD A,(31250)  ; first body's name
  32587 CALL 31690    ;
- 32590 LD DE,32277   ;
+@nowarn=32277
+@ssub=LD DE,GrilleIconText
+ 32590 LD DE,32277   ; " ",136," " grille-icon spacer
  32593 LD B,3        ;
  32595 CALL 44509    ;
- 32598 LD A,(31251)  ;
+ 32598 LD A,(31251)  ; second body's name
  32601 CALL 31690    ;
- 32604 JP 32670      ;
+ 32604 JP 32670      ; blank-pad the rest of the row
 *32607 POP BC        ;
  32608 POP DE        ;
- 32609 LD HL,31250   ;
+ 32609 LD HL,31250   ; anyone here at all?
  32612 LD A,(HL)     ;
  32613 CP 255        ;
- 32615 JR Z,32670    ;
- 32617 LD DE,32244   ;
- 32620 LD B,10       ;
+ 32615 JR Z,32670    ; no: just blank the row
+@nowarn=32244
+@ssub=LD DE,AlsoHereText
+ 32617 LD DE,32244   ; "Also here "
+ 32620 LD B,10       ; draw "Also here " one glyph at a time
 *32622 PUSH BC       ;
  32623 PUSH DE       ;
  32624 CALL 31369    ;
@@ -3125,20 +3247,23 @@ c31964 LD A,(33703)  ; Android slot chosen for this run
  32632 INC (HL)      ;
  32633 POP BC        ;
  32634 DJNZ 32622    ;
- 32636 LD A,(31250)  ;
+ 32636 LD A,(31250)  ; mate A: dead-overprint check + name
  32639 CALL 33610    ;
  32642 CALL 31690    ;
- 32645 LD A,(31251)  ;
+ 32645 LD A,(31251)  ; a second mate too?
  32648 CP 255        ;
  32650 JR Z,32670    ;
- 32652 LD A,144      ;
+ 32652 LD A,144      ; separator glyph
  32654 CALL 31370    ;
  32657 LD HL,31257   ;
  32660 INC (HL)      ;
- 32661 LD A,(31251)  ;
+ 32661 LD A,(31251)  ; mate B: dead-overprint check + name
  32664 CALL 33610    ;
  32667 JP 45692      ;
 ; This entry point is used by the routine at #R45401.
+; BlankRestOfRow: draw blank tiles until the draw pointer reaches
+; column 0 of the next row.
+@label=BlankRestOfRow
 *32670 XOR A         ;
  32671 CALL 31370    ;
  32674 LD HL,31257   ;
@@ -3147,31 +3272,41 @@ c31964 LD A,(33703)  ; Android slot chosen for this run
  32679 AND 31        ;
  32681 RET Z         ;
  32682 JR 32670      ;
+@ignoreua
+; ResetActionMenu: restore the action-menu strip at CorridorPosTable
+; (#R29630) from ActionMenuTemplate (#R30178), clear the viewed room's
+; 20-entry item list ($750A) to 255 and invalidate the cached actor
+; cell/name state ($7A10-$7A13).
+@label=ResetActionMenu
 *32684 LD DE,29630   ;
- 32687 LD HL,30178   ;
+ 32687 LD HL,30178   ; copy the 19-byte menu skeleton
  32690 LD BC,19      ;
  32693 LDIR          ;
- 32695 LD HL,29962   ;
+ 32695 LD HL,29962   ; item list: 20 x 255 = empty
  32698 LD A,255      ;
  32700 LD B,20       ;
 *32702 LD (HL),A     ;
  32703 INC HL        ;
  32704 DJNZ 32702    ;
- 32706 LD (31249),A  ;
+ 32706 LD (31249),A  ; no actor back/front cell
  32709 LD (31248),A  ;
- 32712 LD (31250),A  ;
+ 32712 LD (31250),A  ; no crew names cached
  32715 LD (31251),A  ;
  32718 RET           ;
 
-; DeathSequence
+; RedrawRoomScene
 ;
-; Handles a crew member's on-screen death in the room view: rebuilds
-; the corridor strip, redraws the scene and updates the status panel.
+; Rebuilds the whole room scene: resets the action-menu strip and the
+; room item state (ResetActionMenu), redraws the corridor strip,
+; rebuilds the exit and item menus, the info panel (room name, damage,
+; items present, grille state, crew condition) and the special actors,
+; then updates the status panel. Called by everything that changes
+; what the room shows (item transfers, deaths, grille removal, ...).
 ;
 ; Used by the routines at #R35163, #R35578, #R35973, #R38379 and
 ; #R44815.
-@label=DeathSequence
-c32719 CALL 32684    ;
+@label=RedrawRoomScene
+c32719 CALL 32684    ; ResetActionMenu
 @nowarn=32896
 @ssub=LD HL,Auto_8080
  32722 LD HL,32896   ;
@@ -3268,25 +3403,27 @@ c32719 CALL 32684    ;
  32927 CALL 34882    ;
  32930 CALL 39572    ;
  32933 RET           ;
-; Cell-glyph draw-handler table (was mis-disassembled as code):
-; 3-byte records (glyph, handler word) looked up by the door-arm
-; DrawDoorArm (#R33223), which patches the handler into its CALL.
-; Glyph 125
-; '}' = duct grille; 126-133 = door/corridor segment glyphs mapping
-; to four segment drawers, the grille drawer, or CellDrawStop
-; (#R33275).
+; Cell-glyph walk-handler table (was mis-disassembled as code):
+; 3-byte records (glyph, handler word) looked up by DrawDoorArm
+; (#R33223), which patches the handler into its CALL as it walks an
+; exit path over the room-map grid. Glyphs 126/127/132/133 are
+; straight wall segments -> ArmStraight (#R33275, a no-op: keep
+; heading); 128-131 are the four corner pieces -> steer handlers that
+; bend the walk by approach direction; 125 '}' (duct grille) and
+; 142/143 (junction nodes) -> ArmEndNode (#R33388): paint and end the
+; walk.
 @label=CellDrawTable
- 32934 DEFB 125,108,130   ; '}' -> grille drawer
- 32937 DEFB 126,251,129   ; glyph 126 -> stop
- 32940 DEFB 127,251,129   ; glyph 127 -> stop
- 32943 DEFB 128,252,129   ; glyph 128 -> segment drawer A
- 32946 DEFB 129,24,130   ; glyph 129 -> segment drawer B
- 32949 DEFB 130,52,130   ; glyph 130 -> segment drawer C
- 32952 DEFB 131,80,130   ; glyph 131 -> segment drawer D
- 32955 DEFB 132,251,129   ; glyph 132 -> stop
- 32958 DEFB 133,251,129   ; glyph 133 -> stop
- 32961 DEFB 142,108,130   ; glyph 142 -> grille drawer
- 32964 DEFB 143,108,130   ; glyph 143 -> grille drawer
+ 32934 DEFB 125,108,130   ; '}' duct grille -> ArmEndNode
+ 32937 DEFB 126,251,129   ; horizontal wall -> ArmStraight
+ 32940 DEFB 127,251,129   ; vertical wall -> ArmStraight
+ 32943 DEFB 128,252,129   ; top-left corner -> ArmCornerTopLeft
+ 32946 DEFB 129,24,130   ; bottom-left corner -> ArmCornerBottomLeft
+ 32949 DEFB 130,52,130   ; bottom-right corner -> ArmCornerBottomRight
+ 32952 DEFB 131,80,130   ; top-right corner -> ArmCornerTopRight
+ 32955 DEFB 132,251,129   ; horizontal wall -> ArmStraight
+ 32958 DEFB 133,251,129   ; vertical wall -> ArmStraight
+ 32961 DEFB 142,108,130   ; junction node -> ArmEndNode
+ 32964 DEFB 143,108,130   ; junction node -> ArmEndNode
 
 ; RedrawRoomView
 ;
@@ -3314,17 +3451,17 @@ c32967 LD A,(31243)  ; A = room type
  33000 CALL 33421    ;
  33003 CALL 33395    ;
  33006 CALL 33178    ;
- 33009 LD HL,(31255) ;
- 33012 LD (HL),71    ;
+ 33009 LD HL,(31255) ; mark the room's anchor cell (attr 71:
+ 33012 LD (HL),71    ; bright white) — the arms start here
  33014 PUSH HL       ;
  33015 LD HL,(31259) ;
  33018 PUSH HL       ;
- 33019 LD A,(29632)  ;
+ 33019 LD A,(29632)  ; 1st exit (menu strip cell 2)?
  33022 CP 255        ;
  33024 JR Z,33054    ;
- 33026 LD DE,65516   ;
- 33029 LD (31246),DE ;
- 33033 ADD HL,DE     ;
+ 33026 LD DE,65516   ; yes: walk the NORTH arm — heading -20
+ 33029 LD (31246),DE ; (grid) / -32 (attr), starting one cell
+ 33033 ADD HL,DE     ; above the anchor
  33034 LD (31259),HL ;
  33037 LD HL,(31255) ;
 @nowarn=65504
@@ -3333,11 +3470,11 @@ c32967 LD A,(31243)  ; A = room type
  33047 ADD HL,DE     ;
  33048 LD (31255),HL ;
  33051 CALL 33223    ;
-*33054 LD A,(29633)  ;
+*33054 LD A,(29633)  ; 2nd exit (menu strip cell 3)?
  33057 CP 255        ;
  33059 JR Z,33088    ;
- 33061 POP HL        ;
- 33062 POP DE        ;
+ 33061 POP HL        ; yes: walk the EAST arm — heading +1/+1,
+ 33062 POP DE        ; starting one cell right of the anchor
  33063 PUSH DE       ;
  33064 PUSH HL       ;
  33065 LD BC,1       ;
@@ -3348,11 +3485,11 @@ c32967 LD A,(31243)  ; A = room type
  33077 LD (31244),BC ;
  33081 LD (31246),BC ;
  33085 CALL 33223    ;
-*33088 LD A,(29634)  ;
+*33088 LD A,(29634)  ; 3rd exit (menu strip cell 4)?
  33091 CP 255        ;
  33093 JR Z,33123    ;
- 33095 POP HL        ;
- 33096 POP DE        ;
+ 33095 POP HL        ; yes: walk the SOUTH arm — heading +20/+32,
+ 33096 POP DE        ; starting one cell below the anchor
  33097 PUSH DE       ;
  33098 PUSH HL       ;
  33099 LD BC,20      ;
@@ -3366,11 +3503,11 @@ c32967 LD A,(31243)  ; A = room type
  33120 CALL 33223    ;
 *33123 POP HL        ;
  33124 POP DE        ;
- 33125 LD A,(29635)  ;
+ 33125 LD A,(29635)  ; 4th exit (menu strip cell 5)?
  33128 CP 255        ;
  33130 RET Z         ;
- 33131 DEC DE        ;
- 33132 DEC HL        ;
+ 33131 DEC DE        ; yes: walk the WEST arm — heading -1/-1,
+ 33132 DEC HL        ; starting one cell left of the anchor
  33133 LD (31259),HL ;
  33136 LD (31255),DE ;
  33140 LD HL,65535   ;
@@ -3439,93 +3576,116 @@ c33178 LD A,(31242)  ; A = current room
 
 ; DrawDoorArm
 ;
-; Draws one door/corridor arm of the room view: reads the grid cell
-; under RoomCellCursor, looks its glyph up in CellDrawTable (#R32934),
-; patches the matching handler into the CALL below (self-modifying),
-; paints attribute 5 (cyan) and steps both cursors by the stride pair
-; RoomAttrStep/RoomCellStep, looping until a stop handler fires.
+; Highlights one exit path of the room-map view: walks the (invisibly
+; drawn) wall glyphs from the room's anchor point, painting each
+; visited attribute cell cyan (attr 5), until it reaches a grille or
+; junction node. Per cell it reads the grid under RoomCellCursor,
+; looks the glyph up in CellDrawTable (#R32934) and patches the
+; handler into the CALL below (self-modifying). Straight segments keep
+; the heading, corner glyphs 128-131 turn it, and node glyphs
+; (125/142/143) end the walk via ArmEndNode (which pops the return
+; address). The stride pair RoomAttrStep/RoomCellStep encodes the
+; heading: attr +32/-32/+1/-1 = south/north/east/west (grid steps
+; +20/-20/+1/-1 in lockstep, the grid being 20 cells wide).
 @label=DrawDoorArm
 c33223 LD HL,(31259) ; read grid cell under the cursor
  33226 LD A,(HL)     ;
 @nowarn=32934
 @ssub=LD HL,CellDrawTable
- 33227 LD HL,32934   ;
+ 33227 LD HL,32934   ; find its 3-byte record in CellDrawTable
 *33230 CP (HL)       ;
  33231 JR Z,33238    ;
  33233 INC HL        ;
  33234 INC HL        ;
  33235 INC HL        ;
  33236 JR 33230      ;
-*33238 INC HL        ;
+*33238 INC HL        ; fetch the handler word
  33239 LD A,(HL)     ;
  33240 INC HL        ;
  33241 LD H,(HL)     ;
  33242 LD L,A        ;
- 33243 LD (33247),HL ;
- 33246 CALL 33275    ;
- 33249 LD HL,(31255) ;
+ 33243 LD (33247),HL ; patch it into the CALL below
+ 33246 CALL 33275    ; steer/stop for this glyph
+ 33249 LD HL,(31255) ; paint the attribute cell cyan
  33252 LD (HL),5     ;
- 33254 LD DE,(31244) ;
+ 33254 LD DE,(31244) ; step the attribute cursor by the heading
  33258 ADD HL,DE     ;
  33259 LD (31255),HL ;
- 33262 LD HL,(31259) ;
+ 33262 LD HL,(31259) ; step the grid cursor in lockstep
  33265 LD DE,(31246) ;
  33269 ADD HL,DE     ;
  33270 LD (31259),HL ;
  33273 JR 33223      ;
 
-; CellDrawStop
+; ArmStraight
 ;
-; Null cell-draw handler: glyphs mapped here in CellDrawTable end the
-; door arm.
-@label=CellDrawStop
+; Walk handler for straight wall glyphs (126/127/132/133): a no-op,
+; the walk keeps its current heading.
+@label=ArmStraight
 c33275 RET           ;
- 33276 LD HL,(31244) ;
+; ArmCornerTopLeft — walk handler for corner glyph 128, which joins a
+; south-going edge to an east-going one: a walker heading north exits
+; east; any other heading exits south.
+@label=ArmCornerTopLeft
+ 33276 LD HL,(31244) ; L = low byte of current heading
  33279 LD A,L        ;
- 33280 LD DE,32      ;
+ 33280 LD DE,32      ; default: turn south
  33283 LD HL,20      ;
- 33286 CP 224        ;
+ 33286 CP 224        ; heading north (-32, low byte 224)?
  33288 JR NZ,33296   ;
- 33290 LD DE,1       ;
+ 33290 LD DE,1       ; yes: turn east
  33293 LD HL,1       ;
 *33296 LD (31244),DE ;
  33300 LD (31246),HL ;
  33303 RET           ;
- 33304 LD HL,(31244) ;
+; ArmCornerBottomLeft — corner glyph 129 joins a north-going edge to
+; an east-going one: heading south exits east; otherwise exits north.
+@label=ArmCornerBottomLeft
+ 33304 LD HL,(31244) ; L = low byte of current heading
  33307 LD A,L        ;
- 33308 LD DE,1       ;
+ 33308 LD DE,1       ; default: turn east
  33311 LD HL,1       ;
- 33314 CP 32         ;
+ 33314 CP 32         ; heading south?
  33316 JR Z,33324    ;
 @nowarn=65504
- 33318 LD DE,65504   ; DE = -32 (screen stride)
- 33321 LD HL,65516   ; HL = -20
+ 33318 LD DE,65504   ; no: turn north (DE = -32, HL = -20)
+ 33321 LD HL,65516   ;
 *33324 LD (31244),DE ;
  33328 LD (31246),HL ;
  33331 RET           ;
- 33332 LD HL,(31244) ;
+; ArmCornerBottomRight — corner glyph 130 joins a west-going edge to
+; a north-going one: heading east exits north; otherwise exits west.
+@label=ArmCornerBottomRight
+ 33332 LD HL,(31244) ; L = low byte of current heading
  33335 LD A,L        ;
 @nowarn=65504
- 33336 LD DE,65504   ; DE = -32 (screen stride)
- 33339 LD HL,65516   ; HL = -20
- 33342 CP 1          ;
+ 33336 LD DE,65504   ; default: turn north (DE = -32, HL = -20)
+ 33339 LD HL,65516   ;
+ 33342 CP 1          ; heading east?
  33344 JR Z,33352    ;
- 33346 LD DE,65535   ;
+ 33346 LD DE,65535   ; no: turn west
  33349 LD HL,65535   ;
 *33352 LD (31244),DE ;
  33356 LD (31246),HL ;
  33359 RET           ;
- 33360 LD HL,(31244) ;
+; ArmCornerTopRight — corner glyph 131 joins a west-going edge to a
+; south-going one: heading east exits south; otherwise exits west.
+@label=ArmCornerTopRight
+ 33360 LD HL,(31244) ; L = low byte of current heading
  33363 LD A,L        ;
- 33364 LD DE,32      ;
+ 33364 LD DE,32      ; default: turn south
  33367 LD HL,20      ;
- 33370 CP 1          ;
+ 33370 CP 1          ; heading east?
  33372 JR Z,33380    ;
- 33374 LD DE,65535   ;
+ 33374 LD DE,65535   ; no: turn west
  33377 LD HL,65535   ;
 *33380 LD (31244),DE ;
  33384 LD (31246),HL ;
  33387 RET           ;
+; ArmEndNode — walk handler for the duct grille (125) and junction
+; nodes (142/143): pops DrawDoorArm's looping return address, paints
+; the node cell cyan and ends the walk.
+@label=ArmEndNode
  33388 POP AF        ;
  33389 LD HL,(31255) ;
  33392 LD (HL),5     ;
@@ -3786,8 +3946,8 @@ b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D
  33703 DEFB 9                ; In the Long Game this is the **Android** slot index (1..7): the dormant traitor crew member that UpdateAlien (#R40826) activates on first encounter with the alien (the first frame AlienActiveFlag is set and the slot still has its template +0=+7=0). Once activated, the Android enters action state 7 and wounds nearby crew via CrewAction7_Handler (#R40757). Values >= 8 (e.g. ShortGameInit's hard-wired 9) disable the mechanic — TriggerAlienEvent (#R41264) treats them as "no valid target".
 @label=AlienActiveFlag
  33704 DEFB 0                ; Non-zero when the alien is loose in corridors
-@label=Auto_83A9
- 33705 DEFB 0                ;
+@label=SoundPending
+ 33705 DEFB 0                ; SoundPending: nonzero = a sound effect is queued; PlayMusic (#R44880) plays and clears it
 @label=JonesRoom
  33706 DEFB 6                ; Jones the cat's current room (255 = off-map)
 @label=JonesMoveTimer
@@ -3845,30 +4005,46 @@ b33792 DEFB 10,5
 
 ; RoomDispatchTable
 ;
-; 34 × 16-bit function pointers for the per-room game handler dispatch.
-; Indexed as table[room_mode × 2] where room_mode is the byte at #R31252.
-; Dispatched via JP (HL) from #R35314 (RoomModeDispatch). Pairs of
-; entries often share the same handler.
+@ignoreua
+; Word table with a clever triple use. The action key (HandleInput at
+; $881B) dispatches table[room_mode] with room_mode from #R31252:
+;    0-1  RoomModeDispatch (#R35314)
+;    2-3  RoomHandler_2    (#R35338)   — room picked from a number strip
+;    4    GetItemPick      (#R35578)   — item picked from the Get strip
+; For modes 0 and 1 RoomModeDispatch then re-dispatches on the cursor
+; ROW through overlapping halves of this same table (entry 5 onward =
+; base $840C, entry 23 onward = base $8430):
 ;
-; Room mode → handler:
-;    0-1  RoomModeDispatch (#R35314)   — self-call entry, restarts loop
-;    2-3  RoomHandler_2    (#R35338)   — corridor-edge handler
-;    4    RoomHandler_4    (#R35578)   — corridor positioning
-;    5    RoomHandlerNop   (#R35448)   — no-op (returns)
-;    6-12 RoomHandlerCommon(#R35163)   — standard corridor room
-;    13   RoomHandler_13   (#R35222)   — special corridor 13 logic
-;    14-16 RoomHandlerNop  (#R35448)
-;    17-19 RoomHandler_17  (#R35210)   — alt corridor-position handler
-;    20-23 RoomHandlerNop  (#R35448)
-;    24   RoomHandler_24   (#R35560)   — sets crew action state = 2
-;    25-29 RoomHandler_25  (#R35382)   — multi-step room state
-;    30-31 RoomHandlerNop  (#R35448)
-;    32   RoomHandlerNop2  (#R35449)   — second no-op variant
-;    33   RoomHandler_33   (#R35451)   — terminal room handler
+@ignoreua
+; Mode-0 rows (orders screen), base $840C:
+;    0     "Order:" header       -> RoomHandlerNop (#R35448)
+;    1-7   crew slots 1-7        -> RoomHandlerCommon (#R35163)
+;    8     "Indicate Location"   -> RoomHandler_13 (#R35222): mode 2
+;    9-11  headers/blank         -> nop
+;    12-14 Upper/Middle/Lower    -> RoomHandler_17 (#R35210): deck map
+;    15-18 blank                 -> nop
 ;
-; Bytes past the 34-entry table (at #R33862) form the RoomDispatchTailExtra
-; — likely an overflow continuation if room_mode is ever > 33.
+@ignoreua
+; Mode-1 rows (room view / action menu), base $8430:
+;    0     "move to:" header     -> nop
+;    1     "Grille" (open duct)  -> MoveThroughGrille (#R35560)
+;    2-6   exit rooms            -> MoveToRoom (#R35382)
+;    7     " use:" header        -> nop
+;    8     front-hand item       -> RoomHandlerNop2 (#R35449)
+;    9     back-hand item        -> SwapHeldItems (#R35451)
+;    10    "Get Item"            -> GetItemMenu (#R35638)
+;    11    "Leave Item"          -> LeaveItemHandler (#R35725)
+;    12    "Special" header      -> nop
+;    13    special action        -> $8BC3 (ATTACK / RmveGrille ...)
+;    14    "Get Jones"           -> $8C05 (needs Net or Cat Box)
+;    15-16 fixture actions       -> FixtureAction (#R38398)
+;    17    "   QUIT   "          -> QuitRoomView (#R35440)
+;    18    blank                 -> nop (reuses CrewActionDispatch+0)
 ;
+; The mode-1 row words for rows 11-17 are the "RoomDispatchTailExtra"
+; bytes at #R33862; row 18 overlaps CrewActionDispatch's first entry.
+;
+@ignoreua
 @label=RoomDispatchTable
 w33794 DEFW 35314,35314,35338,35338
  33802 DEFW 35578,35448,35163,35163
@@ -4580,26 +4756,34 @@ c35290 LD A,80       ;
  35310 CALL 34882    ;
  35313 RET           ;
 
-; Routine at #R35314
+; RoomModeDispatch
+;
+@ignoreua
+; Menu-row dispatch for room modes 0 and 1: re-dispatches the action
+; key on the cursor ROW (#R33683) through the second half of the same
+; word table — base $840C for mode 0 (the orders screen) or $8430 for
+; mode 1 (the room view; see the row list at the RoomDispatchTable
+; header).
 @label=RoomModeDispatch
-c35314 CALL 45753    ;
- 35317 LD HL,33804   ;
+c35314 CALL 45753    ; A = room mode (0 or 1 here)
+@nowarn=33804
+ 35317 LD HL,33804   ; mode-0 row-handler base
  35320 LD DE,36      ;
  35323 AND A         ;
  35324 JR Z,35327    ;
- 35326 ADD HL,DE     ;
+ 35326 ADD HL,DE     ; mode 1: the room-view row table
 @nowarn=33683
 @label=Auto_89FF
 @ssub=LD A,(CorridorCursor)
-*35327 LD A,(33683)  ;
+*35327 LD A,(33683)  ; cursor row
  35330 LD E,A        ;
  35331 ADD HL,DE     ;
- 35332 ADD HL,DE     ;
+ 35332 ADD HL,DE     ; base + row*2
  35333 LD A,(HL)     ;
  35334 INC HL        ;
  35335 LD H,(HL)     ;
  35336 LD L,A        ;
- 35337 JP (HL)       ;
+ 35337 JP (HL)       ; jump to the row's handler
 
 ; Routine at #R35338
 @label=RoomHandler_2
@@ -4624,21 +4808,23 @@ c35338 LD A,(33685)  ;
  35378 CALL 35128    ;
  35381 RET           ;
 
-; Routine at #R35382
-@label=RoomHandler_25
+; MoveToRoom — action on a "move to:" destination row (2-6): set the
+; actor's destination room from the row's value; in the ducts the
+; destination comes from RoomAdjDucts by direction slot instead.
+@label=MoveToRoom
 c35382 LD A,64       ;
- 35384 CALL 35814    ;
- 35387 LD (IX+3),1   ;
+ 35384 CALL 35814    ; set the actor's action timer
+ 35387 LD (IX+3),1   ; action state = 1
  35391 LD A,(31242)  ;
- 35394 BIT 6,A       ;
+ 35394 BIT 6,A       ; in the duct network?
  35396 JR NZ,35405   ;
- 35398 LD A,(33685)  ;
+ 35398 LD A,(33685)  ; no: destination = the row's room number
  35401 LD (IX+2),A   ;
  35404 RET           ;
 @nowarn=33683
 @label=Auto_8A4D
 @ssub=LD A,(CorridorCursor)
-*35405 LD A,(33683)  ;
+*35405 LD A,(33683)  ; yes: duct direction = row - 2
  35408 SUB 2         ;
  35410 PUSH AF       ;
  35411 LD A,(31242)  ;
@@ -4649,18 +4835,21 @@ c35382 LD A,64       ;
  35420 ADD HL,HL     ;
  35421 ADD HL,HL     ;
  35422 POP DE        ;
- 35423 ADD HL,DE     ;
- 35424 LD DE,29346   ;
+ 35423 ADD HL,DE     ; room * 5
+ 35424 LD DE,29346   ; + RoomAdjDucts
  35427 ADD HL,DE     ;
  35428 POP AF        ;
  35429 LD D,0        ;
  35431 LD E,A        ;
- 35432 ADD HL,DE     ;
+ 35432 ADD HL,DE     ; + direction slot
  35433 LD A,(HL)     ;
- 35434 OR 64         ;
+ 35434 OR 64         ; destination stays inside the ducts
  35436 LD (IX+2),A   ;
  35439 RET           ;
- 35440 LD HL,31263   ;
+; QuitRoomView — action on the QUIT row (17): freeze the crew
+; animation and return to the ship view.
+@label=QuitRoomView
+*35440 LD HL,31263   ;
  35443 SET 7,(HL)    ;
  35445 JP 31417      ;
 
@@ -4673,30 +4862,36 @@ c35448 RET           ;
 c35449 RET           ;
  35450 RET           ;
 
-; Routine at #R35451
-@label=RoomHandler_33
-c35451 CALL 31820    ;
+; SwapHeldItems
+;
+; Action on the back-item row (9): swap the actor's front and back
+; hands — exchange HeldItemFront/HeldItemBack, flip the two markers
+; in ItemLocations (#R29940) by +/-32, adjust the sprite position by
+; the difference of the two carry nudges, and redraw the front item's
+; name.
+@label=SwapHeldItems
+c35451 CALL 31820    ; refresh HeldItemFront/Back for this actor
  35454 LD (IX+0),0   ;
- 35458 LD DE,(31248) ;
- 35462 LD HL,29984   ;
+ 35458 LD DE,(31248) ; E = front item, D = back item
+ 35462 LD HL,29984   ; ItemCarryNudge:
  35465 PUSH HL       ;
  35466 LD C,E        ;
  35467 LD B,0        ;
  35469 ADD HL,BC     ;
- 35470 LD E,(HL)     ;
+ 35470 LD E,(HL)     ; E = nudge[front]
  35471 LD C,D        ;
  35472 POP HL        ;
  35473 ADD HL,BC     ;
- 35474 LD D,(HL)     ;
- 35475 LD A,(IX+5)   ;
+ 35474 LD D,(HL)     ; D = nudge[back]
+ 35475 LD A,(IX+5)   ; X += nudge[back] - nudge[front]
  35478 SUB E         ;
  35479 ADD A,D       ;
- 35480 CP 127        ;
+ 35480 CP 127        ; (clamp underflow to 0)
  35482 JR C,35485    ;
  35484 XOR A         ;
 @label=Auto_8A9D
 *35485 LD (IX+5),A   ;
- 35488 LD A,(IX+6)   ;
+ 35488 LD A,(IX+6)   ; Y likewise
  35491 SUB E         ;
  35492 ADD A,D       ;
  35493 CP 127        ;
@@ -4704,120 +4899,133 @@ c35451 CALL 31820    ;
  35497 XOR A         ;
 @label=Auto_8AAA
 *35498 LD (IX+6),A   ;
- 35501 LD BC,(31248) ;
- 35505 LD L,B        ;
+ 35501 LD BC,(31248) ; C = front item, B = back item
+ 35505 LD L,B        ; swap HeldItemFront <-> HeldItemBack
  35506 LD H,C        ;
  35507 LD (31248),HL ;
- 35510 LD HL,29940   ;
+ 35510 LD HL,29940   ; ItemLocations:
  35513 PUSH HL       ;
- 35514 LD E,C        ;
- 35515 LD D,0        ;
+ 35514 LD E,C        ; old front item's marker -32
+ 35515 LD D,0        ; (160+slot -> 128+slot: now in the back hand)
  35517 ADD HL,DE     ;
  35518 LD A,(HL)     ;
  35519 SUB 32        ;
  35521 LD (HL),A     ;
  35522 POP HL        ;
- 35523 LD E,B        ;
- 35524 ADD HL,DE     ;
+ 35523 LD E,B        ; old back item's marker +32
+ 35524 ADD HL,DE     ; (128+slot -> 160+slot: now in front)
  35525 LD A,(HL)     ;
  35526 ADD A,32      ;
  35528 LD (HL),A     ;
- 35529 LD HL,18486   ;
+ 35529 LD HL,18486   ; redraw the " use:" rows:
  35532 LD (31257),HL ;
  35535 LD A,(31248)  ;
  35538 CALL 31857    ;
- 35541 CALL 31634    ;
+ 35541 CALL 31634    ; draw the new front item's name
  35544 LD A,(31249)  ;
- 35547 CALL 31857    ;
+ 35547 CALL 31857    ; and the new back item's name
  35550 CALL 31634    ;
  35553 CALL 32385    ;
  35556 CALL 36793    ;
  35559 RET           ;
 
-; Routine at #R35560
+; MoveThroughGrille
+;
+; Action on the "Grille" move-to row (1, offered once the room's
+; grille is removed): send the actor through the duct opening — the
+; destination is the same room with the in-ducts flag (bit 6) flipped.
 ;
 ; Used by the routine at #R36457.
-@label=RoomHandler_24
+@label=MoveThroughGrille
 c35560 LD A,64       ;
- 35562 CALL 35814    ;
- 35565 LD (IX+3),2   ;
+ 35562 CALL 35814    ; set the actor's action timer
+ 35565 LD (IX+3),2   ; action state = 2 (move)
  35569 LD A,(31242)  ;
- 35572 XOR 64        ;
+ 35572 XOR 64        ; same room, other side of the grille
  35574 LD (IX+2),A   ;
  35577 RET           ;
 
-; Routine at #R35578
-@label=RoomHandler_4
-c35578 LD A,(33685)  ;
- 35581 CP 61         ;
+; GetItemPick
+;
+; Room mode 4: the "Get Item" picker strip is up (see GetItemMenu,
+; #R35638) and the action key fires on a row. QUIT rebuilds the room
+; scene; otherwise the picked row's entry in RoomItemList (#R29962)
+; is the item id to take: it goes into the front hand (marker
+; 160+slot in ItemLocations (#R29940), sprite nudged by
+; ItemCarryNudge) if that hand is free, else into the back hand
+; (128+slot).
+@label=GetItemPick
+c35578 LD A,(33685)  ; row value under the cursor
+ 35581 CP 61         ; QUIT?
  35583 JP Z,32719    ;
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
- 35586 LD A,(33683)  ;
+ 35586 LD A,(33683)  ; cursor row
  35589 LD E,A        ;
  35590 LD D,0        ;
- 35592 LD HL,29962   ;
+ 35592 LD HL,29962   ; E = RoomItemList[row] = picked item id
  35595 ADD HL,DE     ;
  35596 LD E,(HL)     ;
- 35597 LD C,128      ;
- 35599 LD A,(31248)  ;
+ 35597 LD C,128      ; assume back hand (marker = slot+128)
+ 35599 LD A,(31248)  ; front hand free?
  35602 CP 255        ;
  35604 JR NZ,35626   ;
- 35606 LD HL,29984   ;
- 35609 ADD HL,DE     ;
+ 35606 LD HL,29984   ; yes: nudge the sprite by
+ 35609 ADD HL,DE     ; ItemCarryNudge[item]
  35610 LD A,(IX+5)   ;
  35613 ADD A,(HL)    ;
  35614 LD (IX+5),A   ;
  35617 LD A,(IX+6)   ;
  35620 ADD A,(HL)    ;
  35621 LD (IX+6),A   ;
- 35624 LD C,160      ;
+ 35624 LD C,160      ; and use the front hand (slot+160)
 @label=Auto_8B2A
-*35626 LD A,(31241)  ;
- 35629 ADD A,C       ;
+*35626 LD A,(31241)  ; ItemLocations[item] = hand marker:
+ 35629 ADD A,C       ; the item is now carried
  35630 LD HL,29940   ;
  35633 ADD HL,DE     ;
  35634 LD (HL),A     ;
- 35635 JP 32719      ;
-; Room mode 33 follow-on. Re-builds the corridor template at
-; #R29630 from a 17-byte source pattern, substituting sentinel
-; bytes (255) via #R31857. Sets crew column to 61, corridor cursor to 17,
-; then draws 19 corridor tiles into the display file and switches room
-; mode to 4.
+ 35635 JP 32719      ; rebuild the room scene
+; GetItemMenu — action on the "Get Item" row (10): rebuild the strip
+; as an item picker listing the room's items — copy RoomItemList
+; (#R29962) into CorridorPosTable, converting each id to its name
+; string via ItemIdToString (#R31857) — put the cursor on the QUIT
+; row and switch to room mode 4 (GetItemPick above handles the
+; selection).
 @ignoreua
-@label=RoomHandler_OverflowInit
-*35638 LD (IX+0),0   ; clear (IX+0): action timer / state
+@label=GetItemMenu
+*35638 LD (IX+0),0   ; clear the actor's action timer
  35642 LD DE,29630   ; DE -> CorridorPosTable
 @nowarn=29962
- 35645 LD HL,29962   ; HL -> 17-byte source template
+ 35645 LD HL,29962   ; HL -> RoomItemList
  35648 LD B,17       ; copy 17 entries
 @label=Auto_8B42
 *35650 LD A,(HL)     ;
- 35651 CP 255        ;
+ 35651 CP 255        ; 255 = empty row, copied as-is
  35653 JR Z,35660    ;
  35655 PUSH DE       ;
- 35656 CALL 31857    ;
+ 35656 CALL 31857    ; item id -> name string index
  35659 POP DE        ;
 @label=Auto_8B4C
 *35660 LD (DE),A     ;
  35661 INC HL        ;
  35662 INC DE        ;
  35663 DJNZ 35650    ;
- 35665 LD A,61       ;
- 35667 LD (29647),A  ;
+ 35665 LD A,61       ; row 17 = "   QUIT   ",
+ 35667 LD (29647),A  ; cursor on it
  35670 LD (33685),A  ;
  35673 LD A,17       ;
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
  35675 LD (33683),A  ;
- 35678 LD HL,22582   ;
- 35681 LD A,15       ;
+ 35678 LD HL,22582   ; menu attributes: 17 rows white,
+ 35681 LD A,15       ; 1 row highlighted
  35683 LD C,17       ;
  35685 CALL 31612    ;
  35688 LD A,56       ;
  35690 LD C,1        ;
  35692 CALL 31612    ;
- 35695 LD HL,29630   ;
+ 35695 LD HL,29630   ; draw the 19 menu rows
  35698 LD (31261),HL ;
  35701 LD HL,16438   ;
  35704 LD (31257),HL ;
@@ -4827,22 +5035,27 @@ c35578 LD A,(33685)  ;
  35710 CALL 31626    ;
  35713 POP BC        ;
  35714 DJNZ 35709    ;
- 35716 LD A,4        ;
+ 35716 LD A,4        ; room mode = 4 (item picker)
  35718 LD (31252),A  ;
  35721 CALL 34882    ;
  35724 RET           ;
- 35725 LD (IX+0),0   ;
- 35729 LD A,(31249)  ;
+; LeaveItemHandler — action on the "Leave Item" row (11): drop the
+; back-hand item if there is one, otherwise the front-hand item
+; (undoing its carry nudge); the dropped item's ItemLocations entry
+; becomes the current room.
+@label=LeaveItemHandler
+*35725 LD (IX+0),0   ;
+ 35729 LD A,(31249)  ; back hand loaded?
  35732 CP 255        ;
- 35734 JR NZ,35782   ;
- 35736 LD A,(31248)  ;
+ 35734 JR NZ,35782   ; yes: drop the back item
+ 35736 LD A,(31248)  ; no: drop the front item —
  35739 LD E,A        ;
  35740 LD D,0        ;
- 35742 LD HL,29984   ;
+ 35742 LD HL,29984   ; undo its carry nudge
  35745 ADD HL,DE     ;
  35746 LD A,(IX+5)   ;
  35749 SUB (HL)      ;
- 35750 CP 127        ;
+ 35750 CP 127        ; (clamp underflow to 0)
  35752 JR C,35755    ;
  35754 XOR A         ;
 @label=Auto_8BAB
@@ -4855,31 +5068,33 @@ c35578 LD A,(33685)  ;
 @label=Auto_8BB7
 *35767 LD (IX+6),A   ;
 @label=Auto_8BBA
-*35770 LD HL,29940   ;
- 35773 ADD HL,DE     ;
+*35770 LD HL,29940   ; ItemLocations[item] = current room:
+ 35773 ADD HL,DE     ; the item now lies here
  35774 LD A,(31242)  ;
  35777 LD (HL),A     ;
- 35778 CALL 32719    ;
+ 35778 CALL 32719    ; rebuild the room scene
  35781 RET           ;
 @label=Auto_8BC6
-*35782 LD E,A        ;
+*35782 LD E,A        ; E = back item id (no nudge to undo)
  35783 LD D,0        ;
  35785 JR 35770      ;
- 35787 JP 45830      ;
+; Special-row handler (13) — via #R45830: ATTACK/RmveGrille etc.
+*35787 JP 45830      ;
 ; This entry point is used by the routine at #R45401.
 @label=Auto_8BCE
-*35790 CP 52         ;
- 35792 JP Z,37493    ;
+*35790 CP 52         ; "  ATTACK  " selected?
+ 35792 JP Z,37493    ; yes: attack handler
 ; This entry point is used by the routine at #R45401.
 @label=Auto_8BD3
-*35795 LD A,(31241)  ;
- 35798 LD E,A        ;
- 35799 LD D,0        ;
+*35795 LD A,(31241)  ; timed special action (RmveGrille):
+ 35798 LD E,A        ; per-slot timer base from the table
+@ignoreua
+ 35799 LD D,0        ; at $83EA
  35801 LD HL,33770   ;
  35804 ADD HL,DE     ;
  35805 LD A,(HL)     ;
- 35806 CALL 35814    ;
- 35809 LD (IX+3),3   ;
+ 35806 CALL 35814    ; set the action timer
+ 35809 LD (IX+3),3   ; action state = 3 (remove the grille)
  35813 RET           ;
 ; This entry point is used by the routines at #R35382, #R35560, #R36457 and
 ; #R37490.
@@ -5091,27 +5306,33 @@ c35973 PUSH IX       ;
  36143 CP (HL)       ;
  36144 JP Z,32719    ;
  36147 JP 45338      ;
+@ignoreua
 ; This entry point is used by the routine at #R36457.
-; CrewAction3_Wait — dispatched via CrewActionDispatch entry 3.
-@label=CrewAction3_Wait
-*36150 LD A,1        ;
+; CrewAction3_RemoveGrille — dispatched via CrewActionDispatch entry 3.
+; Fires when a crew member's timed "RmveGrille" job completes (queued
+; by the AI at $90EE or by the action-menu Special handler at $8BD3):
+; clears the actor's room's byte in RoomGrilleState (#R30076), queues
+; a sound effect, and rebuilds the room view if that room is on
+; screen.
+@label=CrewAction3_RemoveGrille
+*36150 LD A,1        ; queue a sound effect for PlayMusic
 @nowarn=33705
-@ssub=LD (Auto_83A9),A
+@ssub=LD (SoundPending),A
  36152 LD (33705),A  ;
- 36155 LD A,(IX+1)   ;
- 36158 AND 63        ;
+ 36155 LD A,(IX+1)   ; E = actor's current room
+ 36158 AND 63        ; (mask off the in-ducts flag, bit 6)
  36160 LD HL,30076   ;
  36163 LD E,A        ;
  36164 LD D,0        ;
  36166 ADD HL,DE     ;
- 36167 LD (HL),0     ;
- 36169 LD A,(31252)  ;
+ 36167 LD (HL),0     ; RoomGrilleState[room] = 0: grille removed
+ 36169 LD A,(31252)  ; room mode 1 (normal room view)?
  36172 CP 1          ;
  36174 RET NZ        ;
- 36175 LD A,(31242)  ;
+ 36175 LD A,(31242)  ; is the actor's room the one on screen?
  36178 AND 63        ;
  36180 CP E          ;
- 36181 JP Z,32719    ;
+ 36181 JP Z,32719    ; yes: full room-view rebuild
  36184 JP 36793      ;
 @label=Auto_8D5B
 *36187 LD HL,65535   ;
@@ -5721,21 +5942,21 @@ c37018 PUSH IX       ; save caller's IX
  37078 LD (IX+3),5   ; action state = 5 (investigate)
  37082 POP IX        ;
  37084 RET           ;
-*37085 LD A,(IX+1)   ;
+*37085 LD A,(IX+1)   ; actor's current room
  37088 AND 63        ;
  37090 LD E,A        ;
  37091 LD D,0        ;
- 37093 LD HL,30076   ;
+ 37093 LD HL,30076   ; RoomGrilleState[room]
  37096 ADD HL,DE     ;
  37097 LD A,(HL)     ;
- 37098 CP 255        ;
- 37100 JR NZ,37122   ;
+ 37098 CP 255        ; grille still in place here?
+ 37100 JR NZ,37122   ; no: consider moving out instead
  37102 CALL 33589    ; AdvanceScriptPtr → A = next script nibble
  37105 CALL 36763    ; ScriptNibbleToDirection → A ∈ [0..4]
  37108 AND A         ; direction 0?
  37109 JR NZ,37151   ; no: branch to idle assignment
  37111 LD (IX+0),50  ; timer = 50 frames
- 37115 LD (IX+3),3   ; action state = 3 (wait)
+ 37115 LD (IX+3),3   ; action state = 3 (remove the grille)
  37119 POP IX        ;
  37121 RET           ;
 *37122 CALL 33589    ; AdvanceScriptPtr → A
@@ -6128,55 +6349,41 @@ c37490 XOR H         ;
 ; matching $737F (the alien's identity from CommonGameInit, #R42451).
 ;
 @ignoreua
-; This routine is dual-purpose: it both enqueues the "{actor} hits the
-; ALIEN" dialogue AND houses the **alien's direct kill primitive** at
-; #R37733, fired when the alien's corridor scan position is 12.
+; The outcome depends on the WEAPON: FindHeldItems (#R31823) loads the
+; attacking crew member's front-hand item id into HeldItemFront
+; (#R31248) and the effect dispatches on it. It also houses the
+; Harpoon Gun's kill primitive at #R37733.
 ;
 @ignoreua
 ; Guards: re-asserts that (IX+1) matches the alien identity, then
 ; requires pixel coords IX+4 >= 2 and IX+6 >= 2 (sprite fully placed).
-; Calls #R44986 to clear the scan-slot, then #R31823 to locate the
-; alien's corridor scan position into (31248):
+; Calls #R44986 to clear the held-item slots, then FindHeldItems
+; (#R31823) to fetch the attacker's weapons:
 ;
 @ignoreua
-;   (31248) == 17       → silent: JP to ClearActionState
-;   (31248) >= 20       → silent (template sentinels)
-;   (31248) == 16       → "net" outcome: write $FF to $7376 (slot 0
-;                         byte +0) to disable the alien, then enqueue
-;                         message #3 "{actor} nets the ALIEN"
-;   else                → "hit" outcome at #R37646: enqueue message #4
-;                         "{actor} hits the ALIEN", then dispatch on
-;                         the saved (31248):
-;                           - {0..5, 18, 19}: INC alien's wound counter
-;                             at $73B2 (byte +4 of slot 0). If it
-;                             reaches the Auto_83D1 threshold, JP 44125
-;                             (alien-defeated path).
-;                           - {6, 7}: enqueue msg #5 "Tracker is broken"
-;                           - {8..11}: decrement Auto_83D2 entry for
-;                             this corridor cell; on underflow enqueue
-;                             msg #6 "extinguisher empty".
-;                           - **== 12: the alien's kill primitive at
-;                             #R37733**. Calls #R37876 to gather up to
-;                             three candidate slots (Auto_839F +
-;                             NearestCrewA/B) sharing the alien's
-;                             sprite class. For each: clear their
-;                             entries in the 22-byte anim table at
-;                             $7504, then if their slot's byte +7 is
-;                             still zero stamp it to 1 (killed) and
-;                             clear their byte +4 wound counter. Then
-;                             alien's wound counter += 5 (cost of
-;                             attack); if it crosses Auto_83D1 → JP
-;                             44125. Otherwise CALL 31417 (rebuild
-;                             corridor view) and JP 37992 (Auto_9468).
-;                           - {13..15}: JP 37831 — decrement Auto_83D2
-;                             entry, then either msg #7 or JP 41022.
-;
-; In short: when the alien enters combat at corridor cell 12 (the
-; alien-spawn anim slot, value 32 in the CommonInit_AnimTable
-; template), the routine kills the alien's three sprite-class
-; "encounter slots" outright by stamping byte +7 = 1 on each. That is
-; the alien's direct attack — it doesn't decrement wound counters
-; like the Android does in CrewAction7_Handler; it kills in one tick.
+;   17 (Cat Box)       → silent: JP to ClearActionState
+;   >= 20 (bare hands) → silent
+;   16 (Net)           → "net" outcome: write $FF to $7376 (slot 0
+;                        byte +0) to disable the alien, then enqueue
+;                        message #3 "{actor} nets the ALIEN"
+;   else               → "hit" outcome at #R37646: enqueue message #4
+;                        "{actor} hits the ALIEN", then dispatch on
+;                        the weapon id:
+;                          - 0-5 Elctrc Prd/Incineratr, 18-19 Spanner:
+;                            INC alien's wound counter at $73B2 (byte
+;                            +4 of slot 0). If it reaches the
+;                            Auto_83D1 threshold, JP 44125 (alien-
+;                            defeated path).
+;                          - 6-7 Tracker: enqueue msg #5 "Tracker is
+;                            broken"
+;                          - 8-11 Fire Extng: decrement the item's
+;                            charge in Auto_83D2; on underflow enqueue
+;                            msg #6 "extinguisher empty".
+;                          - 12 Harpn Gun: the kill primitive at
+;                            #R37733 — see AlienKillPrimitive below.
+;                          - 13-15 Laser Pist: JP 37831 — decrement
+;                            the charge, then either msg #7 "Laser is
+;                            exhausted" or JP 41022.
 ;
 ; This routine parallels #R40941 (CrewHitsAndroid) in structure but
 ; refers to the alien (slot 0 at $7376) and emits messages #3 / #4
@@ -6272,20 +6479,19 @@ c37490 XOR H         ;
  37724 CALL 37176    ;
  37727 JP 37555      ;
 @ignoreua
-; AlienKillPrimitive — the alien's direct kill, reached from
-; CrewHitsAlien (#R37584) when CP 12 on the corridor scan position
-; (31248) sets Z (i.e. exactly position 12 in the 22-byte anim table
-; at $7504). Position 12 in the CommonInit_AnimTable template
-; (#R41406) carries sprite value 32 — the alien-spawn cell. When the
-; alien attacks at that cell, this routine kills up to three crew
-; outright (no wound-counter ramp): for each of Auto_839F (CrewIndex),
-; NearestCrewA, NearestCrewB it clears the anim-table fingerprint of
-; that slot and, if the slot's byte +7 is still zero (alive), stamps
-; +7 = 1 (killed) and clears its byte +4 wound counter. Then bumps
-; the alien's own +4 by 5 (attack cost — too many attacks at this
-; cell and the alien crosses the Auto_83D1 threshold and dies via JP
-; 44125), redraws the corridor view (CALL 31417), and tail-calls into
-; Auto_9468 (#R37992) to advance the per-frame chain.
+; AlienKillPrimitive — the Harpoon Gun outcome, reached from
+; CrewHitsAlien (#R37584) when the attacker's front-hand item
+; (#R31248) is 12, the Harpn Gun. A harpoon strike is devastating for
+; both sides: #R37876 gathers up to three slots (Auto_839F +
+; NearestCrewA/B) sharing the alien's sprite class; for each, every
+; ItemLocations (#R29940) entry that the slot carries or that lies in
+; the alien's room is destroyed (set to 255), and if the slot's byte
+; +7 is still zero (alive) it is stamped to 1 (killed) with its byte
+; +4 wound counter cleared. Then the alien's own wound counter is
+; bumped by 5 (harpoon hits push it quickly over the Auto_83D1
+; threshold → dies via JP 44125), the corridor view is rebuilt
+; (CALL 31417) and the per-frame chain continues at Auto_9468
+; (#R37992).
 @ignoreua
 @label=AlienKillPrimitive
 *37730 JP NZ,37831   ; (31248) != 12 → 37831 (decrement Auto_83D2)
@@ -6303,13 +6509,13 @@ c37490 XOR H         ;
  37744 CP 255        ;
  37746 JR Z,37801    ;
  37748 PUSH AF       ;
- 37749 ADD A,128     ;
+ 37749 ADD A,128     ; E = victim's back-hand marker
  37751 LD E,A        ;
- 37752 ADD A,32      ;
+ 37752 ADD A,32      ; D = victim's front-hand marker
  37754 LD D,A        ;
- 37755 LD C,(IX+1)   ;
- 37758 LD HL,29940   ;
- 37761 LD B,22       ;
+ 37755 LD C,(IX+1)   ; C = the alien's room
+ 37758 LD HL,29940   ; destroy every item the victim holds
+ 37761 LD B,22       ; or that lies in the alien's room:
 @label=Auto_9383
 *37763 LD A,(HL)     ;
  37764 CP E          ;
@@ -6319,7 +6525,7 @@ c37490 XOR H         ;
  37770 CP C          ;
  37771 JR NZ,37775   ;
 @label=Auto_938D
-*37773 LD (HL),255   ;
+*37773 LD (HL),255   ; ItemLocations entry -> gone
 @label=Auto_938F
 *37775 INC HL        ;
  37776 DJNZ 37763    ;
@@ -8907,13 +9113,15 @@ b41374 DEFB 1,2,5,1,2,5,1,2,5,1,2,5,1,2,5,2
 @label=LongGameTargetTable
 b41390 DEFB 1,2,4,6,1,2,4,6,1,2,4,6,1,2,4,6
 
-; CommonInit_AnimTable
+; InitialItemRooms
 ;
 @ignoreua
-; 22 bytes copied wholesale by CommonGameInit (#R42397) to $7504
-; ($7434) — corridor / animation state for the new game session. The
-; final two bytes are $FF sentinels.
-@label=CommonInit_AnimTable
+; 22 bytes copied by CommonGameInit (#R42397) to ItemLocations
+; (#R29940): the starting room of every portable item (see the
+; ItemLocations header for the id -> name map). The final two entries
+; are 255 — the "Cat in Net"/"Cat in Box" items don't exist until
+; Jones is caught.
+@label=InitialItemRooms
 b41406 DEFB 24,21,20,6,6,16,6,16,27,17,18,19,32,2,2,2
  41422 DEFB 24,23,31,20,255,255
 
@@ -9274,22 +9482,22 @@ c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
  42394 LD (39753),A  ;
 @nowarn=41406
 @label=Auto_A59D
-@ssub=LD HL,CommonInit_AnimTable
+@ssub=LD HL,InitialItemRooms
 @ignoreua
- 42397 LD HL,41406   ; HL = CommonInit_AnimTable ($A1BE)
+ 42397 LD HL,41406   ; HL = InitialItemRooms ($A1BE)
 @ignoreua
- 42400 LD DE,29940   ; DE = $7434 (anim state target)
+ 42400 LD DE,29940   ; DE = ItemLocations ($74B4)
  42403 LD BC,22      ;
- 42406 LDIR          ; copy 22-byte anim state
- 42408 LD B,33       ;
- 42410 LD HL,30076   ;
+ 42406 LDIR          ; place the 22 items in their start rooms
+ 42408 LD B,33       ; RoomGrilleState: put all grilles in place
+ 42410 LD HL,30076   ; (33 bytes; room 33's byte stays 0 = open)
  42413 LD A,255      ;
 @label=Auto_A5AF
 *42415 LD (HL),A     ;
  42416 INC HL        ;
  42417 DJNZ 42415    ;
- 42419 LD E,13       ;
- 42421 LD D,0        ;
+ 42419 LD E,13       ; ...except Corridor#6 (room 13):
+ 42421 LD D,0        ; its grille starts removed
  42423 LD HL,30076   ;
  42426 ADD HL,DE     ;
  42427 LD (HL),D     ;
@@ -9980,7 +10188,7 @@ c43242 CALL 42501    ;
 *43442 PUSH BC       ;
  43443 LD A,1        ;
 @nowarn=33705
-@ssub=LD (Auto_83A9),A
+@ssub=LD (SoundPending),A
  43445 LD (33705),A  ;
  43448 CALL 44880    ;
  43451 CALL 43505    ;
@@ -10270,10 +10478,10 @@ c43610 CALL 42501    ; ClearDisplay
  43887 CALL 44509    ;
  43890 CALL 44093    ;
 @ignoreua
- 43893 LD BC,57342   ; BC = port 57342 ($DFFE): keyboard half-row B,N,M,SymShift,Space
+ 43893 LD BC,57342   ; BC = port 57342 ($DFFE): keyboard half-row P,O,I,U,Y
  43896 IN A,(C)      ; read keyboard row
- 43898 AND 16        ; bit 4 = Space key (active low)
- 43900 RET NZ        ; return if Space not pressed
+ 43898 AND 16        ; bit 4 = the Y key (active low)
+ 43900 RET NZ        ; return if Y not pressed (keep default keys)
  43901 CALL 44109    ;
 *43904 LD HL,18436   ;
  43907 LD (31257),HL ;
@@ -10923,10 +11131,10 @@ c44815 CALL 33479    ; draw game-window border
 ; Used by the routines at #R36457 and #R42821.
 @nowarn=33705
 @label=PlayMusic
-@ssub=LD A,(Auto_83A9)
+@ssub=LD A,(SoundPending)
 @ignoreua
-c44880 LD A,(33705)  ; A = music-active flag (#R33737)
- 44883 AND A         ; music enabled?
+c44880 LD A,(33705)  ; A = sound-pending flag (queued by e.g.
+ 44883 AND A         ; CrewAction3_RemoveGrille); anything queued?
  44884 JP Z,36448    ; no: standard frame-timing wait and return
  44887 LD HL,512     ; HL = $0200 (ROM data used as tone source)
  44890 LD BC,2176    ; B=8 (8 pitch steps), C=$88 (initial delay = 136)
@@ -10949,7 +11157,7 @@ c44880 LD A,(33705)  ; A = music-active flag (#R33737)
  44917 DJNZ 44893    ;
  44919 XOR A         ;
 @nowarn=33705
-@ssub=LD (Auto_83A9),A
+@ssub=LD (SoundPending),A
  44920 LD (33705),A  ;
  44923 RET           ;
 ; This entry point is used by the routine at #R37490.
@@ -11081,19 +11289,19 @@ c44880 LD A,(33705)  ; A = music-active flag (#R33737)
  45165 LD HL,29567   ;
  45168 CP (HL)       ;
  45169 JR Z,45203    ;
- 45171 AND 63        ;
- 45173 LD E,A        ;
+ 45171 AND 63        ; refresh the menu's Special slot from
+ 45173 LD E,A        ; RoomGrilleState[viewed room]:
  45174 LD HL,30076   ;
  45177 LD D,0        ;
  45179 ADD HL,DE     ;
  45180 LD A,(HL)     ;
  45181 CP 255        ;
  45183 JR Z,45195    ;
- 45185 LD A,255      ;
+ 45185 LD A,255      ; grille removed: clear the Special slot
  45187 LD (29643),A  ;
  45190 CALL 32816    ;
  45193 JR 45203      ;
-*45195 LD A,49       ;
+*45195 LD A,49       ; grille in place: offer "RmveGrille"
  45197 LD (29643),A  ;
  45200 CALL 32816    ;
 @nowarn=33704
@@ -11123,8 +11331,8 @@ c44880 LD A,(33705)  ; A = music-active flag (#R33737)
  45237 POP IX        ;
  45239 RET           ;
 ; This entry point is used by the routine at #R37490.
-*45240 LD A,(31242)  ;
- 45243 AND 63        ;
+*45240 LD A,(31242)  ; refresh the menu's Special slot from
+ 45243 AND 63        ; RoomGrilleState[viewed room]:
  45245 LD E,A        ;
  45246 LD HL,30076   ;
  45249 LD D,0        ;
@@ -11132,19 +11340,19 @@ c44880 LD A,(33705)  ; A = music-active flag (#R33737)
  45252 LD A,(HL)     ;
  45253 CP 255        ;
  45255 JR Z,45263    ;
- 45257 LD A,255      ;
+ 45257 LD A,255      ; grille removed: clear the Special slot
  45259 LD (29643),A  ;
  45262 RET           ;
-*45263 LD A,49       ;
+*45263 LD A,49       ; grille in place: offer "RmveGrille"
  45265 LD (29643),A  ;
  45268 RET           ;
 ; This entry point is used by the routines at #R37490 and #R40826.
-*45269 CALL 45278    ;
- 45272 LD A,52       ;
+*45269 CALL 45278    ; alien in the room: the Special slot
+ 45272 LD A,52       ; becomes "  ATTACK  " (52)
  45274 LD (29643),A  ;
  45277 RET           ;
-*45278 LD A,(33685)  ;
- 45281 CP 49         ;
+*45278 LD A,(33685)  ; if the live selection was "RmveGrille"
+ 45281 CP 49         ; (49), swap it for "  ATTACK  " too
  45283 RET NZ        ;
  45284 LD A,52       ;
  45286 LD (33685),A  ;
@@ -11501,12 +11709,13 @@ c45401 LD IX,29574   ;
  45829 RET           ;
 ; This entry point is used by the routine at #R35578.
 @label=Auto_B306
-*45830 LD A,(33685)  ;
- 45833 CP 238        ;
- 45835 JP NZ,35790   ;
- 45838 LD A,52       ;
- 45840 LD (33685),A  ;
- 45843 JP 35795      ;
+*45830 LD A,(33685)  ; special-row action: 238 marks a
+ 45833 CP 238        ; RmveGrille row shown as ATTACK because
+@ignoreua
+ 45835 JP NZ,35790   ; the alien is here (see $B2EB); other
+ 45838 LD A,52       ; values: plain ATTACK check / timed
+ 45840 LD (33685),A  ; action. Restore the visible value (52)
+ 45843 JP 35795      ; and start the timed action
 ; This entry point is used by the routine at #R38379.
 @nowarn=33683
 @label=Auto_B316
