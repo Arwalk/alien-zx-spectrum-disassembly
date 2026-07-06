@@ -109,9 +109,9 @@ Addresses in `alien.skool` are **decimal** (`36457`, not `$8E69`); hex appears o
 
 1. `HandleInput` `$877C` — key 6 = advance cursor, 7 = retreat, 5/8 = row moves, **0 = action** (on release, dispatches `RoomDispatchTable[$8402]` by room mode `$7A14`; modes 0/1 re-dispatch on the cursor ROW through overlapping halves of the same table — full row map at the `RoomDispatchTable` header). Before the row dispatch, `PreDispatchHook` `$B2B9` forces the special row to "ATTACK" (52) when the alien/Android is in the viewed room; 238 in `CursorCellValue` marks a press that landed on "RmveGrille" during that same swap, so the grille job still starts (see the `$B2B9` header). The chosen input device patches the scanner CALL operand at `$874D` from the vector table at `$A405` (Kempston/AGF/Sinclair/Keyboard)
 2. `FrameTiming` `$9D7F` — ~1/50s wait or play queued sound
-3. `UpdateAlien` `$9F5A` — alien/Android activation logic; the alien kills crew that enter its room (slot 0 byte +1) via `CrewHitsAlien` `$92D0` (a weapon-effect dispatch on the attacker's front-hand item: Net disables the alien, Harpoon Gun fires the kill primitive `$9365`, prods/spanners wound it, trackers break, extinguishers/lasers lose charge)
+3. `UpdateAlien` `$9F5A` — Android activation only: once `TriggerAlienEvent` `$A130` has set `AlienActiveFlag` (the alien has taken 6+ wounds while the Android is dormant), the Android turns hostile (state 7, wounds room-mates via `CrewAction7_Handler`). The alien's own attack is `CrewAction5_AlienAttack` `$9958` (drains a strength point per tick; may drag a corpse off-ship into its +5 byte); the crew's counter-attack is `CrewHitsAlien` `$92D0` (weapon dispatch on the attacker's front-hand item: Net = single-use disable, Harpoon Gun fires the kill primitive `$9365` killing attacker+bystanders with +15 room damage, prods/spanners/incinerators wound +1, trackers shatter but still wound, extinguishers only scare (`AlienScareCheck` `$9468`), lasers wound +2 and scorch the room +6). Attacks require attacker strength ≥ 2 AND morale ≥ 2, and land on whatever hostile shares the attacker's room
 4. `UpdateCrewState` — advance per-crew action timers
-5. `UpdateCrewAI` `$90D2` — assign script-sourced action to idle crew
+5. `UpdateAlienAI` `$90D2` — the ALIEN's brain (crew act only on player orders): when its countdown is parked, attack room-mates (state 5), rip out the room's grille, slip through an open grille, or wander — damaging the room +1 when it stays put
 6. `ProcessAnimQueue` — step corridor animations (×2 passes)
 7. `UpdateJones` `$8FFB` — walk Jones the cat one room per ~5s (room in `$83AA`); draws the cat into corridor cell 14, enqueues msg #0 when seen, avoids the alien's room
 8. `UpdateCorridors` — advance crew along corridor (×2 passes)
@@ -135,16 +135,28 @@ script); the Short Game is the final act (only Ripley, Lambert, Parker aboard).
 
 Corridor-strip cell values are the interaction vocabulary: 53/54 = closed
 airlock doors (action = BlowLock: kills everyone in the room, may eject the
-alien — it can die or re-enter via ShuttleBay), 55/56 = blown doors (action =
-SealLock), 70/72 = destruct lever off/armed (ASCII 5:00 countdown at
-`DestructMinutes`/`DestructSeconds` `$95CC+`, BOOM at expiry), 74 = hypersleep
-pod, 76 = fire (extinguisher charges per position), 78 = Narcissus launch
-console (`LaunchGate` `$9D14`: all living crew + Jones must be aboard).
+alien — it can die or re-enter via ShuttleBay; both doors are operated from
+Corridor#6), 55/56 = blown doors (action = SealLock), 70/72 = destruct lever
+off/armed (ASCII 5:00 countdown at `DestructMinutes`/`DestructSeconds`
+`$95CC+`, BOOM at expiry), 74 = hypersleep pod (Cryo Vault; the sleeper
+leaves play, his items stack in the room), 76 = fire (needs a charged
+front-hand extinguisher; 1–3 squirts by damage severity), 78 = Narcissus
+launch console (`LaunchGate` `$9D14`: intended rule = all living crew +
+Jones aboard — see the verified-bugs list below).
 Per-room damage meters are ASCII pairs at `RoomDamageDigits` `$7536`
-(`AddRoomDamage` `$9532`); thresholds raise alarms #22–#25, engine states
-live in `ShipSystemFlags` bits 3–5, oxygen is an ASCII clock at `$95DE`.
+(`AddRoomDamage` `$9532`, half-steps of the tens digit); tens digit '3'
+raises alarms #22–#25 or sets an engine room on FIRE (`ShipSystemFlags`
+bits 3–5), '7' = structural damage, past '9' = ship lost. The oxygen clock
+at `$95DE` drains faster the fewer actors live (period = 2× live count);
+borrow past its digits = Endgame_OxygenOut. Trackers (and the caught cat)
+are motion detectors: `FindTrackerHolders` `$9707` sweeps rooms adjacent to
+front-hand holders into `NearRoomList` `$8394` — "all clear" is worth +1
+morale, motion makes the viewed holder's tracker beep (or Jones uneasy).
 All 34 status-message triggers are documented at the `MessageTextTable`
-header (`$8464`).
+header (`$8464`). The endgame Competence Rating = Σ 2×strength over live
+human crew + 1 per room with damage < 20 + 2× the oxygen counter's leading
+digit, capped at 100 — which terms an ending adds depends on the outcome
+(`EndgameScreen` `$AC5D` header).
 
 ### Item system
 
@@ -161,6 +173,25 @@ Weapons act via `CrewHitsAlien`'s front-hand dispatch. Duct grilles:
 (`CrewAction3_RemoveGrille` `$8D36`), and a removed grille adds "Grille" as
 a move-to row → `MoveThroughGrille` `$8AE8` (destination = same room,
 bit 6 flipped).
+
+### Original-game bugs (verified, documented in the skool headers)
+
+- **LaunchGate `$9D14`**: the all-aboard walk drifts off the +7 status
+  column after the first LIVE crew member (it steps +8 from the +1 room
+  byte), so the launch really only requires the first-listed living crew
+  member (plus Jones) to be aboard; a later crew member standing in
+  Airlock #1 (room 0) bogusly countermands. Simulator-verified.
+- **CrewHitsAndroid's harpoon path (`$A0AE` loop)**: the item-wipe's final
+  compare is inverted vs the alien-side loop — it destroys every
+  `ItemLocations` entry EXCEPT items lying loose in the room (everything
+  held by anyone or lying anywhere else is wiped), and the Android itself
+  takes no wound. Simulator-verified.
+- **AlienScareCheck `$9468`**: the "armed with a serious weapon" scare
+  bonus is unreachable (two mutually exclusive equality tests both
+  required).
+- `RecalcMorale` would spill a third room-mate's slot into `RoomModeByte`,
+  but `PreActionCheck`'s 3-crew room-occupancy cap prevents it (ducts are
+  single-occupancy for the same reason).
 
 ### Movement model
 
@@ -183,9 +214,9 @@ Same records as `ActorRecords` above (`$7386` = slot 1); in the room view the pe
 | `IX+0` | Action countdown — fires the queued action via `DispatchCrewAction` on the 1→0 transition; 0 = parked (`SetActionTimer` `$8BE6` = base + per-slot + per-strength adjustments) |
 | `IX+1` | Current room (bits 0–5) + in-ducts flag (bit 6); `$FF` = HostMarker |
 | `IX+2` | Destination room |
-| `IX+3` | Action state (1=idle, 2=move, 3=remove grille, 4=combat/ATTACK order, 5=investigate, 7=Android attack) |
-| `IX+4` | Strength/injury (0=Dead, 1=Collapsed, 2=Wounded, 3+=OK) |
-| `IX+5` | Base courage — raised by carried weapons (`ItemCourageBonus`), decays over time (`DecayCrewCourage` `$8E4C`) |
+| `IX+3` | Action state (1=move to `IX+2` / idle, 2=duct transit through the grille, 3=remove grille, 4=ATTACK order, 5=alien attack tick, 6=hypersleep completion, 7=Android attack) |
+| `IX+4` | Strength/injury (0=Dead, 1=Collapsed, 2=Wounded, 3+=OK); slot 0 = the alien's wound counter (dies at `AlienKillThreshold` = 15) |
+| `IX+5` | Base courage — raised by carried weapons (`ItemCourageBonus`), decays over time (`DecayCrewCourage` `$8E4C`); slot 0 = the slot of a corpse the alien has dragged off-ship |
 | `IX+6` | Morale (0–4 index into `CrewMoraleText`) = courage + companion support, recomputed by `RecalcMorale` `$8D5B`; witnesses of a death lose morale (`KillActorMoraleHit` `$B211`) |
 | `IX+7` | Status (0 = alive, 1 = dead, `$FF` = removed / chestburster host) |
 

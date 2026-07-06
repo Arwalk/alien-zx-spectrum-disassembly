@@ -2370,13 +2370,14 @@ NarcissusAttrs:
 ; actor in the room (255 = none) RoomMateB RoomMateB        second other actor
 ; in the room (255 = none) RoomModeByte RoomModeByte     current room mode
 ; (drives RoomDispatchTable) ShipSystemFlags ShipSystemFlags  bit 0 destruct
-; armed; bits 3-5 engine state RoomAttrCursor RoomAttrCursor   word:
-; attribute-file cursor (room drawing) DrawScreenPtr DrawScreenPtr    word: THE
-; display-file draw pointer (~120 refs) RoomCellCursor RoomCellCursor   word:
-; 20-wide room-cell-grid cursor CorridorTilePtr CorridorTilePtr  pointer into
-; corridor tile source CrewAnimFlags CrewAnimFlags    XOR-blit toggle for crew
-; sprite set A AnimFramePhase AnimFramePhase   XOR-blit toggle for set B /
-; cursor ScriptPointer ScriptPointer    ROM-traversal AI script pointer
+; armed; bits 1/2 airlocks blown; bits 3-5 engine state RoomAttrCursor
+; RoomAttrCursor   word: attribute-file cursor (room drawing) DrawScreenPtr
+; DrawScreenPtr    word: THE display-file draw pointer (~120 refs)
+; RoomCellCursor RoomCellCursor   word: 20-wide room-cell-grid cursor
+; CorridorTilePtr CorridorTilePtr  pointer into corridor tile source
+; CrewAnimFlags CrewAnimFlags    XOR-blit toggle for crew sprite set A
+; AnimFramePhase AnimFramePhase   XOR-blit toggle for set B / cursor
+; ScriptPointer ScriptPointer    ROM-traversal AI script pointer
 ;
 ; The bytes from DrawRoomBackground onwards hold executable code (the view
 ; background renderer, invoked via CALL DrawRoomBackground from InitView_DrawBg
@@ -2415,9 +2416,10 @@ RoomMateB:
 RoomModeByte:
   DEFB $00
 ShipSystemFlags:
-  DEFB $00                ; bit 0 = self-destruct armed; bits 3-5 = Engine
-                          ; #1/#2/#3 state (ship-systems tick at
-                          ; EngineStateScan)
+  DEFB $00                ; bit 0 = self-destruct armed; bits 1/2 = Airlock
+                          ; #1/#2 blown open (set by BlowLock, cleared by
+                          ; SealLock); bits 3-5 = Engine #1/#2/#3 state
+                          ; (ship-systems tick at EngineStateScan)
   DEFB $00
 RoomAttrCursor:
   DEFB $00,$58            ; word: attribute-file cursor for room/door drawing
@@ -2459,7 +2461,7 @@ DrawRoomBackground_0:
 ; index byte from (DE), multiplies by 8 to get an offset into the
 ; 8-byte-per-row character bitmap table at $6935 (CharBitmaps + index×8), then
 ; writes all 8 bytes vertically downward from the current draw pointer at
-; DrawSlotIndex (INC H steps through ZX Spectrum display rows within the same
+; DrawScreenPtr (INC H steps through ZX Spectrum display rows within the same
 ; character cell column).
 ;
 ; Input:  (DE) = tile/character index; (DrawScreenPtr) = screen destination
@@ -2728,7 +2730,7 @@ DrawSprite_ColLoop:
   CALL DrawSpriteRow      ; DrawSpriteRow: draw one tile column (8px tall)
   POP DE                  ; restore sprite data pointer
   INC DE                  ; advance to next tile index byte
-  LD HL,DrawScreenPtr     ; HL → draw pointer (DrawSlotIndex)
+  LD HL,DrawScreenPtr     ; HL → draw pointer (DrawScreenPtr)
   INC (HL)                ; move draw pointer right by 1 character column
   POP BC
   DJNZ DrawSprite_ColLoop ; repeat for all 10 columns
@@ -2800,7 +2802,7 @@ SelectSlotByDrawIdx:
   ADD A,A                 ; A *= 8 (record stride)
   LD E,A
   LD D,$00
-  LD IX,ActorRecords      ; IX = $7376 (slot table base)
+  LD IX,ActorRecords      ; IX = $737E (slot table base)
   ADD IX,DE               ; IX = &slot[index]
   LD A,(IX+$01)           ; A = slot.byte+1
 SelectSlot_HostCheck:
@@ -2929,39 +2931,39 @@ FindHeld_Next:
 ; in Box".
 ItemIdToString:
   LD E,$23                ; E = first item string ("Elctrc Prd")
-  CP $03
+  CP $03                  ; ids 0-2: prods
   JR C,ItemIdStr_Specials
-  INC E
+  INC E                   ; 3-5: incinerators
   CP $06
   JR C,ItemIdStr_Specials
-  INC E
+  INC E                   ; 6-7: trackers
   CP $08
   JR C,ItemIdStr_Specials
-  INC E
+  INC E                   ; 8-11: extinguishers
   CP $0C
   JR C,ItemIdStr_Specials
-  INC E
+  INC E                   ; 12: the harpoon gun
   CP $0C
   JR Z,ItemIdStr_Specials
-  INC E
+  INC E                   ; 13-15: laser pistols
   CP $10
   JR C,ItemIdStr_Specials
-  INC E
+  INC E                   ; 16: the net
   CP $10
   JR Z,ItemIdStr_Specials
-  INC E
+  INC E                   ; 17: the cat box
   CP $11
   JR Z,ItemIdStr_Specials
-  INC E
+  INC E                   ; 18-19: spanners
 ItemIdStr_Specials:
-  CP $14
-  JR NZ,ItemIdStr_CatBox
-  LD E,$44
+  CP $14                  ; ids 20/21 (the caught cat)
+  JR NZ,ItemIdStr_CatBox  ; override the chain:
+  LD E,$44                ; 68 "Cat in Net"
   JR ItemIdStr_Done
 ItemIdStr_CatBox:
   CP $15
   JR NZ,ItemIdStr_Done
-  LD E,$45
+  LD E,$45                ; 69 "Cat in Box"
 ItemIdStr_Done:
   LD A,E
   RET
@@ -3005,99 +3007,100 @@ BuildItemMenu_Hands:
 
 ; DrawRoomSpecials
 ;
-; Draws the special actors into the room view when the viewed room hosts them:
-; the activated Android (via AlienTargetID's record) and Jones the cat, plus
-; follow-on room furniture.
+; Fill the strip cells for the viewed room's special occupants and fixtures:
+; the hostile Android and the alien (ATTACK on the Special slot), Jones ("Get
+; Jones " on row 14), then the room's fixture label on cells 15/16 (destruct
+; lever, airlock doors, hypersleep pod, engine fire, launch console).
 DrawRoomSpecials:
-  LD A,(AlienTargetID)    ; Android slot chosen for this run
+  LD A,(AlienTargetID)    ; is there an Android this game,
   CP $08
   JR NC,DrawSpec_RoomChecks
-  LD A,(AlienActiveFlag)
+  LD A,(AlienActiveFlag)  ; already hostile,
   AND A
   JR Z,DrawSpec_RoomChecks
-  LD HL,(AlienTargetPtr)
+  LD HL,(AlienTargetPtr)  ; and in the viewed room?
   INC HL
   LD A,(CurrentRoom)
   CP (HL)
-  CALL Z,DrawSpec_AndroidHere
+  CALL Z,DrawSpec_AndroidHere ; yes: offer ATTACK
 DrawSpec_RoomChecks:
-  LD A,(CurrentRoom)
+  LD A,(CurrentRoom)      ; Jones in the viewed room?
   LD HL,JonesRoom
   CP (HL)
-  CALL Z,DrawSpec_JonesHere
-  LD HL,$737F
+  CALL Z,DrawSpec_JonesHere ; yes: cat + "Get Jones " row
+  LD HL,$737F             ; the alien in the viewed room?
   CP (HL)
-  CALL Z,DrawSpec_AlienHere
-  LD HL,ShipSystemFlags
-  LD DE,$73CD
-  CP $06
-  JR Z,DrawSpec_DestructLever
-  CP $0D
+  CALL Z,DrawSpec_AlienHere ; yes: offer ATTACK
+  LD HL,ShipSystemFlags   ; HL -> ShipSystemFlags,
+  LD DE,$73CD             ; DE -> strip cells 15/16: which
+  CP $06                  ; fixture lives in this room?
+  JR Z,DrawSpec_DestructLever ; CommdCentr: the destruct lever
+  CP $0D                  ; Corridor#6: the airlock doors
   JR Z,DrawSpec_Airlock
-  CP $0F
+  CP $0F                  ; Cryo Vault: the hypersleep pod
   JR Z,DrawSpec_HyperPod
-  CP $11
-  JR Z,DrawSpec_Engine1Fire
+  CP $11                  ; engine rooms: a fire,
+  JR Z,DrawSpec_Engine1Fire ; if one is burning
   CP $12
   JR Z,DrawSpec_Engine2Fire
   CP $13
   JR Z,DrawSpec_Engine3Fire
-  CP $22
+  CP $22                  ; Narcissus: the launch console
   JR Z,DrawSpec_LaunchConsole
-  RET
+  RET                     ; other rooms: no fixture
 DrawSpec_LaunchConsole:
-  BIT 6,(HL)
-  RET NZ
-  LD A,$4E
-  LD (DE),A
+  BIT 6,(HL)              ; (flag bit 6 would hide the console;
+  RET NZ                  ; nothing sets it in this build)
+  LD A,$4E                ; cells 15/16 = launch-console
+  LD (DE),A               ; label (strings 78/81)
   LD A,$51
   INC DE
   LD (DE),A
   RET
 DrawSpec_DestructLever:
-  LD A,$46
-  BIT 0,(HL)
-  JR Z,DrawSpec_LeverStore
+  LD A,$46                ; lever off (70/71), or
+  BIT 0,(HL)              ; armed (72/73) when the
+  JR Z,DrawSpec_LeverStore ; destruct bit is set
   LD A,$48
 DrawSpec_LeverStore:
-  LD (DE),A
-  INC DE
+  LD (DE),A               ; write the two-row label
+  INC DE                  ; into cells 15/16
   INC A
   LD (DE),A
   RET
 DrawSpec_HyperPod:
-  LD A,$4A
-  LD (DE),A
+  LD A,$4A                ; hypersleep pod label (74/75)
+  LD (DE),A               ; into cells 15/16
   INC DE
   INC A
   LD (DE),A
   RET
 DrawSpec_Engine1Fire:
-  BIT 3,(HL)
+  BIT 3,(HL)              ; Engine #1 burning?
   JR DrawSpec_FireCells
 DrawSpec_Engine2Fire:
-  BIT 4,(HL)
+  BIT 4,(HL)              ; Engine #2 burning?
   JR DrawSpec_FireCells
 DrawSpec_Engine3Fire:
-  BIT 5,(HL)
+  BIT 5,(HL)              ; Engine #3 burning?
 DrawSpec_FireCells:
-  RET Z
-  LD A,$4C
-  LD (DE),A
+  RET Z                   ; no fire: no label
+  LD A,$4C                ; fire label (76/77)
+  LD (DE),A               ; into cells 15/16
   INC A
   INC DE
   LD (DE),A
   RET
 DrawSpec_Airlock:
-  LD A,$35
-  BIT 1,(HL)
+  LD A,$35                ; cell 15 = airlock #1 door:
+  BIT 1,(HL)              ; closed (53) or blown (55)
   JR Z,DrawSpec_StoreDoor1
   LD A,$37
 DrawSpec_StoreDoor1:
   LD (DE),A
   INC DE
-  LD A,$36
-  BIT 2,(HL)
+  LD A,$36                ; cell 16 = airlock #2 door:
+  BIT 2,(HL)              ; closed (54) or blown (56)
   JR Z,DrawSpec_StoreDoor2
   LD A,$38
 DrawSpec_StoreDoor2:
@@ -3506,106 +3509,111 @@ ResetMenu_FillLoop:
 ; grille removal, ...).
 ;
 ; Used by the routines at OpenCrewRoomView, GetItemPick, LeaveItemHandler,
-; CrewAction1_Idle, CrewAction2_Move, CrewAction3_RemoveGrille,
+; CrewAction1_Arrive, CrewAction2_DuctTransit, CrewAction3_RemoveGrille,
 ; TriggerAlienXAnim and PauseMenu.
 RedrawRoomScene:
   CALL ResetActionMenu    ; ResetActionMenu
-  LD HL,DrawMenuStrip
-  LD (CrewAnimFlags),HL
-  LD A,$80
-  LD (JonesPhase),A
+  LD HL,DrawMenuStrip     ; freeze both animation channels
+  LD (CrewAnimFlags),HL   ; ($8080)
+  LD A,$80                ; and the Jones / alien-body
+  LD (JonesPhase),A       ; animation phases too
   LD (AlienXPhase),A
-  CALL SelectSlotByDrawIdx
-  LD A,(CurrentRoom)
+  CALL SelectSlotByDrawIdx ; point IX at the selected slot
+  LD A,(CurrentRoom)      ; sharing the room with the alien?
   LD HL,$737F
   CP (HL)
   JR NZ,Redraw_DuctCheck
-  LD HL,RoomTypeByte
-  LD (HL),$04
+  LD HL,RoomTypeByte      ; yes: view type 4 —
+  LD (HL),$04             ; the encounter screen
 Redraw_DuctCheck:
-  BIT 6,A
+  BIT 6,A                 ; viewing a duct position?
   JR NZ,Redraw_Ducts
-  CALL DrawRoomBackground
-  CALL BuildExitList
+  CALL DrawRoomBackground ; no: draw the room background
+  CALL BuildExitList      ; and build the exit list
   JR Redraw_Common
 Redraw_Ducts:
-  CALL RedrawRoomView
+  CALL RedrawRoomView     ; yes: the duct/room interior view
 Redraw_Common:
-  CALL DrawCrewPortrait
-  CALL BuildRoomItemList
-  CALL RefreshHeldItems
-  CALL BuildItemMenu
-  CALL ClearTextWindow
-  CALL DrawRoomTitle
-  CALL DrawItemsAndGrille
-  CALL DrawCrewCondition
-  CALL DrawRoomMates
-  CALL DrawRoomSpecials
-  CALL DrawSelectedName
-  LD A,(RoomTypeByte)
+  CALL DrawCrewPortrait   ; the crew portrait,
+  CALL BuildRoomItemList  ; the room's item list,
+  CALL RefreshHeldItems   ; the held-items cache,
+  CALL BuildItemMenu      ; the " use:" menu rows,
+  CALL ClearTextWindow    ; a clear info panel,
+  CALL DrawRoomTitle      ; room name + damage meter,
+  CALL DrawItemsAndGrille ; "Items Present" / grille state,
+  CALL DrawCrewCondition  ; the condition line,
+  CALL DrawRoomMates      ; the "Also here" lists,
+  CALL DrawRoomSpecials   ; hostiles/Jones/fixtures,
+  CALL DrawSelectedName   ; the menu strip + status line
+  LD A,(RoomTypeByte)     ; encounter screen?
   CP $04
-  RET Z
-  LD A,(CurrentRoom)
-  BIT 6,A
-  CALL Z,PlaceRoomMarkerA
+  RET Z                   ; then no map marker
+  LD A,(CurrentRoom)      ; in a room (not the ducts):
+  BIT 6,A                 ; place the walking-figure marker
+  CALL Z,PlaceRoomMarkerA ; on the deck map
   RET
 
-; DrawSelectedName
+; DrawSelectedName — the menu column's name row and colour bands
+;
+; Rebuild the right-hand menu column's fixed dressing: the selected crew
+; member's name on screen row 0, the coloured attribute bands behind the 19
+; menu rows, then (falling into DrawMenuStrip) the mode-1 strip itself from
+; CorridorPosTable, the cursor highlight on the QUIT row and the status line.
 ;
 ; Used by the routines at RedrawRoomScene, DestroyHeldItem and
 ; RefreshGrilleRow.
 DrawSelectedName:
-  LD HL,$4016
-  LD (DrawScreenPtr),HL
+  LD HL,$4016             ; blank the name row
+  LD (DrawScreenPtr),HL   ; (screen row 0, col 22)
   PUSH HL
   LD A,$FF
   CALL DrawSprite
   POP HL
-  INC HL
-  LD (DrawScreenPtr),HL
+  INC HL                  ; and print the selected crew
+  LD (DrawScreenPtr),HL   ; member's name at col 23
   LD A,(DrawSlotIndex)
   CALL PrintName
-  LD HL,$5816
-  LD A,$07
+  LD HL,$5816             ; paint the colour bands (attr
+  LD A,$07                ; col 22): the name row white,
   LD C,$01
   CALL FillAttrColumn
-  LD A,$0F
-  LD C,$07
+  LD A,$0F                ; cells 0-6 white-on-blue
+  LD C,$07                ; (the "move to:" block),
   CALL FillAttrColumn
-  LD A,$20
-  LD C,$03
+  LD A,$20                ; cells 7-9 green paper
+  LD C,$03                ; (" use:" + the two hands),
   CALL FillAttrColumn
-  LD A,$17
+  LD A,$17                ; cell 10 white-on-red (Get Item),
   LD C,$01
   CALL FillAttrColumn
-  LD A,$30
+  LD A,$30                ; cell 11 yellow paper (Leave Item),
   LD C,$01
   CALL FillAttrColumn
-  LD A,$1F
-  LD C,$05
+  LD A,$1F                ; cells 12-16 white-on-magenta
+  LD C,$05                ; (the Special block),
   CALL FillAttrColumn
-  LD A,$38
+  LD A,$38                ; cells 17-18 white paper (QUIT)
   LD C,$02
   CALL FillAttrColumn
-  LD A,$3D
+  LD A,$3D                ; mirror = 61 "   QUIT   "
   LD (CursorCellValue),A
 DrawMenuStrip:
-  LD A,$11
+  LD A,$11                ; park the cursor on the QUIT row
   LD (CorridorCursor),A
-  LD A,$01
+  LD A,$01                ; room mode 1 (the room view)
   LD (RoomModeByte),A
-  LD HL,CorridorPosTable
+  LD HL,CorridorPosTable  ; tile source = CorridorPosTable
   LD (CorridorTilePtr),HL
-  LD HL,$4036
-  LD (DrawScreenPtr),HL
+  LD HL,$4036             ; draw the 18 strip rows from
+  LD (DrawScreenPtr),HL   ; screen row 1, col 22
   LD B,$12
 Redraw_StripLoop:
   PUSH BC
   CALL DrawNextCorridorTile
   POP BC
   DJNZ Redraw_StripLoop
-  CALL HighlightMenuRow
-  CALL OxygenCheckRedraw
+  CALL HighlightMenuRow   ; highlight the cursor row
+  CALL OxygenCheckRedraw  ; and redraw the status line
   RET
 ; Cell-glyph walk-handler table (was mis-disassembled as code): 3-byte records
 ; (glyph, handler word) looked up by DrawDoorArm (DrawDoorArm), which patches
@@ -3908,8 +3916,8 @@ ArmEndNode:
 
 ; ClearRoomAttrs
 ClearRoomAttrs:
-  LD DE,$000C
-  LD HL,AttrFileOrigin
+  LD DE,$000C             ; black out the 20x19 room-view
+  LD HL,AttrFileOrigin    ; attribute window
   LD C,$13
 ClearRoomAttrs_RowLoop:
   LD B,$14
@@ -3920,13 +3928,19 @@ ClearRoomAttrs_CellLoop:
   ADD HL,DE
   DEC C
   JR NZ,ClearRoomAttrs_RowLoop
-  LD HL,RoomGridBuffer
-  CALL DrawRoomBackground_0
+  LD HL,RoomGridBuffer    ; then render the grid buffer
+  CALL DrawRoomBackground_0 ; (DrawRoomBackground_0)
   RET
 
 ; BuildDuctExitList
+;
+; The duct view's "move to:" rows: fill strip cells 2-5 from the room's four
+; RoomAdjDucts slots (skipping no-exit entries), then overwrite each present
+; exit with an anonymous direction arrow — strings 57-60
+; "North/East/South/West" — so the player sees where the crawlway leads but not
+; what it leads to.
 BuildDuctExitList:
-  LD A,(CurrentRoom)
+  LD A,(CurrentRoom)      ; HL = RoomAdjDucts + room * 5
   AND $3F
   LD L,A
   LD H,$00
@@ -3937,25 +3951,25 @@ BuildDuctExitList:
   ADD HL,DE
   LD DE,RoomAdjDucts
   ADD HL,DE
-  LD DE,$73C0
-  LD B,$04
+  LD DE,$73C0             ; DE -> strip cell 2
+  LD B,$04                ; four duct directions:
 DuctExits_SlotLoop:
-  LD C,(HL)
-  CP C
+  LD C,(HL)               ; C = the destination that way;
+  CP C                    ; own room = no exit: leave the
+  JR Z,DuctExits_NextSlot ; cell empty (checked twice — A
+  LD A,(CurrentRoom)      ; holds a stale destination after
+  AND $3F                 ; a stored exit, so the reload
+  CP C                    ; makes the second test reliable)
   JR Z,DuctExits_NextSlot
-  LD A,(CurrentRoom)
-  AND $3F
-  CP C
-  JR Z,DuctExits_NextSlot
-  LD A,C
+  LD A,C                  ; else cell = the destination room
   LD (DE),A
 DuctExits_NextSlot:
   INC DE
   INC HL
   DJNZ DuctExits_SlotLoop
-  LD B,$04
-  LD HL,$73C0
-  LD C,$39
+  LD B,$04                ; second pass: disguise each
+  LD HL,$73C0             ; present exit as a direction
+  LD C,$39                ; arrow (57 North ... 60 West)
 DuctExits_ArrowLoop:
   LD A,(HL)
   CP $FF
@@ -3985,9 +3999,14 @@ ClearText_Loop:
   RET
 
 ; DrawCrewPortrait
+;
+; Draw the selected crew member's 24x24-pixel portrait (CrewPortraits
+; CrewPortraits, 72 bytes each) at the bottom-left of the room view (screen
+; rows 15-17, cols 1-3), blue ink on white. BlitPortrait is also entered
+; directly by DrawShipMap with HL/DE preloaded.
 DrawCrewPortrait:
-  LD HL,$59E1
-  LD DE,$001D
+  LD HL,$59E1             ; paint the 3x3 attribute square
+  LD DE,$001D             ; (row 15, col 1) blue-on-white (57)
   LD C,$03
 Portrait_AttrRowLoop:
   LD B,$03
@@ -3998,8 +4017,8 @@ Portrait_AttrCellLoop:
   DEC C
   ADD HL,DE
   JR NZ,Portrait_AttrRowLoop
-  LD DE,$0048
-  LD HL,CrewPortraits
+  LD DE,$0048             ; DE -> CrewPortraits +
+  LD HL,CrewPortraits     ; (slot-1) * 72 bytes
   LD A,(DrawSlotIndex)
   DEC A
   JR Z,Portrait_AddrDone
@@ -4009,32 +4028,32 @@ Portrait_AddrLoop:
   DJNZ Portrait_AddrLoop
 Portrait_AddrDone:
   EX DE,HL
-  LD HL,$48E1
+  LD HL,$48E1             ; blit at screen row 15, col 1
 ; This entry point is used by the routine at DrawShipMap.
 BlitPortrait:
   LD (DrawScreenPtr),HL
-  LD B,$03
+  LD B,$03                ; 3 cell rows
 BlitPortrait_RowLoop:
-  LD C,$03
+  LD C,$03                ; of 3 cell columns
 BlitPortrait_ColLoop:
   PUSH BC
   LD HL,(DrawScreenPtr)
-  LD B,$08
+  LD B,$08                ; 8 pixel bytes straight down
 BlitPortrait_PixLoop:
   LD A,(DE)
   LD (HL),A
   INC H
   INC DE
   DJNZ BlitPortrait_PixLoop
-  LD HL,DrawScreenPtr
+  LD HL,DrawScreenPtr     ; next cell column
   INC (HL)
   POP BC
   DEC C
   JR NZ,BlitPortrait_ColLoop
-  PUSH DE
-  LD HL,(DrawScreenPtr)
-  LD DE,$001D
-  LD A,L
+  PUSH DE                 ; next cell row: usually -3 +32,
+  LD HL,(DrawScreenPtr)   ; but crossing into the next
+  LD DE,$001D             ; screen third needs the big
+  LD A,L                  ; +1821 stride
   CP $E0
   JR C,BlitPortrait_Advance
   LD DE,$071D
@@ -4055,7 +4074,7 @@ BlitPortrait_Advance:
 ; Output: A = next script command (0-15)
 ;
 ; Used by the routines at SetActionTimer, GameEntry, PickNextRoom, UpdateJones,
-; UpdateCrewAI, AlienScareCheck, BlowLock1, CrewAction5_Investigate,
+; UpdateAlienAI, AlienScareCheck, BlowLock1, CrewAction5_AlienAttack,
 ; VictimItemDrop and LongGameInit.
 AdvanceScriptPtr:
   LD HL,(ScriptPointer)   ; HL = current script pointer (ScriptPointer)
@@ -4194,8 +4213,11 @@ FrameCounterB:
 FrameCounterA:
   DEFB $19                ; frame counter for marker channel A (reset to 10)
 NearRoomList:
-  DEFB $FF,$FF,$FF        ; 3-room scratch list ($FF = empty), matched against
-                          ; actor rooms at $8E30
+  DEFB $FF,$FF,$FF        ; motion-tracker results (scan at $9707): entries for
+                          ; Tracker #1/#2 and the carried cat = the holder's
+                          ; room when nothing moves next door (+1 morale for
+                          ; actors there, tested at $8E30), or 255 = motion
+                          ; detected (beep / uneasy cat)
 NearestCrewC:
   DEFB $FF                ; third nearest-crew slot; $839F-$83A1 are also
                           ; iterated as a 3-list
@@ -4227,7 +4249,9 @@ AlienTargetID:
                           ; (TriggerAlienEvent) treats them as "no valid
                           ; target".
 AlienActiveFlag:
-  DEFB $00                ; Non-zero when the alien is loose in corridors
+  DEFB $00                ; 255 once the alien has taken 6+ wounds while the
+                          ; Android is still dormant (TriggerAlienEvent
+                          ; TriggerAlienEvent); gates all Android hostility
 SoundPending:
   DEFB $00                ; SoundPending: nonzero = a sound effect is queued;
                           ; PlayMusic (PlayMusic) plays and clears it
@@ -4277,9 +4301,10 @@ MsgQueueWritePtr:
 MsgLastEnqueued:
   DEFB $FF,$FF            ; last enqueued (msg#, param1) pair - suppresses
                           ; duplicates
-AlienStopCell:
-  DEFB $0F                ; corridor cell at which the walking alien stops
-                          ; (fires $AC5D)
+AlienKillThreshold:
+  DEFB $0F                ; wounds needed to kill the alien: CrewHitsAlien
+                          ; compares the alien's +4 wound counter against this
+                          ; and fires the endgame ($AC5D) on reaching it
 ItemCharges:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; per-item charge counters, items 0-7
                                        ; (prods, incinerators, trackers):
@@ -4344,10 +4369,11 @@ ActionTimeTail:
 ; (LeaveItemHandler) 12    "Special" header      -> nop 13    special action
 ; -> $8BCB -> SpecialRowAction ($B306): 52 ATTACK / 49 RmveGrille / 238 =
 ; RmveGrille swapped to ATTACK under the cursor (hostile in the room — see
-; PreDispatchHook $B2B9) 14    "Get Jones"           -> $8C05 (needs Net or Cat
-; Box) 15-16 fixture actions       -> FixtureAction (FixtureAction) 17    "
-; QUIT   "          -> QuitRoomView (QuitRoomView) 18    blank
-; -> nop (reuses CrewActionDispatch+0)
+; PreDispatchHook $B2B9) 14    "Get Jones"           -> GetJonesHandler
+; (GetJonesHandler): needs the Net or the Cat Box 15-16 fixture actions
+; -> FixtureAction (FixtureAction) 17    "   QUIT   "          -> QuitRoomView
+; (QuitRoomView) 18    blank                 -> nop (reuses
+; CrewActionDispatch+0)
 ;
 ; The mode-1 row words for rows 11-17 are the "RoomDispatchTailExtra" bytes at
 ; RoomDispatchTailExtra; row 18 overlaps CrewActionDispatch's first entry.
@@ -4397,15 +4423,13 @@ RoomDispatchTable:
 ; (LaunchGate LaunchGate) 29/30/31/32 Android combat set (UpdateAlien /
 ; CrewHitsAndroid) 33 Long Game opening: chestburster host named (LongGameInit)
 RoomDispatchTailExtra:
-  DEFW LeaveItemHandler,RoomHandlerNop,SpecialRowJump,$8C05 ; 7 × 16-bit
-                                                            ; pointers
-                                                            ; (room-handler
-                                                            ; tail)
-  DEFW FixtureAction,FixtureAction,QuitRoomView
+  DEFW LeaveItemHandler,RoomHandlerNop ; rows 11-12
+  DEFW SpecialRowJump,GetJonesHandler ; rows 13-14
+  DEFW FixtureAction,FixtureAction,QuitRoomView ; rows 15-17
 CrewActionDispatch:
-  DEFW RoomHandlerNop,CrewAction1_Idle
-  DEFW CrewAction2_Move,CrewAction3_RemoveGrille
-  DEFW CrewAction4_Handler,CrewAction5_Investigate
+  DEFW RoomHandlerNop,CrewAction1_Arrive
+  DEFW CrewAction2_DuctTransit,CrewAction3_RemoveGrille
+  DEFW CrewAction4_Handler,CrewAction5_AlienAttack
   DEFW CrewAction6_Handler,CrewAction7_Handler
 ; #0: "{actor} Sees Jones the Cat"
 MessageTextTable:
@@ -4537,10 +4561,9 @@ MessageTextTable:
 ; (AlienTargetID) — the dormant traitor crew member that UpdateAlien
 ; (UpdateAlien) activates on first encounter with the alien. The actor
 ; placeholder is filled from CrewIndex (CrewIndex) = the slot currently being
-; dispatched in combat state 4. Because the (IX+1) sprite-class match in
-; CrewAction4_Handler is by class (not unique slot ID), the message can fire
-; for any crew sharing the Android's class — see CrewAction4_Handler header for
-; the ambiguity.
+; dispatched in combat state 4 — whichever crew member stands in the Android's
+; room when the ATTACK order fires (CrewAction4_Handler matches on the room
+; byte).
   DEFB $FE
   DEFM " hits the Android"
   DEFB $FF
@@ -4564,9 +4587,9 @@ ScanInput:
 ; DefaultKeyScanner
 DefaultKeyScanner:
   LD HL,AlienFlags        ; HL points to AlienFlags
-  LD (HL),$00
+  LD (HL),$00             ; start from "no keys pressed"
   LD BC,$F7FE             ; port $F7FE: half-row 1-5
-  IN A,(C)
+  IN A,(C)                ; read half-row 1-5
   LD B,$EF                ; next read: port $EFFE, half-row 6-0
   BIT 4,A                 ; key 5 pressed? (active low)
   JR NZ,KeyScan_LowRow
@@ -4586,7 +4609,7 @@ KeyScan_Check6:
   SET 3,(HL)              ; bit 3 = key 6
 KeyScan_Check0:
   BIT 0,A                 ; key 0 (action)?
-  RET NZ
+  RET NZ                  ; not pressed: done
   SET 4,(HL)              ; bit 4 = action
   RET
 
@@ -4641,64 +4664,70 @@ Input_RowMove:
 
 ; AdvanceCursor
 ;
+; Move the cursor one strip row forward (key 6), skipping cells that are not
+; selectable; also holds the retreat handler (key 7) and the action-key
+; dispatch. Cell values steer the movement: >= 82 is header text / empty
+; padding (never a landing spot), 70-81 are two-row fixture labels whose second
+; row must be stepped over.
+;
 ; Used by the routines at HandleInput, SetActionTimer, UpdateJones and
 ; StartAttack.
 AdvanceCursor:
-  CALL UnhighlightMenuRow
-  LD HL,CorridorCursor
-  LD A,(CursorCellValue)
-  CP $46
+  CALL UnhighlightMenuRow ; remove the highlight from the current row
+  LD HL,CorridorCursor    ; HL -> cursor position
+  LD A,(CursorCellValue)  ; A = cell value the cursor is leaving
+  CP $46                  ; leaving a two-row fixture label?
   JR C,AdvCursor_Bounds
-  INC (HL)
+  INC (HL)                ; yes: step over its second row too
 AdvCursor_Bounds:
   LD HL,CorridorCursor
-  LD A,(HL)
-  CP $12
+  LD A,(HL)               ; A = cursor position
+  CP $12                  ; already on the last strip row?
   JR C,AdvCursor_Store
-  LD A,$FF
+  LD A,$FF                ; yes: wrap so the INC restarts at row 0
 AdvCursor_Store:
-  INC A
+  INC A                   ; step forward one row
   LD (HL),A
   LD D,$00
   LD E,A
-  LD HL,CorridorPosTable
+  LD HL,CorridorPosTable  ; index CorridorPosTable by the new position
   ADD HL,DE
-  LD A,(HL)
-  CP $52
-  JR NC,AdvCursor_Bounds
-  CALL HighlightMenuRow
-  CALL UpdateRoomMarkerB
+  LD A,(HL)               ; A = the cell value there
+  CP $52                  ; header text / empty padding?
+  JR NC,AdvCursor_Bounds  ; yes: not selectable, keep stepping
+  CALL HighlightMenuRow   ; highlight the new row, mirror its cell value
+  CALL UpdateRoomMarkerB  ; re-place the blinking box if it is a room row
   RET
 Input_RetreatCursor:
-  CALL UnhighlightMenuRow
+  CALL UnhighlightMenuRow ; remove the highlight from the current row
 Retreat_Step:
-  LD A,(CorridorCursor)
-  AND A
+  LD A,(CorridorCursor)   ; A = cursor position
+  AND A                   ; at the top row (0)?
   JR NZ,Retreat_Wrap
-  LD A,$13
+  LD A,$13                ; yes: wrap so the DEC restarts at row 18
 Retreat_Wrap:
-  DEC A
+  DEC A                   ; step back one row
   LD (CorridorCursor),A
   LD D,$00
   LD E,A
-  LD HL,CorridorPosTable
+  LD HL,CorridorPosTable  ; index CorridorPosTable by the new position
   ADD HL,DE
+  LD A,(HL)               ; A = the cell value there
+  CP $52                  ; header text / empty padding?
+  JR NC,Retreat_Step      ; yes: not selectable, keep stepping
+  CP $46                  ; a two-row fixture label?
+  JR C,Retreat_Done       ; no: done
+  DEC HL                  ; peek at the cell one row up
   LD A,(HL)
-  CP $52
-  JR NC,Retreat_Step
-  CP $46
-  JR C,Retreat_Done
-  DEC HL
-  LD A,(HL)
-  CP $46
-  JR C,Retreat_Done
+  CP $46                  ; is it also part of a two-row label?
+  JR C,Retreat_Done       ; no: we are already on the first row
   CP $52
   JR NC,Retreat_Done
-  LD HL,CorridorCursor
-  DEC (HL)
+  LD HL,CorridorCursor    ; we landed on the label's second row:
+  DEC (HL)                ; back up onto its first row
 Retreat_Done:
-  CALL HighlightMenuRow
-  CALL UpdateRoomMarkerB
+  CALL HighlightMenuRow   ; highlight the new row, mirror its cell value
+  CALL UpdateRoomMarkerB  ; re-place the blinking box if it is a room row
   RET
 Input_ActionRelease:
   XOR A                   ; action key released:
@@ -4709,7 +4738,7 @@ Input_ActionRelease:
   LD D,$00
   ADD HL,DE
   ADD HL,DE               ; HL = table + mode*2
-  LD A,(HL)
+  LD A,(HL)               ; fetch the handler address
   INC HL
   LD H,(HL)
   LD L,A
@@ -4724,13 +4753,13 @@ UnhighlightMenuRow:
   LD A,(CorridorCursor)   ; A = cursor row
   CALL GetMenuRowAttrAddr ; HL = its attribute address
   LD A,(CursorCellValue)  ; cell value >= 70 (two-row label)?
-  LD C,$01
+  LD C,$01                ; C = number of rows to repaint
   CP $46
   JR C,UnhighlightMenuRow_Restore
   INC C                   ; yes: restore two rows
 UnhighlightMenuRow_Restore:
   LD A,(SavedRowAttr)     ; repaint the saved attribute
-  CALL FillAttrColumn
+  CALL FillAttrColumn     ; FillAttrColumn over C rows
   RET
 
 ; HighlightMenuRow
@@ -4747,23 +4776,23 @@ HighlightMenuRow:
   PUSH AF
   LD E,A
   LD D,$00
-  LD HL,CorridorPosTable
+  LD HL,CorridorPosTable  ; index CorridorPosTable by the row
   ADD HL,DE
   LD A,(HL)               ; A = cell value under the cursor
   LD (CursorCellValue),A  ; mirror it for the dispatchers
   EX AF,AF'               ; keep the cell value in A'
-  POP AF
+  POP AF                  ; A = cursor row again
   CALL GetMenuRowAttrAddr ; HL = the row's attribute address
   LD A,(HL)
   LD (SavedRowAttr),A     ; save the attribute for the un-highlight
   EX AF,AF'               ; cell value >= 70 (two-row label)?
-  LD C,$01
+  LD C,$01                ; C = number of rows to paint
   CP $46
   JR C,HighlightMenuRow_Paint
   INC C                   ; yes: highlight two rows
 HighlightMenuRow_Paint:
   LD A,$78                ; bright white paper, black ink
-  CALL FillAttrColumn
+  CALL FillAttrColumn     ; FillAttrColumn over C rows
   RET
 
 ; GetMenuRowAttrAddr
@@ -4772,10 +4801,10 @@ HighlightMenuRow_Paint:
 ; 1-19, columns 22-31, so row 0 -> $5836 (22582) and each further row adds 32.
 GetMenuRowAttrAddr:
   LD HL,$5836             ; attr addr of menu row 0 (screen row 1, col 22)
-  AND A
-  RET Z
-  LD DE,$0020
-  LD B,A
+  AND A                   ; row 0?
+  RET Z                   ; yes: HL is already right
+  LD DE,$0020             ; one attribute row per menu row
+  LD B,A                  ; B = rows still to skip
 GetMenuRowAttrAddrLoop:
   ADD HL,DE               ; +32 per row
   DJNZ GetMenuRowAttrAddrLoop
@@ -4793,7 +4822,7 @@ UpdateRoomMarkerB:
   CP $01
   RET NZ                  ; no: done
   LD A,(CursorCellValue)  ; cell under the cursor a room id?
-  CP $22
+  CP $22                  ; (rooms are 0-33)
   RET NC                  ; no: done
   LD E,A
   LD D,$00
@@ -4803,7 +4832,7 @@ UpdateRoomMarkerB:
   CP (HL)
   RET NZ                  ; no: done
   LD A,(CursorCellValue)  ; yes: blink that room's indicator box
-  CALL PlaceRoomMarkerB
+  CALL PlaceRoomMarkerB   ; via PlaceRoomMarkerB
   RET
 
 ; AnimateCrewA
@@ -5217,9 +5246,9 @@ MoveToRoom_Duct:
 ; Action on the QUIT row (17): freeze the crew animation and return to the ship
 ; view.
 QuitRoomView:
-  LD HL,CrewAnimFlags
+  LD HL,CrewAnimFlags     ; freeze animation channel A
   SET 7,(HL)
-  JP InitGameView
+  JP InitGameView         ; back to the orders/ship view
 
 ; No-op room-action handler
 ;
@@ -5244,7 +5273,7 @@ RoomHandlerNop2:
 ; two courage bonuses, and redraw the front item's name.
 SwapHeldItems:
   CALL RefreshHeldItems   ; refresh HeldItemFront/Back for this actor
-  LD (IX+$00),$00
+  LD (IX+$00),$00         ; park the actor's countdown
   LD DE,(HeldItemFront)   ; E = front item, D = back item
   LD HL,ItemCourageBonus  ; ItemCourageBonus:
   PUSH HL
@@ -5298,8 +5327,8 @@ SwapItems_SetMorale:
   LD A,(HeldItemBack)
   CALL ItemIdToString     ; and the new back item's name
   CALL DrawSprite
-  CALL DrawCrewCondition
-  CALL RefreshRoomInfo
+  CALL DrawCrewCondition  ; refresh the condition line
+  CALL RefreshRoomInfo    ; and the room info
   RET
 
 ; MoveThroughGrille
@@ -5310,9 +5339,9 @@ SwapItems_SetMorale:
 ;
 ; Used by the routines at RoomDispatchTable and PreActionCheck.
 MoveThroughGrille:
-  LD A,$40
+  LD A,$40                ; base time 64
   CALL SetActionTimer     ; set the actor's action timer
-  LD (IX+$03),$02         ; action state = 2 (move)
+  LD (IX+$03),$02         ; action state = 2 (duct transit)
   LD A,(CurrentRoom)
   XOR $40                 ; same room, other side of the grille
   LD (IX+$02),A
@@ -5499,67 +5528,75 @@ SetActionTimer:
   LD HL,ActionTimeByStrength
   ADD HL,DE
   LD A,(HL)
-  ADD A,C
+  ADD A,C                 ; C = slot + strength adjustments
   LD C,A
-  POP AF
+  POP AF                  ; recover the caller's base time
   ADD A,C
   LD (IX+$00),A           ; arm the countdown
   RET
-  LD (IX+$00),$00
-  LD A,(HeldItemFront)
-  CP $11
+; GetJonesHandler — the "Get Jones" menu row (mode-1 row 14), reached through
+; RoomDispatchTailExtra (RoomDispatchTailExtra). Needs the Net (item 16) or the
+; Cat Box (17) in the front hand; rolls a script nibble against
+; JonesCatchBySlot (JonesCatchBySlot) — the Net gets -4 on the threshold, so it
+; is the easier tool. Failure spooks Jones into moving at once; success
+; destroys the tool, puts "Cat in Net"/"Cat in Box" (tool+4) in the catcher's
+; hand and takes Jones off the map.
+GetJonesHandler:
+  LD (IX+$00),$00         ; park the actor's action countdown
+  LD A,(HeldItemFront)    ; front-hand item...
+  CP $11                  ; ...the Cat Box?
   JR Z,GetJones_Threshold
-  CP $10
-  RET NZ
+  CP $10                  ; ...or the Net?
+  RET NZ                  ; neither: cannot catch Jones
 GetJones_Threshold:
-  LD A,(DrawSlotIndex)
-  LD E,A
+  LD A,(DrawSlotIndex)    ; E = JonesCatchBySlot[slot],
+  LD E,A                  ; this crew member's catch threshold
   LD D,$00
   LD HL,JonesCatchBySlot
   ADD HL,DE
   LD E,(HL)
-  LD A,(HeldItemFront)
+  LD A,(HeldItemFront)    ; using the Cat Box?
   CP $11
   JR Z,GetJones_Roll
-  LD A,E
-  SUB $04
+  LD A,E                  ; no, the Net: threshold -4
+  SUB $04                 ; (easier to succeed)
   LD E,A
 GetJones_Roll:
-  CALL AdvanceScriptPtr
-  CP E
-  JR NC,GetJones_Catch
-  LD HL,JonesMoveTimer
-  LD (HL),$01
-  CALL UpdateJones
+  CALL AdvanceScriptPtr   ; roll the next script nibble (0-15)
+  CP E                    ; beat the threshold?
+  JR NC,GetJones_Catch    ; yes: caught him
+  LD HL,JonesMoveTimer    ; no: JonesMoveTimer = 1 —
+  LD (HL),$01             ; the cat bolts,
+  CALL UpdateJones        ; and UpdateJones moves him right now
   RET
 GetJones_Catch:
-  LD A,(HeldItemFront)
-  LD HL,ItemLocations
+  LD A,(HeldItemFront)    ; ItemLocations[tool] = 255:
+  LD HL,ItemLocations     ; the Net / Cat Box ceases to exist...
   LD E,A
   LD D,$00
   ADD HL,DE
   LD (HL),$FF
-  LD E,$04
-  ADD HL,DE
+  LD E,$04                ; ...and tool+4 ("Cat in Net" 20 /
+  ADD HL,DE               ; "Cat in Box" 21) appears
   LD A,(DrawSlotIndex)
-  ADD A,$A0
+  ADD A,$A0               ; in the catcher's front hand (160+slot)
   LD (HL),A
-  CALL RefreshHeldItems
-  LD A,(HeldItemFront)
-  CALL ItemIdToString
+  CALL RefreshHeldItems   ; refresh the HeldItemFront/Back cache
+  LD A,(HeldItemFront)    ; front-hand strip cell ($73C6) =
+  CALL ItemIdToString     ; the new "Cat in ..." item's string id
   LD (MenuUseRows),A
-  LD HL,$4836
-  LD (DrawScreenPtr),HL
+  LD HL,$4836             ; redraw the front-hand row
+  LD (DrawScreenPtr),HL   ; (screen row 9, col 22)
   CALL DrawSprite
-  CALL BumpCourageMorale
-  LD (HL),$FF
-  LD HL,$48F6
-  LD (DrawScreenPtr),HL
+  CALL BumpCourageMorale  ; +1 courage/morale for the catcher, and...
+  LD (HL),$FF             ; ...JonesRoom = 255: Jones is off the map
+  LD HL,$48F6             ; blank the "Get Jones" row
+  LD (DrawScreenPtr),HL   ; (screen row 15, col 22)
   LD A,$FF
-  LD ($73CC),A
+  LD ($73CC),A            ; its strip cell 14 = empty
   CALL DrawSprite
-  CALL AdvanceCursor
-  CALL TriggerJonesAnim
+  CALL AdvanceCursor      ; step the cursor off the now-empty row
+  CALL TriggerJonesAnim   ; run the cat animation once
   LD A,(DrawSlotIndex)
   LD L,A                  ; L = capturing crew slot
   LD A,$02                ; msg #2 "{actor} has captured Jones"
@@ -5572,26 +5609,26 @@ GetJones_Catch:
 ; decrement every non-parked action countdown (IX+0), and fire the queued
 ; action on the 1->0 transition — DispatchCrewAction (DispatchCrewAction) then
 ; jumps through CrewActionDispatch (CrewActionDispatch) into the per-state
-; handlers (CrewAction1_Idle idle, CrewAction2_Move move,
+; handlers (CrewAction1_Arrive move/idle, CrewAction2_DuctTransit duct transit,
 ; CrewAction3_RemoveGrille remove grille, ...).
 ResetCrewTimers:
   PUSH IX
-  XOR A
+  XOR A                   ; CrewIndex = 0: start at the alien's slot
   LD (CrewIndex),A
-  LD IX,ActorRecords
-  LD B,$08
+  LD IX,ActorRecords      ; IX -> ActorRecords slot 0
+  LD B,$08                ; all 8 actor slots
 CrewTimersLoop:
   PUSH BC
-  LD A,(IX+$00)
-  AND A
-  JR Z,CrewTimersNext
-  DEC A
+  LD A,(IX+$00)           ; A = action countdown
+  AND A                   ; parked (0)?
+  JR Z,CrewTimersNext     ; yes: leave it alone
+  DEC A                   ; tick it down
   LD (IX+$00),A
-  CALL ActionTimerFire
+  CALL ActionTimerFire    ; fire the action on the 1->0 transition
 CrewTimersNext:
-  LD DE,$0008
+  LD DE,$0008             ; step to the next 8-byte record
   ADD IX,DE
-  LD HL,CrewIndex
+  LD HL,CrewIndex         ; keeping CrewIndex in step
   INC (HL)
   POP BC
   DJNZ CrewTimersLoop
@@ -5620,74 +5657,84 @@ DispatchCrewAction:
   LD L,A
   JP (HL)                 ; tail-call into action handler
 
-; CrewAction1_Idle
+; CrewAction1_Arrive — complete a move (action state 1)
 ;
-; Dispatched via CrewActionDispatch entry 1. Used by the routines at
-; RoomDispatchTailExtra and AlienScareCheck.
-CrewAction1_Idle:
-  LD A,(IX+$02)
-  CP (IX+$01)
-  RET Z
-  LD (IX+$01),A
-  BIT 6,A
-  JR NZ,CrewIdle_AirlockCheck
-  LD A,$01
+; Dispatched via CrewActionDispatch entry 1. State 1 means "go to the room in
+; (IX+2)" (or idle when the destination equals the current room — the AI parks
+; wanderers that way). On firing, the actor arrives: current room :=
+; destination, with a door sound unless the move happened inside the duct
+; network. Arriving in an airlock that has been blown open (ShipSystemFlags bit
+; 1 = Airlock #1, bit 2 = Airlock #2) dumps the mover into Corridor#6 (room 13)
+; instead.
+;
+; Used by the routines at RoomDispatchTailExtra and AlienScareCheck.
+CrewAction1_Arrive:
+  LD A,(IX+$02)           ; A = destination room
+  CP (IX+$01)             ; already there?
+  RET Z                   ; yes: stay idle
+  LD (IX+$01),A           ; arrive: current room = destination
+  BIT 6,A                 ; was the move inside the ducts?
+  JR NZ,CrewArrive_AirlockCheck
+  LD A,$01                ; no: request the door sound
   LD (SoundRequest),A
-CrewIdle_AirlockCheck:
-  CALL RecalcMorale
-  LD A,(IX+$01)
-  LD E,$02
+CrewArrive_AirlockCheck:
+  CALL RecalcMorale       ; recompute room-mates and morale
+  LD A,(IX+$01)           ; entered Airlock #1 (room 0)?
+  LD E,$02                ; (its "blown" flag is bit 1)
   AND A
-  JR Z,CrewIdle_AirlockVented
-  CP $01
-  JR NZ,CrewIdle_RefreshView
-  LD E,$04
-CrewIdle_AirlockVented:
-  LD A,E
+  JR Z,CrewArrive_AirlockVented
+  CP $01                  ; entered Airlock #2 (room 1)?
+  JR NZ,CrewArrive_RefreshView ; neither: no airlock hazard
+  LD E,$04                ; (its "blown" flag is bit 2)
+CrewArrive_AirlockVented:
+  LD A,E                  ; is that airlock blown open?
   LD HL,ShipSystemFlags
   AND (HL)
-  JR Z,CrewIdle_RefreshView
-  LD (IX+$01),$0D
-CrewIdle_RefreshView:
-  LD A,(RoomModeByte)
+  JR Z,CrewArrive_RefreshView
+  LD (IX+$01),$0D         ; yes: the mover ends up in Corridor#6
+CrewArrive_RefreshView:
+  LD A,(RoomModeByte)     ; room view on screen (mode 1)?
   CP $01
-  RET NZ
-  LD A,(CrewIndex)
+  RET NZ                  ; no: done
+  LD A,(CrewIndex)        ; is this the crew member being viewed?
   LD HL,DrawSlotIndex
   CP (HL)
-  JP Z,RedrawRoomScene
-  CALL RefreshCrewCondition
+  JP Z,RedrawRoomScene    ; yes: rebuild the whole room view
+  CALL RefreshCrewCondition ; no: refresh the info panel / condition
   RET
 
-; CrewAction2_Move
+; CrewAction2_DuctTransit — climb through a grille (action state 2)
 ;
-; Dispatched via CrewActionDispatch entry 2.
-CrewAction2_Move:
-  LD E,(IX+$01)
-  LD A,(IX+$05)
-  BIT 6,E
-  JR NZ,CrewMove_BumpCourage
+; Dispatched via CrewActionDispatch entry 2: the actor crosses between a room
+; and the duct run above it (queued by MoveThroughGrille MoveThroughGrille or
+; the AI's duct hop at AlienAI_DuctFlip). The cramped ducts cost a point of
+; courage to enter; climbing back out earns it back.
+CrewAction2_DuctTransit:
+  LD E,(IX+$01)           ; E = current room (bit 6 = in ducts)
+  LD A,(IX+$05)           ; A = courage
+  BIT 6,E                 ; climbing out of the ducts?
+  JR NZ,CrewDuct_BumpCourage ; yes: net +1 courage
+  DEC A                   ; no, crawling in: net -1
   DEC A
-  DEC A
-CrewMove_BumpCourage:
+CrewDuct_BumpCourage:
   INC A
-  CP $7F
-  JR C,CrewMove_SetCourage
+  CP $7F                  ; clamp an underflow to 0
+  JR C,CrewDuct_SetCourage
   XOR A
-CrewMove_SetCourage:
+CrewDuct_SetCourage:
   LD (IX+$05),A
-  LD A,E
-  XOR $40
+  LD A,E                  ; flip the in-ducts flag:
+  XOR $40                 ; same room, other side of the grille
   LD (IX+$01),A
-  CALL RecalcMorale
-  LD A,(RoomModeByte)
+  CALL RecalcMorale       ; recompute room-mates and morale
+  LD A,(RoomModeByte)     ; room view on screen (mode 1)?
   CP $01
-  RET NZ
-  LD A,(CrewIndex)
+  RET NZ                  ; no: done
+  LD A,(CrewIndex)        ; is this the crew member being viewed?
   LD HL,DrawSlotIndex
   CP (HL)
-  JP Z,RedrawRoomScene
-  JP RefreshCrewCondition
+  JP Z,RedrawRoomScene    ; yes: rebuild the whole room view
+  JP RefreshCrewCondition ; no: refresh the info panel / condition
 
 ; CrewAction3_RemoveGrille
 ;
@@ -5717,122 +5764,139 @@ CrewAction3_RemoveGrille:
   JP Z,RedrawRoomScene    ; yes: full room-view rebuild
   JP RefreshRoomInfo
 
-; RecalcMorale
+; RecalcMorale — find room-mates and recompute the trio's morale
+;
+; After an actor moves: scan the 7 crew rooms for other actors on the same spot
+; (same room, same side of the ducts), record up to two in RoomMateA/B, then
+; run MoraleFromCompanion (MoraleFromCompanion) three times, rotating the
+; (self, mateA, mateB) triple through NearestCrewC so each of the three has his
+; morale recomputed with the other two as companions. A third room-mate's slot
+; would spill past RoomMateB into RoomModeByte (RoomModeByte) —
+; PreActionCheck's 3-crew room cap is what keeps that from happening.
 RecalcMorale:
-  LD HL,$FFFF
+  LD HL,$FFFF             ; RoomMateA/B = 255/255 (none)
   LD (RoomMateA),HL
-  LD HL,$7387
-  LD C,$01
-  LD A,(CrewIndex)
+  LD HL,$7387             ; HL -> slot 1's room byte (+1)
+  LD C,$01                ; C = candidate slot number
+  LD A,(CrewIndex)        ; processing the alien (slot 0)?
   AND A
-  RET Z
-  EX AF,AF'
-  LD DE,RoomMateA
-  LD A,(IX+$01)
-  LD B,$07
+  RET Z                   ; yes: it has no morale
+  EX AF,AF'               ; keep own slot number in A'
+  LD DE,RoomMateA         ; DE -> RoomMateA
+  LD A,(IX+$01)           ; A = own spot (room + duct bit)
+  LD B,$07                ; scan the 7 crew slots
 RecalcMorale_ScanLoop:
-  CP (HL)
-  JR NZ,RecalcMorale_NextSlot
-  EX AF,AF'
+  CP (HL)                 ; on the same spot?
+  JR NZ,RecalcMorale_NextSlot ; no: next slot
+  EX AF,AF'               ; is it our own record?
   CP C
-  JR Z,RecalcMorale_SkipSelf
-  EX DE,HL
-  LD (HL),C
+  JR Z,RecalcMorale_SkipSelf ; yes: skip it
+  EX DE,HL                ; record the room-mate's slot
+  LD (HL),C               ; (RoomMateA, then RoomMateB)
   EX DE,HL
   INC DE
 RecalcMorale_SkipSelf:
-  EX AF,AF'
+  EX AF,AF'               ; (put the spot back in A)
 RecalcMorale_NextSlot:
   PUSH DE
-  LD DE,$0008
+  LD DE,$0008             ; step to the next record's room byte
   ADD HL,DE
   POP DE
   INC C
   DJNZ RecalcMorale_ScanLoop
   PUSH IX
-  LD A,(CrewIndex)
-  LD (NearestCrewC),A
-  LD HL,(RoomMateA)
+  LD A,(CrewIndex)        ; seed the rotation:
+  LD (NearestCrewC),A     ; C-slot = self,
+  LD HL,(RoomMateA)       ; A/B-slots = the two room-mates
   LD (NearestCrewA),HL
-  CALL MoraleFromCompanion
-  LD HL,(NearestCrewA)
-  LD A,(NearestCrewC)
+  CALL MoraleFromCompanion ; morale of self (companions: A and B)
+  LD HL,(NearestCrewA)    ; rotate the triple: (C,A,B) =
+  LD A,(NearestCrewC)     ; (mateA, mateB, self)
   LD (NearestCrewB),A
   LD (NearestCrewC),HL
-  CALL MoraleFromCompanion
-  LD HL,(NearestCrewA)
-  LD A,(NearestCrewC)
+  CALL MoraleFromCompanion ; morale of mateA (companions: B, self)
+  LD HL,(NearestCrewA)    ; rotate again: (C,A,B) =
+  LD A,(NearestCrewC)     ; (mateB, self, mateA)
   LD (NearestCrewB),A
   LD (NearestCrewC),HL
-  CALL MoraleFromCompanion
+  CALL MoraleFromCompanion ; morale of mateB (companions: self, A)
   POP IX
   RET
 
-; MoraleFromCompanion
+; MoraleFromCompanion — morale = courage + companion effects
+;
+; Recompute the morale (+6) of the crew member whose slot is in NearestCrewC
+; from his courage (+5) plus a term per companion slot in NearestCrewA/B: a
+; live companion adds his own courage - 2 (a brave friend reassures, a coward
+; unnerves); a dead one costs 1 — and a freshly dead body (status 1) is
+; "found": everyone's courage decays, msg #20 fires and the body's status moves
+; to 2 so it is only found once. Standing in one of the rooms in NearRoomList
+; (NearRoomList, the tracker-holder scan at FindTrackerHolders) is worth +1.
+; The sum is clamped to 0 on underflow.
 MoraleFromCompanion:
-  XOR A
+  XOR A                   ; companion-effect accumulator = 0
   LD (DistanceAccum),A
-  LD A,(NearestCrewC)
-  CP $FF
+  LD A,(NearestCrewC)     ; A = whose morale to compute
+  CP $FF                  ; nobody?
   RET Z
-  LD B,A
+  LD B,A                  ; IX -> that crew member's record
   LD IX,ActorRecords
   LD DE,$0008
 MoraleComp_FindSlot:
   ADD IX,DE
   DJNZ MoraleComp_FindSlot
-  XOR A
+  XOR A                   ; dead or removed (+7 nonzero)?
   CP (IX+$07)
-  RET NZ
+  RET NZ                  ; yes: no morale to compute
   PUSH IX
-  LD B,$02
-  LD DE,NearestCrewA
+  LD B,$02                ; both companion slots:
+  LD DE,NearestCrewA      ; NearestCrewA, then NearestCrewB
 MoraleComp_PairLoop:
   PUSH BC
   PUSH DE
-  LD A,(DE)
+  LD A,(DE)               ; A = companion slot (255 = none)
   CP $FF
   JR Z,MoraleComp_NextPair
-  LD IX,ActorRecords
+  LD IX,ActorRecords      ; IX -> the companion's record
   LD DE,$0008
 MoraleComp_RecSeek:
   ADD IX,DE
   DEC A
   JR NZ,MoraleComp_RecSeek
+  CP (IX+$07)             ; companion alive (status 0)?
+  JR Z,MoraleComp_AddCourage ; yes: courage support
+  INC A                   ; a freshly dead body (status 1)?
   CP (IX+$07)
-  JR Z,MoraleComp_AddCourage
-  INC A
-  CP (IX+$07)
-  JR NZ,MoraleComp_Minus
-  CALL DecayCrewCourage
+  JR NZ,MoraleComp_Minus  ; no (found earlier / removed): just -1
+  CALL DecayCrewCourage   ; find the body: everyone's courage decays,
   POP DE
   PUSH DE
-  LD A,(DE)
+  LD A,(DE)               ; H = the body's slot
   LD H,A
   LD A,(NearestCrewC)
   LD L,A                  ; L = the discovering crew slot
   LD A,$14                ; msg #20 "{actor} finds {target}'s body"
   CALL EnqueueMessage
-  INC (IX+$07)
+  INC (IX+$07)            ; status 2: the body is only found once
 MoraleComp_Minus:
-  LD HL,DistanceAccum
-  DEC (HL)
+  LD HL,DistanceAccum     ; a dead companion:
+  DEC (HL)                ; morale term -1
   JR MoraleComp_NextPair
 MoraleComp_AddCourage:
-  LD A,(IX+$05)
-  SUB $02
+  LD A,(IX+$05)           ; a live companion: morale term +=
+  SUB $02                 ; his courage - 2
   LD E,A
   LD A,(DistanceAccum)
   ADD A,E
   LD (DistanceAccum),A
 MoraleComp_NextPair:
   POP DE
-  INC DE
+  INC DE                  ; next companion slot
   POP BC
   DJNZ MoraleComp_PairLoop
-  POP IX
-  LD B,$03
-  LD HL,NearRoomList
+  POP IX                  ; IX -> the actor again
+  LD B,$03                ; is his spot one of the 3 rooms
+  LD HL,NearRoomList      ; in NearRoomList?
   LD A,(IX+$01)
 MoraleComp_RoomScan:
   CP (HL)
@@ -5841,43 +5905,49 @@ MoraleComp_RoomScan:
   DJNZ MoraleComp_RoomScan
   JR MoraleComp_Apply
 MoraleComp_RoomBonus:
-  LD HL,DistanceAccum
+  LD HL,DistanceAccum     ; yes: +1
   INC (HL)
 MoraleComp_Apply:
-  LD HL,DistanceAccum
+  LD HL,DistanceAccum     ; morale = courage + companion effects,
   LD A,(IX+$05)
   ADD A,(HL)
-  CP $7F
+  CP $7F                  ; clamped to 0 on underflow
   JR C,MoraleComp_SetMorale
   XOR A
 MoraleComp_SetMorale:
   LD (IX+$06),A
   RET
 
-; DecayCrewCourage
+; DecayCrewCourage — everyone loses a point of courage and morale
 ;
-; Used by the routines at MoraleFromCompanion and KillActorMoraleHit.
+; Grim events shake the whole crew: -1 courage and -1 morale for all 7 crew
+; members (each clamped at 0). Triggered by finding a body
+; (MoraleFromCompanion) and by witnessing a kill (KillActorMoraleHit). The loop
+; body is split: DecayMoraleStep (DecayMoraleStep) handles the morale byte and
+; the loop stepping, then refreshes the viewed condition line.
 DecayCrewCourage:
-  LD HL,$738B
-  LD DE,$0008
-  LD B,$07
+  LD HL,$738B             ; HL -> slot 1's courage byte (+5)
+  LD DE,$0008             ; record stride
+  LD B,$07                ; all 7 crew
 ; This entry point is used by the routine at DecayMoraleStep.
 DecayCourageLoop:
-  DEC (HL)
+  DEC (HL)                ; courage -= 1,
   LD A,$7F
-  CP (HL)
+  CP (HL)                 ; clamping an underflow
   JR NC,DecayCourage_Tail
-  LD (HL),$00
+  LD (HL),$00             ; to 0
 DecayCourage_Tail:
-  JP DecayMoraleStep
-  RET
+  JP DecayMoraleStep      ; morale -= 1 too, then loop
+  RET                     ; (DecayMoraleStep returns from here)
 
 ; BusyWait
+;
+; Fixed delay loop, ~126,000 T-states (~36 ms).
 ;
 ; Used by the routines at DamageOverflowFlash, FrameTiming, IntroductionMode,
 ; ScreenTransition, WaitKeyPrompt and PlayMusic.
 BusyWait:
-  LD BC,$12FF
+  LD BC,$12FF             ; 4863 iterations of 26 T-states
 BusyWaitLoop:
   DEC BC
   LD A,C
@@ -5908,8 +5978,7 @@ MainLoop:
   CALL FrameTiming        ; FrameTiming: ~1/50s frame wait or play queued sound
   CALL UpdateAlien        ; UpdateAlien: alien movement & crew-attack logic
   CALL TriggerAlienEvent  ; TriggerAlienEvent: poll alien event timer
-  CALL UpdateCrewAI       ; UpdateCrewAI: give first idle crew member a new
-                          ; action
+  CALL UpdateAlienAI      ; UpdateAlienAI: give the idle alien its next action
   CALL TickMessageQueue   ; TickMessageQueue: tick the queued per-crew
                           ; animation slots
   CALL UpdateJones        ; UpdateJones: walk Jones the cat one room when due
@@ -5936,111 +6005,125 @@ MainLoop:
   CALL Z,ResetScriptPtr   ; two consecutive 0s → ResetScriptPtr (reseed from
                           ; SEED)
   JR MainLoop             ; tail-loop back to the start of the per-frame body
+; PreActionCheck's Android branch (see PreActionCheck): the Android quietly
+; disobeys an ATTACK order.
 PreAction_CancelCombat:
-  LD A,(IX+$03)
+  LD A,(IX+$03)           ; Android ordered to ATTACK (state 4)?
   CP $04
   JR NZ,PreAction_MoveGate
-  CALL PickNextRoom
-  LD (IX+$03),$01
-  LD (IX+$00),$14
-  XOR A
+  CALL PickNextRoom       ; yes: it disobeys — pick a random room
+  LD (IX+$03),$01         ; and wander there instead (state 1)
+  LD (IX+$00),$14         ; in 20 frames
+  XOR A                   ; A = 0: cancel this dispatch
   RET
 PreAction_MoveGate:
-  CP $03
+  CP $03                  ; other Android states: 3+ fire as-is,
   RET NC
-  JR PreAction_DestScan
+  JR PreAction_DestScan   ; 1-2 go through the destination checks
 
-; PreActionCheck
+; PreActionCheck — permission gate before a crew action fires
+;
+; Called by DispatchCrewAction just before an actor's queued action fires;
+; returns A = 0 to cancel the dispatch, nonzero to let it proceed. The alien
+; (slot 0) is always allowed. The Android quietly refuses an ATTACK order — it
+; is re-assigned a wander instead (PreAction_CancelCombat). A crew member whose
+; morale hits 0 (Broken) panics: in the ducts he opens the grille and climbs
+; out; in a room he drops everything he carries and flees to a random adjacent
+; room. And a pending move (state 1/2) is held back (retried in ~32+ frames)
+; when the destination duct cell is already occupied — the ducts are
+; single-file — or the destination room already holds 3 crew (the
+; room-occupancy cap). Heading into the ducts also takes morale >= 2 (at least
+; "Uneasy"); a more shaken crew member panics instead.
 ;
 ; Used by the routine at DispatchCrewAction.
 PreActionCheck:
-  LD A,(CrewIndex)
+  LD A,(CrewIndex)        ; processing the alien (slot 0)?
   AND A
-  CPL
-  RET Z
-  XOR A
+  CPL                     ; (A = 255: proceed)
+  RET Z                   ; yes: always allowed, no checks
+  XOR A                   ; action state 0 (parked)?
   CP (IX+$03)
-  RET Z
-  LD A,(AlienTargetID)
+  RET Z                   ; yes: A = 0, nothing to fire
+  LD A,(AlienTargetID)    ; is this actor the Android?
   LD HL,CrewIndex
   CP (HL)
-  JR Z,PreAction_CancelCombat
-  XOR A
+  JR Z,PreAction_CancelCombat ; yes: combat-refusal branch
+  XOR A                   ; morale 0 (Broken)?
   CP (IX+$06)
-  JR Z,PreAction_Broken
-  LD A,(IX+$03)
-  CP $03
-  RET NC
+  JR Z,PreAction_Broken   ; yes: panic
+  LD A,(IX+$03)           ; states 3+ (grille/combat/...)
+  CP $03                  ; fire unchecked;
+  RET NC                  ; moves go through the checks:
 PreAction_DestScan:
-  LD A,(IX+$02)
-  LD HL,$7387
+  LD A,(IX+$02)           ; A = the pending destination
+  LD HL,$7387             ; HL -> slot 1's room byte (+1)
   LD DE,$0008
-  LD BC,$0700
+  LD BC,$0700             ; B = 7 slots, C = 0 occupants
 PreAction_DestLoop:
-  CP (HL)
-  JR NZ,PreAction_DestNext
+  CP (HL)                 ; count the crew already at
+  JR NZ,PreAction_DestNext ; the destination spot
   INC C
 PreAction_DestNext:
   ADD HL,DE
   DJNZ PreAction_DestLoop
-  LD A,(IX+$02)
+  LD A,(IX+$02)           ; heading into the duct network?
   BIT 6,A
   JR Z,PreAction_DoorGate
-  LD A,(IX+$06)
-  CP $02
-  JR C,PreAction_Broken
-  LD A,C
+  LD A,(IX+$06)           ; too shaken for the ducts
+  CP $02                  ; (morale < 2)?
+  JR C,PreAction_Broken   ; yes: panic
+  LD A,C                  ; duct cell already occupied?
   AND A
-  JR NZ,PreAction_Requeue
-  CPL
+  JR NZ,PreAction_Requeue ; yes: wait and retry
+  CPL                     ; no: A nonzero, proceed
   RET
 PreAction_DoorGate:
-  LD A,C
-  CP $03
-  JR NC,PreAction_Requeue
-  CPL
+  LD A,C                  ; already 3 crew in the room?
+  CP $03                  ; (the room-occupancy cap)
+  JR NC,PreAction_Requeue ; yes: wait and retry
+  CPL                     ; no: A nonzero, proceed
   RET
 PreAction_Requeue:
-  LD A,$20
-  CALL SetActionTimer
-  XOR A
+  LD A,$20                ; re-arm the countdown (32 + the
+  CALL SetActionTimer     ; usual adjustments) and
+  XOR A                   ; cancel this dispatch
   RET
 PreAction_Broken:
-  BIT 6,(IX+$01)
+  BIT 6,(IX+$01)          ; panicking in the ducts?
   JR Z,PreAction_DropScan
-  LD A,(IX+$03)
-  CP $01
+  LD A,(IX+$03)           ; only a pending move (state 1)
+  CP $01                  ; is replaced
   RET NZ
-  CALL CrewAction3_RemoveGrille
-  CALL MoveThroughGrille
-  XOR A
+  CALL CrewAction3_RemoveGrille ; bail out: open this room's grille
+  CALL MoveThroughGrille  ; queue the climb out of the ducts
+  XOR A                   ; and cancel this dispatch
   RET
 PreAction_DropScan:
-  LD HL,ItemLocations
+  LD HL,ItemLocations     ; panicking in a room: scan ItemLocations
   LD A,(CrewIndex)
-  ADD A,$80
+  ADD A,$80               ; E = own back-hand marker (128+slot)
   LD E,A
-  ADD A,$20
+  ADD A,$20               ; D = own front-hand marker (160+slot)
   LD D,A
-  LD C,(IX+$01)
-  LD B,$16
+  LD C,(IX+$01)           ; C = current room
+  LD B,$16                ; all 22 items:
 PreAction_DropLoop:
   LD A,(HL)
-  CP E
+  CP E                    ; held in either hand?
   JR Z,PreAction_DropItem
   CP D
   JR NZ,PreAction_DropNext
 PreAction_DropItem:
-  LD (HL),C
+  LD (HL),C               ; yes: drop it on the floor here
 PreAction_DropNext:
   INC HL
   DJNZ PreAction_DropLoop
-  CALL PickNextRoom
-  JR PreAction_DestScan
+  CALL PickNextRoom       ; flee: pick a random adjacent room
+  JR PreAction_DestScan   ; and re-run the occupancy checks
 
 ; PickNextRoom
 ;
-; Used by the routines at GameEntry, PreActionCheck, UpdateCrewAI,
+; Used by the routines at GameEntry, PreActionCheck, UpdateAlienAI,
 ; AlienScareCheck, VictimItemDrop and UpdateAlien.
 ;
 ; Choose the destination room for the actor whose record IX points at, and
@@ -6081,8 +6164,8 @@ PickRoom_Store:
 ; 3-5 → 1, 6-8 → 2, 9-11 → 3, 12-15 → 4. Used to translate the deterministic
 ; ROM-byte stream into AI movement decisions.
 ;
-; Used by PickNextRoom (PickNextRoom), UpdateJones (UpdateJones), UpdateCrewAI
-; (UpdateCrewAI) and CrewAction5_Investigate (CrewAction5_Investigate).
+; Used by the routines at PickNextRoom, UpdateJones, UpdateAlienAI and
+; CrewAction5_AlienAttack.
 ScriptNibbleToDirection:
   CP $03                  ; nibble 0..2?
   JR NC,NibbleDir_Check6
@@ -6109,22 +6192,27 @@ NibbleDir_Dir4:
 
 ; RefreshRoomInfo
 ;
+; Refresh the viewed room's info: redraw the "Also here" room-mate lists, then
+; handle a hostile presence — the alien in the room hands off to AlienInfoCheck
+; (encounter screen / ATTACK row), the Android (once hostile) to
+; AndroidInfoCheck.
+;
 ; Used by the routines at SwapHeldItems, CrewAction3_RemoveGrille and
 ; RefreshCrewCondition.
 RefreshRoomInfo:
-  LD HL,$FFFF
-  LD (RoomMateA),HL
+  LD HL,$FFFF             ; forget the cached room-mates and
+  LD (RoomMateA),HL       ; redraw the "Also here" lists
   CALL DrawRoomMates
-  LD A,(CurrentRoom)
+  LD A,(CurrentRoom)      ; the alien in the viewed room?
   LD HL,$737F
   CP (HL)
-  JR Z,RefreshInfo_Alien
-  CALL TriggerAlienXAnim
-  LD A,(AlienActiveFlag)
+  JR Z,RefreshInfo_Alien  ; yes: AlienInfoCheck
+  CALL TriggerAlienXAnim  ; no: restart the encounter animation
+  LD A,(AlienActiveFlag)  ; Android hostile yet?
   AND A
-  RET Z
-  LD HL,(AlienTargetPtr)
-  INC HL
+  RET Z                   ; no: done
+  LD HL,(AlienTargetPtr)  ; is the Android in the viewed room
+  INC HL                  ; (Z flag for AndroidInfoCheck)?
   LD A,(CurrentRoom)
   CP (HL)
   JP AndroidInfoCheck
@@ -6132,16 +6220,16 @@ RefreshInfo_Alien:
   JP AlienInfoCheck
 ; This entry point is used by the routine at AlienInfoCheck.
 RefreshInfo_Encounter:
-  LD HL,DrawMenuStrip
-  LD (CrewAnimFlags),HL
-  LD A,$04
+  LD HL,DrawMenuStrip     ; freeze both animation channels
+  LD (CrewAnimFlags),HL   ; ($8080) and switch to view type 4:
+  LD A,$04                ; the alien-encounter screen
   LD (RoomTypeByte),A
 ; This entry point is used by the routine at AndroidInfoCheck.
 RefreshInfo_AttackRow:
-  LD A,$34
+  LD A,$34                ; Special cell (13) = "  ATTACK  "
   LD ($73CB),A
-  LD HL,$48D6
-  LD (DrawScreenPtr),HL
+  LD HL,$48D6             ; and redraw the special row
+  LD (DrawScreenPtr),HL   ; (screen row 14, col 22)
   CALL DrawSprite
   RET
 
@@ -6162,14 +6250,14 @@ RefreshInfo_AttackRow:
 ; ENTERED the viewed room, sprite strip 51 (the cat) is drawn into corridor
 ; cell 14.
 UpdateJones:
-  LD A,(JonesRoom)        ; A = primary alien-event timer
-  CP $FF                  ; 255 = disabled
-  RET Z                   ; disabled: do nothing this frame
+  LD A,(JonesRoom)        ; A = Jones's room —
+  CP $FF                  ; 255 = caught / off the map:
+  RET Z                   ; nothing to walk
   LD HL,JonesMoveTimer    ; HL → JonesMoveTimer
   DEC (HL)                ; tick it down
   RET NZ                  ; not yet zero: wait another frame
-  LD (HL),$FF             ; expired: reset secondary counter to 255
-  EX AF,AF'               ; save A for later use
+  LD (HL),$FF             ; expired: next move in ~255 frames
+  EX AF,AF'               ; keep the OLD room in A'
 Jones_PickMove:
   LD A,(JonesRoom)        ; A = Jones's current room
   LD HL,RoomAdjCorridors  ; corridor adjacency map (RoomAdjCorridors)
@@ -6250,96 +6338,101 @@ Jones_Companion:
   CALL InitJonesAnim      ; start the Jones animation from frame 0
   RET
 
-; UpdateCrewAI
+; UpdateAlienAI — give the idle alien its next action
 ;
-; Assigns a new action to the first idle crew member. Scans the 7-entry crew
-; data table at ActorRecords (IX+0 = action counter). If a crew member's
-; counter is non-zero they are busy; the first one with counter = 0 gets a new
-; action sourced from the ROM-traversal script via AdvanceScriptPtr
-; (AdvanceScriptPtr) and ScriptNibbleToDirection (ScriptNibbleToDirection). The
-; action sets IX+3 to one of: 1 = idle (action timer 80 frames) 2 = move
-; (action timer 50 frames) 3 = wait (action timer 50 frames) 5 = investigate
-; (action timer 60 frames) and IX+0 to the appropriate frame countdown.
+; Despite the old "UpdateCrewAI" name, this is the ALIEN's brain (IX -> slot 0;
+; crew get their actions from the player). When the alien's countdown is parked
+; (0), pick its next move from the ROM script: - crew share its room -> action
+; state 5 (attack tick, timer 60) - alone with the grille still in place ->
+; 3-in-16 chance to rip the grille out itself (state 3, timer 50) - alone,
+; grille open -> 6-in-16 chance to slip through it into / out of the ducts
+; (state 2, timer 50) - otherwise wander to an adjacent room (state 1, timer
+; 80); when the roll leaves it where it stands, it damages the room instead (+1
+; damage point — the alien trashes whatever it is lurking in)
+;
+; The entry goes through AIActionSelect (AIActionSelect), which first rescues
+; the alien from spot 98 (ducts "over" the Narcissus, an escape artifact — see
+; that routine).
 ;
 ; Used by the routine at GameEntry.
-UpdateCrewAI:
+UpdateAlienAI:
   PUSH IX                 ; save caller's IX
-  LD IX,ActorRecords      ; IX = crew data base (first 7-entry crew table)
-  XOR A                   ; A = 0
-  CP (IX+$00)             ; is crew member 0's action counter zero (idle)?
-  JR Z,CrewAI_Assign      ; yes: assign new action at AIActionSelect
-  POP IX                  ; crew member busy: restore IX
-  RET                     ; return without change
-CrewAI_Assign:
-  JP AIActionSelect       ; tail-call: assign action from script byte
+  LD IX,ActorRecords      ; IX -> the alien's record (slot 0)
+  XOR A                   ; is its action countdown parked (0)?
+  CP (IX+$00)
+  JR Z,AlienAI_Assign     ; yes: pick a new action
+  POP IX                  ; no: it is busy
+  RET
+AlienAI_Assign:
+  JP AIActionSelect       ; duct-escape guard, then FindVictims
 ; This entry point is used by the routine at AIActionSelect.
-CrewAI_FindTarget:
-  LD HL,$FFFF
+AlienAI_FindVictims:
+  LD HL,$FFFF             ; NearestCrewC/A = 255/255
   LD (NearestCrewC),HL
-  LD DE,NearestCrewC
-  LD HL,$7387
-  LD BC,$0701
-CrewAI_ScanLoop:
-  CP (HL)
-  JR NZ,CrewAI_ScanNext
-  EX DE,HL
-  LD (HL),C
+  LD DE,NearestCrewC      ; collect crew on the alien's spot
+  LD HL,$7387             ; (A = its room byte, from AIActionSelect)
+  LD BC,$0701             ; B = 7 slots, C = slot 1
+AlienAI_ScanLoop:
+  CP (HL)                 ; on the same spot?
+  JR NZ,AlienAI_ScanNext
+  EX DE,HL                ; record the slot in
+  LD (HL),C               ; NearestCrewC, then A, then B
   EX DE,HL
   INC DE
-CrewAI_ScanNext:
+AlienAI_ScanNext:
   INC C
   PUSH DE
-  LD DE,$0008
+  LD DE,$0008             ; next record's room byte
   ADD HL,DE
   POP DE
-  DJNZ CrewAI_ScanLoop
-  LD A,(NearestCrewC)
+  DJNZ AlienAI_ScanLoop
+  LD A,(NearestCrewC)     ; anyone there?
   CP $FF
-  JR Z,CrewAI_HaveTarget
-  LD (IX+$00),$3C         ; timer = 60 frames
-  LD (IX+$03),$05         ; action state = 5 (investigate)
+  JR Z,AlienAI_GrilleCheck ; no: movement options
+  LD (IX+$00),$3C         ; yes: attack them —
+  LD (IX+$03),$05         ; action state 5, timer 60
   POP IX
   RET
-CrewAI_HaveTarget:
-  LD A,(IX+$01)           ; actor's current room
-  AND $3F
+AlienAI_GrilleCheck:
+  LD A,(IX+$01)           ; alien alone: is this room's
+  AND $3F                 ; grille still in place?
   LD E,A
   LD D,$00
   LD HL,RoomGrilleState   ; RoomGrilleState[room]
   ADD HL,DE
   LD A,(HL)
-  CP $FF                  ; grille still in place here?
-  JR NZ,CrewAI_TryMove    ; no: consider moving out instead
-  CALL AdvanceScriptPtr   ; AdvanceScriptPtr → A = next script nibble
-  CALL ScriptNibbleToDirection ; ScriptNibbleToDirection → A ∈ [0..4]
-  AND A                   ; direction 0?
-  JR NZ,CrewAI_Wander     ; no: branch to idle assignment
-  LD (IX+$00),$32         ; timer = 50 frames
-  LD (IX+$03),$03         ; action state = 3 (remove the grille)
+  CP $FF
+  JR NZ,AlienAI_TryDuct   ; no: it may slip through
+  CALL AdvanceScriptPtr   ; yes: roll the script —
+  CALL ScriptNibbleToDirection ; direction 0 (3 in 16)?
+  AND A
+  JR NZ,AlienAI_Wander    ; no: wander instead
+  LD (IX+$00),$32         ; yes: the alien rips the grille
+  LD (IX+$03),$03         ; out itself (state 3, timer 50)
   POP IX
   RET
-CrewAI_TryMove:
-  CALL AdvanceScriptPtr   ; AdvanceScriptPtr → A
-  CALL ScriptNibbleToDirection ; ScriptNibbleToDirection
-  CP $02                  ; direction < 2?
-  JR NC,CrewAI_Wander     ; no: idle
+AlienAI_TryDuct:
+  CALL AdvanceScriptPtr   ; roll the script —
+  CALL ScriptNibbleToDirection ; direction 0 or 1 (6 in 16)?
+  CP $02
+  JR NC,AlienAI_Wander    ; no: wander
 ; This entry point is used by the routine at AIActionSelect.
-CrewAI_DuctFlip:
-  LD A,(IX+$01)
-  XOR $40
+AlienAI_DuctFlip:
+  LD A,(IX+$01)           ; yes: through the open grille —
+  XOR $40                 ; same room, other side
   LD (IX+$02),A
   LD (IX+$00),$32         ; timer = 50 frames
-  LD (IX+$03),$02         ; action state = 2 (move)
+  LD (IX+$03),$02         ; action state = 2 (duct transit)
   POP IX
   RET
-CrewAI_Wander:
-  CALL PickNextRoom
+AlienAI_Wander:
+  CALL PickNextRoom       ; pick an adjacent room
   LD (IX+$00),$50         ; timer = 80 frames
-  LD (IX+$03),$01         ; action state = 1 (idle / wander)
-  LD A,(IX+$01)
+  LD (IX+$03),$01         ; action state = 1 (move/idle)
+  LD A,(IX+$01)           ; going nowhere (dest = current)?
   CP (IX+$02)
-  LD A,$01
-  CALL Z,AddAlienRoomDamage
+  LD A,$01                ; then the alien trashes the room:
+  CALL Z,AddAlienRoomDamage ; +1 damage point
   POP IX
   RET
 
@@ -6352,50 +6445,56 @@ CrewAI_Wander:
 ; Used by the routines at SetActionTimer, MoraleFromCompanion, UpdateJones,
 ; CrewHitsAlien, AddAlienRoomDamage, DestructArm, DestructAbort,
 ; HypersleepStart, FightFire, SealLock1, BlowLock1, CrewAction6_Handler,
-; FireDamageTick, JonesUneasyMsg, CrewAction5_Investigate, WoundMsg,
+; FireDamageTick, JonesUneasyMsg, CrewAction5_AlienAttack, WoundMsg,
 ; VictimItemDrop, OxygenCheckRedraw, LaunchGate, CrewAction7_Handler,
 ; UpdateAlien, CrewHitsAndroid, LongGameInit and KillActorMoraleHit.
 EnqueueMessage:
-  EX DE,HL
-  LD HL,(MsgLastEnqueued)
-  CP L
+  EX DE,HL                ; E = actor, D = target
+  LD HL,(MsgLastEnqueued) ; same msg# and actor as the last
+  CP L                    ; one enqueued?
   JR NZ,EnqMsg_Append
   LD A,E
   CP H
-  RET Z
-  LD A,L
+  RET Z                   ; yes: drop the duplicate
+  LD A,L                  ; (A = the msg# again)
 EnqMsg_Append:
   EX AF,AF'
-  LD HL,(MsgQueueWritePtr)
-  LD A,(HL)
-  CP $FF
-  RET Z
+  LD HL,(MsgQueueWritePtr) ; queue full? (the write ptr has hit
+  LD A,(HL)               ; the 255 that starts MsgLastEnqueued,
+  CP $FF                  ; ~9 entries in)
+  RET Z                   ; yes: drop the message
   EX AF,AF'
-  LD (HL),A
-  INC HL
+  LD (HL),A               ; append the 3-byte entry:
+  INC HL                  ; msg#, actor, target
   LD (HL),E
   INC HL
   LD (HL),D
   INC HL
   LD (MsgQueueWritePtr),HL
-  LD L,A
-  LD H,E
+  LD L,A                  ; remember (msg#, actor) for the
+  LD H,E                  ; duplicate check
   LD (MsgLastEnqueued),HL
-  LD A,(MsgVisibleTimer)
+  LD A,(MsgVisibleTimer)  ; a message currently on display?
   AND A
   RET Z
-  LD A,$01
-  LD (MsgVisibleTimer),A
+  LD A,$01                ; yes: cut its hold time short so
+  LD (MsgVisibleTimer),A  ; the new one appears promptly
   RET
 
 ; RenderMessage
 ;
+; Draw message number A onto the bottom message line (screen row 23). The text
+; is drawn over BLACK attributes, so it stays invisible until
+; TickMessageQueue's cursor sweep reveals it column by column. Substitution
+; codes: 254 = actor name (MsgParam1), 253 = target name (MsgParam2), 252 =
+; room name (MsgParam1 as a room id).
+;
 ; Used by the routine at TickMessageQueue.
 RenderMessage:
-  LD HL,Screen_R23C0      ; HL = screen address for bottom status line
+  LD HL,Screen_R23C0      ; draw at the message line (row 23)
   LD (DrawScreenPtr),HL
-  LD DE,MessageTextTable
-  AND A
+  LD DE,MessageTextTable  ; find string number A: skip A
+  AND A                   ; 255-terminated strings
   JR Z,RenderMsg_CharLoop
   LD B,A
 RenderMsg_SkipLoop:
@@ -6405,49 +6504,49 @@ RenderMsg_SkipLoop:
   JR NZ,RenderMsg_SkipLoop
   DJNZ RenderMsg_SkipLoop
 RenderMsg_CharLoop:
-  LD A,(DE)
-  CP $FF
+  LD A,(DE)               ; next message byte:
+  CP $FF                  ; end of string?
   JR Z,RenderMsg_Finish
-  CP $FE
+  CP $FE                  ; the actor's name?
   JR Z,RenderMsg_ActorName
-  CP $FD
+  CP $FD                  ; the target's name?
   JR Z,RenderMsg_TargetName
-  CP $FC
+  CP $FC                  ; a room name?
   JR Z,RenderMsg_RoomName
-  PUSH DE
+  PUSH DE                 ; plain character: blit it
   CALL DrawSpriteRow
   POP DE
   INC DE
-  LD HL,DrawScreenPtr
+  LD HL,DrawScreenPtr     ; one column right
   INC (HL)
   JR RenderMsg_CharLoop
 RenderMsg_ActorName:
-  LD A,(MsgParam1)
+  LD A,(MsgParam1)        ; A = the actor's slot
   JR RenderMsg_PrintName
 RenderMsg_TargetName:
-  LD A,(MsgParam2)
+  LD A,(MsgParam2)        ; A = the target's slot
 RenderMsg_PrintName:
   INC DE
-  PUSH DE
+  PUSH DE                 ; print crew name A (CrewNameTable)
   CALL PrintName
   POP DE
   JR RenderMsg_CharLoop
 RenderMsg_RoomName:
   INC DE
   PUSH DE
-  LD A,(MsgParam1)
-  LD HL,(DrawScreenPtr)
-  PUSH HL
+  LD A,(MsgParam1)        ; A = the room id = its name's
+  LD HL,(DrawScreenPtr)   ; string index — a 10-character
+  PUSH HL                 ; strip via DrawSprite
   CALL DrawSprite
   POP HL
-  LD DE,$000A
+  LD DE,$000A             ; advance 10 columns
   ADD HL,DE
   LD (DrawScreenPtr),HL
   POP DE
   JR RenderMsg_CharLoop
 RenderMsg_Finish:
-  LD HL,(DrawScreenPtr)
-  LD A,L
+  LD HL,(DrawScreenPtr)   ; MsgDrawnCol = the end column,
+  LD A,L                  ; bit 7 set = "reveal sweep due"
   AND $1F
   OR $80
   LD (MsgDrawnCol),A
@@ -6455,71 +6554,77 @@ RenderMsg_Finish:
 
 ; ClearMessageRow
 ;
+; Blank the bottom message line: erase the 32 tile columns, black out the
+; attribute row (with a red marker at column 0 priming the reveal sweep) and
+; reset the display timer.
+;
 ; Used by the routine at UpdateAllCrew.
 ClearMessageRow:
-  LD HL,Screen_R23C0
+  LD HL,Screen_R23C0      ; the message line (row 23)
   LD (DrawScreenPtr),HL
-  LD B,$20
+  LD B,$20                ; blank all 32 columns
 ClearMsg_TileLoop:
   PUSH BC
-  XOR A
-  CALL DrawTileA
+  XOR A                   ; (entering DrawSpriteRow past its
+  CALL DrawTileA          ; (DE) fetch draws tile A = blank)
   LD HL,DrawScreenPtr
   INC (HL)
   POP BC
   DJNZ ClearMsg_TileLoop
-  LD HL,MsgLineAttrs
-  LD (HL),$12
-  LD (MsgAttrPtr),HL
+  LD HL,MsgLineAttrs      ; attr row 23: a red block at col 0
+  LD (HL),$12             ; (the sweep cursor's start),
+  LD (MsgAttrPtr),HL      ; MsgAttrPtr = col 0,
   INC HL
-  LD B,$1F
+  LD B,$1F                ; and black over cols 1-31
 ClearMsg_AttrLoop:
   LD (HL),$00
   INC HL
   DJNZ ClearMsg_AttrLoop
-  LD HL,MsgVisibleTimer
+  LD HL,MsgVisibleTimer   ; display timer = 0
   LD (HL),B
   RET
 
 ; TickMessageQueue
 ;
-; Per-frame ticker for the on-screen status-message display. Decrements the
-; message-visible countdown at MsgVisibleTimer; when it expires, peeks at the
-; queued-message head at MsgDrawnCol and either swaps in the next queued
-; message (copying a 21-byte entry from MessageQueue to MessageQueueBody and
-; re-invoking the renderer at RenderMessage) or clears the message line. Called
-; twice per frame from the main loop at GameEntry.
+; Per-frame driver of the message line's teletype effect. A message's life:
+; dequeue -> RenderMessage draws it over black attributes -> a bright-red
+; cursor sweeps left-to-right, turning each column black-on-cyan (the reveal)
+; -> the message holds (timer 50, or just 2 when more messages wait) -> the
+; cursor sweeps back right-to-left blacking it out -> the next message is
+; fetched. MsgDrawnCol encodes the phase: 0 = line free, bit 7 set = revealing,
+; bit 7 clear = erasing. Called twice per frame, so the sweeps run at ~100
+; cells/s.
 ;
 ; Used by the routine at GameEntry.
 TickMessageQueue:
-  LD A,(MsgVisibleTimer)  ; A = current message-visible timer
+  LD A,(MsgVisibleTimer)  ; message currently holding?
   AND A
   JR Z,MsgQueue_Fetch
-  DEC A
+  DEC A                   ; yes: run down the hold time
   LD (MsgVisibleTimer),A
   RET NZ
-  LD A,(MsgAttrPtr)
-  AND $1F
-  LD (MsgDrawnCol),A
+  LD A,(MsgAttrPtr)       ; hold over: start the erase sweep —
+  AND $1F                 ; MsgDrawnCol = current column,
+  LD (MsgDrawnCol),A      ; bit 7 clear
   RET
 MsgQueue_Fetch:
-  LD A,(MsgDrawnCol)
+  LD A,(MsgDrawnCol)      ; a sweep in progress?
   AND A
   JR NZ,MsgLine_Sweep
-  LD A,(MsgQueueWritePtr)
+  LD A,(MsgQueueWritePtr) ; line free: anything queued?
   LD HL,MessageQueue
   CP L
   JR NZ,MsgQueue_Dequeue
-  RET
+  RET                     ; no: idle
 MsgQueue_Dequeue:
-  LD A,(HL)
-  INC HL
-  LD E,(HL)
+  LD A,(HL)               ; pop the head entry:
+  INC HL                  ; A = msg#,
+  LD E,(HL)               ; E/D = actor/target params
   INC HL
   LD D,(HL)
   LD (MsgParam1),DE
-  LD BC,$0015
-  LD DE,MessageQueue
+  LD BC,$0015             ; compact the queue down
+  LD DE,MessageQueue      ; by one 3-byte entry
   LD HL,MessageQueueBody
   LDIR
   LD HL,(MsgQueueWritePtr)
@@ -6527,27 +6632,27 @@ MsgQueue_Dequeue:
   DEC HL
   DEC HL
   LD (MsgQueueWritePtr),HL
-  CALL RenderMessage
+  CALL RenderMessage      ; draw it (still invisible)
   RET
 MsgLine_Sweep:
-  BIT 7,A
-  JR Z,MsgLine_SweepBack
-  LD HL,(MsgAttrPtr)
-  LD (HL),$28
-  INC HL
-  LD (HL),$52
+  BIT 7,A                 ; which sweep phase?
+  JR Z,MsgLine_SweepBack  ; bit 7 clear: erasing
+  LD HL,(MsgAttrPtr)      ; revealing: the column behind turns
+  LD (HL),$28             ; black-on-cyan (readable),
+  INC HL                  ; the cursor block (bright red)
+  LD (HL),$52             ; moves one right
   LD (MsgAttrPtr),HL
-  DEC A
+  DEC A                   ; reached the end of the text?
   CP $80
   JR Z,MsgLine_SetTimer
-  LD (MsgDrawnCol),A
+  LD (MsgDrawnCol),A      ; not yet: keep sweeping
   RET
 MsgLine_SetTimer:
-  XOR A
+  XOR A                   ; reveal done: line phase = idle,
   LD (MsgDrawnCol),A
-  LD A,(MsgQueueWritePtr)
-  LD HL,MessageQueue
-  CP L
+  LD A,(MsgQueueWritePtr) ; hold the message for 50 ticks —
+  LD HL,MessageQueue      ; only 2 when more messages
+  CP L                    ; are waiting
   LD A,$32
   JR Z,MsgLine_StoreTimer
   LD A,$02
@@ -6555,12 +6660,12 @@ MsgLine_StoreTimer:
   LD (MsgVisibleTimer),A
   RET
 MsgLine_SweepBack:
-  LD HL,(MsgAttrPtr)
-  LD (HL),$00
+  LD HL,(MsgAttrPtr)      ; erasing: black out this column,
+  LD (HL),$00             ; the cursor block moves one left
   DEC HL
   LD (HL),$52
   LD (MsgAttrPtr),HL
-  DEC A
+  DEC A                   ; A = columns left (0 frees the line)
   DEFB $32                ; opcode of "LD (msg-head var),A": its operands are
                           ; the XOR H / ADD A,E at XorHAddE, so falling through
                           ; stores A and hits that entry's RET
@@ -6600,20 +6705,20 @@ StartAttack:
 
 ; CrewAction4_Handler
 ;
-; Dispatched via CrewActionDispatch entry 4 (combat).
+; Dispatched via CrewActionDispatch entry 4: a queued ATTACK order fires. The
+; actor attacks whatever hostile shares his room — the actor's room byte (+1)
+; is compared with each hostile's:
 ;
-; Branches a combat-state actor into one of two parallel handlers based on
-; whose sprite-class byte (+1) matches the actor's:
+; 1. The actor stands in the alien's room ($737F) → CALL CrewHitsAlien
+; (CrewHitsAlien) — message #3 "nets the ALIEN" or #4 "hits the ALIEN".
 ;
-; 1. If the actor's (IX+1) matches the alien slot's identity at $737F → CALL
-; CrewHitsAlien (CrewHitsAlien) — message #3 "nets the ALIEN" or #4 "hits the
-; ALIEN".
+; 2. Else, if the alien is loose (AlienActiveFlag) and the actor stands in the
+; **Android's** room (record via AlienTargetPtr AlienTargetPtr) → CALL
+; CrewHitsAndroid (CrewHitsAndroid) — message #31 "nets {target}" or #32 "hits
+; the Android".
 ;
-; 2. Else, if AlienActiveFlag is non-zero AND the actor's (IX+1) matches the
-; alien-target slot's (IX+1) — i.e. the **Android** slot picked by LongGameInit
-; (LongGameInit) via LongGameTargetTable (LongGameTargetTable) and pointed to
-; by AlienTargetPtr (AlienTargetPtr) — → CALL CrewHitsAndroid (CrewHitsAndroid)
-; — message #31 "nets {target}" or #32 "hits the Android".
+; 3. Neither hostile is here (it moved away before the countdown expired): the
+; attack fizzles silently.
 ;
 ; The Android role: LongGameInit randomly picks one of crew slots {1, 2, 4, 6}
 ; (Dallas / Kane / Ash / Parker) and stores it in AlienTargetID
@@ -6621,188 +6726,180 @@ StartAttack:
 ; behave like a normal crew member. UpdateAlien (UpdateAlien) turns them
 ; hostile the first frame the alien is loose and the slot is still in its
 ; template state (the "first encounter"), stamping them into action state 7 and
-; giving them their sprite-class kin as targets via NearestCrewA/B (see
-; GatherSameClassSlots). After activation the Android wounds nearby crew
-; through CrewAction7_Handler (CrewAction7_Handler); CrewHitsAndroid here is
-; the **player-response branch**, dispatched when other crew engage the Android
-; in combat state 4.
+; giving them targets via NearestCrewA/B (see GatherSameRoomSlots). After
+; activation the Android wounds nearby crew through CrewAction7_Handler
+; (CrewAction7_Handler); CrewHitsAndroid here is the **player-response
+; branch**, dispatched when other crew engage the Android in combat state 4.
+; (The Short Game hard-wires AlienTargetID = 9 and never re-points
+; AlienTargetPtr, so branch 2 is inert there.)
 ;
-; CAVEAT: the (IX+1) byte is NOT a unique slot ID in the LongGameCrewInit
-; template (LongGameCrewInit) — slots 1/2/3 share +1=6, slots 4/5/6 share
-; +1=27. So branch 2's match fires for the whole **sprite class** of the
-; Android, not strictly the chosen slot: - AlienTargetID ∈ {1, 2}: matches
-; {Dallas, Kane, Ripley} - AlienTargetID ∈ {4, 6}: matches {Ash, Lambert,
-; Parker} Whether that ambiguity is intentional design or a missing per-slot ID
-; write is unresolved — verify on an emulator before extending. The short game
-; hard-wires AlienTargetID = 9 (out of range), so branch 2 never fires there.
-;
-; After dispatch, CALL PostCombatReset clears IX+3 (action state) and returns.
+; After dispatch, CALL PostCombatReset parks IX+3 (action state) and returns.
 CrewAction4_Handler:
   LD A,($737F)            ; A = the alien's current room (slot 0 byte +1)
-  CP (IX+$01)             ; current actor IS the alien slot?
+  CP (IX+$01)             ; does the actor stand in it?
   JR Z,DispatchHitsAlien  ; yes → CrewHitsAlien branch
   LD A,(AlienActiveFlag)  ; A = AlienActiveFlag
   AND A                   ; alien loose on ship?
   RET Z                   ; no: nothing to dispatch
-  LD HL,(AlienTargetPtr)  ; HL = pointer to alien-target crew record
-  INC HL                  ; HL → target's identity byte (+1)
-  LD A,(HL)               ; A = target's identity
-  CP (IX+$01)             ; current actor IS the alien's target (= the
-                          ; Android)?
-  RET NZ                  ; no: not in combat with either alien or android
+  LD HL,(AlienTargetPtr)  ; HL = pointer to the Android's crew record
+  INC HL                  ; HL → its current-room byte (+1)
+  LD A,(HL)               ; A = the Android's room
+  CP (IX+$01)             ; does the actor stand in it?
+  RET NZ                  ; no: neither hostile is here — fizzle
 Combat_HitAlien:
   CALL CrewHitsAndroid    ; yes → CrewHitsAndroid (msg #32 / #31)
   JR ClearActionState
 DispatchHitsAlien:
-  CALL CrewHitsAlien      ; alien slot → CrewHitsAlien (msg #4 / #3)
+  CALL CrewHitsAlien      ; alien's room → CrewHitsAlien (msg #4 / #3)
 ClearActionState:
   CALL PostCombatReset    ; reset IX+3 = 0 (action state cleared post-combat)
   NOP
   RET
 Combat_RefreshRow:
-  LD A,(RoomModeByte)
+  LD A,(RoomModeByte)     ; room view on screen (mode 1)?
   CP $01
-  RET NZ
-  LD A,(DrawSlotIndex)
+  RET NZ                  ; no: done
+  LD A,(DrawSlotIndex)    ; is the attacker the viewed crew member?
   LD HL,CrewIndex
   CP (HL)
-  RET NZ
-  LD A,$34
-  CALL SpecialRowAttack
-  LD HL,$48D6
-  LD (DrawScreenPtr),HL
+  RET NZ                  ; no: done
+  LD A,$34                ; keep "  ATTACK  " on the Special slot
+  CALL SpecialRowAttack   ; (the hostile is still in the room)
+  LD HL,$48D6             ; and redraw the special row
+  LD (DrawScreenPtr),HL   ; (screen row 14, col 22)
   CALL DrawSprite
   RET
 
 ; CrewHitsAlien
 ;
 ; Alien-side combat handler. Called from CrewAction4_Handler
-; (DispatchHitsAlien) when the actor in state 4 has (IX+1) matching $737F (the
-; alien's identity from CommonGameInit, CommonInit_AlienRoom).
+; (DispatchHitsAlien) when the state-4 actor stands in the alien's room
+; ($737F).
 ;
 ; The outcome depends on the WEAPON: FindHeldItems (FindHeldItems) loads the
 ; attacking crew member's front-hand item id into HeldItemFront (HeldItemFront)
 ; and the effect dispatches on it. It also houses the Harpoon Gun's kill
 ; primitive at AlienKillPrimitive.
 ;
-; Guards: re-asserts that (IX+1) matches the alien identity, then requires
-; pixel coords IX+4 >= 2 and IX+6 >= 2 (sprite fully placed). Calls
-; ClearHandCache to clear the held-item slots, then FindHeldItems
-; (FindHeldItems) to fetch the attacker's weapons:
+; Guards: re-asserts that the attacker still shares the alien's room, then
+; requires strength (IX+4) >= 2 and morale (IX+6) >= 2 — a crew member who is
+; Collapsed or Broken/Shaken cannot fight. Then the front-hand weapon decides:
 ;
-; 17 (Cat Box)       → silent: JP to ClearActionState >= 20 (bare hands) →
-; silent 16 (Net)           → "net" outcome: write $FF to $7376 (slot 0 byte
-; +0) to disable the alien, then enqueue message #3 "{actor} nets the ALIEN"
-; else               → "hit" outcome at CrewHitsAlien_HitPath: enqueue message
-; #4 "{actor} hits the ALIEN", then dispatch on the weapon id: - 0-5 Elctrc
-; Prd/Incineratr, 18-19 Spanner: INC alien's wound counter at $73B2 (byte +4 of
-; slot 0). If it reaches the AlienStopCell threshold, JP 44125 (alien- defeated
-; path). - 6-7 Tracker: enqueue msg #5 "Tracker is broken" - 8-11 Fire Extng:
-; decrement the item's charge in ItemCharges; on underflow enqueue msg #6
-; "extinguisher empty". - 12 Harpn Gun: the kill primitive at
-; AlienKillPrimitive — see AlienKillPrimitive below. - 13-15 Laser Pist: JP
-; 37831 — decrement the charge, then either msg #7 "Laser is exhausted" or JP
-; 41022.
+; 17 (Cat Box)       → silent no-op >= 20 (Cat in Net/Box, or 255 = bare hands)
+; → silent no-op 16 (Net)           → "net" outcome: stamp 255 into the alien's
+; countdown byte ($737E, slot 0 byte +0) — netted, out of action — destroy the
+; Net (single-use), then enqueue message #3 "{actor} nets the ALIEN" else
+; → "hit" outcome at CrewHitsAlien_HitPath: enqueue message #4 "{actor} hits
+; the ALIEN", then dispatch on the weapon id: - 0-5 Elctrc Prd/Incineratr,
+; 18-19 Spanner: INC alien's wound counter at $7382 (byte +4 of slot 0). If it
+; reaches the AlienKillThreshold (15), JP 44125 (alien- defeated path). - 6-7
+; Tracker: the tracker shatters on the alien (destroyed, msg #5 "Tracker is
+; broken") but still wounds it (+1) - 8-11 Fire Extng: no wound — spend a
+; charge (ItemCharges) and try to scare the alien off (AlienScareCheck); with
+; no charge left, msg #6 "extinguisher empty". - 12 Harpn Gun: the kill
+; primitive at AlienKillPrimitive — see AlienKillPrimitive below. - 13-15 Laser
+; Pist: spend a charge, wound the alien (+2) and damage the room (+6); with no
+; charge left, msg #7 "Laser is exhausted".
 ;
 ; This routine parallels CrewHitsAndroid (CrewHitsAndroid) in structure but
-; refers to the alien (slot 0 at $7376) and emits messages #3 / #4 instead of
+; refers to the alien (slot 0 at $737E) and emits messages #3 / #4 instead of
 ; #31 / #32.
 CrewHitsAlien:
   LD A,($737F)            ; A = the alien's current room (slot 0 byte +1)
-  CP (IX+$01)             ; re-check: IX is the alien slot
-  RET NZ                  ; defensive: not the alien → bail
-  LD A,(IX+$04)           ; A = pixel X-tile
+  CP (IX+$01)             ; does the attacker still share it?
+  RET NZ                  ; no: the alien slipped away — bail
+  LD A,(IX+$04)           ; attacker's strength >= 2?
   CP $02
-  RET C                   ; X-tile < 2 → alien not fully on screen, bail
-  LD A,(IX+$06)           ; A = pixel Y
+  RET C                   ; no: too hurt to fight
+  LD A,(IX+$06)           ; attacker's morale >= 2?
   CP $02
-  RET C                   ; Y < 2 → bail
-  CALL ClearHandCache     ; clear (31248) scan slot, A = CrewIndex
-  CALL FindHeldItems      ; populate (31248)/(31249) with corridor positions
-  LD A,(HeldItemFront)    ; A = alien's corridor scan position
-  CP $11
-  JP Z,Combat_RefreshRow  ; pos 17 → silent
-  CP $14
-  JP NC,Combat_RefreshRow ; pos >= 20 → silent (sentinel cells)
-  CP $10
-  JR NZ,CrewHitsAlien_HitPath ; pos != 16 → "hits the ALIEN" branch
-  LD HL,ActorRecords      ; HL = $7376 (alien slot byte 0)
-  LD (HL),$FF             ; mark alien slot as "netted/inactive"
-  CALL DrawFrontItem
-  LD A,(CrewIndex)        ; A = CrewIndex (= alien-slot index)
-  LD L,A                  ; L = actor index
+  RET C                   ; no: too scared to fight
+  CALL ClearHandCache     ; clear the hand cache, A = attacker's slot
+  CALL FindHeldItems      ; FindHeldItems: what is he holding?
+  LD A,(HeldItemFront)    ; A = the front-hand weapon
+  CP $11                  ; the Cat Box?
+  JP Z,Combat_RefreshRow  ; useless: silent no-op
+  CP $14                  ; Cat in Net/Box, or bare hands (255)?
+  JP NC,Combat_RefreshRow ; also useless
+  CP $10                  ; the Net?
+  JR NZ,CrewHitsAlien_HitPath ; no → "hits the ALIEN" branch
+  LD HL,ActorRecords      ; yes: stamp 255 into the alien's countdown
+  LD (HL),$FF             ; byte ($737E) — netted, out of action
+  CALL DestroyFrontItem   ; the Net is used up (destroyed)
+  LD A,(CrewIndex)        ; A = the attacker's slot
+  LD L,A                  ; L = actor for the name substitution
   LD A,$03                ; A = msg #3 "{actor} nets the ALIEN"
   CALL EnqueueMessage     ; enqueue
   JP Combat_RefreshRow
 ; "{actor} hits the ALIEN" branch (CrewHitsAlien continued).
 CrewHitsAlien_HitPath:
-  PUSH AF                 ; stash (31248) for post-message dispatch
-  LD A,(CrewIndex)        ; A = CrewIndex
-  LD L,A                  ; L = actor index
+  PUSH AF                 ; stash the weapon id across the message
+  LD A,(CrewIndex)        ; A = the attacker's slot
+  LD L,A                  ; L = actor for the name substitution
   LD A,$04                ; A = msg #4 "{actor} hits the ALIEN"
   CALL EnqueueMessage     ; enqueue
-  POP AF                  ; A = (31248) restored
-  CP $06
+  POP AF                  ; A = the weapon again
+  CP $06                  ; 0-5: a prod or an incinerator?
   JR C,AlienStep_Advance
-  CP $12
+  CP $12                  ; 18/19: a spanner?
   JR Z,AlienStep_Advance
   CP $13
-  JR NZ,WeaponCheck_Low
+  JR NZ,WeaponCheck_Low   ; anything else: weapon-specific handling
 AlienStep_Advance:
-  LD HL,$7382
+  LD HL,$7382             ; wound the alien: its +4 counter +1
   INC (HL)
-  LD A,(AlienStopCell)
+  LD A,(AlienKillThreshold) ; wounds reached the kill threshold (15)?
   CP (HL)
-  JP Z,EndgameScreen
-  JP AlienScareCheck
+  JP Z,EndgameScreen      ; yes: the alien dies — endgame
+  JP AlienScareCheck      ; no: it may flee (AlienScareCheck)
 WeaponCheck_Low:
-  CP $08
+  CP $08                  ; 6/7: a tracker?
   JR NC,WeaponCheck_Charged
-  CALL DrawFrontItem
-  LD HL,(CrewIndex)
-  LD A,$05
+  CALL DestroyFrontItem   ; yes: it shatters on the alien —
+  LD HL,(CrewIndex)       ; destroyed; L = actor,
+  LD A,$05                ; msg #5 "{actor}'s Tracker is broken"
   CALL EnqueueMessage
-  JR AlienStep_Advance
+  JR AlienStep_Advance    ; and it still wounds the alien
 WeaponCheck_Charged:
-  CP $0C
+  CP $0C                  ; 8-11: an extinguisher?
   JR NC,HarpoonGate
-  LD HL,ItemCharges
+  LD HL,ItemCharges       ; yes: HL -> its ItemCharges entry
   LD E,A
   LD D,$00
   ADD HL,DE
-  LD A,(HL)
+  LD A,(HL)               ; any CO2 left?
   AND A
   JR Z,WeaponSpentMsg
-  DEC (HL)
-  JP AlienScareCheck
+  DEC (HL)                ; yes: spend a charge — no wound, but
+  JP AlienScareCheck      ; the spray may scare the alien off
 WeaponSpentMsg:
-  LD HL,(CrewIndex)
-  LD A,$06
+  LD HL,(CrewIndex)       ; empty: L = actor,
+  LD A,$06                ; msg #6 "{actor}'s extinguisher..empty"
   CALL EnqueueMessage
   JP Combat_RefreshRow
 ; AlienKillPrimitive — the Harpoon Gun outcome, reached from CrewHitsAlien
 ; (CrewHitsAlien) when the attacker's front-hand item (HeldItemFront) is 12,
 ; the Harpn Gun. A harpoon strike is devastating for both sides:
-; GatherSameClassSlots gathers up to three slots (NearestCrewC +
-; NearestCrewA/B) sharing the alien's sprite class; for each, every
-; ItemLocations (ItemLocations) entry that the slot carries or that lies in the
-; alien's room is destroyed (set to 255), and if the slot's byte +7 is still
-; zero (alive) it is stamped to 1 (killed) with its byte +4 wound counter
-; cleared. Then the alien's own wound counter is bumped by 5 (harpoon hits push
-; it quickly over the AlienStopCell threshold → dies via JP 44125), the
-; corridor view is rebuilt (CALL 31417) and the per-frame chain continues at
-; AlienScareCheck (AlienScareCheck).
+; GatherSameRoomSlots gathers the attacker and up to two other crew in the
+; alien's room (NearestCrewC + NearestCrewA/B); for each, every ItemLocations
+; (ItemLocations) entry that the slot carries or that lies in the alien's room
+; is destroyed (set to 255), and if the slot is still alive (+7 = 0) it is
+; killed (+7 = 1, strength +4 cleared) — firing the harpoon kills the firer and
+; every bystander. The room takes 15 damage points, the alien's own wound
+; counter is bumped by 5 (harpoon hits push it quickly over the kill threshold
+; → dies via JP 44125), the corridor view is rebuilt (CALL 31417) and the chain
+; continues at AlienScareCheck (AlienScareCheck).
 HarpoonGate:
-  JP NZ,WeaponCheck_Laser ; (31248) != 12 → 37831 (decrement ItemCharges)
+  JP NZ,WeaponCheck_Laser ; weapon != 12 → 13-15, the laser branch
 AlienKillPrimitive:
-  CALL GatherSameClassSlots ; populate NearestCrewC + NearestCrewA/B with the
-                            ; three slots sharing the alien's sprite class
+  CALL GatherSameRoomSlots ; gather the attacker + up to two other crew in the
+                           ; alien's room
   LD DE,NearestCrewC
-  LD B,$03
+  LD B,$03                ; all three gathered slots:
 KillPrim_SlotLoop:
   PUSH BC
   PUSH DE
-  LD A,(DE)
+  LD A,(DE)               ; A = victim slot (255 = none)
   CP $FF
   JR Z,KillPrim_NextSlot
   PUSH AF
@@ -6826,7 +6923,7 @@ KillPrim_WipeItem:
 KillPrim_NextItem:
   INC HL
   DJNZ KillPrim_ItemLoop
-  POP AF
+  POP AF                  ; HL -> the victim's status byte (+7)
   LD HL,ActorRecords
   ADD A,A
   ADD A,A
@@ -6835,233 +6932,263 @@ KillPrim_NextItem:
   LD E,A
   LD D,$00
   ADD HL,DE
-  XOR A
+  XOR A                   ; still alive?
   CP (HL)
   JR NZ,KillPrim_NextSlot
-  LD (HL),$01
+  LD (HL),$01             ; yes: killed by the blast (+7 = 1),
   DEC HL
   DEC HL
   DEC HL
-  LD (HL),A
+  LD (HL),A               ; strength (+4) = 0
 KillPrim_NextSlot:
   POP DE
   INC DE
   POP BC
   DJNZ KillPrim_SlotLoop
-  LD A,$0F
-  CALL AddAlienRoomDamage
-  LD HL,$7382
+  LD A,$0F                ; the blast wrecks the room:
+  CALL AddAlienRoomDamage ; +15 damage points
+  LD HL,$7382             ; alien wound counter += 5
   LD A,(HL)
   ADD A,$05
   LD (HL),A
-  LD HL,AlienStopCell
+  LD HL,AlienKillThreshold ; reached the kill threshold (15)?
   CP (HL)
-  JP NC,EndgameScreen
-  CALL InitGameView
-  JP AlienScareCheck
+  JP NC,EndgameScreen     ; yes: the alien dies — endgame
+  CALL InitGameView       ; rebuild the ship view
+  JP AlienScareCheck      ; the alien may flee
 WeaponCheck_Laser:
-  LD E,A
+  LD E,A                  ; 13-15, a laser pistol:
   LD D,$00
-  LD HL,ItemCharges
+  LD HL,ItemCharges       ; HL -> its ItemCharges entry
   ADD HL,DE
-  XOR A
+  XOR A                   ; any shots left?
   CP (HL)
   JR Z,LaserSpentMsg
-  DEC (HL)
-  LD A,$06
-  CALL AddAlienRoomDamage
-  LD HL,$7382
+  DEC (HL)                ; yes: spend one
+  LD A,$06                ; the beam scorches the room:
+  CALL AddAlienRoomDamage ; +6 damage points
+  LD HL,$7382             ; alien wound counter += 2
   LD A,(HL)
   ADD A,$02
   LD (HL),A
-  LD HL,AlienStopCell
+  LD HL,AlienKillThreshold ; reached the kill threshold (15)?
   CP (HL)
-  JP NC,EndgameScreen
-  JP AlienScareCheck
+  JP NC,EndgameScreen     ; yes: the alien dies — endgame
+  JP AlienScareCheck      ; no: it may flee
 LaserSpentMsg:
-  LD HL,(CrewIndex)
-  LD A,$07
+  LD HL,(CrewIndex)       ; out of shots: L = actor,
+  LD A,$07                ; msg #7 "{actor}'s Laser is exhausted"
   CALL EnqueueMessage
   JP Combat_RefreshRow
 
-; GatherSameClassSlots
+; GatherSameRoomSlots
+;
+; Fill NearestCrewC with the current actor's slot (CrewIndex) and
+; NearestCrewA/B with up to two other crew on the same spot (same room byte,
+; same side of the ducts) — the same scan RecalcMorale uses for RoomMateA/B.
+; GatherSlots_Scan is a direct entry with A = the slot to treat as "self".
 ;
 ; Used by the routines at CrewHitsAlien, AlienScareCheck, CrewAction7_Handler,
 ; UpdateAlien and CrewHitsAndroid.
-GatherSameClassSlots:
-  LD HL,$FFFF
+GatherSameRoomSlots:
+  LD HL,$FFFF             ; NearestCrewA/B = 255/255 (none)
   LD (NearestCrewA),HL
   LD DE,NearestCrewA
-  LD A,(CrewIndex)
+  LD A,(CrewIndex)        ; NearestCrewC = the current actor
   LD (NearestCrewC),A
-; This entry point is used by the routine at CrewAction5_Investigate.
+; This entry point is used by the routine at CrewAction5_AlienAttack.
 GatherSlots_Scan:
-  LD HL,$7387
-  LD C,$01
-  EX AF,AF'
-  LD A,(IX+$01)
-  LD B,$07
+  LD HL,$7387             ; HL -> slot 1's room byte (+1)
+  LD C,$01                ; C = candidate slot number
+  EX AF,AF'               ; keep "self" slot in A'
+  LD A,(IX+$01)           ; A = the actor's spot
+  LD B,$07                ; scan the 7 crew slots
 GatherSlots_Loop:
-  CP (HL)
-  JR NZ,GatherSlots_Next
-  EX AF,AF'
+  CP (HL)                 ; on the same spot?
+  JR NZ,GatherSlots_Next  ; no: next slot
+  EX AF,AF'               ; is it "self"?
   CP C
-  JR Z,GatherSlots_Skip
-  EX DE,HL
-  LD (HL),C
+  JR Z,GatherSlots_Skip   ; yes: skip it
+  EX DE,HL                ; record the slot
+  LD (HL),C               ; (NearestCrewA, then NearestCrewB)
   EX DE,HL
   INC DE
 GatherSlots_Skip:
-  EX AF,AF'
+  EX AF,AF'               ; (put the spot back in A)
 GatherSlots_Next:
   PUSH DE
-  LD DE,$0008
+  LD DE,$0008             ; step to the next record's room byte
   ADD HL,DE
   POP DE
   INC C
   DJNZ GatherSlots_Loop
   RET
 
-; DrawFrontItem
+; DestroyFrontItem
+;
+; The current actor's front-hand item is used up (Net) or broken (Tracker):
+; point HL at its ItemLocations entry, aim the draw pointer at the front-hand
+; menu row, and fall to DestroyHeldItem (DestroyHeldItem), which wipes the item
+; and promotes the back-hand item to the front hand.
 ;
 ; Used by the routines at CrewHitsAlien and CrewHitsAndroid.
-DrawFrontItem:
-  LD HL,$4836
-  LD (DrawScreenPtr),HL
-  LD BC,(HeldItemFront)
+DestroyFrontItem:
+  LD HL,$4836             ; draw pointer -> the front-hand row
+  LD (DrawScreenPtr),HL   ; (screen row 9, col 22)
+  LD BC,(HeldItemFront)   ; C = front item, B = back item
   LD E,C
   LD D,$00
-  LD HL,ItemLocations
+  LD HL,ItemLocations     ; HL -> ItemLocations[front item]
   ADD HL,DE
-  JP DestroyHeldItem
+  JP DestroyHeldItem      ; wipe it (DestroyHeldItem)
 
 ; UpdateHandRows
 ;
+; Tail of DestroyHeldItem (DestroyHeldItem) for the on-screen case, entered
+; with A = 255 and B = the back-hand item: if both hands are now empty, blank
+; the front row; otherwise promote the back-hand item to the front hand (redraw
+; both rows, move its ItemLocations marker +32 and apply its courage bonus via
+; PickupItemBoost).
+;
 ; Used by the routine at DestroyHeldItem.
 UpdateHandRows:
-  CP B
+  CP B                    ; back hand empty too (255)?
   JR NZ,UpdateHandRows_Swap
-  LD (MenuUseRows),A
-  CALL HandRows_Finish
+  LD (MenuUseRows),A      ; yes: front-row cell = blank
+  CALL HandRows_Finish    ; redraw the hand rows
   RET
 UpdateHandRows_Swap:
-  LD L,B
-  LD H,A
+  LD L,B                  ; front := the back-hand item,
+  LD H,A                  ; back := empty (255)
   LD (HeldItemFront),HL
-  LD A,L
+  LD A,L                  ; front-row cell = its string id
   CALL ItemIdToString
   LD (MenuUseRows),A
-  CALL DrawSprite
-  LD A,$FF
+  CALL DrawSprite         ; draw the front row
+  LD A,$FF                ; blank the back row (cell 9)
   LD ($73C7),A
-  CALL DrawSprite
-  LD A,(HeldItemFront)
+  CALL DrawSprite         ; and draw it
+  LD A,(HeldItemFront)    ; A = the promoted item
 ; This entry point is used by the routine at DestroyHeldItem.
 GetItemLocation:
-  LD HL,ItemLocations
+  LD HL,ItemLocations     ; HL -> its ItemLocations entry
   LD E,A
   LD D,$00
   ADD HL,DE
-  LD A,(HL)
-  JP PickupItemBoost
+  LD A,(HL)               ; A = its hand marker (128+slot)
+  JP PickupItemBoost      ; make it front-hand: +32 and courage
   RET
 
-; AlienScareCheck
+; AlienScareCheck — will the alien flee the fight?
+;
+; After a crew attack: total up how frightening the resistance is, then roll a
+; script nibble — if the nibble is below the total (and is not 15), the alien
+; flees to a random adjacent room and every fighter present gains courage and
+; morale (+1 each, courage capped at 8). The total counts, for each of up to
+; three crew in the room (the attacker + room-mates from GatherSameRoomSlots):
+; +1 if a fit (strength 3+), in-combat (state 4) fighter is Confident (morale
+; 4+); plus the alien's wounds / 4 — a hurt alien is easier to drive off.
+;
+; The INC (HL) at the end of the Scare_TrackerBonus weapon check is
+; unreachable: the two comparisons before it demand A = 6 AND A = 7 at once (JR
+; NZ where the intent was presumably a 6-12 weapon range check), so the
+; intended "armed with something serious" bonus never applies — an
+; original-game bug, preserved as-is.
 AlienScareCheck:
-  CALL GatherSameClassSlots
-  XOR A
+  CALL GatherSameRoomSlots ; gather the attacker + up to two other
+  XOR A                   ; crew in the alien's room; scare total = 0
   LD (DistanceAccum),A
   PUSH IX
   LD DE,NearestCrewC
-  LD B,$03
+  LD B,$03                ; all three gathered slots:
 Scare_SlotLoop:
   PUSH BC
   PUSH DE
-  LD A,(DE)
+  LD A,(DE)               ; A = slot (>= 8 = none)
   CP $08
   JR NC,Scare_NextSlot
   PUSH AF
-  LD IX,ActorRecords
+  LD IX,ActorRecords      ; IX -> his record
   ADD A,A
   ADD A,A
   ADD A,A
   LD E,A
   LD D,$00
   ADD IX,DE
-  LD A,$02
+  LD A,$02                ; fit to fight (strength 3+)?
   CP (IX+$04)
-  JR NC,Scare_SkipSlot
-  LD A,$04
+  JR NC,Scare_SkipSlot    ; no: he doesn't scare anything
+  LD A,$04                ; actually in combat (state 4)?
   CP (IX+$03)
-  JR NZ,Scare_SkipSlot
+  JR NZ,Scare_SkipSlot    ; no: doesn't count
   LD HL,DistanceAccum
-  DEC A
+  DEC A                   ; Confident (morale 4+)?
   CP (IX+$06)
   JR NC,Scare_TrackerBonus
-  INC (HL)
+  INC (HL)                ; yes: +1 to the scare total
 Scare_TrackerBonus:
-  POP AF
-  CALL FindHeldItems
+  POP AF                  ; A = the slot again
+  CALL FindHeldItems      ; FindHeldItems: what does he hold?
   LD HL,DistanceAccum
-  LD A,(HeldItemFront)
-  CP $0D
-  JR NC,Scare_AddDistance
-  CP $06
-  JR NZ,Scare_AddDistance
+  LD A,(HeldItemFront)    ; front-hand weapon check —
+  CP $0D                  ; but the INC below is unreachable:
+  JR NC,Scare_AddDistance ; the two equality tests demand
+  CP $06                  ; A = 6 and A = 7 at once
+  JR NZ,Scare_AddDistance ; (original-game bug, see the header)
   CP $07
   JR NZ,Scare_AddDistance
-  INC (HL)
+  INC (HL)                ; (never executed)
 Scare_AddDistance:
-  LD A,($7382)
-  SRA A
-  SRA A
+  LD A,($7382)            ; + the alien's wounds / 4:
+  SRA A                   ; a hurt alien is easier
+  SRA A                   ; to drive off
   ADD A,(HL)
   LD (HL),A
-  PUSH AF
+  PUSH AF                 ; (balances the POP below)
 Scare_SkipSlot:
   POP AF
 Scare_NextSlot:
   POP DE
-  INC DE
+  INC DE                  ; next gathered slot
   POP BC
   DJNZ Scare_SlotLoop
-  CALL AdvanceScriptPtr
-  CP $0F
+  CALL AdvanceScriptPtr   ; roll the next script nibble (0-15)
+  CP $0F                  ; 15 = the alien always stands firm
   JR Z,Scare_Done
-  LD HL,DistanceAccum
+  LD HL,DistanceAccum     ; nibble below the scare total?
   CP (HL)
-  JR NC,Scare_Done
-  LD IX,ActorRecords
+  JR NC,Scare_Done        ; no: it stays and fights
+  LD IX,ActorRecords      ; yes: it flees — IX -> the alien
 Scare_PickFlee:
-  CALL PickNextRoom
-  LD A,(IX+$01)
-  CP (IX+$02)
+  CALL PickNextRoom       ; pick an adjacent room, rerolling
+  LD A,(IX+$01)           ; until it actually leaves
+  CP (IX+$02)             ; (destination != current)
   JR Z,Scare_PickFlee
-  LD A,(CrewIndex)
-  PUSH AF
-  XOR A
+  LD A,(CrewIndex)        ; move it there at once:
+  PUSH AF                 ; run CrewAction1_Arrive with
+  XOR A                   ; CrewIndex temporarily = 0
   LD (CrewIndex),A
-  CALL CrewAction1_Idle
+  CALL CrewAction1_Arrive
   POP AF
   LD (CrewIndex),A
-  CALL TriggerAlienXAnim
-  LD (IX+$00),$00
-  LD DE,NearestCrewC
+  CALL TriggerAlienXAnim  ; restart the encounter-screen animation
+  LD (IX+$00),$00         ; park the alien's countdown
+  LD DE,NearestCrewC      ; every fighter present is emboldened:
   LD B,$03
 Scare_FleeLoop:
   PUSH BC
   PUSH DE
-  LD A,(DE)
+  LD A,(DE)               ; A = slot (>= 8 = none)
   CP $08
   JR NC,Scare_FleeNext
-  ADD A,A
-  ADD A,A
+  ADD A,A                 ; +1 courage and +1 morale
+  ADD A,A                 ; (IncPairAt on his +5/+6),
   ADD A,A
   LD E,A
   LD D,$00
   LD HL,$7383
   CALL IncPairAt
-  CP $09
+  CP $09                  ; courage capped at 8
   JR C,Scare_FleeNext
   LD (HL),$08
 Scare_FleeNext:
@@ -7069,16 +7196,19 @@ Scare_FleeNext:
   INC DE
   POP BC
   DJNZ Scare_FleeLoop
-  JP RefreshCondIfViewed
+  JP RefreshCondIfViewed  ; refresh the viewed condition line
 Scare_Done:
   POP IX
-  JP Combat_RefreshRow
+  JP Combat_RefreshRow    ; keep ATTACK on the special row
 
 ; AddAlienRoomDamage
 ;
-; Used by the routines at UpdateCrewAI and CrewHitsAlien.
+; Add A damage points to the ALIEN's current room (then fall into the general
+; AddRoomDamage below).
+;
+; Used by the routines at UpdateAlienAI and CrewHitsAlien.
 AddAlienRoomDamage:
-  LD HL,$737F
+  LD HL,$737F             ; E = the alien's current room
   LD E,(HL)
 ; This entry point is used by the routines at FireSpreadCheck and
 ; CrewHitsAndroid. AddRoomDamage: add A damage points to room E's damage meter
@@ -7095,19 +7225,19 @@ AddRoomDamage:
   INC HL                  ; HL -> units digit
   LD B,A                  ; B = damage points to add
 Damage_PointLoop:
-  PUSH BC
-  PUSH HL
+  PUSH BC                 ; per damage point: the meter climbs
+  PUSH HL                 ; in half-steps of the tens digit —
   PUSH DE
-  LD A,(HL)
+  LD A,(HL)               ; units already '5'?
   CP $35
   JR Z,Damage_TensCarry
-  LD (HL),$35
+  LD (HL),$35             ; no: units 0 -> 5
   JR Damage_NextPoint
 Damage_TensCarry:
-  LD (HL),$30
-  DEC HL
+  LD (HL),$30             ; yes: units '5' -> '0',
+  DEC HL                  ; carry into the tens digit
   INC (HL)
-  LD A,(HL)
+  LD A,(HL)               ; tens reached '3'?
   CP $33
   JR NZ,Damage_ChkStructural
   LD A,E                  ; damage tens digit reached '3': room alarms
@@ -7126,30 +7256,30 @@ Damage_ChkLifeSupt:
   LD A,$18                ; msg #24 "Environmental irregularities"
   JR Damage_SendMsg
 Damage_ChkNarcissus:
-  CP $22
+  CP $22                  ; the Narcissus?
   JR NZ,Damage_ChkEngines
-  LD A,$19
+  LD A,$19                ; msg #25 "Narcissus status RED"
   JR Damage_SendMsg
 Damage_ChkEngines:
-  CP $11
+  CP $11                  ; an engine room (17-19)?
   JR C,Damage_NextPoint
   CP $14
-  JR NC,Damage_NextPoint
-  AND $03
+  JR NC,Damage_NextPoint  ; other rooms: no "30" alarm
+  AND $03                 ; room 17/18/19 -> flag bit 3/4/5:
   LD B,A
   LD A,$04
 Damage_EngineBit:
-  ADD A,A
+  ADD A,A                 ; A = 4 << (room & 3)
   DJNZ Damage_EngineBit
-  LD HL,ShipSystemFlags
-  OR (HL)
+  LD HL,ShipSystemFlags   ; the engine room catches FIRE —
+  OR (HL)                 ; set its ShipSystemFlags bit
   LD (HL),A
-  LD L,E                  ; L = room for the [251] room-name field
+  LD L,E                  ; L = room for the {room} field
   LD A,$09                ; msg #9 "WARNING: Fire in {room}"
   CALL EnqueueMessage
   JR Damage_NextPoint
 Damage_ChkStructural:
-  CP $37
+  CP $37                  ; tens reached '7' (70 damage)?
   JR NZ,Damage_ChkOverflow
   LD L,E                  ; L = room
   LD A,$08                ; msg #8 "Structural Damage in {room}"
@@ -7157,44 +7287,48 @@ Damage_SendMsg:
   CALL EnqueueMessage
   JR Damage_NextPoint
 Damage_ChkOverflow:
-  CP $3A
-  CALL Z,DamageOverflowFlash
+  CP $3A                  ; tens past '9' (100 damage)?
+  CALL Z,DamageOverflowFlash ; the ship breaks up - game over
 Damage_NextPoint:
   POP DE
   POP HL
   POP BC
-  DJNZ Damage_PointLoop
-  LD A,(RoomModeByte)
-  CP $01
+  DJNZ Damage_PointLoop   ; next damage point
+  LD A,(RoomModeByte)     ; is the damaged room the one on
+  CP $01                  ; screen?
   RET NZ
   LD A,(CurrentRoom)
   CP E
-  CALL Z,DrawRoomTitle
+  CALL Z,DrawRoomTitle    ; yes: redraw the title/damage line
   RET
 
-; DamageOverflowFlash
+; DamageOverflowFlash — the hull gives way
+;
+; A room's damage meter has passed 99 (or the destruct countdown ran out): ~7
+; seconds of screen flashing with a rainbow border, then the ship is lost
+; (DamageGameOver DamageGameOver).
 ;
 ; Used by the routines at AddAlienRoomDamage and CrewAction6_Handler.
 DamageOverflowFlash:
   PUSH BC
   PUSH AF
-  LD B,$64
+  LD B,$64                ; 100 flash cycles:
 DamageFlash_Loop:
   PUSH BC
-  CALL BusyWait
-  LD A,$07
+  CALL BusyWait           ; ~36 ms delay,
+  LD A,$07                ; attributes = white ink on black,
   CALL FillAttributes
-  CALL BusyWait
-  LD A,$38
+  CALL BusyWait           ; ~36 ms delay,
+  LD A,$38                ; attributes = black ink on white
   CALL FillAttributes
   POP BC
-  LD A,B
-  AND $07
+  LD A,B                  ; border cycles through
+  AND $07                 ; all 8 colours
   OUT ($FE),A
   DJNZ DamageFlash_Loop
   POP AF
   POP BC
-  JP DamageGameOver
+  JP DamageGameOver       ; game over: the Nostromo is lost
 ; Ship-status dashboard: counters and ASCII digit cells (previously
 ; mis-disassembled as code). The digit cells double as the source text drawn on
 ; the status bar, and the endgame renderer copies them into the "The Nostromo
@@ -7243,10 +7377,10 @@ EventPaceCounter:
 ; Used by the routine at GameEntry.
 UpdateRoomActors:
   CALL DestructTicker     ; DestructTicker: countdown + border flash
-  CALL FindTrackerHolders ; fixture-proximity checks on strip cells 6/7/20
+  CALL FindTrackerHolders ; FindTrackerHolders: motion-tracker scan
   CALL OxygenTick         ; oxygen clock / status line
-  CALL ViewedTrackerCheck ; event pacing / ambient events
-  CALL EngineStateScan    ; EngineStateScan: engine damage/repair states
+  CALL ViewedTrackerCheck ; ViewedTrackerCheck: beep / uneasy cat
+  CALL EngineStateScan    ; EngineStateScan: engine fires
   CALL UpdateAlienAnim    ; alien encounter animation layers
   RET
 
@@ -7259,9 +7393,9 @@ UpdateRoomActors:
 ; -> Narcissus launch      53/54 -> blow airlock #1/#2 55/56 -> seal airlock
 ; #1/#2
 FixtureAction:
-  CALL CancelActionTimer
-  LD HL,CorridorPosTable  ; corridor position table
-  LD E,A
+  CALL CancelActionTimer  ; cancel any pending countdown;
+  LD HL,CorridorPosTable  ; A = the cursor row —
+  LD E,A                  ; index CorridorPosTable by it
   LD D,$00
   ADD HL,DE
   LD A,(HL)               ; A = cell value under the cursor
@@ -7292,8 +7426,8 @@ DestructArm:
   CALL EnqueueMessage
   LD A,$48                ; cells 15/16 := armed lever sprites 72/73
   LD ($73CD),A
-  LD HL,$5016
-  LD (DrawScreenPtr),HL
+  LD HL,$5016             ; redraw both rows
+  LD (DrawScreenPtr),HL   ; (screen rows 16/17, col 22)
   CALL DrawSprite
   LD A,$49
   LD (MenuFixtureRow),A
@@ -7306,8 +7440,8 @@ DestructAbort:
   CALL EnqueueMessage
   LD A,$46                ; cells 15/16 := off lever sprites 70/71
   LD ($73CD),A
-  LD HL,$5016
-  LD (DrawScreenPtr),HL
+  LD HL,$5016             ; redraw both rows
+  LD (DrawScreenPtr),HL   ; (screen rows 16/17, col 22)
   CALL DrawSprite
   LD A,$47
   LD (MenuFixtureRow),A
@@ -7326,27 +7460,31 @@ DestructSetTimer:
 ; HypersleepStart
 HypersleepStart:
   LD (IX+$03),$06         ; action state 6 = entering hypersleep
-  LD (IX+$00),$FF
+  LD (IX+$00),$FF         ; over a long 255-frame countdown
   LD A,$0B                ; msg #11 "{actor} prepares for hypersleep"
-  LD HL,(DrawSlotIndex)
+  LD HL,(DrawSlotIndex)   ; L = the viewed crew member
   CALL EnqueueMessage
   RET
 
-; FightFire
+; FightFire — action on the fire label (cell value 76)
+;
+; Needs a Fire Extng (item 8-11) in the front hand; a charged one delivers a
+; squirt towards putting the engine-room fire out (FireDamageTick decides how
+; many are needed).
 FightFire:
-  LD A,(HeldItemFront)    ; A = actor's corridor cell
-  CP $08                  ; fire cells occupy positions 8-11
-  RET C
+  LD A,(HeldItemFront)    ; front-hand item an extinguisher
+  CP $08                  ; (8-11)?
+  RET C                   ; no: nothing to fight with
   CP $0C
   RET NC
   LD E,A
   LD D,$00
-  LD HL,ItemCharges
-  ADD HL,DE               ; HL -> extinguisher charges for this position
-  XOR A
+  LD HL,ItemCharges       ; HL -> that extinguisher's charges
+  ADD HL,DE
+  XOR A                   ; any CO2 left?
   CP (HL)
-  JR NZ,FightFireSquirt
-  LD HL,(DrawSlotIndex)   ; empty:
+  JR NZ,FightFireSquirt   ; yes: squirt
+  LD HL,(DrawSlotIndex)   ; empty: L = the viewed crew member,
   LD A,$06                ; msg #6 "{actor}'s extinguisher is empty"
   CALL EnqueueMessage
   RET
@@ -7463,26 +7601,29 @@ BlowLock_NextItem:
   LD (HL),$00             ; reset the alien's action byte
   RET
 
-; CrewAction6_Handler
+; CrewAction6_Handler — hypersleep completed (action state 6)
 ;
-; Dispatched via CrewActionDispatch entry 6.
+; Dispatched via CrewActionDispatch entry 6: the 255-frame countdown queued by
+; HypersleepStart (HypersleepStart) has expired. The sleeper leaves play (+7 =
+; 255, room = 255 — the same removed pattern as the chestburster host) and
+; whatever he carried is stacked in the Cryo Vault (room 15).
 CrewAction6_Handler:
-  LD HL,(CrewIndex)
-  LD A,$0C
+  LD HL,(CrewIndex)       ; L = the sleeper
+  LD A,$0C                ; msg #12 "{actor} enters hypersleep"
   CALL EnqueueMessage
-  LD (IX+$07),$FF
-  LD (IX+$01),$FF
+  LD (IX+$07),$FF         ; status = removed from play,
+  LD (IX+$01),$FF         ; room = none
   LD HL,ItemLocations
   LD A,(CrewIndex)
-  ADD A,$80
+  ADD A,$80               ; E = his back-hand marker
   LD E,A
-  ADD A,$20
+  ADD A,$20               ; D = his front-hand marker
   LD D,A
-  LD C,(IX+$01)
-  LD B,$16
+  LD C,(IX+$01)           ; (C = 255 now, unused)
+  LD B,$16                ; anything he carried
 RedirectRoomLoop:
-  LD A,(HL)
-  CP E
+  LD A,(HL)               ; is left in the
+  CP E                    ; Cryo Vault (room 15):
   JR Z,RedirectRoomSet
   CP D
   JR NZ,RedirectRoomNext
@@ -7491,12 +7632,12 @@ RedirectRoomSet:
 RedirectRoomNext:
   INC HL
   DJNZ RedirectRoomLoop
-  LD A,(RoomModeByte)
+  LD A,(RoomModeByte)     ; room view on screen (mode 1)?
   CP $01
-  RET NZ
-  LD A,(DrawSlotIndex)
-  LD HL,CrewIndex
-  JP KillActor_Bounce
+  RET NZ                  ; no: done
+  LD A,(DrawSlotIndex)    ; sleeper viewed -> rebuild the view,
+  LD HL,CrewIndex         ; else redraw the room-mate lists
+  JP KillActor_Bounce     ; (KillActor_Bounce)
   NOP
   NOP
 DestructTicker:
@@ -7530,47 +7671,67 @@ StorePanelPtr:
   LD (DestructSeconds),HL
   JP OxygenCheckRedraw
 
-; FindTrackerHolders
+; FindTrackerHolders — run the motion-tracker scan
+;
+; The two Trackers (items 6/7) and the carried cat ("Cat in Net"/"Cat in Box",
+; items 20/21) are motion detectors: for each one held in a FRONT hand (marker
+; >= 160), TrackerHolderRoom (TrackerHolderRoom) sweeps the rooms adjacent to
+; the holder and fills the matching NearRoomList entry (NearRoomList: tracker
+; #1, tracker #2, the cat) with the holder's room if nothing moves next door
+; ("all clear" — worth +1 morale to everyone standing there,
+; MoraleFromCompanion), or 255 if something does (which makes the viewed
+; holder's tracker beep, or Jones grow uneasy — ViewedTrackerCheck
+; ViewedTrackerCheck).
+;
+; Used by the routine at UpdateRoomActors.
 FindTrackerHolders:
-  LD HL,NearRoomList
-  LD A,(TrackerLocations)
+  LD HL,NearRoomList      ; HL -> NearRoomList entry 0
+  LD A,(TrackerLocations) ; Tracker #1 (item 6) in a front
+  CP $A0                  ; hand (marker >= 160)?
+  CALL NC,TrackerHolderRoom ; yes: scan around its holder
+  INC HL                  ; entry 1:
+  LD A,($74FB)            ; Tracker #2 (item 7)
   CP $A0
   CALL NC,TrackerHolderRoom
-  INC HL
-  LD A,($74FB)
+  INC HL                  ; entry 2 (shared):
+  LD A,(CatItemLocations) ; Cat in Net (item 20)
   CP $A0
   CALL NC,TrackerHolderRoom
-  INC HL
-  LD A,(CatItemLocations)
-  CP $A0
-  CALL NC,TrackerHolderRoom
-  LD A,($7509)
+  LD A,($7509)            ; Cat in Box (item 21)
   CP $A0
   CALL NC,TrackerHolderRoom
   RET
 
-; TrackerHolderRoom
+; TrackerHolderRoom — sweep the rooms around one tracker holder
+;
+; A = the front-hand marker (160+slot), HL -> the NearRoomList entry to fill:
+; walk the holder's 5 adjacency slots (corridor map, or duct map when he is in
+; the ducts) and write the holder's room ("all clear") — unless Jones, the
+; alien, or any live actor is in an adjacent room, in which case the entry
+; becomes 255 ("motion detected", via PickRoom_Reject).
+;
+; Used by the routine at FindTrackerHolders.
 TrackerHolderRoom:
-  CP $FF
+  CP $FF                  ; marker 255 = the item does not exist
   RET Z
-  PUSH HL
-  SUB $A0
-  ADD A,A
+  PUSH HL                 ; save the NearRoomList entry ptr
+  SUB $A0                 ; A = the holder's slot;
+  ADD A,A                 ; HL -> his room byte (+1)
   ADD A,A
   ADD A,A
   LD E,A
   LD D,$00
   LD HL,$737F
   ADD HL,DE
-  LD A,(HL)
+  LD A,(HL)               ; AdjTestRoom = the holder's room
   LD (AdjTestRoom),A
-  LD BC,RoomAdjCorridors
-  BIT 6,A
+  LD BC,RoomAdjCorridors  ; BC = RoomAdjCorridors...
+  BIT 6,A                 ; ...unless he is in the ducts:
   JR Z,AdjRowFromRoom
-  CALL DuctSearchInit
+  CALL DuctSearchInit     ; then RoomAdjDucts (DuctSearchInit)
 AdjRowFromRoom:
-  LD L,A
-  LD H,$00
+  LD L,A                  ; HL = map + room*5:
+  LD H,$00                ; the room's 5 direction slots
   PUSH HL
   ADD HL,HL
   ADD HL,HL
@@ -7578,121 +7739,140 @@ AdjRowFromRoom:
   ADD HL,DE
   ADD HL,BC
   LD DE,$0008
-  LD B,$05
+  LD B,$05                ; each direction slot:
 PickRoomScanLoop:
   PUSH BC
   PUSH HL
-  LD C,(HL)
-  LD A,(AdjTestRoom)
-  CP C
+  LD C,(HL)               ; C = the adjacent room
+  LD A,(AdjTestRoom)      ; own room = no exit that way:
+  CP C                    ; skip the slot
   JR Z,PickRoomScanNext
-  LD A,(JonesRoom)
-  JP RoomRejectCheck
+  LD A,(JonesRoom)        ; anything moving in there?
+  JP RoomRejectCheck      ; Jones / the alien / live actors
 
-; PickRoom_ActorScan
+; PickRoom_ActorScan — tail of the tracker sweep
+;
+; C = an adjacent room: reject the sweep (motion detected) if any live actor
+; stands in it; otherwise continue with the next direction slot, and after all
+; five write the "all clear" result.
 ;
 ; Used by the routine at RoomRejectCheck.
 PickRoom_ActorScan:
-  LD B,$08
-  LD HL,$737F
+  LD B,$08                ; all 8 actor slots:
+  LD HL,$737F             ; walk the +1 (room) column
 PickRoom_ActorLoop:
-  LD A,(HL)
+  LD A,(HL)               ; in the adjacent room?
   AND $3F
   CP C
   JR NZ,PickRoom_ActorNext
-  PUSH HL
+  PUSH HL                 ; yes: alive (+7 = 0)?
   ADD HL,DE
   DEC HL
   DEC HL
   XOR A
   CP (HL)
-  JR Z,PickRoom_PopReject
+  JR Z,PickRoom_PopReject ; yes: motion detected
   POP HL
 PickRoom_ActorNext:
   ADD HL,DE
   DJNZ PickRoom_ActorLoop
 PickRoomScanNext:
-  POP HL
-  INC HL
+  POP HL                  ; this direction is quiet:
+  INC HL                  ; next direction slot
   POP BC
   DJNZ PickRoomScanLoop
-  POP HL
-  LD A,(AdjTestRoom)
-  LD (HL),A
+  POP HL                  ; all five quiet: NearRoomList
+  LD A,(AdjTestRoom)      ; entry = the holder's room
+  LD (HL),A               ; ("all clear")
   RET
 PickRoom_PopReject:
   POP HL
 ; This entry point is used by the routine at RoomRejectCheck.
 PickRoom_Reject:
-  POP HL
-  POP BC
-  POP HL
+  POP HL                  ; motion detected: unwind the scan
+  POP BC                  ; and write 255 into the
+  POP HL                  ; NearRoomList entry
   LD (HL),$FF
   RET
 
-; EngineStateScan
+; EngineStateScan — tick the three engine-room fires
+;
+; ShipSystemFlags bits 3-5 mark fires in Engine #1/#2/#3 (rooms 17-19, lit by
+; the damage-meter alarm at Damage_ChkEngines). Each burning engine goes
+; through FireDamageTick; then the 100-frame ship tick that paces fire damage
+; is advanced.
+;
+; Used by the routine at UpdateRoomActors.
 EngineStateScan:
-  LD D,$08
-  LD A,(ShipSystemFlags)
-  LD E,$11
-  BIT 3,A
+  LD D,$08                ; D = bit mask (bit 3),
+  LD A,(ShipSystemFlags)  ; A = ShipSystemFlags,
+  LD E,$11                ; E = Engine #1's room
+  BIT 3,A                 ; Engine #1 on fire?
+  CALL NZ,FireDamageTick
+  SLA D                   ; next bit / next room:
+  INC E
+  BIT 4,A                 ; Engine #2 on fire?
   CALL NZ,FireDamageTick
   SLA D
   INC E
-  BIT 4,A
+  BIT 5,A                 ; Engine #3 on fire?
   CALL NZ,FireDamageTick
-  SLA D
-  INC E
-  BIT 5,A
-  CALL NZ,FireDamageTick
-  LD HL,ShipTickCounter
+  LD HL,ShipTickCounter   ; advance the 100-frame ship tick
   DEC (HL)
   RET NZ
   LD (HL),$64
   RET
 
-; FireDamageTick
+; FireDamageTick — one burning engine room (E), fire bit in D
+;
+; The number of extinguisher squirts needed grows with the damage already done
+; (1, 2 from "60", 3 from "80"). Enough squirts put the fire out: clear its
+; ShipSystemFlags bit, blank the on-screen fire label, msg #15. Not enough: the
+; fire keeps burning and adds a damage point every 100 frames
+; (FireSpreadCheck).
+;
+; Used by the routine at EngineStateScan.
 FireDamageTick:
   PUSH AF
   PUSH DE
-  LD C,$01
-  LD B,D
+  LD C,$01                ; C = squirts needed: 1,
+  LD B,D                  ; (B = the engine's fire bit)
   LD D,$00
-  LD HL,RoomDamageDigits
+  LD HL,RoomDamageDigits  ; HL -> the room's damage tens digit
   ADD HL,DE
   ADD HL,DE
   LD A,(HL)
-  CP $36
+  CP $36                  ; +1 from "60" damage,
   JR C,FireThresholdCheck
   INC C
-  CP $38
+  CP $38                  ; +1 more from "80"
   JR C,FireThresholdCheck
   INC C
 FireThresholdCheck:
-  LD HL,$95BE
-  ADD HL,DE
+  LD HL,$95BE             ; A = squirts delivered so far
+  ADD HL,DE               ; (EngineFixCounts, base-17 indexed)
   LD A,(HL)
-  CP C
-  JR C,FireSpreadCheck
-  LD A,(ShipSystemFlags)
+  CP C                    ; enough to put it out?
+  JR C,FireSpreadCheck    ; no: the fire keeps burning
+  LD A,(ShipSystemFlags)  ; yes: clear the engine's fire bit
   XOR B
   LD (ShipSystemFlags),A
-  LD A,(RoomModeByte)
+  LD A,(RoomModeByte)     ; is the burning room on screen?
   CP $01
   JR NZ,FireExtinguishedMsg
   LD A,(CurrentRoom)
   CP E
   JR NZ,FireExtinguishedMsg
-  LD HL,$FFFF
-  LD ($73CD),HL
+  LD HL,$FFFF             ; yes: blank the fire label —
+  LD ($73CD),HL           ; cells 15/16 = empty
   LD A,L
-  LD HL,$5016
-  LD (DrawScreenPtr),HL
+  LD HL,$5016             ; and redraw those rows
+  LD (DrawScreenPtr),HL   ; (screen rows 16/17, col 22)
   CALL DrawSprite
   LD A,$FF
   CALL DrawSprite
 FireExtinguishedMsg:
-  POP HL
+  POP HL                  ; L = the room
   PUSH HL
   LD A,$0F                ; msg #15 "Fire extinguished in {room}"
   CALL EnqueueMessage
@@ -7701,57 +7881,79 @@ FireExtinguishedMsg:
   RET
 
 ; FireSpreadCheck
+;
+; The fire is still burning: on the frame the 100-frame ship tick expires, it
+; does another damage point to the room.
+;
+; Used by the routine at FireDamageTick.
 FireSpreadCheck:
-  LD A,(ShipTickCounter)
+  LD A,(ShipTickCounter)  ; ship tick about to expire?
   DEC A
-  LD A,$01
-  CALL Z,AddRoomDamage
+  LD A,$01                ; then the fire adds
+  CALL Z,AddRoomDamage    ; +1 damage point to room E
   POP DE
   POP AF
   RET
 
-; ViewedTrackerCheck
+; ViewedTrackerCheck — sound the viewed crew member's detector
+;
+; In the room view: if the viewed crew member holds a Tracker in the front
+; hand, and its NearRoomList entry reads 255 (motion detected next door — the
+; sweep at FindTrackerHolders), the tracker beeps every 8th pass; if he carries
+; the caught cat instead, msg #19 "Jones is looking uneasy" fires.
+;
+; Used by the routine at UpdateRoomActors.
 ViewedTrackerCheck:
-  LD A,(RoomModeByte)
+  LD A,(RoomModeByte)     ; room view on screen (mode 1)?
   CP $01
-  RET NZ
-  LD A,(DrawSlotIndex)
-  ADD A,$A0
+  RET NZ                  ; no: done
+  LD A,(DrawSlotIndex)    ; C = the viewed crew member's
+  ADD A,$A0               ; front-hand marker
   LD C,A
-  LD HL,NearRoomList
+  LD HL,NearRoomList      ; is he holding Tracker #1?
   LD A,(TrackerLocations)
   CP C
-  JR Z,AmbientBeepTick
-  LD A,($74FB)
+  JR Z,TrackerBeepTick    ; yes: beep check on entry 0
+  LD A,($74FB)            ; Tracker #2?
   INC HL
   CP C
-  JR Z,AmbientBeepTick
-  INC HL
+  JR Z,TrackerBeepTick    ; yes: beep check on entry 1
+  INC HL                  ; the caught cat?
   LD A,(CatItemLocations)
   CP C
-  JR Z,JonesUneasyMsg
+  JR Z,JonesUneasyMsg     ; yes: unease check on entry 2
   LD A,($7509)
   CP C
   JR Z,JonesUneasyMsg
-  RET
+  RET                     ; holding no detector
 
-; AmbientBeepTick
-AmbientBeepTick:
-  LD A,(HL)
+; TrackerBeepTick
+;
+; (HL) = the tracker's NearRoomList entry: when it reads 255 (motion detected
+; next door), beep on every 8th pass.
+;
+; Used by the routine at ViewedTrackerCheck.
+TrackerBeepTick:
+  LD A,(HL)               ; motion detected (entry = 255)?
   CP $FF
-  RET NZ
-  LD HL,EventPaceCounter
-  INC (HL)
+  RET NZ                  ; no: silence
+  LD HL,EventPaceCounter  ; yes: pace the alert —
+  INC (HL)                ; a ROM beep every 8th pass
   LD A,(HL)
   AND $07
   CALL Z,RomBeep
   RET
 
 ; JonesUneasyMsg
+;
+; (HL) = the carried cat's NearRoomList entry: when it reads 255 (motion
+; detected next door), the cat senses it.
+;
+; Used by the routine at ViewedTrackerCheck.
 JonesUneasyMsg:
-  LD A,(HL)
+  LD A,(HL)               ; motion detected (entry = 255)?
   CP $FF
-  RET NZ
+  RET NZ                  ; no: the cat is calm
   LD A,(CurrentRoom)
   LD L,A                  ; L = current room
   LD A,$13                ; msg #19 "Jones is looking uneasy"
@@ -7760,64 +7962,75 @@ JonesUneasyMsg:
 
 ; RomBeep
 ;
-; Used by the routines at AmbientBeepTick and IntroductionMode.
+; One short beep via the ZX ROM BEEPER routine ($03B5): DE = 5 cycles, HL = 549
+; (~790 Hz).
+;
+; Used by the routines at TrackerBeepTick and IntroductionMode.
 RomBeep:
-  PUSH IX
-  LD DE,$0005
-  LD HL,$0225
-  CALL $03B5
+  PUSH IX                 ; (BEEPER corrupts IX)
+  LD DE,$0005             ; 5 cycles
+  LD HL,$0225             ; at ~755 Hz
+  CALL $03B5              ; ROM BEEPER
   POP IX
   RET
 
-; CrewAction5_Investigate
+; CrewAction5_AlienAttack — the alien's attack tick (action state 5)
 ;
-; Dispatched via CrewActionDispatch entry 5.
-CrewAction5_Investigate:
-  LD HL,$FFFF
+; Dispatched via CrewActionDispatch entry 5, queued by UpdateAlienAI
+; (UpdateAlienAI) when crew share the alien's spot. Re-gathers the crew on the
+; alien's spot (up to three into NearestCrewC/A/B), picks one by script roll,
+; and drains a strength point: below 2 the victim collapses (VictimItemDrop
+; VictimItemDrop, msg #21), at 2-3 msg #10 "is being wounded", and a still-fit
+; victim (4+) gets msg #1 "The ALIEN is attacking {actor}". A chosen victim who
+; is already dead may be dragged off the ship (Wound_PanicRoll, in the
+; VictimItemDrop block), else another gathered slot is tried; with nobody left
+; the alien moves on.
+CrewAction5_AlienAttack:
+  LD HL,$FFFF             ; NearestCrewA/B = 255/255
   LD (NearestCrewA),HL
-  LD DE,NearestCrewC
+  LD DE,NearestCrewC      ; NearestCrewC = 255 too
   LD A,$FF
   LD (DE),A
-  XOR A
-  CALL GatherSlots_Scan
-  LD C,$00
+  XOR A                   ; gather the crew on the alien's spot
+  CALL GatherSlots_Scan   ; into C/A/B ("self" = slot 0)
+  LD C,$00                ; count them:
   LD HL,NearestCrewC
   LD A,$FF
   LD B,$03
-Investigate_CountLoop:
+AlienAtk_CountLoop:
   CP (HL)
-  JR Z,Investigate_CountNext
+  JR Z,AlienAtk_CountNext
   INC C
-Investigate_CountNext:
+AlienAtk_CountNext:
   INC HL
-  DJNZ Investigate_CountLoop
-  LD A,C
+  DJNZ AlienAtk_CountLoop
+  LD A,C                  ; nobody there after all?
   AND A
-  RET Z
-  CP $01
-  JR NZ,Investigate_PickTwo
-  XOR A
-  JR Investigate_TakeSlot
-Investigate_PickTwo:
-  CP $02
-  JR NZ,Investigate_PickAny
-  CALL AdvanceScriptPtr
-  AND $01
-  JR Investigate_TakeSlot
-Investigate_PickAny:
-  CALL AdvanceScriptPtr
-  AND $07
-  CALL ScriptNibbleToDirection
-Investigate_TakeSlot:
+  RET Z                   ; then no attack
+  CP $01                  ; one victim:
+  JR NZ,AlienAtk_PickTwo
+  XOR A                   ; take entry 0
+  JR AlienAtk_TakeSlot
+AlienAtk_PickTwo:
+  CP $02                  ; two victims:
+  JR NZ,AlienAtk_PickAny
+  CALL AdvanceScriptPtr   ; a script roll picks
+  AND $01                 ; entry 0 or 1
+  JR AlienAtk_TakeSlot
+AlienAtk_PickAny:
+  CALL AdvanceScriptPtr   ; three victims: script roll & 7,
+  AND $07                 ; mapped through the direction table,
+  CALL ScriptNibbleToDirection ; picks entry 0-2
+AlienAtk_TakeSlot:
   LD E,A
   LD D,$00
-  LD HL,NearestCrewC
+  LD HL,NearestCrewC      ; C = the chosen victim's slot,
   ADD HL,DE
   LD C,(HL)
-  LD (HL),$FF
+  LD (HL),$FF             ; taken off the list
   LD A,C
-Investigate_SlotAddr:
-  ADD A,A
+AlienAtk_SlotAddr:
+  ADD A,A                 ; HL -> the victim's status byte (+7)
   ADD A,A
   ADD A,A
   ADD A,$07
@@ -7825,9 +8038,9 @@ Investigate_SlotAddr:
   LD D,$00
   LD HL,ActorRecords
   ADD HL,DE
-  XOR A
+  XOR A                   ; still alive?
   CP (HL)
-  JP NZ,Wound_PanicRoll
+  JP NZ,Wound_PanicRoll   ; no: a corpse — maybe drag it off
   DEC HL
   DEC HL
   DEC HL                  ; HL -> victim's +4 strength
@@ -7843,15 +8056,18 @@ Investigate_SlotAddr:
   RET
 
 ; WoundMsg
+;
+; A victim (slot in C) has been wounded to strength 2-3 by the alien: log it
+; and refresh the viewed condition line.
 WoundMsg:
-  LD L,C
+  LD L,C                  ; L = the victim
   LD A,$0A                ; msg #10 "{actor} is being wounded"
   CALL EnqueueMessage
-  LD A,(RoomModeByte)
+  LD A,(RoomModeByte)     ; room view on screen (mode 1)?
   CP $01
-  RET NZ
+  RET NZ                  ; no: done
   PUSH IX
-  LD A,(DrawSlotIndex)
+  LD A,(DrawSlotIndex)    ; re-point IX at the viewed slot
   ADD A,A
   ADD A,A
   ADD A,A
@@ -7859,99 +8075,118 @@ WoundMsg:
   LD E,A
   LD D,$00
   ADD IX,DE
-  CALL DrawCrewCondition
+  CALL DrawCrewCondition  ; and redraw his condition line
   POP IX
   RET
 
-; VictimItemDrop
+; VictimItemDrop — a victim collapses
 ;
-; Used by the routines at CrewAction5_Investigate and CrewAction7_Handler.
+; Entered with HL -> the victim's strength byte (+4, just dropped below 2) and
+; C = his slot: mark him dead with witness-morale processing (KillActorRefresh
+; -> KillActorMoraleHit), park his countdown, drop everything he carried onto
+; the floor, and if he is the crew member on screen, log msg #21 and rebuild
+; the view.
+;
+; Used by the routines at CrewAction5_AlienAttack and CrewAction7_Handler.
 VictimItemDrop:
-  INC HL
-  INC HL
-  CALL KillActorRefresh
-  LD DE,$FFF9
-  ADD HL,DE
+  INC HL                  ; HL -> his morale byte (+6):
+  INC HL                  ; the KillActorMoraleHit entry point
+  CALL KillActorRefresh   ; mark dead + witness morale + redraw
+  LD DE,$FFF9             ; countdown (+0) = 0:
+  ADD HL,DE               ; the body never acts again
   LD (HL),$00
-  LD A,C
+  LD A,C                  ; A = the victim's slot
   PUSH AF
-  ADD A,$80
+  ADD A,$80               ; E = his back-hand marker
   LD E,A
-  ADD A,$20
+  ADD A,$20               ; D = his front-hand marker
   LD D,A
-  LD C,(IX+$01)
-  LD B,$16
+  LD C,(IX+$01)           ; C = the room he fell in
+  LD B,$16                ; all 22 items:
   LD HL,ItemLocations
 VictimItems_Loop:
   LD A,(HL)
-  CP E
+  CP E                    ; held in either hand?
   JR Z,VictimItems_Set
   CP D
   JR NZ,VictimItems_Next
 VictimItems_Set:
-  LD (HL),C
+  LD (HL),C               ; yes: it drops to the floor here
 VictimItems_Next:
   INC HL
   DJNZ VictimItems_Loop
-  POP AF
-  LD L,A
+  POP AF                  ; is the victim the crew member
+  LD L,A                  ; on screen?
   LD A,(RoomModeByte)
   CP $01
   RET NZ
   LD A,(DrawSlotIndex)
   CP L
-  RET NZ
+  RET NZ                  ; no: done
   LD A,$15                ; msg #21 "{actor} has collapsed"
   CALL EnqueueMessage
-  JP InitGameView
+  JP InitGameView         ; and rebuild the whole view
+; Wound_PanicRoll — the alien's chosen victim is already dead. If the alien is
+; not carrying a body (+5 = 0), a 4-in-16 script roll lets it DRAG THE CORPSE
+; OFF: the body's room becomes 255 (gone from the ship) and its slot is
+; remembered in the alien's +5. Otherwise another gathered slot is attacked
+; instead, or the alien moves on.
 Wound_PanicRoll:
-  XOR A
+  XOR A                   ; already carrying a body (+5 != 0)?
   CP (IX+$05)
-  JR NZ,Wound_TrioPick
-  PUSH HL
-  CALL AdvanceScriptPtr
+  JR NZ,Wound_TrioPick    ; yes: try another victim
+  PUSH HL                 ; no: script roll < 4
+  CALL AdvanceScriptPtr   ; (4 in 16)?
   POP HL
   CP $04
   JR NC,Wound_TrioPick
-  LD DE,$FFFA
-  ADD HL,DE
-  LD (HL),$FF
-  CALL SetCourageRefresh
+  LD DE,$FFFA             ; yes: drag the corpse away —
+  ADD HL,DE               ; its room byte (+1) = 255,
+  LD (HL),$FF             ; gone from the ship,
+  CALL SetCourageRefresh  ; and the alien's +5 = the slot
   RET
 Wound_TrioPick:
-  LD DE,$0001
-  LD HL,NearestCrewC
-  CP $07
-  JR C,Wound_TrioLoop
+  LD DE,$0001             ; scan the gathered slots for another
+  LD HL,NearestCrewC      ; victim (direction picked by the
+  CP $07                  ; leftover roll: < 7 forward from C,
+  JR C,Wound_TrioLoop     ; else backward from B)
   LD DE,$FFFF
   LD HL,NearestCrewB
 Wound_TrioLoop:
   LD B,$03
 Wound_TrioRead:
-  LD A,(HL)
-  CP $FF
+  LD A,(HL)               ; skip empties and the corpse
+  CP $FF                  ; we just tried
   JR Z,Wound_TrioNext
   CP C
   JR Z,Wound_TrioNext
-  LD (HL),$FF
+  LD (HL),$FF             ; take this one off the list
   LD C,A
-  JP Investigate_SlotAddr
+  JP AlienAtk_SlotAddr    ; and attack him instead
 Wound_TrioNext:
   ADD HL,DE
   DJNZ Wound_TrioRead
-  CALL PickNextRoom
-  LD (IX+$00),$28
+  CALL PickNextRoom       ; nobody left: the alien moves on
+  LD (IX+$00),$28         ; (move/idle, timer 40)
   LD (IX+$03),$01
   RET
 
-; OxygenTick
+; OxygenTick — the oxygen clock
+;
+; A countdown whose period is 2 x the number of live actors: the fewer are left
+; to run the ship, the faster the oxygen drains. Each expiry knocks one off the
+; 4-digit ASCII oxygen counter ("7500" at the start), with the borrow rippling
+; left; when the borrow runs past the digits into the label, the air is gone
+; (see OxygenCheckRedraw).
+;
+; Used by the routine at UpdateRoomActors.
 OxygenTick:
-  LD HL,OxygenTickInit
+  LD HL,OxygenTickInit    ; tick the oxygen countdown
   DEC (HL)
   RET NZ
-  LD HL,ActorStatusColumn
-  LD DE,$0008
-  LD BC,$0800
+  LD HL,ActorStatusColumn ; expired: count the live actors
+  LD DE,$0008             ; (status +7 = 0, alien included)
+  LD BC,$0800             ; over all 8 slots
   XOR A
 OxygenTick_CountLoop:
   CP (HL)
@@ -7960,57 +8195,62 @@ OxygenTick_CountLoop:
 OxygenTick_CountNext:
   ADD HL,DE
   DJNZ OxygenTick_CountLoop
-  LD A,C
+  LD A,C                  ; reload period = 2 x live count
   ADD A,A
   LD (OxygenTickInit),A
-  LD A,$2F
-  LD HL,$95E9
+  LD A,$2F                ; multi-digit ASCII decrement:
+  LD HL,$95E9             ; units digit first,
 OxygenTick_Borrow:
   DEC (HL)
-  CP (HL)
+  CP (HL)                 ; on '0'-1 ('/')
   JR NZ,OxygenCheckRedraw
-  LD (HL),$39
-  DEC HL
+  LD (HL),$39             ; wrap to '9' and
+  DEC HL                  ; borrow one digit left
   JR OxygenTick_Borrow
 
-; OxygenCheckRedraw
+; OxygenCheckRedraw — oxygen alarms + the bottom status line
+;
+; Fire msg #26 when the oxygen counter reads exactly "0500"; jump to
+; Endgame_OxygenOut when the borrow has eaten past the digits (the air ran
+; out); otherwise redraw the bottom-right status line — "TOOH: nnnn" (the
+; oxygen counter), or "TIME: m:ss" while the self-destruct is armed.
 ;
 ; Used by the routines at OrdersMenuNextRow, DrawSelectedName,
 ; CrewAction6_Handler and OxygenTick.
 OxygenCheckRedraw:
-  LD HL,(OxygenHi)
+  LD HL,(OxygenHi)        ; high digits = "05"...
   LD A,L
   CP $30
   JR NZ,ClockPanelUpdate
   LD A,H
   CP $35
   JR NZ,ClockPanelUpdate
-  LD HL,(OxygenLo)
+  LD HL,(OxygenLo)        ; ...and low digits = "00"?
   LD A,$30
   CP L
   JR NZ,ClockPanelUpdate
   CP H
   JR NZ,ClockPanelUpdate
-  LD A,$1A
+  LD A,$1A                ; msg #26 "Oxygen status CRITICAL"
   CALL EnqueueMessage
 ClockPanelUpdate:
-  LD A,($95E5)
-  CP $20
-  JP NZ,Endgame_OxygenOut
-  LD A,(RoomModeByte)
-  CP $02
-  RET Z
+  LD A,($95E5)            ; did the borrow ripple past the
+  CP $20                  ; digits (oxygen fully exhausted)?
+  JP NZ,Endgame_OxygenOut ; yes: Endgame_OxygenOut
+  LD A,(RoomModeByte)     ; no status line over the
+  CP $02                  ; Indicate Location list
+  RET Z                   ; (modes 2/3)
   CP $03
   RET Z
-  LD HL,$5076
+  LD HL,$5076             ; draw at screen row 19, col 22:
   LD (DrawScreenPtr),HL
-  LD DE,OxygenText
-  LD HL,ShipSystemFlags
+  LD DE,OxygenText        ; "TOOH: nnnn" — unless the
+  LD HL,ShipSystemFlags   ; self-destruct is armed:
   BIT 0,(HL)
   JR Z,ClockDraw10
-  LD DE,DestructTimeText
+  LD DE,DestructTimeText  ; then "TIME: m:ss"
 ClockDraw10:
-  LD B,$0A
+  LD B,$0A                ; blit the 10 characters
 ClockDrawLoop:
   PUSH BC
   PUSH DE
@@ -8018,7 +8258,7 @@ ClockDrawLoop:
   POP DE
   POP BC
   INC DE
-  LD HL,DrawScreenPtr
+  LD HL,DrawScreenPtr     ; one column right each time
   INC (HL)
   DJNZ ClockDrawLoop
   RET
@@ -8489,64 +8729,79 @@ ClearAlien_CellLoop:
 
 ; LaunchGate
 ;
-; Fixture 78 (Narcissus launch console). The launch is COUNTERMANDED (msg #28)
-; unless every living crew member's room is 34 (Narcissus); then Jones must be
-; aboard too (JonesRoom = 34, or the cat present in the shuttle strip cells) or
-; msg #27 "BioUnit Jones not present" fires first.
+; Fixture 78 (Narcissus launch console). Intended rule: the launch is
+; COUNTERMANDED (msg #28) unless every living crew member's room is 34
+; (Narcissus); then Jones must be aboard too (JonesRoom = 34, or the cat caught
+; and the Cat in Net/Box item aboard or held) or msg #27 "BioUnit Jones not
+; present" fires first.
+;
+; BUG (simulator-verified): the crew walk drifts off the +7 status column after
+; the first LIVE crew member — the "back to the next record" step adds 8 from
+; the +1 room byte instead of returning to +7, so every later slot has its ROOM
+; byte read as a status byte. Rooms are almost never 0, so later crew are
+; simply skipped: the launch really only requires the first-listed living crew
+; member (plus Jones) to be aboard, and the rest are left behind. The one side
+; effect: a later crew member standing in Airlock #1 (room 0) bogusly
+; countermands the launch.
 LaunchGate:
   LD HL,CrewStatusColumn  ; walk the +7 status column of all 7 crew
   LD DE,$0008
   LD B,$07
 Launch_CrewLoop:
-  XOR A
+  XOR A                   ; is this crew member alive?
   CP (HL)
-  JR NZ,Launch_NextCrew
-  PUSH DE
+  JR NZ,Launch_NextCrew   ; no: he needn't board
+  PUSH DE                 ; yes: HL -> his room byte (+1)
   LD DE,$FFFA
   ADD HL,DE
   POP DE
-  LD A,(HL)
+  LD A,(HL)               ; aboard the Narcissus (34)?
   CP $22
-  JR NZ,Launch_Countermand
+  JR NZ,Launch_Countermand ; no: LAUNCH COUNTERMANDED
 Launch_NextCrew:
-  ADD HL,DE
-  DJNZ Launch_CrewLoop
-  LD A,(JonesRoom)
+  ADD HL,DE               ; +8 — but from +1 after a live crew
+  DJNZ Launch_CrewLoop    ; member: the walk drifts (see BUG)
+  LD A,(JonesRoom)        ; Jones aboard on his own paws?
   CP $22
-  JR Z,LaunchSequence
-  CP $FF
-  JR NZ,Launch_NoJones
-  LD HL,CatItemLocations
-  LD B,$02
+  JR Z,LaunchSequence     ; yes: LAUNCH
+  CP $FF                  ; or caught (carried, room 255)?
+  JR NZ,Launch_NoJones    ; neither: he is missing
+  LD HL,CatItemLocations  ; caught: where is the Cat in
+  LD B,$02                ; Net (20) / Cat in Box (21)?
 Launch_CatItemLoop:
   LD A,(HL)
-  CP $FF
+  CP $FF                  ; (nonexistent: try the other)
   JR Z,Launch_CatItemNext
-  CP $22
+  CP $22                  ; lying in the Narcissus,
   JR Z,LaunchSequence
-  CP $80
-  JR NC,LaunchSequence
+  CP $80                  ; or in somebody's hand?
+  JR NC,LaunchSequence    ; either way: LAUNCH
 Launch_CatItemNext:
   INC HL
   DJNZ Launch_CatItemLoop
 Launch_NoJones:
-  LD A,$1B
+  LD A,$1B                ; msg #27 "BioUnit Jones not present"
   CALL EnqueueMessage
 Launch_Countermand:
-  LD A,$1C
+  LD A,$1C                ; msg #28 "LAUNCH COUNTERMANDED"
   CALL EnqueueMessage
   RET
 
-; LaunchSequence
+; LaunchSequence — the Narcissus lifts off
+;
+; 75 frames of engine noise with the whole room-view area flashing (BRIGHT bit
+; XOR), then the escape ending (Endgame_Escape).
+;
+; Used by the routine at LaunchGate.
 LaunchSequence:
-  LD B,$4B
+  LD B,$4B                ; 75 flash frames:
 Launch_FlashLoop:
   PUSH BC
-  LD A,$01
+  LD A,$01                ; queue the engine-noise effect
   LD (SoundRequest),A
-  CALL FrameTiming
-  LD DE,$000C
-  LD HL,AttrFileOrigin
+  CALL FrameTiming        ; play it (FrameTiming)
+  LD DE,$000C             ; toggle the BRIGHT bit across the
+  LD HL,AttrFileOrigin    ; 20x19 room-view attribute window
   LD C,$13
 Launch_AttrRows:
   LD B,$14
@@ -8561,7 +8816,7 @@ Launch_AttrLoop:
   JR NZ,Launch_AttrRows
   POP BC
   DJNZ Launch_FlashLoop
-  JP Endgame_Escape
+  JP Endgame_Escape       ; you got away: Endgame_Escape
 
 ; FrameTiming
 ;
@@ -8714,9 +8969,10 @@ Music_Abort:
   POP BC
   RET
 KeyboardModeFlag:
-  NOP
-EndgameFlag:
-  NOP
+  NOP                     ; variable: 255 = keyboard input chosen
+RatingScore:
+  NOP                     ; variable: the endgame Competence Rating accumulator
+                          ; (see ComputeRating)
 
 ; Intro-screen tile map and attribute table
 ;
@@ -8754,107 +9010,103 @@ IntroAttributes:
   DEFB $07,$07,$04,$07,$04,$04,$07,$07,$07,$07,$07 ; row  6
   DEFB $07,$07,$07,$07,$04,$07,$07,$07,$07,$07,$07 ; row  7
 
-; CrewAction7_Handler
+; CrewAction7_Handler — the Android's attack tick (action state 7)
 ;
-; Action-state 7 handler dispatched from CrewActionDispatch
-; (CrewActionDispatch, entry index 7). Called via JP (HL) from
-; DispatchCrewAction. Calls GatherSameClassSlots to update the sprite position,
-; then walks the two nearest-crew slots (NearestCrewA and NearestCrewB) — if
-; either crew member is still alive, decrements one of the per-crew counters at
-; offset -3 from its alive flag and, depending on the value, either jumps to
-; VictimItemDrop or initiates a 29-step approach via EnqueueMessage. Returns
-; without further action if both nearest-crew entries are dead or absent (255).
+; Dispatched via CrewActionDispatch entry 7 for the activated Android (see
+; UpdateAlien UpdateAlien). Gathers the crew sharing the Android's room
+; (GatherSameRoomSlots) and wounds the first live one found (NearestCrewA, then
+; NearestCrewB): strength (+4) -1. Below 2 the victim collapses (VictimItemDrop
+; VictimItemDrop, msg #21); at 2-3, msg #29 announces the assault; a still-fit
+; victim (4+) suffers silently. Returns without action when no live room-mate
+; remains.
 CrewAction7_Handler:
-  CALL GatherSameClassSlots
-  LD A,(NearestCrewA)
+  CALL GatherSameRoomSlots ; gather the crew in the Android's room
+  LD A,(NearestCrewA)     ; A = first room-mate (255 = none)
   CP $FF
   JR Z,Android_SecondTarget
-  LD C,A
-  ADD A,A
+  LD C,A                  ; C = victim slot
+  ADD A,A                 ; HL -> his status byte (+7)
   ADD A,A
   ADD A,A
   LD E,A
   LD D,$00
   LD HL,ActorStatusColumn
   ADD HL,DE
-  XOR A
+  XOR A                   ; alive?
   CP (HL)
-  JR Z,Android_WoundVictim
+  JR Z,Android_WoundVictim ; yes: wound him
 Android_SecondTarget:
-  LD A,(NearestCrewB)
+  LD A,(NearestCrewB)     ; try the second room-mate
   CP $FF
-  RET Z
-  LD C,A
-  ADD A,A
+  RET Z                   ; nobody to attack
+  LD C,A                  ; C = victim slot
+  ADD A,A                 ; HL -> his status byte (+7)
   ADD A,A
   ADD A,A
   LD E,A
   LD D,$00
   LD HL,ActorStatusColumn
   ADD HL,DE
-  XOR A
+  XOR A                   ; alive?
   CP (HL)
-  RET NZ
+  RET NZ                  ; no: give up this tick
 Android_WoundVictim:
+  DEC HL                  ; HL -> the victim's strength (+4)
   DEC HL
   DEC HL
-  DEC HL
-  DEC (HL)
+  DEC (HL)                ; the Android saps a strength point
   LD A,(HL)
-  CP $02
+  CP $02                  ; below 2: the victim collapses
   JP C,VictimItemDrop
-  CP $04
+  CP $04                  ; 4+: shrugs it off silently
   RET NC
-  LD L,C
-  LD A,(AlienTargetID)
+  LD L,C                  ; wounded (2-3): L = victim,
+  LD A,(AlienTargetID)    ; H = the Android,
   LD H,A
-  LD A,$1D
-  CALL EnqueueMessage
+  LD A,$1D                ; msg #29 "{target} is attacking {actor}"
+  CALL EnqueueMessage     ; — "<Android> is attacking <victim>"
   RET
 
 ; UpdateAlien
 ;
-; Per-frame driver for the alien's combat behaviour. The alien itself does
-; still attack crew directly elsewhere in the per-frame chain — this routine
-; specifically handles the **first-encounter activation of the Android**: once
-; the alien is loose and meets the alien_target slot for the first time, this
-; routine pulls that slot into action state 7 (attack), turning the Android
-; from a normal-looking crew member into a hostile actor that wounds nearby
-; crew.
+; Per-frame Android activation check. Once TriggerAlienEvent
+; (TriggerAlienEvent) has set AlienActiveFlag — the crew has wounded the alien
+; 6+ times — this routine pulls the alien_target slot into action state 7
+; (attack), turning the Android from a normal-looking crew member into a
+; hostile actor that wounds the crew in its room.
 ;
-; Returns immediately if any of: - AlienActiveFlag (AlienActiveFlag) == 0
-; (alien not yet loose / no encounter) - alien_target's byte +0 != 0 (Android
-; already activated; the activation stamp at Android_Activate sets +0 = 80, so
-; on every subsequent frame this guard short-circuits the routine) -
-; alien_target's byte +7 != 0 (lockout sentinel — CrewHitsAndroid's collapse
-; path at Android_Collapsed writes +7 = 2, and that prevents re-activation if
-; the Android has been defeated)
+; Returns immediately if any of: - AlienActiveFlag (AlienActiveFlag) == 0 (the
+; trigger has not fired) - alien_target's byte +0 != 0 (Android already
+; activated; the activation stamp at Android_Activate sets +0 = 80, so on every
+; subsequent frame this guard short-circuits the routine) - alien_target's byte
+; +7 != 0 (lockout sentinel — CrewHitsAndroid's collapse path at
+; Android_Collapsed writes +7 = 2, and that prevents re-activation if the
+; Android has been defeated)
 ;
 ; In other words: the routine fires exactly ONCE per game for the Android, the
-; first frame the alien is active and the slot is still in its as-issued
+; first frame the trigger is set and the slot is still in its as-issued
 ; template state (LongGameCrewInit, LongGameCrewInit, gives +0 = +7 = 0 for
-; every slot). That single firing is the "encounter".
+; every slot).
 ;
 ; When all guards pass: 1. IX = alien_target record; stamp (IX+0) = 80
 ; (activation marker and timer that also blocks future re-entry into this
 ; branch). 2. Cache AlienTargetID into CrewIndex (CrewIndex) for downstream
-; message enqueues. 3. CALL GatherSameClassSlots — scan crew records 1..7 for
-; slots sharing the Android's (IX+1) sprite-class and write up to two slot
-; indices into NearestCrewA / NearestCrewB (the Android's "kin" — its attack
-; pool). 4. If at least one of NearestCrewA/B is alive: enqueue message #30
-; "{actor} is attacking {target}" with actor = AlienTargetID (the Android's
-; name, e.g. "Ash is attacking Lambert"), put the alien_target into action
-; state 7 with timer 40, then return. 5. If neither kin is reachable, fall
-; through to PickNextRoom (wander) and reset the Android to action state 1.
+; message enqueues. 3. CALL GatherSameRoomSlots — gather up to two other crew
+; standing in the Android's room into NearestCrewA/B (its victim pool). 4. If
+; at least one of them is alive: enqueue message #30 "{actor} is attacking
+; {target}" with actor = AlienTargetID (the Android's name, e.g. "Ash is
+; attacking Lambert"), put the alien_target into action state 7 with timer 40,
+; then return. 5. If nobody is there to attack, fall through to PickNextRoom
+; (wander) and reset the Android to action state 1.
 ;
 ; Once the Android is in state 7, subsequent ResetCrewTimers frames dispatch it
-; through CrewAction7_Handler (CrewAction7_Handler) which decrements the wound
-; counter on its NearestCrewA/B kin and can collapse them via VictimItemDrop
-; (msg #21 "{actor} has collapsed").
+; through CrewAction7_Handler (CrewAction7_Handler) which wounds a live crew
+; member in its room and can collapse them via VictimItemDrop (msg #21 "{actor}
+; has collapsed").
 ;
 ; This routine is NOT the alien's own attack: the alien kills crew that end up
-; in its room (slot 0 record byte +1) — see CrewHitsAlien (CrewHitsAlien) and
-; the kill primitive at AlienKillPrimitive.
+; in its room (slot 0 record byte +1) — see the attack tick at
+; AlienAtk_SlotAddr.
 ;
 ; Used by the routine at GameEntry.
 UpdateAlien:
@@ -8877,44 +9129,44 @@ Android_Activate:
   LD (IX+$00),$50         ; stamp +0 = 80 — activation marker / blocks re-entry
   LD A,(AlienTargetID)    ; A = AlienTargetID (= Android slot index)
   LD (CrewIndex),A        ; CrewIndex = AlienTargetID (Android's slot)
-  CALL GatherSameClassSlots ; pick the Android's two sprite-class kin as
-                            ; targets
-  LD A,(NearestCrewA)     ; A = nearest crew ID 1 (NearestCrewA)
-  CP $FF                  ; $FF = no crew in range
-  JR Z,Alien_Wander       ; no primary target: wander
-  LD C,A                  ; C = crew ID
+  CALL GatherSameRoomSlots ; gather up to two other crew standing in the
+                           ; Android's room as its victims
+  LD A,(NearestCrewA)     ; A = first room-mate (NearestCrewA)
+  CP $FF                  ; $FF = nobody there
+  JR Z,Android_Wander     ; no primary target: wander
+  LD C,A                  ; C = victim slot
   ADD A,A                 ; A × 8 (crew record size)
   ADD A,A
   ADD A,A
   LD E,A
   LD D,$00
-  LD HL,ActorStatusColumn ; HL = crew alive-table base ($7385)
-  ADD HL,DE               ; HL → NearestCrewA's alive-flag byte
-  XOR A                   ; A = 0
-  CP (HL)                 ; Z iff (HL) == 0 (which is the "alive" value here)
-  JR Z,Alien_Attack       ; NearestCrewA alive: attack them
-  LD A,(NearestCrewB)     ; A = NearestCrewB
+  LD HL,ActorStatusColumn ; HL -> that slot's status byte
+  ADD HL,DE               ; (+7, base $7385)
+  XOR A                   ; alive (status 0)?
+  CP (HL)
+  JR Z,Android_Attack     ; yes: attack him
+  LD A,(NearestCrewB)     ; A = second room-mate
   CP $FF
-  JR Z,Alien_Wander       ; no secondary target either: wander
-  LD C,A
-  ADD A,A
+  JR Z,Android_Wander     ; no secondary target either: wander
+  LD C,A                  ; C = victim slot
+  ADD A,A                 ; HL -> his status byte (+7)
   ADD A,A
   ADD A,A
   LD E,A
   LD D,$00
-  LD HL,ActorStatusColumn ; crew alive-table base
+  LD HL,ActorStatusColumn
   ADD HL,DE
-  XOR A
-  CP (HL)                 ; Z iff NearestCrewB's flag == 0 (alive)
-  JR Z,Alien_Attack       ; alive: attack them
-Alien_Wander:
-  CALL PickNextRoom       ; no reachable crew: alien wanders
-  LD (IX+$03),$01         ; Android slot → action state 1 (idle/wander)
+  XOR A                   ; alive (status 0)?
+  CP (HL)
+  JR Z,Android_Attack     ; yes: attack him
+Android_Wander:
+  CALL PickNextRoom       ; nobody to attack: pick a room to
+  LD (IX+$03),$01         ; wander to (action state 1)
   LD (IX+$00),$3C         ; with timer 60 frames
   POP IX
   RET
-Alien_Attack:
-  LD H,C                  ; H = nearest-crew ID (message target)
+Android_Attack:
+  LD H,C                  ; H = the victim slot (message target)
   LD A,(AlienTargetID)    ; A = AlienTargetID
   LD L,A                  ; L = Android slot index (message actor)
   LD A,$1E                ; A = message #30 "{actor} is attacking {target}"
@@ -8927,178 +9179,154 @@ Alien_Attack:
 
 ; CrewHitsAndroid
 ;
-; Combat-resolution dialogue when the current actor engages the Android (called
-; from CrewAction4_Handler at Combat_HitAlien).
+; Android-side combat handler, called from CrewAction4_Handler
+; (Combat_HitAlien) when the state-4 actor stands in the Android's room (the
+; slot picked by LongGameInit from LongGameTargetTable LongGameTargetTable, id
+; in AlienTargetID AlienTargetID, record pointer in AlienTargetPtr
+; AlienTargetPtr). The parallel of CrewHitsAlien (CrewHitsAlien): same guards,
+; same weapon dispatch on the attacker's front-hand item, but aimed at the
+; Android and emitting messages #31 / #32 instead of #3 / #4.
 ;
-; Fires from action state 4 (combat) when the actor's (IX+1) sprite-class byte
-; matches the alien-target slot's (IX+1). Because (IX+1) is not unique in
-; LongGameCrewInit (LongGameCrewInit), this fires for the whole class that
-; contains the Android (see CrewAction4_Handler header) — multiple crew members
-; can trigger this routine, not only the Android itself.
+; Guards: strength (IX+4) >= 2 and morale (IX+6) >= 2 — a Collapsed or
+; Broken/Shaken crew member cannot fight. Then the weapon decides:
 ;
-; The Android is the slot picked by LongGameInit (LongGameInit) from
-; LongGameTargetTable (LongGameTargetTable) and stored in AlienTargetID
-; (AlienTargetID), record pointer cached at AlienTargetPtr (AlienTargetPtr). It
-; starts dormant and is activated by UpdateAlien (UpdateAlien) on first
-; encounter with the alien (the first frame AlienActiveFlag is set while the
-; slot's +0/+7 are still template-zero), entering action state 7 and wounding
-; its sprite-class kin via CrewAction7_Handler (CrewAction7_Handler). This
-; routine is the **player-response leg**: when the Android (or another crew in
-; its sprite class) is engaged in combat state 4, log the dialogue and apply
-; the per-corridor-cell outcome.
-;
-; Guards: pixel coords IX+4 >= 2 and IX+6 >= 2 (actor placed on screen). Then
-; FindHeldItems locates the actor's corridor scan position into (31248):
-;
-; (31248) == 17       → silent: JP to HitAndroid_Refresh (post-combat fade-out)
-; (31248) >= 20       → silent: JP to HitAndroid_Refresh (sentinel cells)
-; (31248) == 16       → "net" outcome: write $FF to alien-target slot byte +0
-; (locks the Android out for the rest of this engagement), then enqueue message
-; #31 "{actor} nets {target}" with actor = CrewIndex (CrewIndex) — the crew
-; slot currently being dispatched — and target high byte from (33702). JP to
-; HitAndroid_Refresh. else                → "hit" outcome at
-; CrewHitsAndroid_HitPath: enqueue message #32 "{actor} hits the Android" with
-; actor = CrewIndex. Then run the per-(31248) follow-up: - decrement
-; alien-target's byte +4 (wound counter); if it underflows past 2, stamp byte
-; +7 = 2 (lockout sentinel that prevents UpdateAlien re-commandeering on
-; subsequent frames, see UpdateAlien's byte-+7 gate at Android_ActivateCheck)
-; and enqueue message #21 "{Android} has collapsed" - if (31248) ∈ {6, 7}:
-; enqueue message #5 "{actor}'s Tracker is broken" - if (31248) < 12: decrement
-; the slot's entry in ItemCharges (ItemCharges) and enqueue message #6 if it
-; expires - other (31248) values branch into the corridor-display rebuild at
-; HitAndroid_HarpoonGate / HitAndroid_Laser (clears the Android's class entries
-; from the corridor display and respawns the room)
-;
-; Caveat on the actor name: when (33700) is itself the Android's slot (the
-; dispatch ran for the Android slot), the message reads "{Android} hits the
-; Android" — apparent self-reference. With the class-not-ID matching above, the
-; message ALSO fires for non-Android slots in the same class, e.g. "Lambert
-; hits the Android" if AlienTargetID = 4 (Ash). The semantics here are best
-; confirmed with an emulator run rather than further static reading.
-;
-; This routine is the parallel of CrewHitsAlien (CrewHitsAlien) — identical
-; control flow but referring to the Android slot (AlienTargetPtr) and emitting
-; messages #31 / #32 instead of #3 / #4.
+; 17 (Cat Box) / >= 20 (Cat in Net/Box, bare hands) → silent no-op 16 (Net)
+; → stamp 255 into the Android's countdown byte (+0) — netted, out of action —
+; destroy the Net, msg #31 "{actor} nets {target}" 0-5, 18-19         → wound:
+; Android strength (+4) -1; below 2 it collapses — status (+7) = 2 (the lockout
+; UpdateAlien's gate at Android_ActivateCheck respects), msg #21 "{Android} has
+; collapsed", and AlienActiveFlag is cleared 6-7 (Tracker)      → tracker
+; shatters (destroyed, msg #5) but still wounds it 8-11 (Fire Extng)  → spend a
+; charge, no effect (msg #6 if empty) 12 (Harpn Gun)     → the blast kills the
+; attacker and every bystander and adds 15 room damage — but unlike the
+; alien-side loop at KillPrim_ItemLoop, the final compare in the item wipe at
+; AndroidKill_ItemLoop has an INVERTED branch (JR Z where the alien side falls
+; through), so it destroys every ItemLocations entry EXCEPT items lying loose
+; in this room: all items held by anyone or lying anywhere else on the ship are
+; wiped — and the Android itself takes no wound. Verified in the simulator:
+; items in other rooms / other hands -> 255, floor items survive, attacker +7 =
+; 1. An original-game bug, preserved as-is. 13-15 (Laser Pist) → spend a
+; charge, +6 room damage, then the normal wound path (msg #7 if empty)
 CrewHitsAndroid:
-  LD A,(IX+$04)           ; A = actor pixel X-tile
+  LD A,(IX+$04)           ; attacker's strength >= 2?
   CP $02
-  RET C                   ; X-tile < 2 → not yet placed: bail
-  LD A,(IX+$06)           ; A = actor pixel Y
+  RET C                   ; no: too hurt to fight
+  LD A,(IX+$06)           ; attacker's morale >= 2?
   CP $02
-  RET C                   ; Y < 2 → bail
-  LD A,(CrewIndex)        ; A = CrewIndex (slot being dispatched)
-  CALL FindHeldItems      ; populate (31248)/(31249) with corridor positions
-  LD A,(HeldItemFront)    ; A = scan position in 22-byte anim table
-  CP $11
-  JP Z,HitAndroid_Refresh ; pos 17 → silent post-combat
-  CP $14
-  JP NC,HitAndroid_Refresh ; pos >= 20 → silent (sentinel cells)
-  CP $10
-  JR NZ,CrewHitsAndroid_HitPath ; pos != 16 → "hits the Android" branch
-  LD HL,(AlienTargetPtr)  ; HL = alien-target (Android) slot pointer
-  LD (HL),$FF             ; lock Android's byte +0 = $FF for this engagement
-  CALL DrawFrontItem
-  LD A,(CrewIndex)        ; A = CrewIndex
-  LD HL,($83A6)           ; H = high byte of AlienTargetPtr
-  LD L,A                  ; L = actor (CrewIndex)
+  RET C                   ; no: too scared to fight
+  LD A,(CrewIndex)        ; A = the attacker's slot
+  CALL FindHeldItems      ; FindHeldItems: what is he holding?
+  LD A,(HeldItemFront)    ; A = the front-hand weapon
+  CP $11                  ; the Cat Box?
+  JP Z,HitAndroid_Refresh ; useless: silent no-op
+  CP $14                  ; Cat in Net/Box, or bare hands (255)?
+  JP NC,HitAndroid_Refresh ; also useless
+  CP $10                  ; the Net?
+  JR NZ,CrewHitsAndroid_HitPath ; no → "hits the Android" branch
+  LD HL,(AlienTargetPtr)  ; yes: stamp 255 into the Android's
+  LD (HL),$FF             ; countdown (+0) — netted, out of action
+  CALL DestroyFrontItem   ; the Net is used up (destroyed)
+  LD A,(CrewIndex)        ; L = the attacker's slot,
+  LD HL,($83A6)           ; H = the Android's slot (the byte
+  LD L,A                  ; after AlienTargetPtr is AlienTargetID)
   LD A,$1F                ; A = msg #31 "{actor} nets {target}"
   CALL EnqueueMessage     ; enqueue
   JP HitAndroid_Refresh
 ; "{actor} hits the Android" branch (CrewHitsAndroid continued).
 CrewHitsAndroid_HitPath:
-  PUSH AF                 ; stash (31248) for the post-message dispatch
-  LD A,(CrewIndex)        ; A = CrewIndex (slot being dispatched)
+  PUSH AF                 ; stash the weapon id across the message
+  LD A,(CrewIndex)        ; A = the attacker's slot
   LD L,A                  ; L = actor for the message
   LD A,$20                ; A = msg #32 "{actor} hits the Android"
   CALL EnqueueMessage     ; enqueue
-  POP AF                  ; A = (31248) restored
-  CP $06
+  POP AF                  ; A = the weapon again
+  CP $06                  ; 0-5: a prod or an incinerator?
   JR C,Android_TakeHit
-  CP $12
+  CP $12                  ; 18/19: a spanner?
   JR Z,Android_TakeHit
   CP $13
-  JR NZ,HitAndroid_Wound
+  JR NZ,HitAndroid_Wound  ; anything else: weapon-specific handling
 Android_TakeHit:
-  LD HL,(AlienTargetPtr)
-  LD DE,$0004
+  LD HL,(AlienTargetPtr)  ; wound the Android:
+  LD DE,$0004             ; its strength (+4) -1
   ADD HL,DE
   DEC (HL)
-  LD A,(HL)
+  LD A,(HL)               ; still 2+ ?
   CP $02
-  JP NC,HitAndroid_Refresh
-  INC HL
+  JP NC,HitAndroid_Refresh ; yes: it stays up
+  INC HL                  ; below 2: the Android collapses —
   INC HL
   INC HL
 Android_Collapsed:
-  LD (HL),$02
-  LD DE,$FFF9
-  ADD HL,DE
+  LD (HL),$02             ; status (+7) = 2 (defeated, locked out
+  LD DE,$FFF9             ; of re-activation),
+  ADD HL,DE               ; countdown (+0) = 0
   LD (HL),$00
-  LD A,(AlienTargetID)
+  LD A,(AlienTargetID)    ; L = the Android,
   LD L,A
-  LD A,$15
+  LD A,$15                ; msg #21 "{actor} has collapsed"
   CALL EnqueueMessage
-  CALL RefreshGrilleRow
-  LD (HL),$00
-  RET
+  CALL RefreshGrilleRow   ; put the Special row back to the grille
+  LD (HL),$00             ; state, and clear AlienActiveFlag
+  RET                     ; (RefreshGrilleRow returns HL -> it)
 HitAndroid_Wound:
-  CP $08
+  CP $08                  ; 6/7: a tracker?
   JR NC,HitAndroid_Extinguisher
-  CALL DrawFrontItem
-  LD A,$05
+  CALL DestroyFrontItem   ; yes: it shatters — destroyed,
+  LD A,$05                ; msg #5 "{actor}'s Tracker is broken"
   LD HL,(CrewIndex)
   CALL EnqueueMessage
-  JR Android_TakeHit
+  JR Android_TakeHit      ; and it still wounds the Android
 HitAndroid_Extinguisher:
-  CP $0C
+  CP $0C                  ; 8-11: an extinguisher?
   JR NC,HitAndroid_HarpoonGate
-  LD HL,ItemCharges
+  LD HL,ItemCharges       ; yes: HL -> its ItemCharges entry
   LD E,A
   LD D,$00
   ADD HL,DE
-  LD A,(HL)
+  LD A,(HL)               ; any CO2 left?
   AND A
   JR Z,HitAndroid_ExtSpent
-  DEC (HL)
-  JP HitAndroid_Refresh
+  DEC (HL)                ; yes: spend a charge — no effect
+  JP HitAndroid_Refresh   ; on the Android
 HitAndroid_ExtSpent:
-  LD HL,(CrewIndex)
-  LD A,$06
+  LD HL,(CrewIndex)       ; empty: L = actor,
+  LD A,$06                ; msg #6 "{actor}'s extinguisher is empty"
   CALL EnqueueMessage
   JP HitAndroid_Refresh
 HitAndroid_HarpoonGate:
-  JP NZ,HitAndroid_Laser
-  CALL GatherSameClassSlots
-  LD DE,NearestCrewC
-  LD B,$03
+  JP NZ,HitAndroid_Laser  ; weapon != 12 → 13-15, the laser branch
+  CALL GatherSameRoomSlots ; the Harpoon Gun: gather the attacker
+  LD DE,NearestCrewC      ; + room-mates as blast victims
+  LD B,$03                ; all three gathered slots:
 AndroidKill_SlotLoop:
   PUSH BC
   PUSH DE
-  LD A,(DE)
+  LD A,(DE)               ; A = victim slot (255 = none)
   CP $FF
   JR Z,AndroidKill_NextSlot
   PUSH AF
-  ADD A,$80
+  ADD A,$80               ; E = victim's back-hand marker
   LD E,A
-  ADD A,$20
+  ADD A,$20               ; D = victim's front-hand marker
   LD D,A
-  LD C,(IX+$01)
-  LD HL,ItemLocations
-  LD B,$16
+  LD C,(IX+$01)           ; C = the room
+  LD HL,ItemLocations     ; item wipe — NB the room test below is
+  LD B,$16                ; INVERTED vs the alien side (KillPrim_ItemLoop):
 AndroidKill_ItemLoop:
   LD A,(HL)
-  CP D
+  CP D                    ; held by the victim: wiped
   JR Z,AndroidKill_WipeItem
   CP E
   JR Z,AndroidKill_WipeItem
-  CP C
-  JR Z,AndroidKill_NextItem
+  CP C                    ; lying in this room: SURVIVES —
+  JR Z,AndroidKill_NextItem ; but everything else on the ship
 AndroidKill_WipeItem:
-  LD (HL),$FF
+  LD (HL),$FF             ; falls through and is destroyed
 AndroidKill_NextItem:
-  INC HL
+  INC HL                  ; (original-game bug, see the header)
   DJNZ AndroidKill_ItemLoop
-  POP AF
+  POP AF                  ; HL -> the victim's status byte (+7)
   LD HL,ActorStatusColumn
   ADD A,A
   ADD A,A
@@ -9106,11 +9334,11 @@ AndroidKill_NextItem:
   LD E,A
   LD D,$00
   ADD HL,DE
-  XOR A
+  XOR A                   ; still alive?
   CP (HL)
   JR NZ,AndroidKill_NextSlot
-  LD (HL),$01
-  LD DE,$FFF9
+  LD (HL),$01             ; yes: killed by the blast (+7 = 1),
+  LD DE,$FFF9             ; countdown (+0) = 0
   ADD HL,DE
   LD (HL),A
 AndroidKill_NextSlot:
@@ -9118,75 +9346,75 @@ AndroidKill_NextSlot:
   INC DE
   POP BC
   DJNZ AndroidKill_SlotLoop
-  LD A,$0F
-  LD E,(IX+$01)
+  LD A,$0F                ; the blast wrecks the room:
+  LD E,(IX+$01)           ; +15 damage points
   CALL AddRoomDamage
-  JP InitGameView
+  JP InitGameView         ; rebuild the ship view
 HitAndroid_Laser:
-  LD E,A
+  LD E,A                  ; 13-15, a laser pistol:
   LD D,$00
-  LD HL,ItemCharges
+  LD HL,ItemCharges       ; HL -> its ItemCharges entry
   ADD HL,DE
-  XOR A
+  XOR A                   ; any shots left?
   CP (HL)
   JR Z,HitAndroid_LaserSpent
-  DEC (HL)
-  LD A,$06
+  DEC (HL)                ; yes: spend one,
+  LD A,$06                ; +6 room damage,
   LD E,(IX+$01)
   CALL AddRoomDamage
-  JP Android_TakeHit
+  JP Android_TakeHit      ; and wound the Android
 HitAndroid_LaserSpent:
-  LD HL,(CrewIndex)
-  LD A,$07
+  LD HL,(CrewIndex)       ; out of shots: L = actor,
+  LD A,$07                ; msg #7 "{actor}'s Laser is exhausted"
   CALL EnqueueMessage
   JP HitAndroid_Refresh
 HitAndroid_Refresh:
-  LD A,(RoomModeByte)
+  LD A,(RoomModeByte)     ; room view on screen (mode 1)?
   CP $01
-  RET NZ
-  LD A,(DrawSlotIndex)
+  RET NZ                  ; no: done
+  LD A,(DrawSlotIndex)    ; is the attacker the viewed crew member?
   LD HL,CrewIndex
   CP (HL)
-  RET NZ
-  LD A,(AlienActiveFlag)
+  RET NZ                  ; no: done
+  LD A,(AlienActiveFlag)  ; Android hostility still on?
   AND A
-  LD A,(HL)
-  RET Z
-  LD A,$34
-  CALL SpecialRowAttack
-  LD HL,$48D6
+  LD A,(HL)               ; (leftover load, unused)
+  RET Z                   ; no: leave the Special row alone
+  LD A,$34                ; yes: keep "  ATTACK  " on the Special
+  CALL SpecialRowAttack   ; slot and redraw the special row
+  LD HL,$48D6             ; (screen row 14, col 22)
   LD (DrawScreenPtr),HL
   CALL DrawSprite
   RET
 
-; TriggerAlienEvent
+; TriggerAlienEvent — arm the Android once the alien is hurt
 ;
-; Per-frame guard: when the alien's current corridor index is >= 6 AND the
-; alien-target crew id is < 8 AND the targeted crew member is dead (alive flag
-; at offset 7 of the crew record is zero), fire a "hatch" event by setting the
-; alien-source byte to 255 and jumping to the alien-event dispatcher at
-; AlienEventDispatch. Otherwise simply returns.
+; Per-frame check: once the crew has wounded the alien 6 or more times (slot 0
+; byte +4), and a valid Android slot exists (AlienTargetID < 8 — Long Game
+; only) whose record is still dormant (+7 = 0), set AlienActiveFlag = 255 via
+; AlienEventDispatch (AlienEventDispatch). UpdateAlien (UpdateAlien) sees the
+; flag and turns the Android hostile — the traitor reveals himself when the
+; alien is in danger.
 ;
 ; Used by the routine at GameEntry.
 TriggerAlienEvent:
-  LD HL,$7382             ; HL → alien's current corridor index
-  LD A,(HL)               ; A = corridor
-  CP $06                  ; corridor 0-5 = pre-alien spawn area
-  RET C                   ; below 6: alien not yet active here
-  LD A,(AlienTargetID)    ; A = AlienTargetID (crew ID being targeted)
+  LD HL,$7382             ; HL -> the alien's wound counter (+4)
+  LD A,(HL)
+  CP $06                  ; wounded fewer than 6 times?
+  RET C                   ; yes: no trigger yet
+  LD A,(AlienTargetID)    ; is there a valid Android slot?
 TriggerAlien_TargetCheck:
-  CP $08                  ; crew IDs are 0..6; 8+ = none/invalid
-  RET NC                  ; no valid target: nothing to do
-  LD HL,(AlienTargetPtr)  ; HL = pointer to current crew record
-                          ; (AlienTargetPtr)
-  LD DE,$0007             ; offset 7 = alive flag
+  CP $08                  ; (the Short Game hard-wires 9)
+  RET NC                  ; no: nothing to trigger
+  LD HL,(AlienTargetPtr)  ; HL -> the Android's record;
+  LD DE,$0007             ; its status byte (+7):
   ADD HL,DE
-  XOR A
+  XOR A                   ; still dormant (0)?
   CP (HL)
-  RET NZ
-  LD A,$FF
-  JP AlienEventDispatch
-  RET
+  RET NZ                  ; no (collapsed / host): stay quiet
+  LD A,$FF                ; yes: AlienActiveFlag = 255 —
+  JP AlienEventDispatch   ; the Android turns hostile
+  RET                     ; (unreachable)
   LD HL,AlienFlags
   LD (HL),$00
   LD BC,$001F
@@ -9301,14 +9529,9 @@ ItemChargesInit:
 ; LongGameCrewInit
 ;
 ; 64-byte starting state (eight 8-byte records) copied by LongGameInit
-; (LongGameInit) into $7376-$73B5. Layout, with ActorRecords ($7376) as record
-; 0:
-;
-; slot 0 ($7376): alien-slot header (all zero) slot 1 ($737E): alien gameplay
-; slot proper slot 2 ($7386): crew[0]    \ slot 3 ($738E): crew[1]     | slot 4
-; ($7396): crew[2]     |  Initial state for the 6 crew that slot 5 ($739E):
-; crew[3]     |  share the 64-byte block. crew[6] at slot 6 ($73A6): crew[4]
-; |  $73B6 is initialised separately. slot 7 ($73AE): crew[5]    /
+; (LongGameInit) into $737E-$73BD: slot 0 ($737E) is the alien, then one 8-byte
+; record per crew slot ($7386 Dallas ... $73B6 Brett — the per-line comments
+; below name them).
 ;
 ; Per-record field layout: see ActorRecords (ActorRecords). In particular +1 is
 ; the STARTING ROOM (6 = CommdCentr, 27 = Mess) and +4 is the crew member's
@@ -9339,7 +9562,7 @@ LongGameCrewInit:
 ; ShortGameCrewInit
 ;
 ; 64-byte starting state (eight 8-byte records) copied by ShortGameInit
-; (ShortGameInit) into $7376-$73B5. Same record layout as LongGameCrewInit
+; (ShortGameInit) into $737E-$73BD. Same record layout as LongGameCrewInit
 ; (LongGameCrewInit) — see that block for field semantics.
 ;
 ; Slot occupancy comparison (ShortGameCrewInit vs LongGameCrewInit):
@@ -9513,7 +9736,7 @@ PressAnyKeyText:
 ; MsgDrawnCol/MsgVisibleTimer. 2. CALL ResetMsgAndScript: reseed the script
 ; pointer from the ZX SEED system variable and reset the message-dup marker
 ; (MsgLastEnqueued MsgLastEnqueued) to $FFFF. 3. LDIR 64 bytes from
-; LongGameCrewInit (LongGameCrewInit) into $7376 to populate the alien slot and
+; LongGameCrewInit (LongGameCrewInit) into $737E to populate the alien slot and
 ; the seven crew slots with the long-game starting state (all crew alive,
 ; normal alien position). 4. Pull one script nibble, look it up in
 ; LongGameHostSlotTable (LongGameHostSlotTable) to get the host slot index
@@ -9541,7 +9764,7 @@ LongGameInit:
   LD (MsgDrawnCol),A      ; clear run-state byte MsgDrawnCol
   CALL ResetMsgAndScript  ; reset message-dup marker + reseed script pointer
   LD HL,LongGameCrewInit  ; HL = LongGameCrewInit ($A1E4)
-  LD DE,ActorRecords      ; DE = $7376 (alien slot + crew table base)
+  LD DE,ActorRecords      ; DE = $737E (alien slot + crew table base)
 LongGame_SetupRecords:
   LD BC,$0040             ; 64 bytes = 8 × 8-byte records
 LongGame_CopyRecords:
@@ -9638,15 +9861,15 @@ CommonInit_GrilleLoop:
   LD (HL),D
   LD HL,ShipSystemFlags
   LD (HL),D
-  CALL AdvanceScriptPtr
-  LD (JonesRoom),A
-  CALL AdvanceScriptPtr
+  CALL AdvanceScriptPtr   ; Jones starts in a random
+  LD (JonesRoom),A        ; room 0-15 (script nibble)
+  CALL AdvanceScriptPtr   ; the alien's lair is drawn from
   LD E,A
   LD D,$00
   LD HL,AlienInitTable    ; HL = AlienInitTable ($A18E)
   ADD HL,DE
   LD A,(HL)               ; A = AlienInitTable[script_byte]
-  OR $40                  ; set direction bit (bit 6)
+  OR $40                  ; ...hidden in the ducts above it (bit 6)
 CommonInit_AlienRoom:
   LD ($737F),A            ; set the alien's starting room (slot 0 byte +1)
 CommonInit_Charges:
@@ -9744,7 +9967,7 @@ DrawIntroScreen:
   CALL FillAttributes     ; FillAttributes(0): all black-on-black (invisible)
   LD DE,IntroTileMap      ; DE = IntroTileMap (intro tile-map data)
   LD HL,$408A             ; HL = $408A (screen address: top-left of tile area)
-  LD (DrawScreenPtr),HL   ; store as current draw pointer (DrawSlotIndex)
+  LD (DrawScreenPtr),HL   ; store as current draw pointer (DrawScreenPtr)
   LD B,$0F                ; 15 tile columns
 Intro_ColLoop:
   PUSH BC
@@ -10069,7 +10292,7 @@ GameModeJump:
 ; slot selected into AlienTargetID AlienTargetID — see the notes at
 ; LongGameTargetTable and the activation logic in UpdateAlien.)
 ;
-; Starting crew/alien record state at $7376: - Short Game = ShortGameCrewInit
+; Starting crew/alien record state at $737E: - Short Game = ShortGameCrewInit
 ; (ShortGameCrewInit) — four slots pre-stamped with the HostMarker, yielding a
 ; smaller "active" starting cast - Long Game  = LongGameCrewInit
 ; (LongGameCrewInit) — every slot starts with normal (non-$FF) data;
@@ -10541,92 +10764,110 @@ WaitRelease_Poll:
   JR C,WaitRelease_Poll
   RET
 
-; EndgameScreen
+; EndgameScreen — every way the game can end
+;
+; Five entry points, one per outcome; each wipes the screen, zeroes RatingScore
+; and adds the terms that outcome earns before the shared
+; roster/rating/wait-key tail (which restarts at GameEntry):
+;
+; EndgameScreen (EndgameScreen) — the alien was killed in combat or died in
+; space: "The Alien has been killed"; scores crew + rooms + oxygen (the only
+; ending that counts ship condition). Endgame_Escape (Endgame_Escape) — the
+; Narcissus got away: with the self-destruct armed, the frozen countdown digits
+; are patched into "The Nostromo will explode in m minutes ss seconds" and crew
+; + oxygen are scored; WITHOUT it the alien survives — "The Alien will be
+; unleashed upon the Earth", Competence Rating 0. Endgame_CrewLost
+; (Endgame_CrewLost) — no human left alive: "Humanoid life levels minimal",
+; then the same destruct-armed split. Endgame_OxygenOut (Endgame_OxygenOut) —
+; the air ran out: "Life Support Systems exhausted", every crew member is
+; marked dead, then the same destruct-armed split. Endgame_Summary
+; (Endgame_Summary) — from DamageGameOver (the ship broke up or the countdown
+; expired): the alien died with the ship, but only the oxygen term is scored.
 ;
 ; Used by the routines at CrewHitsAlien and BlowLock1.
 EndgameScreen:
-  CALL ScreenTransition
-  XOR A
-  LD (EndgameFlag),A
-  CALL ComputeRating
-  CALL CountRoomDamage
+  CALL ScreenTransition   ; wipe the screen
+  XOR A                   ; RatingScore = 0,
+  LD (RatingScore),A
+  CALL ComputeRating      ; + crew term
+  CALL CountRoomDamage    ; + room-condition term
 ; This entry point is used by the routine at DamageGameOver.
 Endgame_Summary:
-  CALL OxygenScore
-  CALL PrintAlienKilled
+  CALL OxygenScore        ; + oxygen term
+  CALL PrintAlienKilled   ; "The Alien has been killed"
 Endgame_Roster:
-  CALL PrintDeadRoster
-  CALL PrintAndroidReveal
-  CALL PrintRating
-  CALL WaitKeyPrompt
-  JP GameEntry
+  CALL PrintDeadRoster    ; the dead-crew roster,
+  CALL PrintAndroidReveal ; "<name> was the Android",
+  CALL PrintRating        ; "Competence Rating nnn",
+  CALL WaitKeyPrompt      ; wait for a key,
+  JP GameEntry            ; and restart the game
 ; This entry point is used by the routine at LaunchSequence.
 Endgame_Escape:
-  CALL ScreenTransition
-  XOR A
-  LD (EndgameFlag),A
-  LD DE,StrNarcissusLaunched
+  CALL ScreenTransition   ; wipe the screen
+  XOR A                   ; RatingScore = 0
+  LD (RatingScore),A
+  LD DE,StrNarcissusLaunched ; "The Narcissus is launched"
   LD B,$19
   LD HL,$4003
   LD (DrawScreenPtr),HL
   CALL PrintStr
-  LD HL,ShipSystemFlags
+  LD HL,ShipSystemFlags   ; was the self-destruct armed?
   BIT 0,(HL)
-  JR NZ,Endgame_ExplodeText
-  CALL Endgame_UnleashedText
-  JP Endgame_Roster
+  JR NZ,Endgame_ExplodeText ; yes: the Nostromo (and alien) die
+  CALL Endgame_UnleashedText ; no: the alien reaches Earth —
+  JP Endgame_Roster       ; rating stays 0
 Endgame_ExplodeText:
-  LD A,(DestructMinutes)
-  LD ($A48A),A
-  LD HL,(DestructSeconds)
+  LD A,(DestructMinutes)  ; patch the frozen countdown into
+  LD ($A48A),A            ; the message: minutes digit,
+  LD HL,(DestructSeconds) ; seconds digits
   LD ($A494),HL
-  LD HL,$4043
+  LD HL,$4043             ; "The Nostromo will explode"
   LD (DrawScreenPtr),HL
   LD B,$19
   LD DE,StrWillExplode
   CALL PrintStr
-  LD HL,$4063
+  LD HL,$4063             ; "in m minutes ss seconds"
   LD (DrawScreenPtr),HL
   LD B,$17
   LD DE,DestructTextIn
   CALL PrintStr
-  CALL ComputeRating
-  CALL OxygenScore
+  CALL ComputeRating      ; + crew term
+  CALL OxygenScore        ; + oxygen term
   JP Endgame_Roster
 ; This entry point is used by the routine at CheckCrewAlive.
 Endgame_CrewLost:
-  CALL ScreenTransition
-  XOR A
-  LD (EndgameFlag),A
-  LD HL,$4002
+  CALL ScreenTransition   ; wipe the screen
+  XOR A                   ; RatingScore = 0
+  LD (RatingScore),A
+  LD HL,$4002             ; "Humanoid life levels minimal"
   LD (DrawScreenPtr),HL
   LD DE,StrLifeLevelsMinimal
   LD B,$1C
   CALL PrintStr
 Endgame_DestructChk:
-  LD HL,ShipSystemFlags
+  LD HL,ShipSystemFlags   ; was the self-destruct armed?
   BIT 0,(HL)
-  JP NZ,Endgame_ExplodeText
-  CALL Endgame_UnleashedText
+  JP NZ,Endgame_ExplodeText ; yes: the explode ending
+  CALL Endgame_UnleashedText ; no: the alien reaches Earth
   JP Endgame_Roster
 ; This entry point is used by the routine at OxygenCheckRedraw.
 Endgame_OxygenOut:
-  CALL ScreenTransition
-  LD HL,$4001
-  LD (DrawScreenPtr),HL
+  CALL ScreenTransition   ; wipe the screen
+  LD HL,$4001             ; "Life Support Systems
+  LD (DrawScreenPtr),HL   ; exhausted"
   LD DE,StrLifeSupportGone
   LD B,$1E
   CALL PrintStr
-  XOR A
-  LD (EndgameFlag),A
-  LD HL,CrewStatusColumn
-  LD DE,$0008
+  XOR A                   ; RatingScore = 0
+  LD (RatingScore),A
+  LD HL,CrewStatusColumn  ; everyone suffocates: all 7 crew
+  LD DE,$0008             ; status bytes = 2 (dead, found)
   LD B,$07
 Endgame_MarkCrew:
   LD (HL),$02
   ADD HL,DE
   DJNZ Endgame_MarkCrew
-  JR Endgame_DestructChk
+  JR Endgame_DestructChk  ; then the destruct-armed split
 
 ; CheckCrewAlive — the per-frame crew-extinction gate
 ;
@@ -10662,8 +10903,8 @@ CrewAlive_Next:
 ;
 ; Used by the routine at EndgameScreen.
 PrintAlienKilled:
-  LD HL,$4044
-  LD (DrawScreenPtr),HL
+  LD HL,$4044             ; "The Alien has been killed"
+  LD (DrawScreenPtr),HL   ; on screen row 2
   LD B,$19
   LD DE,StrAlienKilled
   CALL PrintStr
@@ -10671,33 +10912,37 @@ PrintAlienKilled:
 
 ; PrintDeadRoster
 ;
+; List the fallen: one "<name> is dead" line per crew slot whose status is
+; neither alive (0) nor removed-from-play (255) — the Android excluded (its
+; reveal line follows separately).
+;
 ; Used by the routine at EndgameScreen.
 PrintDeadRoster:
-  LD HL,$40A4
+  LD HL,$40A4             ; from screen row 5, col 4
   LD (DrawScreenPtr),HL
-  LD BC,$0701
+  LD BC,$0701             ; B = 7 slots, C = slot 1
   LD IX,CrewRecords
   LD DE,$0008
 DeadRoster_Loop:
   PUSH BC
   PUSH DE
-  LD A,(AlienTargetID)
+  LD A,(AlienTargetID)    ; the Android gets its own line
   CP C
   JR Z,DeadRoster_Next
-  LD A,(IX+$07)
+  LD A,(IX+$07)           ; alive, or never in play?
   AND A
-  JR Z,DeadRoster_Next
+  JR Z,DeadRoster_Next    ; then not on the roster
   CP $FF
   JR Z,DeadRoster_Next
   LD HL,(DrawScreenPtr)
   PUSH HL
-  LD A,C
+  LD A,C                  ; "<name> is dead"
   CALL PrintName
   LD DE,StrIsDead
   LD B,$08
   CALL PrintStr
-  POP HL
-  LD DE,$0040
+  POP HL                  ; two screen rows down (+64,
+  LD DE,$0040             ; or the screen-third stride)
   LD A,L
   CP $E0
   JR C,DeadRoster_Advance
@@ -10715,53 +10960,61 @@ DeadRoster_Next:
 
 ; PrintAndroidReveal
 ;
+; The post-mortem twist: name the traitor ("<name> was the Android") — Long
+; Game only (a valid AlienTargetID).
+;
 ; Used by the routine at EndgameScreen.
 PrintAndroidReveal:
-  LD HL,$5024
+  LD HL,$5024             ; on screen row 16, col 4
   LD (DrawScreenPtr),HL
-  LD A,(AlienTargetID)
+  LD A,(AlienTargetID)    ; was there an Android this game?
   CP $08
-  RET NC
-  CALL PrintName
-  LD DE,StrWasAndroid
+  RET NC                  ; no (Short Game): keep the secret
+  CALL PrintName          ; print its name +
+  LD DE,StrWasAndroid     ; " was the Android"
   LD B,$10
   CALL PrintStr
   RET
 
 ; PrintRating
 ;
+; Print "Competence Rating: nnn": clamp RatingScore to 100, reset the ASCII
+; digits inside the label string to "00", bump them A times with decimal
+; carries (RatingHundred patches in the leading "1" for a perfect 100), then
+; print the patched 22-character string.
+;
 ; Used by the routine at EndgameScreen.
 PrintRating:
-  LD A,(EndgameFlag)
-  CP $64
+  LD A,(RatingScore)      ; A = RatingScore,
+  CP $64                  ; clamped to 100
   JR C,Rating_Digits
   LD A,$64
 Rating_Digits:
-  CALL ResetRatingDigits
+  CALL ResetRatingDigits  ; digits = "  00"
   LD ($A451),HL
-  AND A
+  AND A                   ; zero: print as-is
   JR Z,Rating_PrintLabel
-  LD B,A
-  LD HL,StrRatingDigits
+  LD B,A                  ; else count the score out
+  LD HL,StrRatingDigits   ; in ASCII: units +1,
   LD A,$3A
 Rating_IncLoop:
   INC (HL)
-  CP (HL)
+  CP (HL)                 ; past '9'?
   JR NZ,Rating_Next
-  LD (HL),$30
-  DEC HL
+  LD (HL),$30             ; wrap to '0',
+  DEC HL                  ; carry into the tens,
   INC (HL)
   CP (HL)
   JR NZ,Rating_CarryDone
-  CALL RatingHundred
-  INC HL
+  CALL RatingHundred      ; and past 99 write the "10"
+  INC HL                  ; of a perfect 100
 Rating_CarryDone:
   INC HL
 Rating_Next:
   DJNZ Rating_IncLoop
 Rating_PrintLabel:
-  LD HL,$5084
-  LD (DrawScreenPtr),HL
+  LD HL,$5084             ; print "Competence Rating: nnn"
+  LD (DrawScreenPtr),HL   ; on screen row 19
   LD DE,StrCompetence
   LD B,$16
   CALL PrintStr
@@ -10806,7 +11059,7 @@ DamageOver_Loop:
   LD B,$15
   CALL PrintStr
   XOR A
-  LD (EndgameFlag),A
+  LD (RatingScore),A
   JP Endgame_Summary
 
 ; ScreenTransition
@@ -10871,23 +11124,30 @@ Endgame_UnleashedText:
   CALL PrintStr
   RET
 
-; ComputeRating
+; ComputeRating — the crew term of the Competence Rating
+;
+; RatingScore += 2 x strength for every crew member who is still alive (+7 =
+; 0), the Android's slot excluded. Which terms an ending adds is what
+; distinguishes the outcomes (see the EndgameScreen header): destroying the
+; alien scores crew + rooms + oxygen; going up with the ship scores oxygen
+; only; escaping with the destruct armed scores crew + oxygen; letting the
+; alien survive scores 0.
 ;
 ; Used by the routine at EndgameScreen.
 ComputeRating:
-  LD IX,CrewRecords
+  LD IX,CrewRecords       ; IX -> slot 1's record
   LD DE,$0008
-  XOR A
+  XOR A                   ; A' = running total 0
   EX AF,AF'
-  LD BC,$0701
+  LD BC,$0701             ; B = 7 slots, C = slot 1
 Rating_CrewLoop:
-  LD A,(AlienTargetID)
+  LD A,(AlienTargetID)    ; the Android earns nothing
   CP C
   JR Z,Rating_SkipCrew
-  LD A,(IX+$07)
+  LD A,(IX+$07)           ; alive?
   AND A
   JR NZ,Rating_SkipCrew
-  LD L,(IX+$04)
+  LD L,(IX+$04)           ; yes: total += 2 x strength
   SLA L
   EX AF,AF'
   ADD A,L
@@ -10896,44 +11156,50 @@ Rating_SkipCrew:
   ADD IX,DE
   INC C
   DJNZ Rating_CrewLoop
-  EX AF,AF'
+  EX AF,AF'               ; RatingScore += the total
   LD C,A
-  LD A,(EndgameFlag)
+  LD A,(RatingScore)
   ADD A,C
-  LD (EndgameFlag),A
+  LD (RatingScore),A
   RET
 
-; CountRoomDamage
+; CountRoomDamage — the ship-condition term of the Competence Rating
+;
+; RatingScore += 1 for every room whose damage meter is still below "20" (tens
+; digit < '2') — 34 rooms, up to 34 points.
 ;
 ; Used by the routine at EndgameScreen.
 CountRoomDamage:
-  LD BC,$2200
-  LD HL,RoomDamageDigits
+  LD BC,$2200             ; B = 34 rooms, C = 0 points
+  LD HL,RoomDamageDigits  ; walk the damage TENS digits
 CountDmg_Loop:
-  LD A,(HL)
+  LD A,(HL)               ; below '2' (under 20 damage)?
   CP $32
   JR NC,CountDmg_Next
-  INC C
+  INC C                   ; yes: +1
 CountDmg_Next:
   INC HL
   INC HL
   DJNZ CountDmg_Loop
-  LD A,(EndgameFlag)
+  LD A,(RatingScore)      ; RatingScore += the count
   ADD A,C
-  LD (EndgameFlag),A
+  LD (RatingScore),A
   RET
 
-; OxygenScore
+; OxygenScore — the oxygen term of the Competence Rating
+;
+; RatingScore += 2 x the oxygen counter's leading digit ('7' at the start of a
+; game, so up to 14 points for a quick finish).
 ;
 ; Used by the routine at EndgameScreen.
 OxygenScore:
-  LD A,(OxygenHi)
+  LD A,(OxygenHi)         ; the oxygen counter's first digit
   SUB $30
-  SLA A
+  SLA A                   ; x 2
   LD C,A
-  LD A,(EndgameFlag)
+  LD A,(RatingScore)      ; RatingScore += it
   ADD A,C
-  LD (EndgameFlag),A
+  LD (RatingScore),A
   RET
 
 ; ShortGameInit
@@ -10954,7 +11220,7 @@ OxygenScore:
 ; Point the message queue head (MsgQueueWritePtr MsgQueueWritePtr) at the queue
 ; base MessageQueue (MessageQueue). 3. Hard-wire AlienTargetID (AlienTargetID)
 ; = 9 — disables alien hunt logic. 4. LDIR 64 bytes from ShortGameCrewInit
-; (ShortGameCrewInit) into $7376 to populate the alien slot and the seven crew
+; (ShortGameCrewInit) into $737E to populate the alien slot and the seven crew
 ; slots with the short-game starting state (four slots wear the HostMarker so
 ; they're skipped by normal crew processing, leaving the alien header plus
 ; three active crew). 5. JP into the shared common init at CommonGameInit
@@ -10973,7 +11239,7 @@ ShortGame_SetTarget:
   LD A,$09                ; A = 9 (fixed Short Game alien target)
   LD (AlienTargetID),A    ; AlienTargetID = 9 — no randomisation
   LD HL,ShortGameCrewInit ; HL = ShortGameCrewInit ($A224)
-  LD DE,ActorRecords      ; DE = $7376 (alien slot + crew table base)
+  LD DE,ActorRecords      ; DE = $737E (alien slot + crew table base)
   LD BC,$0040             ; 64 bytes = 8 × 8-byte records
   LDIR                    ; copy short-game starting crew/alien state
 ShortGameInit_Done:
@@ -11077,46 +11343,57 @@ Music_Gap:
 
 ; PostCombatReset
 ;
+; After a combat dispatch: park the actor's action state and reload the hand
+; cache for the viewed crew member.
+;
 ; Used by the routine at CrewAction4_Handler.
 PostCombatReset:
-  LD (IX+$03),$00
-  LD HL,$FFFF
+  LD (IX+$03),$00         ; action state = 0 (parked)
+  LD HL,$FFFF             ; clear the hand cache
   LD (HeldItemFront),HL
-  CALL RefreshHeldItems
+  CALL RefreshHeldItems   ; and reload it for the viewed slot
   RET
 
 ; DestroyHeldItem
 ;
-; Used by the routine at DrawFrontItem.
+; Entered from DestroyFrontItem (DestroyFrontItem) with HL -> the front-hand
+; item's ItemLocations entry and B = the back-hand item: wipe the item out of
+; existence and promote the back-hand item to the front hand — with a full
+; hand-row redraw (UpdateHandRows UpdateHandRows) when the owner is the crew
+; member on screen, marker/courage bookkeeping only (GetItemLocation
+; GetItemLocation) when he is not.
 DestroyHeldItem:
-  LD A,$FF
-  LD (HL),A
-  LD A,(RoomModeByte)
+  LD A,$FF                ; ItemLocations[front item] = 255:
+  LD (HL),A               ; the item ceases to exist
+  LD A,(RoomModeByte)     ; room view on screen (mode 1)?
   CP $01
   JR NZ,DestroyItem_BackHand
   PUSH HL
-  LD A,(CrewIndex)
+  LD A,(CrewIndex)        ; is the owner the viewed crew member?
   LD HL,DrawSlotIndex
   CP (HL)
   POP HL
   JR NZ,DestroyItem_BackHand
-  LD A,$FF
+  LD A,$FF                ; yes: redraw the hand rows too
   JP UpdateHandRows
 DestroyItem_BackHand:
-  LD A,$FF
+  LD A,$FF                ; off screen: anything in the back hand?
   CP B
   LD A,(HeldItemBack)
-  JP NZ,GetItemLocation
+  JP NZ,GetItemLocation   ; yes: promote it to the front hand
   RET
 ; This entry point is used by the routine at UpdateHandRows.
 HandRows_Finish:
-  CALL DrawSprite
-  LD A,$FF
-  LD ($73C9),A
-  CALL DrawSelectedName
+  CALL DrawSprite         ; draw the (blank) front row,
+  LD A,$FF                ; blank the "Leave Item" row
+  LD ($73C9),A            ; (cell 11 — nothing left to leave)
+  CALL DrawSelectedName   ; and repaint the menu strip
   RET
 
 ; ClearHandCache
+;
+; Reset HeldItemFront/Back to 255/255 and return A = the current actor's slot —
+; the input FindHeldItems (FindHeldItems) wants.
 ;
 ; Used by the routine at CrewHitsAlien.
 ClearHandCache:
@@ -11127,26 +11404,36 @@ ClearHandCache:
 
 ; AttackRowGate
 ;
+; Special-row draw hook (DrawRoomSpecials DrawRoomSpecials) when the alien is
+; in the viewed room: while the viewed crew member's own ATTACK is still
+; counting down (state 4, timer running), leave the row alone; otherwise force
+; the "  ATTACK  " cell.
+;
 ; Used by the routine at DrawRoomSpecials.
 AttackRowGate:
-  LD A,(IX+$03)
-  CP $04
+  LD A,(IX+$03)           ; mid-attack (state 4, timer still
+  CP $04                  ; running)?
   JR NZ,AttackRow_Force
   LD A,(IX+$00)
   OR A
-  JP NZ,DrawSpec_AlienDone
+  JP NZ,DrawSpec_AlienDone ; yes: draw the row as it stands
 AttackRow_Force:
-  CALL CursorGrilleToAttack
-  LD DE,$73CB
-  JP DrawSpec_AlienAttackRow
+  CALL CursorGrilleToAttack ; no: swap a live "RmveGrille" pick too,
+  LD DE,$73CB             ; and force the Special cell (13)
+  JP DrawSpec_AlienAttackRow ; to "  ATTACK  "
 
 ; AlienInfoCheck
+;
+; Room-info hook (RefreshRoomInfo RefreshRoomInfo) when the alien shares the
+; viewed room: if the viewed crew member is between attacks, offer ATTACK;
+; while his attack countdown is still running, switch the view to the
+; alien-encounter screen (room type 4) with both animation channels frozen.
 ;
 ; Used by the routine at RefreshRoomInfo.
 AlienInfoCheck:
   PUSH IX
   PUSH DE
-  LD A,(DrawSlotIndex)
+  LD A,(DrawSlotIndex)    ; IX -> the viewed slot's record
   ADD A,A
   ADD A,A
   ADD A,A
@@ -11154,36 +11441,40 @@ AlienInfoCheck:
   LD D,$00
   LD IX,ActorRecords
   ADD IX,DE
-  LD A,(IX+$03)
-  CP $04
+  LD A,(IX+$03)           ; mid-attack (state 4, timer still
+  CP $04                  ; running)?
   JR NZ,AlienInfo_Attack
   LD A,(IX+$00)
   OR A
   JR NZ,AlienInfo_Combat
 AlienInfo_Attack:
-  POP DE
+  POP DE                  ; not attacking yet:
   POP IX
-  CALL CursorGrilleToAttack
-  CALL ResetAlienXAnim
-  JP RefreshInfo_Encounter
+  CALL CursorGrilleToAttack ; swap a live "RmveGrille" pick to ATTACK
+  CALL ResetAlienXAnim    ; reset the encounter animation
+  JP RefreshInfo_Encounter ; and continue the info refresh
 AlienInfo_Combat:
-  POP DE
+  POP DE                  ; attack in progress:
   POP IX
-  CALL ResetAlienXAnim
-  LD HL,DrawMenuStrip
-  LD (CrewAnimFlags),HL
-  LD A,$04
-  LD (RoomTypeByte),A
+  CALL ResetAlienXAnim    ; reset the encounter animation,
+  LD HL,DrawMenuStrip     ; freeze both animation channels
+  LD (CrewAnimFlags),HL   ; ($8080 -> CrewAnimFlags+AnimFramePhase)
+  LD A,$04                ; and view type 4:
+  LD (RoomTypeByte),A     ; the alien-encounter screen
   RET
 
 ; AndroidInfoCheck
 ;
+; Room-info hook (RefreshRoomInfo RefreshRoomInfo) when the Android is in the
+; viewed room (caller's Z flag): offer ATTACK unless the viewed crew member's
+; own attack countdown is still running.
+;
 ; Used by the routine at RefreshRoomInfo.
 AndroidInfoCheck:
-  RET NZ
+  RET NZ                  ; not the Android's room: done
   PUSH IX
   PUSH DE
-  LD A,(DrawSlotIndex)
+  LD A,(DrawSlotIndex)    ; IX -> the viewed slot's record
   ADD A,A
   ADD A,A
   ADD A,A
@@ -11191,36 +11482,39 @@ AndroidInfoCheck:
   LD D,$00
   LD IX,ActorRecords
   ADD IX,DE
-  LD A,(IX+$03)
+  LD A,(IX+$03)           ; in combat (state 4)?
   CP $04
   JR Z,AndroidInfo_Timer
-  POP DE
+  POP DE                  ; no: offer ATTACK
   POP IX
   JR AndroidInfo_Attack
 AndroidInfo_Timer:
-  LD A,(IX+$00)
+  LD A,(IX+$00)           ; countdown still running?
   OR A
   POP DE
   POP IX
-  RET NZ
+  RET NZ                  ; yes: leave the view alone
 AndroidInfo_Attack:
-  CALL CursorGrilleToAttack
-  JP RefreshInfo_AttackRow
+  CALL CursorGrilleToAttack ; swap a live "RmveGrille" pick to ATTACK
+  JP RefreshInfo_AttackRow ; and continue the info refresh
 
 ; AndroidRowGate
 ;
+; Special-row draw hook (DrawRoomSpecials DrawRoomSpecials) when the Android is
+; in the viewed room — the Android twin of AttackRowGate.
+;
 ; Used by the routine at DrawRoomSpecials.
 AndroidRowGate:
-  LD A,(IX+$03)
-  CP $04
+  LD A,(IX+$03)           ; mid-attack (state 4, timer still
+  CP $04                  ; running)?
   JR NZ,AndroidRow_Force
   LD A,(IX+$00)
   OR A
-  JP NZ,DrawSpec_AndroidDone
+  JP NZ,DrawSpec_AndroidDone ; yes: draw the row as it stands
 AndroidRow_Force:
-  CALL CursorGrilleToAttack
-  LD DE,$73CB
-  JP DrawSpec_AndroidAttackRow
+  CALL CursorGrilleToAttack ; no: swap a live "RmveGrille" pick too,
+  LD DE,$73CB             ; and force the Special cell (13)
+  JP DrawSpec_AndroidAttackRow ; to "  ATTACK  "
 
 ; RefreshGrilleRow
 ;
@@ -11286,10 +11580,13 @@ ResetMsgAndScript:
 
 ; ActionTimerFire
 ;
+; Countdown trampoline: the caller decremented (IX+0); on the 1->0 transition
+; (Z set) dispatch the actor's queued action.
+;
 ; Used by the routine at ResetCrewTimers.
 ActionTimerFire:
   PUSH IX
-  CALL Z,DispatchCrewAction
+  CALL Z,DispatchCrewAction ; countdown just hit 0: DispatchCrewAction
   POP IX
   RET
 
@@ -11375,51 +11672,59 @@ PickupItemBoost:
 
 ; RefreshCrewCondition
 ;
-; Used by the routines at CrewAction1_Idle and CrewAction2_Move.
+; Called after a non-viewed actor arrives somewhere: refresh the room info
+; panel, then redraw the viewed crew member's condition line.
+;
+; Used by the routines at CrewAction1_Arrive and CrewAction2_DuctTransit.
 RefreshCrewCondition:
-  CALL RefreshRoomInfo
-  LD A,(CrewIndex)
+  CALL RefreshRoomInfo    ; refresh the room info panel
+  LD A,(CrewIndex)        ; the alien moved?
   CP $00
-  RET Z
-  LD A,(DrawSlotIndex)
+  RET Z                   ; then no condition line to touch
+  LD A,(DrawSlotIndex)    ; re-point IX at the viewed slot
   LD B,A
   LD IX,ActorRecords
   LD DE,$0008
 RefreshCrewCond_Seek:
   ADD IX,DE
   DJNZ RefreshCrewCond_Seek
-  CALL DrawCrewCondition
+  CALL DrawCrewCondition  ; and redraw his condition line
   RET
 
 ; IncPairAt
 ;
+; Increment two adjacent bytes at HL+DE — in practice a crew record's courage
+; (+5) and morale (+6) pair. Returns A = the first byte.
+;
 ; Used by the routine at AlienScareCheck.
 IncPairAt:
-  ADD HL,DE
-  INC (HL)
+  ADD HL,DE               ; HL -> the slot's courage byte
+  INC (HL)                ; courage += 1
   INC HL
-  INC (HL)
+  INC (HL)                ; morale += 1
   DEC HL
-  LD A,(HL)
+  LD A,(HL)               ; A = the new courage
   RET
 
 ; RefreshCondIfViewed
 ;
+; In the room view, redraw the viewed crew member's condition line.
+;
 ; Used by the routine at AlienScareCheck.
 RefreshCondIfViewed:
-  LD A,(RoomModeByte)
+  LD A,(RoomModeByte)     ; room view on screen (mode 1)?
   CP $01
-  JR NZ,RefreshCond_Done
-  LD A,(DrawSlotIndex)
+  JR NZ,RefreshCond_Done  ; no: skip the redraw
+  LD A,(DrawSlotIndex)    ; re-point IX at the viewed slot
   LD B,A
   LD IX,ActorRecords
   LD DE,$0008
 RefreshCond_Seek2:
   ADD IX,DE
   DJNZ RefreshCond_Seek2
-  CALL DrawCrewCondition
+  CALL DrawCrewCondition  ; and redraw his condition line
 RefreshCond_Done:
-  POP IX
+  POP IX                  ; (balances AlienScareCheck's PUSH IX)
   RET
 
 ; UpdateAllCrew — pairwise companion morale support
@@ -11441,8 +11746,8 @@ CrewPass_Next:
   PUSH IX
 CrewPass_Scan:
   CALL NextSlotIX         ; step IX to the next slot
-  LD A,H
-  CP (IX+$01)             ; same room?
+  LD A,H                  ; same room?
+  CP (IX+$01)
   JR Z,CrewPass_MateBoost ; yes: apply the mutual boost
 CrewPass_NoMate:
   DJNZ CrewPass_Scan
@@ -11452,7 +11757,7 @@ CrewPass_NoMate:
   LD A,IXl
   CP $B6                  ; stop after slot 7 ($73B6)
   JR NZ,CrewPass_Next
-  CALL ClearMessageRow
+  CALL ClearMessageRow    ; blank the message line
   RET
   NOP
 CrewPass_MateBoost:
@@ -11460,15 +11765,15 @@ CrewPass_MateBoost:
   SUB $02
   ADD A,(IX+$06)
   LD (IX+$06),A
-  POP DE
-  PUSH DE
+  POP DE                  ; and the other way round:
+  PUSH DE                 ; DE -> this actor's morale byte (+6)
   INC E
   INC E
   INC E
   INC E
   INC E
   INC E
-  LD A,(DE)
+  LD A,(DE)               ; += the mate's courage - 2
   ADD A,(IX+$05)
   SUB $02
   LD (DE),A
@@ -11482,24 +11787,27 @@ NextSlotIX:
 
 ; KillActorRefresh
 ;
+; Kill the victim (KillActorMoraleHit) and, unless the victim is the crew
+; member on screen, redraw the "Also here" room-mate lists.
+;
 ; Used by the routine at VictimItemDrop.
 KillActorRefresh:
-  CALL KillActorMoraleHit
+  CALL KillActorMoraleHit ; mark dead + witness morale
 KillActor_View:
-  LD A,(RoomModeByte)
+  LD A,(RoomModeByte)     ; room view on screen (mode 1)?
   CP $01
-  RET NZ
-  LD A,(DrawSlotIndex)
+  RET NZ                  ; no: done
+  LD A,(DrawSlotIndex)    ; the victim IS the viewed slot?
   CP C
-  RET Z
+  RET Z                   ; yes: his own path rebuilds the view
 KillActor_Redraw:
   PUSH BC
   PUSH DE
   PUSH HL
   PUSH IX
-  LD HL,$FFFF
-  LD (RoomMateA),HL
-  CALL DrawRoomMates
+  LD HL,$FFFF             ; forget the cached room-mates and
+  LD (RoomMateA),HL       ; redraw the "Also here" /
+  CALL DrawRoomMates      ; "Also Bodies of" lists
   POP IX
   POP HL
   POP DE
@@ -11508,85 +11816,103 @@ KillActor_Redraw:
 
 ; BumpCourageMorale
 ;
+; Catching Jones comforts the catcher: +1 courage, +1 morale, redraw the
+; condition line; returns HL -> JonesRoom for the caller to clear.
+;
 ; Used by the routine at SetActionTimer.
 BumpCourageMorale:
-  LD A,(IX+$05)
+  LD A,(IX+$05)           ; courage += 1
   ADD A,$01
   LD (IX+$05),A
-  LD A,(IX+$06)
+  LD A,(IX+$06)           ; morale += 1
   ADD A,$01
   LD (IX+$06),A
-  CALL DrawCrewCondition
-  LD HL,JonesRoom
+  CALL DrawCrewCondition  ; redraw the crew-condition line
+  LD HL,JonesRoom         ; hand back HL -> JonesRoom
   RET
 
 ; SetCourageRefresh
 ;
+; Set the actor's +5 byte to C, then refresh the room-mate display via
+; KillActor_View. (For its one caller the "actor" is the ALIEN, whose +5 holds
+; the slot of a dragged-off body — see Wound_PanicRoll — not courage.)
+;
 ; Used by the routine at VictimItemDrop.
 SetCourageRefresh:
-  LD (IX+$05),C
-  JP KillActor_View
+  LD (IX+$05),C           ; courage = C
+  JP KillActor_View       ; and refresh the room-mate lists
 
-; DecayMoraleStep
+; DecayMoraleStep — tail of the DecayCrewCourage loop
+;
+; After the courage byte: drop the slot's morale too, step to the next record,
+; and once all 7 are done redraw the viewed crew member's condition line.
 ;
 ; Used by the routine at DecayCrewCourage.
 DecayMoraleStep:
-  INC HL
+  INC HL                  ; morale byte (+6): -1 too,
   DEC (HL)
   LD A,$7F
-  CP (HL)
+  CP (HL)                 ; clamping an underflow
   JR NC,DecayMorale_Next
-  LD (HL),$00
+  LD (HL),$00             ; to 0
 DecayMorale_Next:
-  DEC HL
-  ADD HL,DE
+  DEC HL                  ; back to the courage byte,
+  ADD HL,DE               ; next record
   DEC B
-  JP NZ,DecayCourageLoop
-  LD A,(RoomModeByte)
+  JP NZ,DecayCourageLoop  ; loop over all 7 crew
+  LD A,(RoomModeByte)     ; room view on screen (mode 1)?
   CP $01
-  RET NZ
+  RET NZ                  ; no: done
   PUSH BC
   PUSH IX
-  LD A,(DrawSlotIndex)
+  LD A,(DrawSlotIndex)    ; re-point IX at the viewed slot
   LD B,A
   LD IX,ActorRecords
   LD DE,$0008
 ViewedSlotSeek:
   ADD IX,DE
   DJNZ ViewedSlotSeek
-  CALL DrawCrewCondition
+  CALL DrawCrewCondition  ; and redraw his condition line
   POP IX
   POP BC
   RET
 
-; KillActorMoraleHit
+; KillActorMoraleHit — mark a victim dead and shake the witnesses
+;
+; Entered with HL -> the victim's morale byte (+6) and C = his slot: stamp
+; status (+7) = 1 (dead), then give every live actor gathered in
+; NearestCrewC/A/B a point of morale loss (WitnessMoraleLoss). If at least one
+; witness survives, the death is seen at once: the body is marked found (+7 =
+; 2), msg #20 "{witness} finds {victim}'s body" fires, and the whole crew's
+; courage decays. With no witness the body stays at status 1 for a later
+; discovery (MoraleFromCompanion MoraleFromCompanion).
 KillActorMoraleHit:
-  INC HL
+  INC HL                  ; status (+7) = 1: dead
   LD (HL),$01
   PUSH BC
   PUSH IX
   PUSH HL
-  LD H,$00
-  LD A,(NearestCrewC)
-  CP $FF
-  CALL NZ,WitnessMoraleLoss
+  LD H,$00                ; H = last live witness (0 = none)
+  LD A,(NearestCrewC)     ; each gathered slot (C, A, B)
+  CP $FF                  ; that exists loses morale
+  CALL NZ,WitnessMoraleLoss ; as a witness
   LD A,(NearestCrewA)
   CP $FF
   CALL NZ,WitnessMoraleLoss
   LD A,(NearestCrewB)
   CP $FF
   CALL NZ,WitnessMoraleLoss
-  LD A,H
+  LD A,H                  ; any live witness?
   CP $00
-  JR Z,KillMorale_Done
-  POP HL
-  LD (HL),$02
+  JR Z,KillMorale_Done    ; no: the body lies undiscovered
+  POP HL                  ; yes: the death is seen at once —
+  LD (HL),$02             ; the body is already "found" (+7 = 2),
   PUSH HL
-  LD L,A
+  LD L,A                  ; L = witness, H = victim:
   LD H,C
-  LD A,$14
+  LD A,$14                ; msg #20 "{actor} finds {target}'s body"
   CALL EnqueueMessage
-  CALL DecayCrewCourage
+  CALL DecayCrewCourage   ; and everyone's courage decays
 KillMorale_Done:
   POP HL
   POP IX
@@ -11594,41 +11920,50 @@ KillMorale_Done:
   RET
 
 ; WitnessMoraleLoss
+;
+; A = a witness slot: if he is still alive, -1 morale (clamped at 0) and record
+; his slot in H ("a live witness saw it").
 WitnessMoraleLoss:
-  LD B,A
+  LD B,A                  ; IX -> the witness's record
   LD IX,ActorRecords
   LD DE,$0008
 WitnessMorale_Seek:
   ADD IX,DE
   DJNZ WitnessMorale_Seek
-  LD B,A
-  LD A,(IX+$07)
+  LD B,A                  ; keep the slot in B
+  LD A,(IX+$07)           ; still alive?
   OR A
-  RET NZ
-  DEC (IX+$06)
+  RET NZ                  ; no: the dead see nothing
+  DEC (IX+$06)            ; morale -1,
   LD A,$7F
-  CP (IX+$06)
+  CP (IX+$06)             ; clamped at 0
   JR NC,WitnessMorale_Keep
   LD (IX+$06),$00
 WitnessMorale_Keep:
-  LD H,B
+  LD H,B                  ; H = this live witness's slot
   RET
 
 ; KillActor_Bounce
 ;
+; A = the viewed slot, (HL) = the departing actor's slot: full view rebuild
+; when they match, room-mate list redraw when they don't.
+;
 ; Used by the routine at CrewAction6_Handler.
 KillActor_Bounce:
-  CP (HL)
-  JP Z,InitGameView
-  JP KillActor_Redraw
+  CP (HL)                 ; is the departed the viewed slot?
+  JP Z,InitGameView       ; yes: rebuild the whole view
+  JP KillActor_Redraw     ; no: redraw the room-mate lists
 
 ; DuctSearchInit
 ;
+; The tracker holder is in the ducts: switch the sweep to the duct adjacency
+; map and strip the network flag from his room.
+;
 ; Used by the routine at TrackerHolderRoom.
 DuctSearchInit:
-  LD BC,RoomAdjDucts
-  AND $3F
-  LD (AdjTestRoom),A
+  LD BC,RoomAdjDucts      ; BC = RoomAdjDucts
+  AND $3F                 ; A = plain room id
+  LD (AdjTestRoom),A      ; update AdjTestRoom
   RET
 
 ; PrintNameThenPanel
@@ -11646,39 +11981,50 @@ PanelColCheck:
 
 ; RoomRejectCheck
 ;
+; Tracker-sweep test for one adjacent room (in C, A = JonesRoom): Jones or the
+; alien there = motion detected; otherwise scan the actors too.
+;
 ; Used by the routine at TrackerHolderRoom.
 RoomRejectCheck:
-  CP C
-  JP Z,PickRoom_Reject
-  LD A,($737F)
+  CP C                    ; Jones in the adjacent room?
+  JP Z,PickRoom_Reject    ; yes: motion detected
+  LD A,($737F)            ; the alien in it?
   AND $3F
   CP C
-  JP Z,PickRoom_Reject
-  JP PickRoom_ActorScan
+  JP Z,PickRoom_Reject    ; yes: motion detected
+  JP PickRoom_ActorScan   ; else check the actors
 
 ; AIActionSelect
 ;
-; Used by the routine at UpdateCrewAI.
+; Entry shim for the alien's AI: spot 98 (= room 34 | 64, the ducts "over" the
+; Narcissus) is an escape artifact — the Narcissus has no grille byte, so the
+; alien can duct-flip into a network that does not connect anywhere. If it is
+; stuck there, flip it straight back out; otherwise run the victim scan.
+;
+; Used by the routine at UpdateAlienAI.
 AIActionSelect:
-  LD A,(IX+$01)
+  LD A,(IX+$01)           ; stuck in the Narcissus "ducts" (98)?
   CP $62
-  JP Z,CrewAI_DuctFlip
-  JP CrewAI_FindTarget
+  JP Z,AlienAI_DuctFlip   ; yes: climb straight back out
+  JP AlienAI_FindVictims  ; no: scan for victims (A = its spot)
 
 ; AlienEventDispatch
 ;
+; Store A into AlienActiveFlag (TriggerAlienEvent passes 255) and, if the
+; Android happens to be the crew member on screen, rebuild the view.
+;
 ; Used by the routine at TriggerAlienEvent.
 AlienEventDispatch:
-  LD (AlienActiveFlag),A
-  LD A,(RoomModeByte)
+  LD (AlienActiveFlag),A  ; AlienActiveFlag = A
+  LD A,(RoomModeByte)     ; room view on screen (mode 1)?
   CP $01
-  RET NZ
-  LD A,(AlienTargetID)
-  LD D,A
+  RET NZ                  ; no: done
+  LD A,(AlienTargetID)    ; is the Android the viewed
+  LD D,A                  ; crew member?
   LD A,(DrawSlotIndex)
   CP D
-  RET NZ
-  JP InitGameView
+  RET NZ                  ; no: done
+  JP InitGameView         ; yes: rebuild the whole view
 
 ; PreDispatchHook
 ;
