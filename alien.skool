@@ -3984,8 +3984,9 @@ c33610 PUSH AF       ;
 ;   #R33737 MusicActiveFlag   music phrase is playing
 ;   #R33739 AnimFrameCnt      crew animation tick
 ;
-; All cells in this block now carry meaningful labels; the message-queue
-; cluster ($83AC-$83CF) is documented at TickMessageQueue (#R37363).
+; All cells in this block now carry meaningful labels; the
+; message-queue cluster (MsgDrawnCol through MsgLastEnqueued) is
+; documented at TickMessageQueue (#R37363).
 @label=AlienFlags
 b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D, 3=U, 4=Fire)
 @label=CorridorCursor
@@ -5997,7 +5998,7 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
 c36859 LD A,(33706)  ; A = primary alien-event timer
  36862 CP 255        ; 255 = disabled
  36864 RET Z         ; disabled: do nothing this frame
- 36865 LD HL,33707   ; HL → JonesMoveTimer ($83AB)
+ 36865 LD HL,33707   ; HL → JonesMoveTimer
  36868 DEC (HL)      ; tick it down
  36869 RET NZ        ; not yet zero: wait another frame
  36870 LD (HL),255   ; expired: reset secondary counter to 255
@@ -6708,7 +6709,7 @@ c37490 XOR H         ;
 ; (CALL 31417) and the per-frame chain continues at AlienScareCheck
 ; (#R37992).
 @ignoreua
-@label=AlienKillPrimitive
+@label=HarpoonGate
 *37730 JP NZ,37831   ; (31248) != 12 → 37831 (decrement ItemCharges)
 @label=AlienKillPrimitive
  37733 CALL 37876    ; populate NearestCrewC + NearestCrewA/B with the
@@ -8449,7 +8450,6 @@ c40149 LD HL,16384   ; HL = DisplayFile: start of display file
  40208 DEC C         ;
  40209 JR NZ,40200   ;
  40211 RET           ;
-@label=LaunchGate
 ; LaunchGate: fixture 78 (Narcissus launch console). The launch is
 ; COUNTERMANDED (msg #28) unless every living crew member's room is 34
 ; (Narcissus); then Jones must be aboard too (JonesRoom = 34, or the
@@ -9027,7 +9027,7 @@ c40826 LD A,(33704)  ; A = AlienActiveFlag
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
  40984 LD A,(33700)  ; A = CrewIndex
- 40987 LD HL,(33702) ; H = high byte of AlienTargetPtr ($83A6)
+ 40987 LD HL,(33702) ; H = high byte of AlienTargetPtr
  40990 LD L,A        ; L = actor (CrewIndex)
  40991 LD A,31       ; A = msg #31 "{actor} nets {target}"
  40993 CALL 37176    ; enqueue
