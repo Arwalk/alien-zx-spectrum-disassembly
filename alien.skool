@@ -2332,7 +2332,8 @@ b30861 DEFB 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9
 ;   #R31250 RoomMateA        first other actor in the room (255 = none)
 ;   #R31251 RoomMateB        second other actor in the room (255 = none)
 ;   #R31252 RoomModeByte     current room mode (drives RoomDispatchTable)
-;   #R31253 ShipSystemFlags  bit 0 destruct armed; bits 3-5 engine state
+;   #R31253 ShipSystemFlags  bit 0 destruct armed; bits 1/2 airlocks
+;                            blown; bits 3-5 engine state
 ;   #R31255 RoomAttrCursor   word: attribute-file cursor (room drawing)
 ;   #R31257 DrawScreenPtr    word: THE display-file draw pointer (~120 refs)
 ;   #R31259 RoomCellCursor   word: 20-wide room-cell-grid cursor
@@ -2377,7 +2378,9 @@ b31241 DEFB 5
 @label=RoomModeByte
  31252 DEFB 0
 @label=ShipSystemFlags
- 31253 DEFB 0              ; bit 0 = self-destruct armed; bits 3-5 = Engine
+ 31253 DEFB 0              ; bit 0 = self-destruct armed; bits 1/2 =
+                           ; Airlock #1/#2 blown open (set by BlowLock,
+                           ; cleared by SealLock); bits 3-5 = Engine
                            ; #1/#2/#3 state (ship-systems tick at #R39041)
  31254 DEFB 0
 @label=RoomAttrCursor
@@ -2421,7 +2424,7 @@ b31241 DEFB 5
 ; tile index byte from (DE), multiplies by 8 to get an offset into the
 ; 8-byte-per-row character bitmap table at $6935 (#R26869 + index×8), then
 ; writes all 8 bytes vertically downward from the current draw pointer at
-; #R31241 (INC H steps through ZX Spectrum display rows within the same
+; #R31257 (INC H steps through ZX Spectrum display rows within the same
 ; character cell column).
 ; .
 ; Input:  (DE) = tile/character index; (#R31257) = screen destination address
@@ -2696,7 +2699,7 @@ c31634 CP 255        ; sprite index 255 = invalid/absent
  31661 POP DE        ; restore sprite data pointer
  31662 INC DE        ; advance to next tile index byte
 @ignoreua
- 31663 LD HL,31257   ; HL → draw pointer (#R31241)
+ 31663 LD HL,31257   ; HL → draw pointer (#R31257)
  31666 INC (HL)      ; move draw pointer right by 1 character column
  31667 POP BC        ;
  31668 DJNZ 31656    ; repeat for all 10 columns
@@ -4346,7 +4349,8 @@ b33792 DEFB 10,5
 ;                                   RmveGrille swapped to ATTACK under
 ;                                   the cursor (hostile in the room —
 ;                                   see PreDispatchHook $B2B9)
-;    14    "Get Jones"           -> $8C05 (needs Net or Cat Box)
+;    14    "Get Jones"           -> GetJonesHandler (#R35845):
+;                                   needs the Net or the Cat Box
 ;    15-16 fixture actions       -> FixtureAction (#R38398)
 ;    17    "   QUIT   "          -> QuitRoomView (#R35440)
 ;    18    blank                 -> nop (reuses CrewActionDispatch+0)
@@ -4412,8 +4416,9 @@ w33794 DEFW 35314,35314,35338,35338
 ;         33 Long Game opening: chestburster host named (LongGameInit)
 @ignoreua
 @label=RoomDispatchTailExtra
-b33862 DEFW 35725,35448,35787,35845  ; 7 × 16-bit pointers (room-handler tail)
- 33870 DEFW 38398,38398,35440
+b33862 DEFW 35725,35448  ; rows 11-12
+ 33866 DEFW 35787,35845  ; rows 13-14
+ 33870 DEFW 38398,38398,35440 ; rows 15-17
 @label=CrewActionDispatch
  33876 DEFW 35448,36034
  33880 DEFW 36101,36150
@@ -4583,10 +4588,10 @@ c34636 CALL 34640    ; scan into AlienFlags via the selected device's
 @ssub=LD HL,AlienFlags
 @label=DefaultKeyScanner
 c34640 LD HL,33682   ; HL points to AlienFlags
- 34643 LD (HL),0     ;
+ 34643 LD (HL),0     ; start from "no keys pressed"
 @ignoreua
  34645 LD BC,63486   ; port $F7FE: half-row 1-5
- 34648 IN A,(C)      ;
+ 34648 IN A,(C)      ; read half-row 1-5
 @ignoreua
  34650 LD B,239      ; next read: port $EFFE, half-row 6-0
  34652 BIT 4,A       ; key 5 pressed? (active low)
@@ -4607,7 +4612,7 @@ c34640 LD HL,33682   ; HL points to AlienFlags
  34676 SET 3,(HL)    ; bit 3 = key 6
 @label=KeyScan_Check0
 *34678 BIT 0,A       ; key 0 (action)?
- 34680 RET NZ        ;
+ 34680 RET NZ        ; not pressed: done
  34681 SET 4,(HL)    ; bit 4 = action
  34683 RET           ;
 
@@ -4670,73 +4675,79 @@ c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
 
 ; AdvanceCursor
 ;
+; Move the cursor one strip row forward (key 6), skipping cells that
+; are not selectable; also holds the retreat handler (key 7) and the
+; action-key dispatch. Cell values steer the movement: >= 82 is header
+; text / empty padding (never a landing spot), 70-81 are two-row
+; fixture labels whose second row must be stepped over.
+; .
 ; Used by the routines at #R34684, #R35814, #R36859 and #R37493.
 @label=AdvanceCursor
-c34743 CALL 34859    ;
+c34743 CALL 34859    ; remove the highlight from the current row
 @nowarn=33683
 @ssub=LD HL,CorridorCursor
- 34746 LD HL,33683   ;
- 34749 LD A,(33685)  ;
- 34752 CP 70         ;
+ 34746 LD HL,33683   ; HL -> cursor position
+ 34749 LD A,(33685)  ; A = cell value the cursor is leaving
+ 34752 CP 70         ; leaving a two-row fixture label?
  34754 JR C,34757    ;
- 34756 INC (HL)      ;
+ 34756 INC (HL)      ; yes: step over its second row too
 @nowarn=33683
 @ssub=LD HL,CorridorCursor
 @label=AdvCursor_Bounds
 *34757 LD HL,33683   ;
- 34760 LD A,(HL)     ;
- 34761 CP 18         ;
+ 34760 LD A,(HL)     ; A = cursor position
+ 34761 CP 18         ; already on the last strip row?
  34763 JR C,34767    ;
- 34765 LD A,255      ;
+ 34765 LD A,255      ; yes: wrap so the INC restarts at row 0
 @label=AdvCursor_Store
-*34767 INC A         ;
+*34767 INC A         ; step forward one row
  34768 LD (HL),A     ;
  34769 LD D,0        ;
  34771 LD E,A        ;
- 34772 LD HL,29630   ;
+ 34772 LD HL,29630   ; index CorridorPosTable by the new position
  34775 ADD HL,DE     ;
- 34776 LD A,(HL)     ;
- 34777 CP 82         ;
- 34779 JR NC,34757   ;
- 34781 CALL 34882    ;
- 34784 CALL 34933    ;
+ 34776 LD A,(HL)     ; A = the cell value there
+ 34777 CP 82         ; header text / empty padding?
+ 34779 JR NC,34757   ; yes: not selectable, keep stepping
+ 34781 CALL 34882    ; highlight the new row, mirror its cell value
+ 34784 CALL 34933    ; re-place the blinking box if it is a room row
  34787 RET           ;
 @label=Input_RetreatCursor
-*34788 CALL 34859    ;
+*34788 CALL 34859    ; remove the highlight from the current row
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
 @label=Retreat_Step
-*34791 LD A,(33683)  ;
- 34794 AND A         ;
+*34791 LD A,(33683)  ; A = cursor position
+ 34794 AND A         ; at the top row (0)?
  34795 JR NZ,34799   ;
- 34797 LD A,19       ;
+ 34797 LD A,19       ; yes: wrap so the DEC restarts at row 18
 @label=Retreat_Wrap
-*34799 DEC A         ;
+*34799 DEC A         ; step back one row
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
  34800 LD (33683),A  ;
  34803 LD D,0        ;
  34805 LD E,A        ;
- 34806 LD HL,29630   ;
+ 34806 LD HL,29630   ; index CorridorPosTable by the new position
  34809 ADD HL,DE     ;
- 34810 LD A,(HL)     ;
- 34811 CP 82         ;
- 34813 JR NC,34791   ;
- 34815 CP 70         ;
- 34817 JR C,34833    ;
- 34819 DEC HL        ;
+ 34810 LD A,(HL)     ; A = the cell value there
+ 34811 CP 82         ; header text / empty padding?
+ 34813 JR NC,34791   ; yes: not selectable, keep stepping
+ 34815 CP 70         ; a two-row fixture label?
+ 34817 JR C,34833    ; no: done
+ 34819 DEC HL        ; peek at the cell one row up
  34820 LD A,(HL)     ;
- 34821 CP 70         ;
- 34823 JR C,34833    ;
+ 34821 CP 70         ; is it also part of a two-row label?
+ 34823 JR C,34833    ; no: we are already on the first row
  34825 CP 82         ;
  34827 JR NC,34833   ;
 @nowarn=33683
 @ssub=LD HL,CorridorCursor
- 34829 LD HL,33683   ;
- 34832 DEC (HL)      ;
+ 34829 LD HL,33683   ; we landed on the label's second row:
+ 34832 DEC (HL)      ; back up onto its first row
 @label=Retreat_Done
-*34833 CALL 34882    ;
- 34836 CALL 34933    ;
+*34833 CALL 34882    ; highlight the new row, mirror its cell value
+ 34836 CALL 34933    ; re-place the blinking box if it is a room row
  34839 RET           ;
 @label=Input_ActionRelease
 *34840 XOR A         ; action key released:
@@ -4747,7 +4758,7 @@ c34743 CALL 34859    ;
  34850 LD D,0        ;
  34852 ADD HL,DE     ;
  34853 ADD HL,DE     ; HL = table + mode*2
- 34854 LD A,(HL)     ;
+ 34854 LD A,(HL)     ; fetch the handler address
  34855 INC HL        ;
  34856 LD H,(HL)     ;
  34857 LD L,A        ;
@@ -4764,13 +4775,13 @@ c34743 CALL 34859    ;
 c34859 LD A,(33683)  ; A = cursor row
  34862 CALL 34920    ; HL = its attribute address
  34865 LD A,(33685)  ; cell value >= 70 (two-row label)?
- 34868 LD C,1        ;
+ 34868 LD C,1        ; C = number of rows to repaint
  34870 CP 70         ;
  34872 JR C,34875    ;
  34874 INC C         ; yes: restore two rows
 @label=UnhighlightMenuRow_Restore
 *34875 LD A,(33684)  ; repaint the saved attribute
- 34878 CALL 31612    ;
+ 34878 CALL 31612    ; FillAttrColumn over C rows
  34881 RET           ;
 
 ; HighlightMenuRow
@@ -4789,23 +4800,23 @@ c34882 LD A,(33683)  ; A = cursor row
  34885 PUSH AF       ;
  34886 LD E,A        ;
  34887 LD D,0        ;
- 34889 LD HL,29630   ;
+ 34889 LD HL,29630   ; index CorridorPosTable by the row
  34892 ADD HL,DE     ;
  34893 LD A,(HL)     ; A = cell value under the cursor
  34894 LD (33685),A  ; mirror it for the dispatchers
  34897 EX AF,AF'     ; keep the cell value in A'
- 34898 POP AF        ;
+ 34898 POP AF        ; A = cursor row again
  34899 CALL 34920    ; HL = the row's attribute address
  34902 LD A,(HL)     ;
  34903 LD (33684),A  ; save the attribute for the un-highlight
  34906 EX AF,AF'     ; cell value >= 70 (two-row label)?
- 34907 LD C,1        ;
+ 34907 LD C,1        ; C = number of rows to paint
  34909 CP 70         ;
  34911 JR C,34914    ;
  34913 INC C         ; yes: highlight two rows
 @label=HighlightMenuRow_Paint
 *34914 LD A,120      ; bright white paper, black ink
- 34916 CALL 31612    ;
+ 34916 CALL 31612    ; FillAttrColumn over C rows
  34919 RET           ;
 
 ; GetMenuRowAttrAddr
@@ -4816,10 +4827,10 @@ c34882 LD A,(33683)  ; A = cursor row
 ; (22582) and each further row adds 32.
 @label=GetMenuRowAttrAddr
 c34920 LD HL,22582   ; attr addr of menu row 0 (screen row 1, col 22)
- 34923 AND A         ;
- 34924 RET Z         ;
- 34925 LD DE,32      ;
- 34928 LD B,A        ;
+ 34923 AND A         ; row 0?
+ 34924 RET Z         ; yes: HL is already right
+ 34925 LD DE,32      ; one attribute row per menu row
+ 34928 LD B,A        ; B = rows still to skip
 @label=GetMenuRowAttrAddrLoop
 *34929 ADD HL,DE     ; +32 per row
  34930 DJNZ 34929    ;
@@ -4838,7 +4849,7 @@ c34933 CALL 35146    ; erase/freeze marker channel B
  34939 CP 1          ;
  34941 RET NZ        ; no: done
  34942 LD A,(33685)  ; cell under the cursor a room id?
- 34945 CP 34         ;
+ 34945 CP 34         ; (rooms are 0-33)
  34947 RET NC        ; no: done
  34948 LD E,A        ;
  34949 LD D,0        ;
@@ -4848,7 +4859,7 @@ c34933 CALL 35146    ; erase/freeze marker channel B
  34958 CP (HL)       ;
  34959 RET NZ        ; no: done
  34960 LD A,(33685)  ; yes: blink that room's indicator box
- 34963 CALL 35128    ;
+ 34963 CALL 35128    ; via PlaceRoomMarkerB
  34966 RET           ;
 
 ; AnimateCrewA
@@ -5604,69 +5615,78 @@ c35814 PUSH AF       ; A = base time from the caller
  35832 LD HL,33778   ;
  35835 ADD HL,DE     ;
  35836 LD A,(HL)     ;
- 35837 ADD A,C       ;
+ 35837 ADD A,C       ; C = slot + strength adjustments
  35838 LD C,A        ;
- 35839 POP AF        ;
+ 35839 POP AF        ; recover the caller's base time
  35840 ADD A,C       ;
  35841 LD (IX+0),A   ; arm the countdown
  35844 RET           ;
- 35845 LD (IX+0),0   ;
- 35849 LD A,(31248)  ;
- 35852 CP 17         ;
+; GetJonesHandler — the "Get Jones" menu row (mode-1 row 14), reached
+; through RoomDispatchTailExtra (#R33862). Needs the Net (item 16) or
+; the Cat Box (17) in the front hand; rolls a script nibble against
+; JonesCatchBySlot (#R33762) — the Net gets -4 on the threshold, so it
+; is the easier tool. Failure spooks Jones into moving at once;
+; success destroys the tool, puts "Cat in Net"/"Cat in Box" (tool+4)
+; in the catcher's hand and takes Jones off the map.
+@label=GetJonesHandler
+ 35845 LD (IX+0),0   ; park the actor's action countdown
+ 35849 LD A,(31248)  ; front-hand item...
+ 35852 CP 17         ; ...the Cat Box?
  35854 JR Z,35859    ;
- 35856 CP 16         ;
- 35858 RET NZ        ;
+ 35856 CP 16         ; ...or the Net?
+ 35858 RET NZ        ; neither: cannot catch Jones
 @label=GetJones_Threshold
-*35859 LD A,(31241)  ;
- 35862 LD E,A        ;
+*35859 LD A,(31241)  ; E = JonesCatchBySlot[slot],
+ 35862 LD E,A        ; this crew member's catch threshold
  35863 LD D,0        ;
 @nowarn=33762
 @ssub=LD HL,JonesCatchBySlot
  35865 LD HL,33762   ;
  35868 ADD HL,DE     ;
  35869 LD E,(HL)     ;
- 35870 LD A,(31248)  ;
+ 35870 LD A,(31248)  ; using the Cat Box?
  35873 CP 17         ;
  35875 JR Z,35881    ;
- 35877 LD A,E        ;
- 35878 SUB 4         ;
+ 35877 LD A,E        ; no, the Net: threshold -4
+ 35878 SUB 4         ; (easier to succeed)
  35880 LD E,A        ;
 @label=GetJones_Roll
-*35881 CALL 33589    ;
- 35884 CP E          ;
- 35885 JR NC,35896   ;
- 35887 LD HL,33707   ;
- 35890 LD (HL),1     ;
- 35892 CALL 36859    ;
+*35881 CALL 33589    ; roll the next script nibble (0-15)
+ 35884 CP E          ; beat the threshold?
+ 35885 JR NC,35896   ; yes: caught him
+ 35887 LD HL,33707   ; no: JonesMoveTimer = 1 —
+ 35890 LD (HL),1     ; the cat bolts,
+ 35892 CALL 36859    ; and UpdateJones moves him right now
  35895 RET           ;
 @label=GetJones_Catch
-*35896 LD A,(31248)  ;
- 35899 LD HL,29940   ;
+*35896 LD A,(31248)  ; ItemLocations[tool] = 255:
+ 35899 LD HL,29940   ; the Net / Cat Box ceases to exist...
  35902 LD E,A        ;
  35903 LD D,0        ;
  35905 ADD HL,DE     ;
  35906 LD (HL),255   ;
- 35908 LD E,4        ;
- 35910 ADD HL,DE     ;
+ 35908 LD E,4        ; ...and tool+4 ("Cat in Net" 20 /
+ 35910 ADD HL,DE     ; "Cat in Box" 21) appears
  35911 LD A,(31241)  ;
- 35914 ADD A,160     ;
+ 35914 ADD A,160     ; in the catcher's front hand (160+slot)
  35916 LD (HL),A     ;
- 35917 CALL 31820    ;
- 35920 LD A,(31248)  ;
- 35923 CALL 31857    ;
+ 35917 CALL 31820    ; refresh the HeldItemFront/Back cache
+@ignoreua
+ 35920 LD A,(31248)  ; front-hand strip cell ($73C6) =
+ 35923 CALL 31857    ; the new "Cat in ..." item's string id
  35926 LD (29638),A  ;
- 35929 LD HL,18486   ;
- 35932 LD (31257),HL ;
+ 35929 LD HL,18486   ; redraw the front-hand row
+ 35932 LD (31257),HL ; (screen row 9, col 22)
  35935 CALL 31634    ;
- 35938 CALL 45510    ;
- 35941 LD (HL),255   ;
- 35943 LD HL,18678   ;
- 35946 LD (31257),HL ;
+ 35938 CALL 45510    ; +1 courage/morale for the catcher, and...
+ 35941 LD (HL),255   ; ...JonesRoom = 255: Jones is off the map
+ 35943 LD HL,18678   ; blank the "Get Jones" row
+ 35946 LD (31257),HL ; (screen row 15, col 22)
  35949 LD A,255      ;
- 35951 LD (29644),A  ;
+ 35951 LD (29644),A  ; its strip cell 14 = empty
  35954 CALL 31634    ;
- 35957 CALL 34743    ;
- 35960 CALL 39670    ;
+ 35957 CALL 34743    ; step the cursor off the now-empty row
+ 35960 CALL 39670    ; run the cat animation once
  35963 LD A,(31241)  ;
  35966 LD L,A        ; L = capturing crew slot
  35967 LD A,2        ; msg #2 "{actor} has captured Jones"
@@ -5679,29 +5699,30 @@ c35814 PUSH AF       ; A = base time from the caller
 ; decrement every non-parked action countdown (IX+0), and fire the
 ; queued action on the 1->0 transition — DispatchCrewAction (#R36014)
 ; then jumps through CrewActionDispatch (#R33876) into the per-state
-; handlers (#R36034 idle, #R36101 move, #R36150 remove grille, ...).
+; handlers (#R36034 move/idle, #R36101 duct transit, #R36150 remove
+; grille, ...).
 @label=ResetCrewTimers
 c35973 PUSH IX       ;
- 35975 XOR A         ;
+ 35975 XOR A         ; CrewIndex = 0: start at the alien's slot
 @nowarn=33700
 @ssub=LD (CrewIndex),A
  35976 LD (33700),A  ;
- 35979 LD IX,29566   ;
- 35983 LD B,8        ;
+ 35979 LD IX,29566   ; IX -> ActorRecords slot 0
+ 35983 LD B,8        ; all 8 actor slots
 @label=CrewTimersLoop
 *35985 PUSH BC       ;
- 35986 LD A,(IX+0)   ;
- 35989 AND A         ;
- 35990 JR Z,35999    ;
- 35992 DEC A         ;
+ 35986 LD A,(IX+0)   ; A = action countdown
+ 35989 AND A         ; parked (0)?
+ 35990 JR Z,35999    ; yes: leave it alone
+ 35992 DEC A         ; tick it down
  35993 LD (IX+0),A   ;
- 35996 CALL 45232    ;
+ 35996 CALL 45232    ; fire the action on the 1->0 transition
 @label=CrewTimersNext
-*35999 LD DE,8       ;
+*35999 LD DE,8       ; step to the next 8-byte record
  36002 ADD IX,DE     ;
 @nowarn=33700
 @ssub=LD HL,CrewIndex
- 36004 LD HL,33700   ;
+ 36004 LD HL,33700   ; keeping CrewIndex in step
  36007 INC (HL)      ;
  36008 POP BC        ;
  36009 DJNZ 35985    ;
@@ -5732,80 +5753,90 @@ c36014 CALL 36579    ; preliminary actor update
  36032 LD L,A        ;
  36033 JP (HL)       ; tail-call into action handler
 
-; CrewAction1_Idle
+; CrewAction1_Arrive — complete a move (action state 1)
 ;
-; Dispatched via CrewActionDispatch entry 1.
+; Dispatched via CrewActionDispatch entry 1. State 1 means "go to the
+; room in (IX+2)" (or idle when the destination equals the current
+; room — the AI parks wanderers that way). On firing, the actor
+; arrives: current room := destination, with a door sound unless the
+; move happened inside the duct network. Arriving in an airlock that
+; has been blown open (ShipSystemFlags bit 1 = Airlock #1, bit 2 =
+; Airlock #2) dumps the mover into Corridor#6 (room 13) instead.
+; .
 ; Used by the routines at #R33862 and #R37992.
-@label=CrewAction1_Idle
-c36034 LD A,(IX+2)   ;
- 36037 CP (IX+1)     ;
- 36040 RET Z         ;
- 36041 LD (IX+1),A   ;
- 36044 BIT 6,A       ;
+@label=CrewAction1_Arrive
+c36034 LD A,(IX+2)   ; A = destination room
+ 36037 CP (IX+1)     ; already there?
+ 36040 RET Z         ; yes: stay idle
+ 36041 LD (IX+1),A   ; arrive: current room = destination
+ 36044 BIT 6,A       ; was the move inside the ducts?
  36046 JR NZ,36053   ;
- 36048 LD A,1        ;
+ 36048 LD A,1        ; no: request the door sound
 @nowarn=33699
 @ssub=LD (SoundRequest),A
  36050 LD (33699),A  ;
-@label=CrewIdle_AirlockCheck
-*36053 CALL 36187    ;
- 36056 LD A,(IX+1)   ;
- 36059 LD E,2        ;
+@label=CrewArrive_AirlockCheck
+*36053 CALL 36187    ; recompute room-mates and morale
+ 36056 LD A,(IX+1)   ; entered Airlock #1 (room 0)?
+ 36059 LD E,2        ; (its "blown" flag is bit 1)
  36061 AND A         ;
  36062 JR Z,36070    ;
- 36064 CP 1          ;
- 36066 JR NZ,36081   ;
- 36068 LD E,4        ;
-@label=CrewIdle_AirlockVented
-*36070 LD A,E        ;
+ 36064 CP 1          ; entered Airlock #2 (room 1)?
+ 36066 JR NZ,36081   ; neither: no airlock hazard
+ 36068 LD E,4        ; (its "blown" flag is bit 2)
+@label=CrewArrive_AirlockVented
+*36070 LD A,E        ; is that airlock blown open?
  36071 LD HL,31253   ;
  36074 AND (HL)      ;
  36075 JR Z,36081    ;
- 36077 LD (IX+1),13  ;
-@label=CrewIdle_RefreshView
-*36081 LD A,(31252)  ;
+ 36077 LD (IX+1),13  ; yes: the mover ends up in Corridor#6
+@label=CrewArrive_RefreshView
+*36081 LD A,(31252)  ; room view on screen (mode 1)?
  36084 CP 1          ;
- 36086 RET NZ        ;
+ 36086 RET NZ        ; no: done
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
- 36087 LD A,(33700)  ;
+ 36087 LD A,(33700)  ; is this the crew member being viewed?
  36090 LD HL,31241   ;
  36093 CP (HL)       ;
- 36094 JP Z,32719    ;
- 36097 CALL 45338    ;
+ 36094 JP Z,32719    ; yes: rebuild the whole room view
+ 36097 CALL 45338    ; no: refresh the info panel / condition
  36100 RET           ;
 
-; CrewAction2_Move
+; CrewAction2_DuctTransit — climb through a grille (action state 2)
 ;
-; Dispatched via CrewActionDispatch entry 2.
-@label=CrewAction2_Move
-c36101 LD E,(IX+1)   ;
- 36104 LD A,(IX+5)   ;
- 36107 BIT 6,E       ;
- 36109 JR NZ,36113   ;
- 36111 DEC A         ;
+; Dispatched via CrewActionDispatch entry 2: the actor crosses between
+; a room and the duct run above it (queued by MoveThroughGrille
+; #R35560 or the AI's duct hop at #R37132). The cramped ducts cost a
+; point of courage to enter; climbing back out earns it back.
+@label=CrewAction2_DuctTransit
+c36101 LD E,(IX+1)   ; E = current room (bit 6 = in ducts)
+ 36104 LD A,(IX+5)   ; A = courage
+ 36107 BIT 6,E       ; climbing out of the ducts?
+ 36109 JR NZ,36113   ; yes: net +1 courage
+ 36111 DEC A         ; no, crawling in: net -1
  36112 DEC A         ;
-@label=CrewMove_BumpCourage
+@label=CrewDuct_BumpCourage
 *36113 INC A         ;
- 36114 CP 127        ;
+ 36114 CP 127        ; clamp an underflow to 0
  36116 JR C,36119    ;
  36118 XOR A         ;
-@label=CrewMove_SetCourage
+@label=CrewDuct_SetCourage
 *36119 LD (IX+5),A   ;
- 36122 LD A,E        ;
- 36123 XOR 64        ;
+ 36122 LD A,E        ; flip the in-ducts flag:
+ 36123 XOR 64        ; same room, other side of the grille
  36125 LD (IX+1),A   ;
- 36128 CALL 36187    ;
- 36131 LD A,(31252)  ;
+ 36128 CALL 36187    ; recompute room-mates and morale
+ 36131 LD A,(31252)  ; room view on screen (mode 1)?
  36134 CP 1          ;
- 36136 RET NZ        ;
+ 36136 RET NZ        ; no: done
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
- 36137 LD A,(33700)  ;
+ 36137 LD A,(33700)  ; is this the crew member being viewed?
  36140 LD HL,31241   ;
  36143 CP (HL)       ;
- 36144 JP Z,32719    ;
- 36147 JP 45338      ;
+ 36144 JP Z,32719    ; yes: rebuild the whole room view
+ 36147 JP 45338      ; no: refresh the info panel / condition
 
 ; CrewAction3_RemoveGrille
 @ignoreua
@@ -5839,36 +5870,45 @@ c36150 LD A,1        ; queue a sound effect for PlayMusic
  36181 JP Z,32719    ; yes: full room-view rebuild
  36184 JP 36793      ;
 
-; RecalcMorale
+; RecalcMorale — find room-mates and recompute the trio's morale
+;
+; After an actor moves: scan the 7 crew rooms for other actors on the
+; same spot (same room, same side of the ducts), record up to two in
+; RoomMateA/B, then run MoraleFromCompanion (#R36283) three times,
+; rotating the (self, mateA, mateB) triple through NearestCrewC so
+; each of the three has his morale recomputed with the other two as
+; companions. A third room-mate's slot would spill past RoomMateB
+; into RoomModeByte (#R31252) — PreActionCheck's 3-crew room cap is
+; what keeps that from happening.
 @label=RecalcMorale
-c36187 LD HL,65535   ;
+c36187 LD HL,65535   ; RoomMateA/B = 255/255 (none)
  36190 LD (31250),HL ;
- 36193 LD HL,29575   ;
- 36196 LD C,1        ;
+ 36193 LD HL,29575   ; HL -> slot 1's room byte (+1)
+ 36196 LD C,1        ; C = candidate slot number
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
- 36198 LD A,(33700)  ;
+ 36198 LD A,(33700)  ; processing the alien (slot 0)?
  36201 AND A         ;
- 36202 RET Z         ;
- 36203 EX AF,AF'     ;
- 36204 LD DE,31250   ;
- 36207 LD A,(IX+1)   ;
- 36210 LD B,7        ;
+ 36202 RET Z         ; yes: it has no morale
+ 36203 EX AF,AF'     ; keep own slot number in A'
+ 36204 LD DE,31250   ; DE -> RoomMateA
+ 36207 LD A,(IX+1)   ; A = own spot (room + duct bit)
+ 36210 LD B,7        ; scan the 7 crew slots
 @label=RecalcMorale_ScanLoop
-*36212 CP (HL)       ;
- 36213 JR NZ,36224   ;
- 36215 EX AF,AF'     ;
+*36212 CP (HL)       ; on the same spot?
+ 36213 JR NZ,36224   ; no: next slot
+ 36215 EX AF,AF'     ; is it our own record?
  36216 CP C          ;
- 36217 JR Z,36223    ;
- 36219 EX DE,HL      ;
- 36220 LD (HL),C     ;
+ 36217 JR Z,36223    ; yes: skip it
+ 36219 EX DE,HL      ; record the room-mate's slot
+ 36220 LD (HL),C     ; (RoomMateA, then RoomMateB)
  36221 EX DE,HL      ;
  36222 INC DE        ;
 @label=RecalcMorale_SkipSelf
-*36223 EX AF,AF'     ;
+*36223 EX AF,AF'     ; (put the spot back in A)
 @label=RecalcMorale_NextSlot
 *36224 PUSH DE       ;
- 36225 LD DE,8       ;
+ 36225 LD DE,8       ; step to the next record's room byte
  36228 ADD HL,DE     ;
  36229 POP DE        ;
  36230 INC C         ;
@@ -5876,90 +5916,100 @@ c36187 LD HL,65535   ;
  36233 PUSH IX       ;
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
- 36235 LD A,(33700)  ;
+ 36235 LD A,(33700)  ; seed the rotation:
 @nowarn=33695
 @ssub=LD (NearestCrewC),A
- 36238 LD (33695),A  ;
- 36241 LD HL,(31250) ;
+ 36238 LD (33695),A  ; C-slot = self,
+ 36241 LD HL,(31250) ; A/B-slots = the two room-mates
 @nowarn=33696
 @ssub=LD (NearestCrewA),HL
  36244 LD (33696),HL ;
- 36247 CALL 36283    ;
+ 36247 CALL 36283    ; morale of self (companions: A and B)
 @nowarn=33696
 @ssub=LD HL,(NearestCrewA)
- 36250 LD HL,(33696) ;
+ 36250 LD HL,(33696) ; rotate the triple: (C,A,B) =
 @nowarn=33695
 @ssub=LD A,(NearestCrewC)
- 36253 LD A,(33695)  ;
+ 36253 LD A,(33695)  ; (mateA, mateB, self)
 @nowarn=33697
 @ssub=LD (NearestCrewB),A
  36256 LD (33697),A  ;
 @nowarn=33695
 @ssub=LD (NearestCrewC),HL
  36259 LD (33695),HL ;
- 36262 CALL 36283    ;
+ 36262 CALL 36283    ; morale of mateA (companions: B, self)
 @nowarn=33696
 @ssub=LD HL,(NearestCrewA)
- 36265 LD HL,(33696) ;
+ 36265 LD HL,(33696) ; rotate again: (C,A,B) =
 @nowarn=33695
 @ssub=LD A,(NearestCrewC)
- 36268 LD A,(33695)  ;
+ 36268 LD A,(33695)  ; (mateB, self, mateA)
 @nowarn=33697
 @ssub=LD (NearestCrewB),A
  36271 LD (33697),A  ;
 @nowarn=33695
 @ssub=LD (NearestCrewC),HL
  36274 LD (33695),HL ;
- 36277 CALL 36283    ;
+ 36277 CALL 36283    ; morale of mateB (companions: self, A)
  36280 POP IX        ;
  36282 RET           ;
 
-; MoraleFromCompanion
+; MoraleFromCompanion — morale = courage + companion effects
+;
+; Recompute the morale (+6) of the crew member whose slot is in
+; NearestCrewC from his courage (+5) plus a term per companion slot
+; in NearestCrewA/B: a live companion adds his own courage - 2 (a
+; brave friend reassures, a coward unnerves); a dead one costs 1 —
+; and a freshly dead body (status 1) is "found": everyone's courage
+; decays, msg #20 fires and the body's status moves to 2 so it is
+; only found once. Standing in one of the rooms in NearRoomList
+; (#R33692, the tracker-holder scan at #R38903) is worth +1. The sum
+; is clamped to 0 on underflow.
 @label=MoraleFromCompanion
-c36283 XOR A         ;
+c36283 XOR A         ; companion-effect accumulator = 0
 @nowarn=33698
 @ssub=LD (DistanceAccum),A
  36284 LD (33698),A  ;
 @nowarn=33695
 @ssub=LD A,(NearestCrewC)
- 36287 LD A,(33695)  ;
- 36290 CP 255        ;
+ 36287 LD A,(33695)  ; A = whose morale to compute
+ 36290 CP 255        ; nobody?
  36292 RET Z         ;
- 36293 LD B,A        ;
+ 36293 LD B,A        ; IX -> that crew member's record
  36294 LD IX,29566   ;
  36298 LD DE,8       ;
 @label=MoraleComp_FindSlot
 *36301 ADD IX,DE     ;
  36303 DJNZ 36301    ;
- 36305 XOR A         ;
+ 36305 XOR A         ; dead or removed (+7 nonzero)?
  36306 CP (IX+7)     ;
- 36309 RET NZ        ;
+ 36309 RET NZ        ; yes: no morale to compute
  36310 PUSH IX       ;
- 36312 LD B,2        ;
+ 36312 LD B,2        ; both companion slots:
 @nowarn=33696
 @ssub=LD DE,NearestCrewA
- 36314 LD DE,33696   ;
+ 36314 LD DE,33696   ; NearestCrewA, then NearestCrewB
 @label=MoraleComp_PairLoop
 *36317 PUSH BC       ;
  36318 PUSH DE       ;
- 36319 LD A,(DE)     ;
+ 36319 LD A,(DE)     ; A = companion slot (255 = none)
  36320 CP 255        ;
  36322 JR Z,36385    ;
- 36324 LD IX,29566   ;
+ 36324 LD IX,29566   ; IX -> the companion's record
  36328 LD DE,8       ;
 @label=MoraleComp_RecSeek
 *36331 ADD IX,DE     ;
  36333 DEC A         ;
  36334 JR NZ,36331   ;
- 36336 CP (IX+7)     ;
- 36339 JR Z,36372    ;
- 36341 INC A         ;
+ 36336 CP (IX+7)     ; companion alive (status 0)?
+ 36339 JR Z,36372    ; yes: courage support
+ 36341 INC A         ; a freshly dead body (status 1)?
  36342 CP (IX+7)     ;
- 36345 JR NZ,36366   ;
- 36347 CALL 36428    ;
+ 36345 JR NZ,36366   ; no (found earlier / removed): just -1
+ 36347 CALL 36428    ; find the body: everyone's courage decays,
  36350 POP DE        ;
  36351 PUSH DE       ;
- 36352 LD A,(DE)     ;
+ 36352 LD A,(DE)     ; H = the body's slot
  36353 LD H,A        ;
 @nowarn=33695
 @ssub=LD A,(NearestCrewC)
@@ -5967,16 +6017,16 @@ c36283 XOR A         ;
  36357 LD L,A        ; L = the discovering crew slot
  36358 LD A,20       ; msg #20 "{actor} finds {target}'s body"
  36360 CALL 37176    ;
- 36363 INC (IX+7)    ;
+ 36363 INC (IX+7)    ; status 2: the body is only found once
 @nowarn=33698
 @label=MoraleComp_Minus
 @ssub=LD HL,DistanceAccum
-*36366 LD HL,33698   ;
- 36369 DEC (HL)      ;
+*36366 LD HL,33698   ; a dead companion:
+ 36369 DEC (HL)      ; morale term -1
  36370 JR 36385      ;
 @label=MoraleComp_AddCourage
-*36372 LD A,(IX+5)   ;
- 36375 SUB 2         ;
+*36372 LD A,(IX+5)   ; a live companion: morale term +=
+ 36375 SUB 2         ; his courage - 2
  36377 LD E,A        ;
 @nowarn=33698
 @ssub=LD A,(DistanceAccum)
@@ -5987,14 +6037,14 @@ c36283 XOR A         ;
  36382 LD (33698),A  ;
 @label=MoraleComp_NextPair
 *36385 POP DE        ;
- 36386 INC DE        ;
+ 36386 INC DE        ; next companion slot
  36387 POP BC        ;
  36388 DJNZ 36317    ;
- 36390 POP IX        ;
- 36392 LD B,3        ;
+ 36390 POP IX        ; IX -> the actor again
+ 36392 LD B,3        ; is his spot one of the 3 rooms
 @nowarn=33692
 @ssub=LD HL,NearRoomList
- 36394 LD HL,33692   ;
+ 36394 LD HL,33692   ; in NearRoomList?
  36397 LD A,(IX+1)   ;
 @label=MoraleComp_RoomScan
 *36400 CP (HL)       ;
@@ -6005,45 +6055,51 @@ c36283 XOR A         ;
 @nowarn=33698
 @label=MoraleComp_RoomBonus
 @ssub=LD HL,DistanceAccum
-*36408 LD HL,33698   ;
+*36408 LD HL,33698   ; yes: +1
  36411 INC (HL)      ;
 @nowarn=33698
 @label=MoraleComp_Apply
 @ssub=LD HL,DistanceAccum
-*36412 LD HL,33698   ;
+*36412 LD HL,33698   ; morale = courage + companion effects,
  36415 LD A,(IX+5)   ;
  36418 ADD A,(HL)    ;
- 36419 CP 127        ;
+ 36419 CP 127        ; clamped to 0 on underflow
  36421 JR C,36424    ;
  36423 XOR A         ;
 @label=MoraleComp_SetMorale
 *36424 LD (IX+6),A   ;
  36427 RET           ;
 
-; DecayCrewCourage
+; DecayCrewCourage — everyone loses a point of courage and morale
 ;
-; Used by the routines at #R36283 and #R45585.
+; Grim events shake the whole crew: -1 courage and -1 morale for all
+; 7 crew members (each clamped at 0). Triggered by finding a body
+; (#R36283) and by witnessing a kill (#R45585). The loop body is
+; split: DecayMoraleStep (#R45539) handles the morale byte and the
+; loop stepping, then refreshes the viewed condition line.
 @label=DecayCrewCourage
-c36428 LD HL,29579   ;
- 36431 LD DE,8       ;
- 36434 LD B,7        ;
+c36428 LD HL,29579   ; HL -> slot 1's courage byte (+5)
+ 36431 LD DE,8       ; record stride
+ 36434 LD B,7        ; all 7 crew
 ; This entry point is used by the routine at #R45539.
 @label=DecayCourageLoop
-*36436 DEC (HL)      ;
+*36436 DEC (HL)      ; courage -= 1,
  36437 LD A,127      ;
- 36439 CP (HL)       ;
+ 36439 CP (HL)       ; clamping an underflow
  36440 JR NC,36444   ;
- 36442 LD (HL),0     ;
+ 36442 LD (HL),0     ; to 0
 @label=DecayCourage_Tail
-*36444 JP 45539      ;
- 36447 RET           ;
+*36444 JP 45539      ; morale -= 1 too, then loop
+ 36447 RET           ; (DecayMoraleStep returns from here)
 
 ; BusyWait
 ;
+; Fixed delay loop, ~126,000 T-states (~36 ms).
+; .
 ; Used by the routines at #R38317, #R40319, #R43242, #R44561, #R44591 and
 ; #R44880.
 @label=BusyWait
-c36448 LD BC,4863    ;
+c36448 LD BC,4863    ; 4863 iterations of 26 T-states
 @label=BusyWaitLoop
 *36451 DEC BC        ;
  36452 LD A,C        ;
@@ -6096,115 +6152,130 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
  36547 CP 0          ;
  36549 CALL Z,33600  ; two consecutive 0s → ResetScriptPtr (reseed from SEED)
  36552 JR 36481      ; tail-loop back to the start of the per-frame body
+; PreActionCheck's Android branch (see #R36579): the Android quietly
+; disobeys an ATTACK order.
 @label=PreAction_CancelCombat
-*36554 LD A,(IX+3)   ;
+*36554 LD A,(IX+3)   ; Android ordered to ATTACK (state 4)?
  36557 CP 4          ;
  36559 JR NZ,36574   ;
- 36561 CALL 36717    ;
- 36564 LD (IX+3),1   ;
- 36568 LD (IX+0),20  ;
- 36572 XOR A         ;
+ 36561 CALL 36717    ; yes: it disobeys — pick a random room
+ 36564 LD (IX+3),1   ; and wander there instead (state 1)
+ 36568 LD (IX+0),20  ; in 20 frames
+ 36572 XOR A         ; A = 0: cancel this dispatch
  36573 RET           ;
 @label=PreAction_MoveGate
-*36574 CP 3          ;
+*36574 CP 3          ; other Android states: 3+ fire as-is,
  36576 RET NC        ;
- 36577 JR 36611      ;
+ 36577 JR 36611      ; 1-2 go through the destination checks
 
-; PreActionCheck
+; PreActionCheck — permission gate before a crew action fires
 ;
+; Called by DispatchCrewAction just before an actor's queued action
+; fires; returns A = 0 to cancel the dispatch, nonzero to let it
+; proceed. The alien (slot 0) is always allowed. The Android quietly
+; refuses an ATTACK order — it is re-assigned a wander instead
+; (#R36554). A crew member whose morale hits 0 (Broken) panics: in
+; the ducts he opens the grille and climbs out; in a room he drops
+; everything he carries and flees to a random adjacent room. And a
+; pending move (state 1/2) is held back (retried in ~32+ frames) when
+; the destination duct cell is already occupied — the ducts are
+; single-file — or the destination room already holds 3 crew (the
+; room-occupancy cap). Heading into the ducts also takes morale >= 2
+; (at least "Uneasy"); a more shaken crew member panics instead.
+; .
 ; Used by the routine at #R36014.
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
 @label=PreActionCheck
-c36579 LD A,(33700)  ;
+c36579 LD A,(33700)  ; processing the alien (slot 0)?
  36582 AND A         ;
- 36583 CPL           ;
- 36584 RET Z         ;
- 36585 XOR A         ;
+ 36583 CPL           ; (A = 255: proceed)
+ 36584 RET Z         ; yes: always allowed, no checks
+ 36585 XOR A         ; action state 0 (parked)?
  36586 CP (IX+3)     ;
- 36589 RET Z         ;
+ 36589 RET Z         ; yes: A = 0, nothing to fire
 @nowarn=33703
 @ssub=LD A,(AlienTargetID)
- 36590 LD A,(33703)  ;
+ 36590 LD A,(33703)  ; is this actor the Android?
 @nowarn=33700
 @ssub=LD HL,CrewIndex
  36593 LD HL,33700   ;
  36596 CP (HL)       ;
- 36597 JR Z,36554    ;
- 36599 XOR A         ;
+ 36597 JR Z,36554    ; yes: combat-refusal branch
+ 36599 XOR A         ; morale 0 (Broken)?
  36600 CP (IX+6)     ;
- 36603 JR Z,36664    ;
- 36605 LD A,(IX+3)   ;
- 36608 CP 3          ;
- 36610 RET NC        ;
+ 36603 JR Z,36664    ; yes: panic
+ 36605 LD A,(IX+3)   ; states 3+ (grille/combat/...)
+ 36608 CP 3          ; fire unchecked;
+ 36610 RET NC        ; moves go through the checks:
 @label=PreAction_DestScan
-*36611 LD A,(IX+2)   ;
- 36614 LD HL,29575   ;
+*36611 LD A,(IX+2)   ; A = the pending destination
+ 36614 LD HL,29575   ; HL -> slot 1's room byte (+1)
  36617 LD DE,8       ;
- 36620 LD BC,1792    ;
+ 36620 LD BC,1792    ; B = 7 slots, C = 0 occupants
 @label=PreAction_DestLoop
-*36623 CP (HL)       ;
- 36624 JR NZ,36627   ;
+*36623 CP (HL)       ; count the crew already at
+ 36624 JR NZ,36627   ; the destination spot
  36626 INC C         ;
 @label=PreAction_DestNext
 *36627 ADD HL,DE     ;
  36628 DJNZ 36623    ;
- 36630 LD A,(IX+2)   ;
+ 36630 LD A,(IX+2)   ; heading into the duct network?
  36633 BIT 6,A       ;
  36635 JR Z,36650    ;
- 36637 LD A,(IX+6)   ;
- 36640 CP 2          ;
- 36642 JR C,36664    ;
- 36644 LD A,C        ;
+ 36637 LD A,(IX+6)   ; too shaken for the ducts
+ 36640 CP 2          ; (morale < 2)?
+ 36642 JR C,36664    ; yes: panic
+ 36644 LD A,C        ; duct cell already occupied?
  36645 AND A         ;
- 36646 JR NZ,36657   ;
- 36648 CPL           ;
+ 36646 JR NZ,36657   ; yes: wait and retry
+ 36648 CPL           ; no: A nonzero, proceed
  36649 RET           ;
 @label=PreAction_DoorGate
-*36650 LD A,C        ;
- 36651 CP 3          ;
- 36653 JR NC,36657   ;
- 36655 CPL           ;
+*36650 LD A,C        ; already 3 crew in the room?
+ 36651 CP 3          ; (the room-occupancy cap)
+ 36653 JR NC,36657   ; yes: wait and retry
+ 36655 CPL           ; no: A nonzero, proceed
  36656 RET           ;
 @label=PreAction_Requeue
-*36657 LD A,32       ;
- 36659 CALL 35814    ;
- 36662 XOR A         ;
+*36657 LD A,32       ; re-arm the countdown (32 + the
+ 36659 CALL 35814    ; usual adjustments) and
+ 36662 XOR A         ; cancel this dispatch
  36663 RET           ;
 @label=PreAction_Broken
-*36664 BIT 6,(IX+1)  ;
+*36664 BIT 6,(IX+1)  ; panicking in the ducts?
  36668 JR Z,36684    ;
- 36670 LD A,(IX+3)   ;
- 36673 CP 1          ;
+ 36670 LD A,(IX+3)   ; only a pending move (state 1)
+ 36673 CP 1          ; is replaced
  36675 RET NZ        ;
- 36676 CALL 36150    ;
- 36679 CALL 35560    ;
- 36682 XOR A         ;
+ 36676 CALL 36150    ; bail out: open this room's grille
+ 36679 CALL 35560    ; queue the climb out of the ducts
+ 36682 XOR A         ; and cancel this dispatch
  36683 RET           ;
 @label=PreAction_DropScan
-*36684 LD HL,29940   ;
+*36684 LD HL,29940   ; panicking in a room: scan ItemLocations
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
  36687 LD A,(33700)  ;
- 36690 ADD A,128     ;
+ 36690 ADD A,128     ; E = own back-hand marker (128+slot)
  36692 LD E,A        ;
- 36693 ADD A,32      ;
+ 36693 ADD A,32      ; D = own front-hand marker (160+slot)
  36695 LD D,A        ;
- 36696 LD C,(IX+1)   ;
- 36699 LD B,22       ;
+ 36696 LD C,(IX+1)   ; C = current room
+ 36699 LD B,22       ; all 22 items:
 @label=PreAction_DropLoop
 *36701 LD A,(HL)     ;
- 36702 CP E          ;
+ 36702 CP E          ; held in either hand?
  36703 JR Z,36708    ;
  36705 CP D          ;
  36706 JR NZ,36709   ;
 @label=PreAction_DropItem
-*36708 LD (HL),C     ;
+*36708 LD (HL),C     ; yes: drop it on the floor here
 @label=PreAction_DropNext
 *36709 INC HL        ;
  36710 DJNZ 36701    ;
- 36712 CALL 36717    ;
- 36715 JR 36611      ;
+ 36712 CALL 36717    ; flee: pick a random adjacent room
+ 36715 JR 36611      ; and re-run the occupancy checks
 
 ; PickNextRoom
 ;
@@ -10335,7 +10406,7 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
 @ignoreua
  42593 LD HL,16522   ; HL = $408A (screen address: top-left of tile area)
 @ignoreua
- 42596 LD (31257),HL ; store as current draw pointer (#R31241)
+ 42596 LD (31257),HL ; store as current draw pointer (#R31257)
  42599 LD B,15       ; 15 tile columns
 @label=Intro_ColLoop
 *42601 PUSH BC       ;
@@ -12093,10 +12164,13 @@ c45222 LD HL,65535   ;
 
 ; ActionTimerFire
 ;
+; Countdown trampoline: the caller decremented (IX+0); on the 1->0
+; transition (Z set) dispatch the actor's queued action.
+; .
 ; Used by the routine at #R35973.
 @label=ActionTimerFire
 c45232 PUSH IX       ;
- 45234 CALL Z,36014  ;
+ 45234 CALL Z,36014  ; countdown just hit 0: DispatchCrewAction
  45237 POP IX        ;
  45239 RET           ;
 
@@ -12185,22 +12259,25 @@ c45295 ADD A,32      ; hand marker +32: back hand -> front hand
 
 ; RefreshCrewCondition
 ;
+; Called after a non-viewed actor arrives somewhere: refresh the room
+; info panel, then redraw the viewed crew member's condition line.
+; .
 ; Used by the routines at #R36034 and #R36101.
 @label=RefreshCrewCondition
-c45338 CALL 36793    ;
+c45338 CALL 36793    ; refresh the room info panel
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
- 45341 LD A,(33700)  ;
+ 45341 LD A,(33700)  ; the alien moved?
  45344 CP 0          ;
- 45346 RET Z         ;
- 45347 LD A,(31241)  ;
+ 45346 RET Z         ; then no condition line to touch
+ 45347 LD A,(31241)  ; re-point IX at the viewed slot
  45350 LD B,A        ;
  45351 LD IX,29566   ;
  45355 LD DE,8       ;
 @label=RefreshCrewCond_Seek
 *45358 ADD IX,DE     ;
  45360 DJNZ 45358    ;
- 45362 CALL 32385    ;
+ 45362 CALL 32385    ; and redraw his condition line
  45365 RET           ;
 
 ; IncPairAt
@@ -12322,18 +12399,21 @@ c45476 CALL 45585    ;
 
 ; BumpCourageMorale
 ;
+; Catching Jones comforts the catcher: +1 courage, +1 morale, redraw
+; the condition line; returns HL -> JonesRoom for the caller to clear.
+; .
 ; Used by the routine at #R35814.
 @label=BumpCourageMorale
-c45510 LD A,(IX+5)   ;
+c45510 LD A,(IX+5)   ; courage += 1
  45513 ADD A,1       ;
  45515 LD (IX+5),A   ;
- 45518 LD A,(IX+6)   ;
+ 45518 LD A,(IX+6)   ; morale += 1
  45521 ADD A,1       ;
  45523 LD (IX+6),A   ;
- 45526 CALL 32385    ;
+ 45526 CALL 32385    ; redraw the crew-condition line
 @nowarn=33706
 @ssub=LD HL,JonesRoom
- 45529 LD HL,33706   ;
+ 45529 LD HL,33706   ; hand back HL -> JonesRoom
  45532 RET           ;
 
 ; SetCourageRefresh
@@ -12343,34 +12423,38 @@ c45510 LD A,(IX+5)   ;
 c45533 LD (IX+5),C   ;
  45536 JP 45479      ;
 
-; DecayMoraleStep
+; DecayMoraleStep — tail of the DecayCrewCourage loop
 ;
+; After the courage byte: drop the slot's morale too, step to the
+; next record, and once all 7 are done redraw the viewed crew
+; member's condition line.
+; .
 ; Used by the routine at #R36428.
 @label=DecayMoraleStep
-c45539 INC HL        ;
+c45539 INC HL        ; morale byte (+6): -1 too,
  45540 DEC (HL)      ;
  45541 LD A,127      ;
- 45543 CP (HL)       ;
+ 45543 CP (HL)       ; clamping an underflow
  45544 JR NC,45548   ;
- 45546 LD (HL),0     ;
+ 45546 LD (HL),0     ; to 0
 @label=DecayMorale_Next
-*45548 DEC HL        ;
- 45549 ADD HL,DE     ;
+*45548 DEC HL        ; back to the courage byte,
+ 45549 ADD HL,DE     ; next record
  45550 DEC B         ;
- 45551 JP NZ,36436   ;
- 45554 LD A,(31252)  ;
+ 45551 JP NZ,36436   ; loop over all 7 crew
+ 45554 LD A,(31252)  ; room view on screen (mode 1)?
  45557 CP 1          ;
- 45559 RET NZ        ;
+ 45559 RET NZ        ; no: done
  45560 PUSH BC       ;
  45561 PUSH IX       ;
- 45563 LD A,(31241)  ;
+ 45563 LD A,(31241)  ; re-point IX at the viewed slot
  45566 LD B,A        ;
  45567 LD IX,29566   ;
  45571 LD DE,8       ;
 @label=ViewedSlotSeek
 *45574 ADD IX,DE     ;
  45576 DJNZ 45574    ;
- 45578 CALL 32385    ;
+ 45578 CALL 32385    ; and redraw his condition line
  45581 POP IX        ;
  45583 POP BC        ;
  45584 RET           ;
