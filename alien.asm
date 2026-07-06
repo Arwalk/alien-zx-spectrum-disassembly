@@ -1077,17 +1077,16 @@ LoadedCode:
   DEFB $5D,$1C,$BA,$CD,$52,$1C,$76,$1B
   DEFB $03,$13,$00,$3E
 
-; Ship-map screen data — three deck maps
+; Ship-map data — the Nostromo's three deck maps
 ;
-; The map screen shown by DrawShipMap (DrawShipMap) as three stacked deck
-; views: 3 decks x 19 rows x 20 columns of tile codes (the same 20-wide grid
-; format the room views use). Row texts like "UPPER DECK" are plain ASCII tile
-; codes; other values are map glyphs (room outlines, corridors, and the legend
-; symbols: 123 '{' ladder up, 124 '|' hatchway down, 125 '}' duct grille).
-;
-; Double duty: in play, DrawRoomBackground (DrawRoomBackground) renders the
-; single deck selected by RoomTypeByte (380 bytes per deck) as the room view's
-; background map.
+; 3 decks x 19 rows x 20 columns of tile codes (the same 20-wide grid format
+; the room views use), drawn one deck at a time (380 bytes, selected by
+; RoomTypeByte) by DrawRoomBackground (DrawRoomBackground) as the map pane /
+; room-view background; the Upper/Middle/Lower rows of the orders menu switch
+; decks via SelectDeckMap (SelectDeckMap). Row texts like "UPPER DECK" are
+; plain ASCII tile codes; other values are map glyphs (room outlines,
+; corridors, and the legend symbols: 123 '{' ladder up, 124 '|' hatchway down,
+; 125 '}' duct grille).
 ShipMapData:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ; UPPER deck
                                                                                        ; row 0
@@ -2216,11 +2215,11 @@ OrdersMenuLowerHalf:
 ; Crew portrait bitmaps
 ;
 ; Seven 3x3-character (24x24 pixel) raw bitmap portraits, drawn by
-; BlitPortrait. Used by DrawShipMap (DrawShipMap -- all 7 at once) and by the
-; crew-status display (single-portrait draw, crew index from DrawSlotIndex, via
-; DrawSprite). Crew member names from CrewNameTable (CrewNameTable); portrait N
-; is at address CrewPortraits + (N-1)*72. Portrait data continues into
-; CrewPortraitsCont and CrewPortraitsCont2 due to block boundaries.
+; BlitPortrait. Used by GameModeScreen (GameModeScreen -- all 7 at once) and by
+; the crew-status display (single-portrait draw, crew index from DrawSlotIndex,
+; via DrawSprite). Crew member names from CrewNameTable (CrewNameTable);
+; portrait N is at address CrewPortraits + (N-1)*72. Portrait data continues
+; into CrewPortraitsCont and CrewPortraitsCont2 due to block boundaries.
 ;
 ; Dallas (1):   Kane (2):     Ripley (3):   Ash (4):      Lambert (5):  Parker
 ; (6):   Brett (7):
@@ -2754,12 +2753,12 @@ DrawSprite_Advance:
 ; walk other string lists.
 ;
 ; Used by the routines at OrdersCrewNameRow, DrawCrewCondition, DrawRoomMates,
-; DrawSelectedName, RenderMessage, DrawShipMap, PrintDeadRoster,
+; DrawSelectedName, RenderMessage, GameModeScreen, PrintDeadRoster,
 ; PrintAndroidReveal and PrintNameThenPanel.
 PrintName:
   LD DE,CrewNameTable     ; CrewNameTable
 ; This entry point is used by the routines at DrawCrewCondition and
-; DrawShipMap.
+; GameModeScreen.
 PrintNameDE:
   AND A                   ; name 0: draw from the list head
   JR Z,PrintName_GlyphLoop
@@ -4003,7 +4002,7 @@ ClearText_Loop:
 ; Draw the selected crew member's 24x24-pixel portrait (CrewPortraits
 ; CrewPortraits, 72 bytes each) at the bottom-left of the room view (screen
 ; rows 15-17, cols 1-3), blue ink on white. BlitPortrait is also entered
-; directly by DrawShipMap with HL/DE preloaded.
+; directly by GameModeScreen with HL/DE preloaded.
 DrawCrewPortrait:
   LD HL,$59E1             ; paint the 3x3 attribute square
   LD DE,$001D             ; (row 15, col 1) blue-on-white (57)
@@ -4029,7 +4028,7 @@ Portrait_AddrLoop:
 Portrait_AddrDone:
   EX DE,HL
   LD HL,$48E1             ; blit at screen row 15, col 1
-; This entry point is used by the routine at DrawShipMap.
+; This entry point is used by the routine at GameModeScreen.
 BlitPortrait:
   LD (DrawScreenPtr),HL
   LD B,$03                ; 3 cell rows
@@ -5966,7 +5965,7 @@ GameEntry:
   LD SP,$FFFA             ; stack at $FFFA (top of game RAM, below extra data)
   CALL ResetScriptPtr     ; ResetScriptPtr: seed ROM-traversal script pointer
   CALL DrawIntroScreen    ; DrawIntroScreen: animated Alien title screen
-  CALL DrawShipMap        ; DrawShipMap: ship layout / room-selection screen
+  CALL GameModeScreen     ; GameModeScreen: crew roster + game-mode menu
   CALL OptionsScreen      ; OptionsScreen: difficulty selection (keys 1-4)
   CALL ScreenTransition   ; ScreenTransition: wipe to black, set white
                           ; attributes
@@ -9898,7 +9897,7 @@ CommonInit_Charges:
 ; data. The display file occupies DisplayFile-$57FF (6144 bytes). Uses a single
 ; LDIR from DisplayFile into $4001 after priming the first byte to 0.
 ;
-; Used by the routines at DrawIntroScreen, DrawShipMap, IntroductionMode,
+; Used by the routines at DrawIntroScreen, GameModeScreen, IntroductionMode,
 ; OptionsScreen and ScreenTransition.
 ClearDisplay:
   LD HL,DisplayFile       ; HL = DisplayFile (start of display file)
@@ -9917,7 +9916,7 @@ ClearDisplay:
 ;
 ; Input: A = attribute byte to flood-fill
 ;
-; Used by the routines at DamageOverflowFlash, DrawIntroScreen, DrawShipMap,
+; Used by the routines at DamageOverflowFlash, DrawIntroScreen, GameModeScreen,
 ; IntroductionMode, OptionsScreen and ScreenTransition.
 FillAttributes:
   LD HL,AttrFileOrigin    ; HL = AttrFileOrigin (start of attribute file)
@@ -9929,9 +9928,10 @@ FillAttributes:
 
 ; Ship-map screen title and credits
 ;
-; Plain ASCII (previously misclassified as code), drawn by DrawShipMap
-; (DrawShipMap): the big "ALIEN" title (one glyph per cell, 3-column spacing)
-; and the author/publisher credit lines "John Heap" / "Argus Press Software".
+; Plain ASCII (previously misclassified as code), drawn by GameModeScreen
+; (GameModeScreen): the big "ALIEN" title (one glyph per cell, 3-column
+; spacing) and the author/publisher credit lines "John Heap" / "Argus Press
+; Software".
 StrAlien:
   DEFM "ALIEN"
   DEFM "        "
@@ -10087,55 +10087,52 @@ Intro_KeyPoll:
   JR C,Intro_KeyPoll
   JR Intro_WaitLoop
 
-; DrawShipMap
+; GameModeScreen — crew roster + game-mode menu
 ;
-; Draws the Nostromo ship overview map and handles game-mode selection. Sets
-; border green, fills attributes (32), clears display, then blits the deck plan
-; as tile blocks at fixed screen positions. After drawing, prints the crew
-; names via PrintName (one name per corridor segment) and the four-line menu
-; ("1: Short Game", "2: Long Game", "3: Introduction", "4: Select") from the
-; text table at GameModeText (GameModeText).
+; Despite the old "DrawShipMap" name, no ship map is drawn here. The screen
+; shows the seven crew portraits (four across the top, three below) with their
+; names, then the menu "1: Short Game / 2: Long Game / 3: Introduction / 4:
+; Select" from the text table at GameModeText.
 ;
 ; Key input loop reads port $F7FE: Key 1 — highlight "Short Game"   (selection
 ; 0) Key 2 — highlight "Long Game"    (selection 1) Key 3 — highlight
-; "Introduction" (selection 2) Key 4 — confirm: dispatch through 3-word table
-; at GameModeDispatchTable (GameModeDispatchTable) to the handler for the
-; highlighted mode, then return
+; "Introduction" (selection 2) Key 4 — confirm: dispatch through the 3-word
+; table at GameModeDispatchTable to the handler for the highlighted mode
 ;
 ; "4: Select" is a confirm key, not a fourth game mode.
 ;
 ; Used by the routines at GameEntry and IntroductionMode.
-DrawShipMap:
-  LD A,$04                ; A = 4 (green border)
-  OUT ($FE),A             ; set border green
-  LD A,$20                ; attribute 32 = green ink on black paper
+GameModeScreen:
+  LD A,$04                ; green border,
+  OUT ($FE),A
+  LD A,$20                ; green paper, black ink
   CALL FillAttributes     ; FillAttributes(32)
   CALL ClearDisplay       ; ClearDisplay
-  CALL WaitKeyRelease     ; wait for display to stabilise
-  LD DE,CrewPortraits
-  LD HL,$4044
-  LD B,$04
+  CALL WaitKeyRelease     ; wait for the keys to clear
+  LD DE,CrewPortraits     ; four crew portraits across the
+  LD HL,$4044             ; top (from row 2, col 4; 72 data
+  LD B,$04                ; bytes / 7 columns each)
 ShipMap_Portraits1:
   PUSH BC
   PUSH HL
   PUSH DE
-  CALL BlitPortrait
+  CALL BlitPortrait       ; BlitPortrait
   POP DE
-  LD HL,$0048
+  LD HL,$0048             ; next portrait's data,
   ADD HL,DE
   EX DE,HL
   POP HL
-  LD BC,$0007
+  LD BC,$0007             ; 7 columns right
   ADD HL,BC
   POP BC
   DJNZ ShipMap_Portraits1
-  LD HL,$4807
-  LD B,$03
+  LD HL,$4807             ; three more below
+  LD B,$03                ; (from row 8, col 7)
 ShipMap_Portraits2:
   PUSH BC
   PUSH HL
   PUSH DE
-  CALL BlitPortrait
+  CALL BlitPortrait       ; BlitPortrait
   POP DE
   LD HL,$0048
   ADD HL,DE
@@ -10145,108 +10142,108 @@ ShipMap_Portraits2:
   ADD HL,BC
   POP BC
   DJNZ ShipMap_Portraits2
-  LD HL,$40C3
-  LD A,$01
+  LD HL,$40C3             ; the names under the portraits:
+  LD A,$01                ; Dallas,
   LD (DrawScreenPtr),HL
   CALL PrintName
-  LD HL,$40CB
+  LD HL,$40CB             ; Kane,
   LD (DrawScreenPtr),HL
   LD A,$02
   CALL PrintName
-  LD HL,$40D1
+  LD HL,$40D1             ; Ripley,
   LD (DrawScreenPtr),HL
   LD A,$03
   CALL PrintName
-  LD HL,$40D9
+  LD HL,$40D9             ; Ash,
   LD (DrawScreenPtr),HL
   LD A,$04
   CALL PrintName
-  LD HL,$4885
+  LD HL,$4885             ; Lambert,
   LD (DrawScreenPtr),HL
   LD A,$05
   CALL PrintName
-  LD HL,$488D
+  LD HL,$488D             ; Parker,
   LD (DrawScreenPtr),HL
   LD A,$06
   CALL PrintName
-  LD HL,$4895
+  LD HL,$4895             ; Brett
   LD (DrawScreenPtr),HL
   LD A,$07
   CALL PrintName
-  LD DE,GameModeText
-  LD HL,$48E9
+  LD DE,GameModeText      ; the menu lines:
+  LD HL,$48E9             ; "1: Short Game" (row 15)
   LD (DrawScreenPtr),HL
   PUSH DE
   XOR A
   CALL PrintNameDE
-  LD HL,$5029
+  LD HL,$5029             ; "2: Long Game" (row 17)
   LD (DrawScreenPtr),HL
   POP DE
   PUSH DE
   LD A,$01
   CALL PrintNameDE
-  LD HL,$5069
+  LD HL,$5069             ; "3: Introduction" (row 19)
   LD (DrawScreenPtr),HL
   POP DE
   PUSH DE
   LD A,$02
   CALL PrintNameDE
-  LD HL,$50A9
+  LD HL,$50A9             ; "4: Select" (row 21)
   LD (DrawScreenPtr),HL
   POP DE
   PUSH DE
   LD A,$03
   CALL PrintNameDE
-  LD HL,$50E6
+  LD HL,$50E6             ; "Press Appropriate Key" (row 22)
   LD (DrawScreenPtr),HL
   POP DE
   LD A,$04
   CALL PrintNameDE
-  XOR A
+  XOR A                   ; selection = 0 (Short Game),
   LD (CorridorCursor),A
-  CALL HighlightGameMode
+  CALL HighlightGameMode  ; highlighted
 ShipMap_KeyLoop:
-  LD BC,$F7FE
+  LD BC,$F7FE             ; scan half-row 1-5:
   IN A,(C)
-  BIT 0,A
+  BIT 0,A                 ; key 1?
   JR Z,ShipMap_Pick1
-  BIT 1,A
+  BIT 1,A                 ; key 2?
   JR Z,ShipMap_Pick2
-  BIT 2,A
+  BIT 2,A                 ; key 3?
   JR Z,ShipMap_Pick3
-  BIT 3,A
+  BIT 3,A                 ; key 4 = confirm?
   JR Z,ShipMap_Confirm
   JR ShipMap_KeyLoop
 ShipMap_Pick1:
-  LD A,(CorridorCursor)
+  LD A,(CorridorCursor)   ; already on Short Game?
   AND A
   JR Z,ShipMap_KeyLoop
-  CALL HighlightGameMode
-  XOR A
+  CALL HighlightGameMode  ; no: unhighlight the old pick,
+  XOR A                   ; select mode 0,
   LD (CorridorCursor),A
-  CALL HighlightGameMode
+  CALL HighlightGameMode  ; highlight it
   JR ShipMap_KeyLoop
 ShipMap_Pick2:
-  LD A,(CorridorCursor)
+  LD A,(CorridorCursor)   ; already on Long Game?
   CP $01
   JR Z,ShipMap_KeyLoop
-  CALL HighlightGameMode
+  CALL HighlightGameMode  ; no: repick mode 1
   LD A,$01
   LD (CorridorCursor),A
   CALL HighlightGameMode
   JR ShipMap_KeyLoop
 ShipMap_Pick3:
-  LD A,(CorridorCursor)
+  LD A,(CorridorCursor)   ; already on Introduction?
   CP $02
   JR Z,ShipMap_KeyLoop
-  CALL HighlightGameMode
+  CALL HighlightGameMode  ; no: repick mode 2
   LD A,$02
   LD (CorridorCursor),A
   CALL HighlightGameMode
   JR ShipMap_KeyLoop
 ShipMap_Confirm:
-  LD A,(CorridorCursor)
-  ADD A,A
+  LD A,(CorridorCursor)   ; key 4: dispatch the picked mode
+  ADD A,A                 ; through GameModeDispatchTable
   LD HL,GameModeDispatchTable
   LD E,A
   LD D,$00
@@ -10318,9 +10315,9 @@ GameModeDispatchTable:
 
 ; GameModeText
 ;
-; $FF-terminated text strings for the game-mode menu, rendered by DrawShipMap
-; (DrawShipMap) via five calls to PrintNameDE. Indices 0-3 are the four menu
-; lines; index 4 is the footer prompt.
+; $FF-terminated text strings for the game-mode menu, rendered by
+; GameModeScreen (GameModeScreen) via five calls to PrintNameDE. Indices 0-3
+; are the four menu lines; index 4 is the footer prompt.
 GameModeText:
   DEFB $31,$3A,$20,$53,$68,$6F,$72,$74,$20,$47,$61,$6D,$65,$FF ; "1: Short
                                                                ; Game"
@@ -10334,10 +10331,10 @@ GameModeText:
 ; HighlightGameMode
 ;
 ; XOR-toggles the attribute colour of the currently selected menu row, used by
-; DrawShipMap (DrawShipMap) to highlight or erase the cursor. Loads the base
-; attribute address $59E9 (row 15, col 9), steps 64 bytes per row (selection ×
-; 64), then XORs 15 consecutive attribute bytes with 36 (flipping ink/paper to
-; show highlight).
+; GameModeScreen (GameModeScreen) to highlight or erase the cursor. Loads the
+; base attribute address $59E9 (row 15, col 9), steps 64 bytes per row
+; (selection × 64), then XORs 15 consecutive attribute bytes with 36 (flipping
+; ink/paper to show highlight).
 HighlightGameMode:
   LD HL,$59E9
 ; This entry point is used by the routine at OptionsScreen.
@@ -10472,7 +10469,7 @@ IntroMode_WaitKey:
   LD A,(SysLastKey)
   AND A
   JR Z,IntroMode_WaitKey
-  JP DrawShipMap
+  JP GameModeScreen
 IntroMode_Animate:
   LD B,$14
 IntroMode_AnimLoop:
@@ -10499,120 +10496,119 @@ StrGrilleRemoved:
 StrTrackerReading:
   DEFM "Positive Tracker Reading"
 
-; OptionsScreen
+; OptionsScreen — the input-device menu
 ;
-; Draws the difficulty-selection screen and waits for a key. Clears display,
-; fills attributes green (32), then draws the game title and five option lines
-; using the tile-blit helper PrintStr. Reads port $F7FE in a loop: keys 1-4
-; (bits 0-3) set CorridorCursor (reused here as difficulty, 0-3) and redraw the
-; highlighted option; key 5 (bit 4) confirms the selection and returns. The
-; selected difficulty level is stored at CorridorCursor and used throughout the
-; game to scale alien speed and crew health.
+; "Select Keyboard or joystick": lists 1 KEMPSTON / 2 AGF-PROTEK / 3 SINCLAIR /
+; 4 KEYBOARD / 5 SELECT. Keys 1-4 move the highlight (the picked device index,
+; 0-3, lives in CorridorCursor — CorridorCursor reused); key 5 confirms:
+; Options_Select patches the input-scanner CALL operand from InputScannerTable,
+; and picking the keyboard (device 3) continues into the key-redefinition
+; offer.
 ;
 ; Used by the routine at GameEntry.
 OptionsScreen:
   CALL ClearDisplay       ; ClearDisplay
-  LD A,$20                ; green ink on black
+  LD A,$20                ; green paper, black ink
   CALL FillAttributes     ; FillAttributes(32)
-  LD HL,$4042             ; HL = $4042 (screen row for title)
-  LD (DrawScreenPtr),HL   ; set draw pointer
-  LD DE,StrSelectDevice   ; DE = StrSelectDevice (title tile data)
-  LD B,$1B                ; 27 characters wide
-  CALL PrintStr           ; blit title text
-  LD HL,$40EB
+  LD HL,$4042             ; "Select Keyboard or joystick"
+  LD (DrawScreenPtr),HL   ; on screen row 2
+  LD DE,StrSelectDevice
+  LD B,$1B
+  CALL PrintStr
+  LD HL,$40EB             ; "1 : KEMPSTON" (row 5)
   LD (DrawScreenPtr),HL
-; This entry point is used by the routine at DrawShipMap.
+; This entry point is used by the routine at GameModeScreen.
   LD DE,StrKempston
   LD B,$0C
   CALL PrintStr
-; This entry point is used by the routine at DrawShipMap.
-  LD HL,$482B
+; This entry point is used by the routine at GameModeScreen.
+  LD HL,$482B             ; "2 : AGF-PROTEK" (row 9)
   LD (DrawScreenPtr),HL
-; This entry point is used by the routine at DrawShipMap.
+; This entry point is used by the routine at GameModeScreen.
   LD DE,StrAGFProtek
-; This entry point is used by the routine at DrawShipMap.
+; This entry point is used by the routine at GameModeScreen.
   LD B,$0E
-; This entry point is used by the routine at DrawShipMap.
+; This entry point is used by the routine at GameModeScreen.
   CALL PrintStr
-  LD HL,$486B
+  LD HL,$486B             ; "3 : SINCLAIR" (row 11)
   LD (DrawScreenPtr),HL
   LD DE,StrSinclair
   LD B,$0C
   CALL PrintStr
-  LD HL,$48AB
+  LD HL,$48AB             ; "4 : KEYBOARD" (row 13)
   LD (DrawScreenPtr),HL
-; This entry point is used by the routine at DrawShipMap.
+; This entry point is used by the routine at GameModeScreen.
   LD DE,StrKeyboard
   LD B,$0C
   CALL PrintStr
-  LD HL,$48EB
+  LD HL,$48EB             ; "5 : SELECT" (row 15)
   LD (DrawScreenPtr),HL
-; This entry point is used by the routine at DrawShipMap.
+; This entry point is used by the routine at GameModeScreen.
   LD DE,StrSelect
   LD B,$0A
   CALL PrintStr
-  LD HL,$5066
+  LD HL,$5066             ; "PRESS APPROPRIATE KEY" (row 19)
   LD (DrawScreenPtr),HL
   LD DE,StrPressKey
   LD B,$15
   CALL PrintStr
-  LD HL,$50C2
-  LD (DrawScreenPtr),HL
+  LD HL,$50C2             ; "During Game Press 1 to Pause"
+  LD (DrawScreenPtr),HL   ; (row 22)
   LD DE,StrPressPause
   LD B,$1C
   CALL PrintStr
-  XOR A
+  XOR A                   ; picked device = 0 (Kempston)
   LD (CorridorCursor),A
 Options_Redraw:
-  CALL Options_HighlightRow
+  CALL Options_HighlightRow ; toggle the pick's highlight
 Options_KeyLoop:
-  LD HL,CorridorCursor
+  LD HL,CorridorCursor    ; scan half-row 1-5:
   LD BC,$F7FE
   IN A,(C)
-  RRA
+  RRA                     ; key 1?
   JR NC,Options_Pick1
-  RRA
+  RRA                     ; key 2?
   JR NC,Options_Pick2
-  RRA
+  RRA                     ; key 3?
   JR NC,Options_Pick3
-  RRA
+  RRA                     ; key 4?
   JR NC,Options_Pick4
-  RRA
+  RRA                     ; key 5?
   JR NC,Options_Select
   JR Options_KeyLoop
 Options_Pick1:
-  LD A,(HL)
+  LD A,(HL)               ; already on device 0?
   AND A
   JR Z,Options_KeyLoop
-  CALL Options_HighlightRow
-  LD (HL),$00
-  JR Options_Redraw
+  CALL Options_HighlightRow ; no: unhighlight the old pick,
+  LD (HL),$00             ; pick Kempston,
+  JR Options_Redraw       ; highlight it
 Options_Pick2:
-  LD A,(HL)
+  LD A,(HL)               ; already on device 1?
   CP $01
   JR Z,Options_KeyLoop
-  CALL Options_HighlightRow
+  CALL Options_HighlightRow ; no: repick AGF-Protek
   LD (HL),$01
   JR Options_Redraw
 Options_Pick3:
-  LD A,(HL)
+  LD A,(HL)               ; already on device 2?
   CP $02
   JR Z,Options_KeyLoop
-  CALL Options_HighlightRow
+  CALL Options_HighlightRow ; no: repick Sinclair
   LD (HL),$02
   JR Options_Redraw
 Options_Pick4:
-  LD A,(HL)
+  LD A,(HL)               ; already on device 3?
   CP $03
   JR Z,Options_KeyLoop
-  CALL Options_HighlightRow
+  CALL Options_HighlightRow ; no: repick the keyboard
   LD (HL),$03
   JR Options_Redraw
 Options_Select:
-  LD A,(HL)
-  ADD A,A
-  LD E,A
-  LD D,$00
+  LD A,(HL)               ; key 5: commit the pick —
+  ADD A,A                 ; patch the input-scanner CALL
+  LD E,A                  ; operand ($874D) from
+  LD D,$00                ; InputScannerTable[device]
   LD HL,InputScannerTable
   ADD HL,DE
   LD A,(HL)
@@ -10620,146 +10616,160 @@ Options_Select:
   LD H,(HL)
   LD L,A
   LD ($874D),HL
-  LD A,(CorridorCursor)
+  LD A,(CorridorCursor)   ; a joystick (device < 3)?
   CP $03
-  RET NZ
-  CALL ClearDisplay
+  RET NZ                  ; yes: done — into the game
+  CALL ClearDisplay       ; keyboard: fresh green screen
   LD A,$20
   CALL FillAttributes
   CALL WaitKeyRelease
-  LD HL,$4041
+  LD HL,$4041             ; "The keyboard is user definable"
   LD (DrawScreenPtr),HL
   LD DE,StrUserDefinable
   LD B,$1E
   CALL PrintStr
-  LD A,(KeyboardModeFlag)
-  AND A
-  JR Z,Options_Redefine
-  LD HL,$4084
+  LD A,(KeyboardModeFlag) ; first time on this screen the
+  AND A                   ; redefinition is compulsory;
+  JR Z,Options_Redefine   ; afterwards it is offered:
+  LD HL,$4084             ; "Press Y to redefine keys"
   LD (DrawScreenPtr),HL
   LD DE,StrRedefineKeys
   LD B,$18
   CALL PrintStr
-  LD HL,$40A4
+  LD HL,$40A4             ; "Any other key to continue"
   LD (DrawScreenPtr),HL
   LD DE,StrAnyOtherKey
   LD B,$19
   CALL PrintStr
-  CALL WaitKeyPress
+  CALL WaitKeyPress       ; wait for a key
   LD BC,$DFFE             ; BC = port 57342 ($DFFE): keyboard half-row
                           ; P,O,I,U,Y
   IN A,(C)                ; read keyboard row
   AND $10                 ; bit 4 = the Y key (active low)
-  RET NZ                  ; return if Y not pressed (keep default keys)
+  RET NZ                  ; return if Y not pressed (keep the current keys)
   CALL WaitKeyRelease
+; Key redefinition: each prompt waits for a press (WaitKeyPress returns BC =
+; the port and A = the bit mask of the key found) and patches that (port, mask)
+; pair straight into KeyboardScanner's self-modifying operands
+; (KeyboardScanner).
 Options_Redefine:
-  LD HL,$4804
+  LD HL,$4804             ; "Which key do you wish to"
   LD (DrawScreenPtr),HL
   LD DE,StrWhichKey
   LD B,$18
   CALL PrintStr
-  LD HL,$4844
+  LD HL,$4844             ; "use for: UP"
   LD (DrawScreenPtr),HL
   LD DE,StrUseForUp
   LD B,$0B
   CALL PrintStr
-  CALL WaitKeyPress
-  LD ($AC0F),BC
-  LD ($AC14),A
+  CALL WaitKeyPress       ; the pressed key becomes
+  LD ($AC0F),BC           ; UP (advance): patch the
+  LD ($AC14),A            ; scanner's port + mask
   CALL WaitKeyRelease
-  LD HL,$484D
+  LD HL,$484D             ; overwrite the word: "DOWN"
   LD (DrawScreenPtr),HL
   LD DE,StrDown
   LD B,$04
   CALL PrintStr
-  CALL WaitKeyPress
-  LD ($AC1B),BC
+  CALL WaitKeyPress       ; the pressed key becomes
+  LD ($AC1B),BC           ; DOWN (retreat)
   LD ($AC20),A
   CALL WaitKeyRelease
-  LD HL,$484D
+  LD HL,$484D             ; "FIRE"
   LD (DrawScreenPtr),HL
   LD DE,StrFire
   LD B,$04
   CALL PrintStr
-  CALL WaitKeyPress
-  LD ($AC27),BC
+  CALL WaitKeyPress       ; the pressed key becomes
+  LD ($AC27),BC           ; FIRE (action)
   LD ($AC2C),A
   CALL WaitKeyRelease
-  LD HL,$484D
+  LD HL,$484D             ; "Return to QUIT"
   LD (DrawScreenPtr),HL
   LD DE,StrReturnTo
   LD B,$0E
   CALL PrintStr
-  CALL WaitKeyPress
-  LD ($AC33),BC
+  CALL WaitKeyPress       ; the pressed key becomes
+  LD ($AC33),BC           ; the row-move key
   LD ($AC38),A
   CALL WaitKeyRelease
-  LD A,$FF
-  LD (KeyboardModeFlag),A
+  LD A,$FF                ; remember the keyboard was
+  LD (KeyboardModeFlag),A ; configured once
   RET
 Options_HighlightRow:
-  PUSH HL
-  LD HL,$58EB
-  CALL HighlightModeAt
+  PUSH HL                 ; XOR-toggle the highlight on
+  LD HL,$58EB             ; option row (HL) (shared with
+  CALL HighlightModeAt    ; HighlightGameMode's helper)
   POP HL
   RET
 
-; KeyboardScanner
+; KeyboardScanner — the (redefinable) keyboard input device
+;
+; The keyboard entry of InputScannerTable. Each control is a self-modified
+; (port, mask) pair patched by the redefinition flow at Options_Redefine. A
+; match sets the AlienFlags bit HandleInput expects: UP = bit 2 (cursor up =
+; retreat), DOWN = bit 3 (advance), FIRE = bit 4 (action), "Return to QUIT" =
+; bit 1 (row jump).
 KeyboardScanner:
-  LD HL,AlienFlags
+  LD HL,AlienFlags        ; AlienFlags = no keys
   LD (HL),$00
-  LD BC,$7FFE
-  IN A,(C)
-  AND $01
+  LD BC,$7FFE             ; the UP key's port and mask
+  IN A,(C)                ; (both operands are patched):
+  AND $01                 ; pressed?
   JR NZ,KbdScan_Check2
-  SET 2,(HL)
+  SET 2,(HL)              ; yes: cursor up (retreat)
   RET
 KbdScan_Check2:
-  LD BC,$7FFE
+  LD BC,$7FFE             ; the DOWN key
   IN A,(C)
   AND $02
   JR NZ,KbdScan_Check3
-  SET 3,(HL)
+  SET 3,(HL)              ; cursor down (advance)
   RET
 KbdScan_Check3:
-  LD BC,$7FFE
+  LD BC,$7FFE             ; the FIRE key
   IN A,(C)
   AND $04
   JR NZ,KbdScan_Check4
-  SET 4,(HL)
+  SET 4,(HL)              ; action
   RET
 KbdScan_Check4:
-  LD BC,$7FFE
+  LD BC,$7FFE             ; the "Return to QUIT" key
   IN A,(C)
   AND $08
   RET NZ
-  SET 1,(HL)
+  SET 1,(HL)              ; row jump
   RET
 
-; WaitKeyPress
+; WaitKeyPress — wait for any key and identify it
+;
+; Rotates through the 8 keyboard half-row ports until a key is down. Returns BC
+; = that half-row's port and A = the key's bit mask — exactly the (port, mask)
+; pair the redefinition flow patches into KeyboardScanner.
 ;
 ; Used by the routines at OptionsScreen and PauseMenu.
 WaitKeyPress:
-  LD BC,$FEFE
+  LD BC,$FEFE             ; start at half-row $FE
 WaitPress_Poll:
   IN A,(C)
-  AND $1F
-  XOR $1F
-  RET NZ
-  RLC B
+  AND $1F                 ; any of its 5 keys down?
+  XOR $1F                 ; (A = pressed bits as 1s)
+  RET NZ                  ; yes: BC/A identify it
+  RLC B                   ; next half-row
   JR C,WaitPress_Poll
-  JR WaitKeyPress
+  JR WaitKeyPress         ; wrapped: start over
 
-; WaitKeyRelease
+; WaitKeyRelease — wait until no key is pressed anywhere
 ;
-; Used by the routines at DrawShipMap, OptionsScreen and PauseMenu.
+; Used by the routines at GameModeScreen, OptionsScreen and PauseMenu.
 WaitKeyRelease:
-  LD BC,$FEFE
+  LD BC,$FEFE             ; all 8 half-rows must
 WaitRelease_Poll:
-  IN A,(C)
+  IN A,(C)                ; read clear
   AND $1F
   XOR $1F
-  JR NZ,WaitKeyRelease
+  JR NZ,WaitKeyRelease    ; something still down: restart
   RLC B
   JR C,WaitRelease_Poll
   RET
