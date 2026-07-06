@@ -1244,17 +1244,53 @@ b26501 DEFB 3,9          ;  0 Airlock #1
  26565 DEFB 9,1          ; 32 ShuttleBay
  26567 DEFB 2,5          ; 33 Shttlstore
 
-; Data block at #R26569
-@label=CrewSpriteBitmaps
-b26569 DEFB 138,64,170,72,77,64,73,64
- 26577 DEFB 9,72,201,72,1,72,47,72
- 26585 DEFB 4,78,8,73,141,70,77,72
- 26593 DEFB 141,78,45,72,13,78,42,72
- 26601 DEFB 134,78,112,64,16,72,209,72
- 26609 DEFB 230,78,166,64,43,64,133,72
- 26617 DEFB 11,80,49,72,197,64,9,72
- 26625 DEFB 69,72,237,72,143,64,175,72
- 26633 DEFB 38,72,134,64
+; Room marker screen-address table
+;
+; One word per room (0-33): the display-file address where the room's
+; animated marker (24x12 pixels) is XOR-blitted on that room's deck
+; map. Read by GetRoomMarkerAddr (#R35088), which feeds both marker
+; channels: A — the walking crew figure (CrewWalkA1/A2) on the room
+; being viewed, placed by PlaceRoomMarkerA (#R35101) — and B — the
+; blinking box cursor (RoomCursor0-3) on a candidate room: an exit row
+; under the cursor in the room view, or a room picked from the
+; Indicate Location list, placed by PlaceRoomMarkerB (#R35128).
+; Rooms on different decks may share an address (Cargopod#2/Mess);
+; the Narcissus (34) has no entry.
+@label=RoomMarkerAddrTable
+w26569 DEFW 16522          ;  0 Airlock #1
+ 26571 DEFW 18602          ;  1 Airlock #2
+ 26573 DEFW 16461          ;  2 Armoury   
+ 26575 DEFW 16457          ;  3 Cargopod#1
+ 26577 DEFW 18441          ;  4 Cargopod#2
+ 26579 DEFW 18633          ;  5 Cargopod#3
+ 26581 DEFW 18433          ;  6 CommdCentr
+ 26583 DEFW 18479          ;  7 Computer  
+ 26585 DEFW 19972          ;  8 Corridor#1
+ 26587 DEFW 18696          ;  9 Corridor#2
+ 26589 DEFW 18061          ; 10 Corridor#3
+ 26591 DEFW 18509          ; 11 Corridor#4
+ 26593 DEFW 20109          ; 12 Corridor#5
+ 26595 DEFW 18477          ; 13 Corridor#6
+ 26597 DEFW 19981          ; 14 Corridor#7
+ 26599 DEFW 18474          ; 15 Cryo Vault
+ 26601 DEFW 20102          ; 16 Engineerng
+ 26603 DEFW 16496          ; 17 Engine #1 
+ 26605 DEFW 18448          ; 18 Engine #2 
+ 26607 DEFW 18641          ; 19 Engine #3 
+ 26609 DEFW 20198          ; 20 Eng Stores
+ 26611 DEFW 16550          ; 21 Infirmary 
+ 26613 DEFW 16427          ; 22 Inf Stores
+ 26615 DEFW 18565          ; 23 Laboratory
+ 26617 DEFW 20491          ; 24 Lab Stores
+ 26619 DEFW 18481          ; 25 Life Suppt
+ 26621 DEFW 16581          ; 26 Livng Qtrs
+ 26623 DEFW 18441          ; 27 Mess      
+ 26625 DEFW 18501          ; 28 RecrtnArea
+ 26627 DEFW 18669          ; 29 Stores #1 
+ 26629 DEFW 16527          ; 30 Stores #2 
+ 26631 DEFW 18607          ; 31 Stores #3 
+ 26633 DEFW 18470          ; 32 ShuttleBay
+ 26635 DEFW 16518          ; 33 Shttlstore
 
 ; RoomCursor0
 ;
@@ -1875,15 +1911,21 @@ b29574 DEFB 64,12,0,0,2,2,2    ; slot 1 Dallas  +0..+6 — in Corridor#5
 ;
 @ignoreua
 ; 19 bytes indexed by CorridorCursor (#R33683, range 0..18); the cell
-; value under the cursor is mirrored to $836D and is what the action
-; key dispatches on. Its meaning depends on the view: in the room
-; view each cell holds a string index for the menu row drawn at that
-; position (ResetActionMenu (#R32684) loads the skeleton from
+; value under the cursor is mirrored to CursorCellValue ($8395) and
+; is what the action key dispatches on. Cell r is drawn on screen row
+; r+1, columns 22-31 (row 0 holds the view title); a cell value >= 70
+; is the first row of a two-row label, so the cursor highlight covers
+; two rows (see HighlightMenuRow #R34882). The cells' meaning depends
+; on the view: on the orders screen (mode 0) they hold the
+; OrdersMenuTemplate (#R30197) bytes; in the room view (mode 1) each
+; cell holds a string index for the menu row drawn at that position
+; (ResetActionMenu (#R32684) loads the skeleton from
 ; ActionMenuTemplate (#R30178); the load image holds a hypersleep-
 ; room variant: 73 " Destruct ", 74 "  Enter   ", 75 "Hypersleep");
-; in the orders/corridor views it holds position or room codes (e.g.
-; RoomHandler_13 (#R35222) fills it with room numbers). Read by the
-; cursor-movement helpers around HandleInput at #R34684.
+; in the Indicate Location list (modes 2/3, IndicateLocation
+; (#R35222)) cells 1-17 hold room ids 0-16 or 17-33, framed by cell 0
+; = 62 "Other List" (page toggle) and cell 18 = 61 "   QUIT   ".
+; Read by the cursor-movement helpers around HandleInput at #R34684.
 @ignoreua
 @label=CorridorPosTable
 b29630 DEFB 73,255,255,255,255,255,255,74
@@ -1932,7 +1974,9 @@ b29630 DEFB 73,255,255,255,255,255,255,74
 ; One byte per room (0-34): the map-view layout type fed to
 ; RoomTypeByte (#R31243) — 0/1/2 pick the layout templates at
 ; #R25716, #R25835 and #R25996; 3 = the Narcissus. Read by
-; RoomHandler_2 (#R35338) when a room is picked from a strip.
+; LocationListAction (#R35338) when a room is picked from the
+; Indicate Location list, and by UpdateRoomMarkerB (#R34933) to
+; check an exit room against the displayed deck.
 @label=RoomTypeTable
 b29905 DEFB 0,0,1,2,2,2,1 ; rooms 0-6
  29912 DEFB 0,1,1,1,1,1,0 ; rooms 7-13
@@ -2062,14 +2106,31 @@ b30178 DEFB 86,255,255,255,255,255,255 ; "move to:" + 6 destination slots
  30190 DEFB 88,255,255,255,255         ; "Special" + 4 action slots
  30195 DEFB 61,255                     ; "QUIT"
 
-; Corridor position template
+; Orders-menu template (the mode-0 menu strip)
 ;
-; 19-byte template copied verbatim to #R29630 by room-init code within
-; #R31417 (InitGameView). The next 504 bytes starting at #R30216 are the
-; crew portrait bitmaps; see #R30216.
-@label=CorridorTemplates
+; 19-byte template copied verbatim to CorridorPosTable (#R29630) by
+; InitGameView (#R31417) — the cell layout of the orders screen
+; (room mode 0), drawn on screen rows 1-19 under the " CONTROL  "
+; title:
+;   cell 0     83  "Order:    "  header
+;   cells 1-7  52  crew rows — InitGameView draws the seven crew
+;                  NAMES here (via PrintName #R31690), so the 52s are
+;                  never rendered; they only give the rows a nonzero
+;                  dispatch value
+;   cells 8-9  79,80  " Indicate "/" Location " (2-row label; the
+;                  action key on row 8 opens the room-location list,
+;                  IndicateLocation #R35222)
+;   cells 10-11 84,85 " Display  "/"  Level   " header (2-row label)
+;   cells 12-14 44,45,46 "Upper Deck"/"MiddleDeck"/"Lower Deck"
+;                  (SelectDeckMap #R35210 redraws the map pane)
+;   cells 15-18 255 blank
+; The lower half (from cell 8) is also drawn directly from this
+; template by the tail of OrdersMenuNextRow (#R31577), pointer set
+; to #R30205. The next 504 bytes starting at #R30216 are the crew
+; portrait bitmaps; see #R30216.
+@label=OrdersMenuTemplate
 b30197 DEFB 83,52,52,52,52,52,52,52
-@label=Auto_75FD
+@label=OrdersMenuLowerHalf
  30205 DEFB 79,80,84,85,44,45,46,255
  30213 DEFB 255,255,255
 
@@ -2469,51 +2530,65 @@ c31417 XOR A         ; A = 0
  31556 EX AF,AF'     ;
  31557 LD A,7        ;
 ; This entry point is used by the routine at #R31577.
-*31559 EX AF,AF'     ;
+; Orders-screen crew-name loop head: A' holds the next crew id,
+; A the remaining row count (7 names on menu rows 2-8).
+@label=OrdersCrewNameLoop
+*31559 EX AF,AF'     ; A = crew id to print
  31560 DEFB 42,25     ; first 2 bytes of "LD HL,(draw pointer)": the
                       ; operand-high byte is the LD A,D at #R31562, so
                       ; falling through loads HL and continues after it
 
-; Routine at #R31562
-@label=NextCorridorEntry
-c31562 LD A,D        ;
- 31563 PUSH AF       ;
- 31564 PUSH HL       ;
- 31565 CALL 31690    ;
+; Orders-screen crew-name row
+;
+; Body of the loop above (never entered at #R31562 itself — the LD A,D
+; opcode is just the operand high byte of the overlapping instruction):
+; prints crew name A via PrintName (#R31690), then steps the menu draw
+; pointer (#R31257) one character row down: +32 within a display-file
+; third, or +1824 (via the fall-through block below) when crossing a
+; third boundary (L >= $E0).
+@label=OrdersCrewNameRow
+c31562 LD A,D        ; (dead when fallen into: overlap operand)
+ 31563 PUSH AF       ; save crew id
+ 31564 PUSH HL       ; save draw pointer
+ 31565 CALL 31690    ; PrintName: draw crew name A on this row
  31568 POP HL        ;
- 31569 LD DE,32      ;
+ 31569 LD DE,32      ; normal stride: next char row in same third
  31572 LD A,L        ;
- 31573 CP 224        ;
- 31575 JR C,31580    ;
+ 31573 CP 224        ; crossing into the next display third?
+ 31575 JR C,31580    ; no: advance by 32
 
-; FillAttributeBlock
+; Orders-menu build, lower part
 ;
-; Fills a rectangular block of attribute cells with A (loaded via A'), then
-; draws the 10-tile corridor segment row. Advances the draw pointer by 1824
-; bytes (one full character-row stride in the attribute file region), pops AF
-; to recover the colour and segment counter from the stack, then draws 10
-; corridor tiles using #R31626. Also updates the ambient sound and room-
-; display state via #R34882 and #R39572.
-;
-@label=FillAttributeBlock
-c31577 LD DE,1824    ; stride to next character row in attribute area
+; Tail of the orders-screen build started in InitGameView (#R31417).
+; First the third-boundary case of the crew-name row stride (+1824),
+; then the shared loop tail: store the draw pointer, advance A' to the
+; next crew id and loop until all 7 names are printed. After the loop,
+; draws menu rows 9-18 straight from OrdersMenuLowerHalf (#R30205)
+; (" Indicate "/" Location ", " Display  "/"  Level   ", the three
+; deck rows, blanks), re-highlights the cursor row and mirrors its
+; cell value (#R34882), and redraws the oxygen clock on row 19
+; (#R39572).
+@label=OrdersMenuNextRow
+c31577 LD DE,1824    ; big stride: next char row across a third boundary
 ; This entry point is used by the routine at #R31562.
+@label=OrdersMenuAdvance
 *31580 ADD HL,DE     ;
- 31581 LD (31257),HL ;
- 31584 POP AF        ;
+ 31581 LD (31257),HL ; store draw pointer for the next row
+ 31584 POP AF        ; A = crew id just printed
  31585 INC A         ;
- 31586 EX AF,AF'     ;
+ 31586 EX AF,AF'     ; A' = next crew id, A = row counter
  31587 DEC A         ;
- 31588 JR NZ,31559   ;
- 31590 LD HL,30205   ;
+ 31588 JR NZ,31559   ; loop for all 7 crew rows
+ 31590 LD HL,30205   ; then draw rows 9-18 from OrdersMenuLowerHalf
  31593 LD (31261),HL ;
  31596 LD B,10       ;
+@label=OrdersMenuLowerLoop
 *31598 PUSH BC       ;
- 31599 CALL 31626    ;
+ 31599 CALL 31626    ; draw next menu row from the template
  31602 POP BC        ;
  31603 DJNZ 31598    ;
- 31605 CALL 34882    ;
- 31608 CALL 39572    ;
+ 31605 CALL 34882    ; highlight the cursor row / mirror its value
+ 31608 CALL 39572    ; redraw the oxygen clock (row 19)
  31611 RET           ;
 ; This entry point is used by the routines at #R31417, #R31634, #R34684,
 ; #R35222 and #R35578.
@@ -3914,8 +3989,14 @@ c33610 PUSH AF       ;
 b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D, 3=U, 4=Fire)
 @label=CorridorCursor
  33683 DEFB 17               ; Currently selected corridor / cursor position (0-18)
-@label=Auto_8394
- 33684 DEFB 0,0              ;
+@label=SavedRowAttr
+@ignoreua
+ 33684 DEFB 0                ; attribute saved from under the menu-cursor highlight
+                             ; (HighlightMenuRow $8842 / UnhighlightMenuRow $882B)
+@label=CursorCellValue
+@ignoreua
+ 33685 DEFB 0                ; CorridorPosTable cell value under the cursor ($8395):
+                             ; what the action key dispatches on
 @label=SprDestA
  33686 DEFB 0                ;
 @label=Auto_8397
@@ -4008,9 +4089,10 @@ b33792 DEFB 10,5
 @ignoreua
 ; Word table with a clever triple use. The action key (HandleInput at
 ; $881B) dispatches table[room_mode] with room_mode from #R31252:
-;    0-1  RoomModeDispatch (#R35314)
-;    2-3  RoomHandler_2    (#R35338)   — room picked from a number strip
-;    4    GetItemPick      (#R35578)   — item picked from the Get strip
+;    0-1  RoomModeDispatch   (#R35314)
+;    2-3  LocationListAction (#R35338) — Indicate Location list,
+;         pages 1 (rooms 0-16) and 2 (rooms 17-33)
+;    4    GetItemPick        (#R35578) — item picked from the Get strip
 ; For modes 0 and 1 RoomModeDispatch then re-dispatches on the cursor
 ; ROW through overlapping halves of this same table (entry 5 onward =
 ; base $840C, entry 23 onward = base $8430):
@@ -4018,10 +4100,12 @@ b33792 DEFB 10,5
 @ignoreua
 ; Mode-0 rows (orders screen), base $840C:
 ;    0     "Order:" header       -> RoomHandlerNop (#R35448)
-;    1-7   crew slots 1-7        -> RoomHandlerCommon (#R35163)
-;    8     "Indicate Location"   -> RoomHandler_13 (#R35222): mode 2
-;    9-11  headers/blank         -> nop
-;    12-14 Upper/Middle/Lower    -> RoomHandler_17 (#R35210): deck map
+;    1-7   crew slots 1-7        -> OpenCrewRoomView (#R35163)
+;    8     " Indicate "          -> IndicateLocation (#R35222): opens
+;                                   the room-location list (mode 2)
+;    9     " Location "          -> nop (2nd row of the 2-row label)
+;    10-11 " Display  "/"  Level"-> nop (header for the deck rows)
+;    12-14 Upper/Middle/Lower    -> SelectDeckMap (#R35210): deck map
 ;    15-18 blank                 -> nop
 ;
 @ignoreua
@@ -4340,7 +4424,7 @@ c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
  34730 AND A         ; mode 0 = single-row corridor (no up/down)
  34731 RET Z         ; in single-row mode: up/down keys ignored
 @ignoreua
-*34732 LD A,(33685)  ; A = crew column position ($836D)
+*34732 LD A,(33685)  ; A = cell value under the cursor ($8395)
  34735 CP 61         ; column 61 = leftmost valid position
  34737 RET Z         ; at left wall: cannot move
  34738 CALL 34743    ; move one step (shares forward-move code)
@@ -4419,78 +4503,105 @@ c34684 CALL 34636    ; scan keyboard → #R33642 bitmask
  34856 LD H,(HL)     ;
  34857 LD L,A        ;
  34858 JP (HL)       ; jump to the room's action handler
+; UnhighlightMenuRow: undo the cursor highlight — restore the saved
+; attribute (SavedRowAttr) on the row under the cursor; two rows when
+; the cell value is >= 70 (first word of a two-row label).
 @nowarn=33683
+@label=UnhighlightMenuRow
 @ssub=LD A,(CorridorCursor)
-*34859 LD A,(33683)  ;
- 34862 CALL 34920    ;
- 34865 LD A,(33685)  ;
+*34859 LD A,(33683)  ; A = cursor row
+ 34862 CALL 34920    ; HL = its attribute address
+ 34865 LD A,(33685)  ; cell value >= 70 (two-row label)?
  34868 LD C,1        ;
  34870 CP 70         ;
  34872 JR C,34875    ;
- 34874 INC C         ;
-*34875 LD A,(33684)  ;
+ 34874 INC C         ; yes: restore two rows
+@label=UnhighlightMenuRow_Restore
+*34875 LD A,(33684)  ; repaint the saved attribute
  34878 CALL 31612    ;
  34881 RET           ;
+@ignoreua
 ; This entry point is used by the routines at #R31577, #R31634, #R35290 and
 ; #R35578.
+; HighlightMenuRow: mirror the CorridorPosTable cell under the cursor
+; into CursorCellValue ($8395), save the attribute under the cursor
+; row into SavedRowAttr, then paint the row bright white (attr 120) —
+; two rows when the cell value is >= 70 (two-row label).
 @nowarn=33683
+@label=HighlightMenuRow
 @ssub=LD A,(CorridorCursor)
-*34882 LD A,(33683)  ;
+*34882 LD A,(33683)  ; A = cursor row
  34885 PUSH AF       ;
  34886 LD E,A        ;
  34887 LD D,0        ;
  34889 LD HL,29630   ;
  34892 ADD HL,DE     ;
- 34893 LD A,(HL)     ;
- 34894 LD (33685),A  ;
- 34897 EX AF,AF'     ;
+ 34893 LD A,(HL)     ; A = cell value under the cursor
+ 34894 LD (33685),A  ; mirror it for the dispatchers
+ 34897 EX AF,AF'     ; keep the cell value in A'
  34898 POP AF        ;
- 34899 CALL 34920    ;
+ 34899 CALL 34920    ; HL = the row's attribute address
  34902 LD A,(HL)     ;
- 34903 LD (33684),A  ;
- 34906 EX AF,AF'     ;
+ 34903 LD (33684),A  ; save the attribute for the un-highlight
+ 34906 EX AF,AF'     ; cell value >= 70 (two-row label)?
  34907 LD C,1        ;
  34909 CP 70         ;
  34911 JR C,34914    ;
- 34913 INC C         ;
-*34914 LD A,120      ;
+ 34913 INC C         ; yes: highlight two rows
+@label=HighlightMenuRow_Paint
+*34914 LD A,120      ; bright white paper, black ink
  34916 CALL 31612    ;
  34919 RET           ;
-*34920 LD HL,22582   ;
+@ignoreua
+; GetMenuRowAttrAddr: HL = attribute address of menu row A — the strip
+; rows sit on screen rows 1-19, columns 22-31, so row 0 -> $5836
+; (22582) and each further row adds 32.
+@label=GetMenuRowAttrAddr
+*34920 LD HL,22582   ; attr addr of menu row 0 (screen row 1, col 22)
  34923 AND A         ;
  34924 RET Z         ;
  34925 LD DE,32      ;
  34928 LD B,A        ;
-*34929 ADD HL,DE     ;
+@label=GetMenuRowAttrAddrLoop
+*34929 ADD HL,DE     ; +32 per row
  34930 DJNZ 34929    ;
  34932 RET           ;
-*34933 CALL 35146    ;
- 34936 LD A,(31252)  ;
+; UpdateRoomMarkerB: cursor-move hook, called from HandleInput's
+; cursor handlers. Erases the blinking candidate-room box (marker
+; channel B), then, in the room view only, re-places it if the row now
+; under the cursor is a room (an exit row, value < 34) that lies on
+; the deck currently shown in the map pane.
+@label=UpdateRoomMarkerB
+*34933 CALL 35146    ; erase/freeze marker channel B
+ 34936 LD A,(31252)  ; room view (mode 1)?
  34939 CP 1          ;
- 34941 RET NZ        ;
- 34942 LD A,(33685)  ;
+ 34941 RET NZ        ; no: done
+ 34942 LD A,(33685)  ; cell under the cursor a room id?
  34945 CP 34         ;
- 34947 RET NC        ;
+ 34947 RET NC        ; no: done
  34948 LD E,A        ;
  34949 LD D,0        ;
- 34951 LD HL,29905   ;
+ 34951 LD HL,29905   ; RoomTypeTable[room]
  34954 ADD HL,DE     ;
- 34955 LD A,(31243)  ;
+ 34955 LD A,(31243)  ; on the deck currently displayed?
  34958 CP (HL)       ;
- 34959 RET NZ        ;
- 34960 LD A,(33685)  ;
+ 34959 RET NZ        ; no: done
+ 34960 LD A,(33685)  ; yes: blink that room's indicator box
  34963 CALL 35128    ;
  34966 RET           ;
 
 ; AnimateCrewA
 ;
-; Animates crew sprite set A. Skips if bit 7 of the animation-freeze flag at
-; #R31263 is set. Decrements the frame counter at #R33739; when it reaches zero,
+; Animates marker channel A — the walking crew figure that marks the
+; viewed room on the deck map (placed by PlaceRoomMarkerA #R35101).
+; Skips if bit 7 of the animation-freeze flag at #R31263 is set.
+; Decrements the frame counter at #R33739; when it reaches zero,
 ; resets the counter to 10 and XOR-blits two consecutive 3×12-byte sprite
 ; frames from the animation table at #R26853 (indexed by the frame phase in
-; #R31263 bits 0-1) onto the display at the address stored in #R33734. Calling
-; this routine twice per frame (once to erase, once to draw the next frame)
-; produces flicker-free sprite animation via double-buffered XOR.
+; #R31263 bits 0-1) onto the display at the address stored in SprDestA
+; (#R33686). Calling this routine twice per frame (once to erase, once to
+; draw the next frame) produces flicker-free sprite animation via
+; double-buffered XOR.
 ;
 ; Used by the routines at #R36457, #R38379 and #R42821.
 @label=AnimateCrewA
@@ -4521,7 +4632,7 @@ c34967 LD A,(31263)  ; A = animation-freeze / frame-phase byte (#R31263)
 @nowarn=33686
 @ssub=LD HL,(SprDestA)
 @ignoreua
- 34996 LD HL,(33686) ; HL = screen destination address (#R33734)
+ 34996 LD HL,(33686) ; HL = screen destination address (#R33686)
  34999 CALL 35065    ; XOR-blit 3 bytes × 12 rows onto screen
  35002 POP BC        ; restore row counter
  35003 DEC B         ;
@@ -4535,11 +4646,13 @@ c34967 LD A,(31263)  ; A = animation-freeze / frame-phase byte (#R31263)
 
 ; AnimateCrewB
 ;
-; Animates the room indicator cursor (B channel). Identical logic to
+; Animates marker channel B — the blinking box cursor on a candidate
+; room (placed by PlaceRoomMarkerB #R35128). Identical logic to
 ; #R34967 (AnimateCrewA) but uses a faster frame rate (counter resets to 5
-; rather than 10), the B-set animation table at #R26861 (#R26861), and the
-; B-channel screen address at #R33736. Cycles through four cursor shapes
-; (RoomCursor0-3) at twice the speed of the crew walk animation.
+; rather than 10), the B-set animation table at #R26861, and the
+; B-channel screen address at SpriteDestAddr (#R33688). Cycles through four
+; cursor shapes (RoomCursor0-3) at twice the speed of the crew walk
+; animation.
 ;
 ; Used by the routines at #R36457, #R38379 and #R42821.
 @label=AnimateCrewB
@@ -4569,7 +4682,7 @@ c35016 LD A,(31264)  ; A = animation-freeze / frame-phase byte (#R31264)
 @nowarn=33688
 @ssub=LD HL,(SpriteDestAddr)
 @ignoreua
- 35045 LD HL,(33688) ; HL = screen destination address (#R33736)
+ 35045 LD HL,(33688) ; HL = screen destination address (#R33688)
  35048 CALL 35065    ; XOR-blit 3 bytes × 12 rows onto screen
  35051 POP BC        ;
  35052 DEC B         ;
@@ -4597,163 +4710,208 @@ c35016 LD A,(31264)  ; A = animation-freeze / frame-phase byte (#R31264)
  35084 DEC C         ;
  35085 JR NZ,35067   ;
  35087 RET           ;
+; GetRoomMarkerAddr: A = room id (0-33) -> HL = display-file address
+; of the room's indicator box on its deck map, from
+; RoomMarkerAddrTable (#R26569).
+@label=GetRoomMarkerAddr
 *35088 ADD A,A       ;
  35089 LD D,0        ;
  35091 LD E,A        ;
- 35092 LD HL,26569   ;
+ 35092 LD HL,26569   ; RoomMarkerAddrTable + room*2
  35095 ADD HL,DE     ;
  35096 LD A,(HL)     ;
  35097 INC HL        ;
  35098 LD H,(HL)     ;
- 35099 LD L,A        ;
+ 35099 LD L,A        ; HL = the room's marker screen address
  35100 RET           ;
 ; This entry point is used by the routine at #R31634.
-*35101 LD A,(31243)  ;
+; PlaceRoomMarkerA: aim marker channel A (the walking crew figure that
+; marks the viewed room on the deck map) at the current room (#R31242)
+; and draw its first frame; no marker on the Narcissus (deck type 3).
+; Channel A then keeps animating via AnimateCrewA (#R34967).
+@label=PlaceRoomMarkerA
+*35101 LD A,(31243)  ; on the Narcissus (type 3)?
  35104 CP 3          ;
- 35106 RET NC        ;
- 35107 LD A,(31242)  ;
+ 35106 RET NC        ; yes: no marker
+ 35107 LD A,(31242)  ; A = the viewed room
  35110 CALL 35088    ;
 @nowarn=33686
 @ssub=LD (SprDestA),HL
- 35113 LD (33686),HL ;
+ 35113 LD (33686),HL ; channel A dest = its marker address
  35116 LD HL,31263   ;
- 35119 RES 7,(HL)    ;
- 35121 LD A,(HL)     ;
+ 35119 RES 7,(HL)    ; unfreeze channel A
+ 35121 LD A,(HL)     ; A = current phase
  35122 LD B,1        ;
- 35124 CALL 34982    ;
+ 35124 CALL 34982    ; XOR-blit one frame (place the box)
  35127 RET           ;
 ; This entry point is used by the routines at #R34684 and #R35338.
-*35128 CALL 35088    ;
+; PlaceRoomMarkerB: aim marker channel B (the "candidate room"
+; blinker) at room A and draw its first frame. Used for the exit row
+; under the cursor in the room view (UpdateRoomMarkerB #R34933) and
+; for a room picked from the Indicate Location list
+; (LocationListAction #R35338). Channel B then keeps blinking via
+; AnimateCrewB (#R35016).
+@label=PlaceRoomMarkerB
+*35128 CALL 35088    ; HL = marker address of room A
 @nowarn=33688
 @ssub=LD (SpriteDestAddr),HL
- 35131 LD (33688),HL ;
+ 35131 LD (33688),HL ; channel B dest = it
  35134 LD HL,31264   ;
- 35137 RES 7,(HL)    ;
- 35139 LD A,(HL)     ;
+ 35137 RES 7,(HL)    ; unfreeze channel B
+ 35139 LD A,(HL)     ; A = current phase
  35140 LD B,1        ;
- 35142 CALL 35031    ;
+ 35142 CALL 35031    ; XOR-blit one frame (place the box)
  35145 RET           ;
 ; This entry point is used by the routine at #R34684.
+; EraseRoomMarkerB: if marker channel B is live, XOR-blit its current
+; frame once more (which removes it from the screen) and freeze the
+; channel.
+@label=EraseRoomMarkerB
 *35146 LD HL,31264   ;
- 35149 BIT 7,(HL)    ;
- 35151 RET NZ        ;
+ 35149 BIT 7,(HL)    ; already frozen?
+ 35151 RET NZ        ; yes: nothing to erase
  35152 PUSH HL       ;
- 35153 LD A,(HL)     ;
+ 35153 LD A,(HL)     ; A = current phase
  35154 LD B,1        ;
- 35156 CALL 35031    ;
+ 35156 CALL 35031    ; XOR-blit once = erase
  35159 POP HL        ;
- 35160 SET 7,(HL)    ;
+ 35160 SET 7,(HL)    ; freeze the channel
  35162 RET           ;
 
-; RoomHandlerCommon
+; OpenCrewRoomView — orders-screen rows 1-7 (the crew names)
 ;
-; Standard corridor room handler for rooms 6-12. Saves the current corridor
-; cursor (#R33683) to #R31241, sets up 17 corridor segments (positions 0-16)
-; starting at position 61, draws the corridor using #R31721, then checks
-; IX+7 (alive flag of the crew member assigned to this room). If the crew
-; member is dead (IX+7=0), jumps to #R31417 to redraw the view. If the alien
-; is active (#R33736 non-zero) and its target corridor matches the saved cursor,
-; calls the alien-in-room handler #R32719.
+; Opens the room view for the crew member on the chosen row. The
+; cursor row IS the actor slot number (1-7); it is saved as the
+; selected slot (#R31241) for everything that follows (menu dispatch,
+; action timers, the alien-presence check at #R45760). The menu
+; cursor is parked on the action menu's QUIT row (17, value 61).
+; SelectSlotByDrawIdx (#R31721) then points IX at the slot's
+; ActorRecords entry and caches its current room (#R31242) and deck
+; type (#R31243). Bails back to the orders screen (InitGameView) if
+; the slot has been removed (IX+7 nonzero) or if the alien is loose
+; and currently targeting this crew member (the encounter sequence
+; owns the screen); otherwise builds the room view via
+; RedrawRoomScene (#R32719).
 ;
 @nowarn=33683
-@label=RoomHandlerCommon
+@label=OpenCrewRoomView
 @ssub=LD A,(CorridorCursor)
 @ignoreua
-c35163 LD A,(33683)  ; A = corridor cursor (#R33683)
+c35163 LD A,(33683)  ; A = cursor row = the actor slot picked (1-7)
 @ignoreua
- 35166 LD (31241),A  ; save as room-entry position (#R31241)
- 35169 LD A,17       ; 17 segments in a standard corridor
+ 35166 LD (31241),A  ; save as the selected slot (#R31241)
+ 35169 LD A,17       ;
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
- 35171 LD (33683),A  ; set segment counter
- 35174 LD A,61       ; starting position = 61 (leftmost)
+ 35171 LD (33683),A  ; park the cursor on the QUIT row (17)
+ 35174 LD A,61       ;
 @ignoreua
- 35176 LD (33685),A  ; store starting corridor position ($836D)
- 35179 CALL 31721    ; draw all corridor segments
- 35182 XOR A         ; A = 0
- 35183 CP (IX+7)     ; is crew member alive? (IX+7 = alive flag)
- 35186 JP NZ,31417   ; crew dead: reinit view
+ 35176 LD (33685),A  ; mirrored cell value = 61 "   QUIT   " ($8395)
+ 35179 CALL 31721    ; IX = slot record; cache its room + deck type
+ 35182 XOR A         ;
+ 35183 CP (IX+7)     ; slot removed (+7 nonzero)?
+ 35186 JP NZ,31417   ; yes: back to the orders screen
 @nowarn=33704
 @ssub=LD A,(AlienActiveFlag)
 @ignoreua
- 35189 LD A,(33704)  ; A = alien active flag (#R33736)
- 35192 AND A         ; alien present?
- 35193 JP Z,32719    ; no alien: draw room contents
+ 35189 LD A,(33704)  ; alien loose (#R33704)?
+ 35192 AND A         ;
+ 35193 JP Z,32719    ; no: build the room view
 @nowarn=33703
 @ssub=LD HL,AlienTargetID
 @ignoreua
- 35196 LD HL,33703   ; HL = alien target corridor ($83C7)
- 35199 LD A,(31241)  ; A = saved entry cursor
- 35202 CP (HL)       ; alien on this room's corridor?
- 35203 JP Z,31417    ; yes: alien blocks entry, redraw
- 35206 CALL 32719    ; draw room contents (crew sprites etc.)
+ 35196 LD HL,33703   ; HL = alien's target slot ($83C7)
+ 35199 LD A,(31241)  ; targeting the crew member just picked?
+ 35202 CP (HL)       ;
+ 35203 JP Z,31417    ; yes: bounce back to the orders screen
+ 35206 CALL 32719    ; no: build the room view
  35209 RET           ;
 
-; Routine at #R35210
+; SelectDeckMap — orders-screen rows 12-14 ("Upper Deck"/"MiddleDeck"/
+; "Lower Deck"): redraw the map pane to show that deck. The cursor row
+; minus 12 is exactly the deck's layout type (0/1/2), which is stored
+; as RoomTypeByte and handed to the map-pane drawer at #R31267.
 @nowarn=33683
-@label=RoomHandler_17
+@label=SelectDeckMap
 @ssub=LD A,(CorridorCursor)
-c35210 LD A,(33683)  ;
- 35213 SUB 12        ;
- 35215 LD (31243),A  ;
- 35218 CALL 31267    ;
+c35210 LD A,(33683)  ; A = cursor row (12-14)
+ 35213 SUB 12        ; -> deck layout type 0-2
+ 35215 LD (31243),A  ; RoomTypeByte = chosen deck
+ 35218 CALL 31267    ; redraw the map pane for that deck
  35221 RET           ;
 
-; Routine at #R35222
+; IndicateLocation — orders-screen row 8 (" Indicate "/" Location ")
+;
+; Opens the room-location list: replaces the menu strip with a pageable
+; list of room names. Page 1 (room mode 2, entered here) lists rooms
+; 0-16; page 2 (room mode 3, entered at #R35228) lists rooms 17-33 —
+; the Narcissus (34) is never listed. The 19 CorridorPosTable cells
+; become: cell 0 = 62 "Other List" (switches to the other page),
+; cells 1-17 = the seventeen room ids, cell 18 = 61 "   QUIT   "
+; (returns to the orders screen). The cursor starts on QUIT. While the
+; list is up, the action key dispatches straight to LocationListAction
+; (#R35338) via RoomDispatchTable entries 2/3: picking a room draws its
+; deck map in the map pane with the room's indicator box blinking on it
+; (marker channel B).
 ;
 ; Used by the routine at #R35338.
-@label=RoomHandler_13
-c35222 LD A,2        ;
- 35224 LD E,0        ;
+@label=IndicateLocation
+c35222 LD A,2        ; room mode 2: page 1,
+ 35224 LD E,0        ; first room id 0
  35226 JR 35232      ;
 ; This entry point is used by the routine at #R35338.
-@label=Auto_899C
-*35228 LD A,3        ;
- 35230 LD E,17       ;
-@label=Auto_89A0
-*35232 LD (31252),A  ;
+@label=IndicateLocationPage2
+*35228 LD A,3        ; room mode 3: page 2,
+ 35230 LD E,17       ; first room id 17
+@label=BuildLocationList
+*35232 LD (31252),A  ; set the room mode (2 or 3)
  35235 LD A,18       ;
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
- 35237 LD (33683),A  ;
+ 35237 LD (33683),A  ; cursor to row 18 (the QUIT cell)
  35240 LD A,61       ;
- 35242 LD (33685),A  ;
- 35245 LD HL,29630   ;
- 35248 LD (HL),62    ;
+ 35242 LD (33685),A  ; mirrored cell value = 61 "   QUIT   "
+ 35245 LD HL,29630   ; fill CorridorPosTable:
+ 35248 LD (HL),62    ; cell 0 = 62 "Other List" (page toggle)
  35250 INC HL        ;
  35251 LD B,17       ;
-@label=Auto_89B5
-*35253 LD (HL),E     ;
+@label=BuildLocationListLoop
+*35253 LD (HL),E     ; cells 1-17 = room ids E..E+16
  35254 INC HL        ;
  35255 INC E         ;
  35256 DJNZ 35253    ;
- 35258 LD (HL),61    ;
- 35260 LD HL,22582   ;
+ 35258 LD (HL),61    ; cell 18 = 61 "   QUIT   "
+ 35260 LD HL,22582   ; colour the strip (attr rows 1-19, cols 22-31):
  35263 LD A,56       ;
- 35265 LD C,1        ;
+ 35265 LD C,1        ; "Other List" row: black ink on white
  35267 CALL 31612    ;
  35270 LD A,15       ;
- 35272 LD C,17       ;
+ 35272 LD C,17       ; the 17 room rows: white ink on blue
  35274 CALL 31612    ;
  35277 LD A,56       ;
- 35279 LD C,1        ;
+ 35279 LD C,1        ; QUIT row: black ink on white
  35281 CALL 31612    ;
- 35284 LD HL,16406   ;
- 35287 LD (31257),HL ;
+ 35284 LD HL,16406   ; draw pointer to row 0, column 22
+ 35287 LD (31257),HL ; (fall through to draw the list)
 
-; Routine at #R35290
-@label=DrawRoomCorridor
-c35290 LD A,80       ;
+; DrawLocationList
+;
+; Renders the room-location list built above: the " Location " title on
+; screen row 0, then the 19 CorridorPosTable cells (room names and the
+; two control rows) on rows 1-19, and finally the cursor highlight via
+; HighlightMenuRow (#R34882).
+@label=DrawLocationList
+c35290 LD A,80       ; draw title 80 " Location " on row 0
  35292 CALL 31634    ;
- 35295 LD HL,29630   ;
+ 35295 LD HL,29630   ; then the 19 cells from CorridorPosTable
  35298 LD (31261),HL ;
  35301 LD B,19       ;
-@label=Auto_89E7
+@label=DrawLocationListLoop
 *35303 PUSH BC       ;
- 35304 CALL 31626    ;
+ 35304 CALL 31626    ; draw next cell (room name / control row)
  35307 POP BC        ;
  35308 DJNZ 35303    ;
- 35310 CALL 34882    ;
+ 35310 CALL 34882    ; highlight the cursor row / mirror its value
  35313 RET           ;
 
 ; RoomModeDispatch
@@ -4785,27 +4943,38 @@ c35314 CALL 45753    ; A = room mode (0 or 1 here)
  35336 LD L,A        ;
  35337 JP (HL)       ; jump to the row's handler
 
-; Routine at #R35338
-@label=RoomHandler_2
-c35338 LD A,(33685)  ;
- 35341 CP 61         ;
- 35343 JP Z,31417    ;
- 35346 CP 62         ;
+; LocationListAction — action key in the room-location list (modes 2/3)
+;
+; Dispatched directly from RoomDispatchTable entries 2 and 3, on the
+; cell value under the cursor: 61 "   QUIT   " leaves the list and
+; rebuilds the orders screen (InitGameView #R31417); 62 "Other List"
+; switches to the other page (mode 2 -> page 2, mode 3 -> page 1);
+; any other value is a room id — show where that room is: look up its
+; deck in RoomTypeTable (#R29905), make it the displayed deck
+; (RoomTypeByte), redraw the map pane and set the room's indicator box
+; blinking on it (marker channel B via PlaceRoomMarkerB #R35128). The
+; list stays up, so several rooms can be looked up in a row; note the
+; displayed deck keeps its last value after QUIT.
+@label=LocationListAction
+c35338 LD A,(33685)  ; A = cell value under the cursor
+ 35341 CP 61         ; "   QUIT   "?
+ 35343 JP Z,31417    ; yes: back to the orders screen
+ 35346 CP 62         ; "Other List"?
  35348 JR NZ,35361   ;
- 35350 LD A,(31252)  ;
- 35353 CP 2          ;
- 35355 JP Z,35228    ;
- 35358 JP 35222      ;
-@label=Auto_8A21
-*35361 LD E,A        ;
+ 35350 LD A,(31252)  ; yes: toggle page —
+ 35353 CP 2          ; on page 1 (mode 2)?
+ 35355 JP Z,35228    ; build page 2
+ 35358 JP 35222      ; else build page 1
+@label=LocationListShowRoom
+*35361 LD E,A        ; a room id was picked:
  35362 LD D,0        ;
- 35364 LD HL,29905   ;
+ 35364 LD HL,29905   ; RoomTypeTable[room]
  35367 ADD HL,DE     ;
  35368 LD A,(HL)     ;
- 35369 LD (31243),A  ;
- 35372 CALL 31267    ;
- 35375 LD A,(33685)  ;
- 35378 CALL 35128    ;
+ 35369 LD (31243),A  ; = the deck to display
+ 35372 CALL 31267    ; redraw the map pane for that deck
+ 35375 LD A,(33685)  ; and blink the room's indicator box
+ 35378 CALL 35128    ; on it (marker channel B)
  35381 RET           ;
 
 ; MoveToRoom — action on a "move to:" destination row (2-6): set the

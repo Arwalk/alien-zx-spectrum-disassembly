@@ -87,7 +87,7 @@ Addresses in `alien.skool` are **decimal** (`36457`, not `$8E69`); hex appears o
 | `$72A2` | `RoomAdjDucts` — air-duct network over the same rooms (34 entries, no Narcissus) |
 | `$734C` | `CrewNameTable`: ALIEN, Dallas, Kane, Ripley, Ash, Lambert, Parker, Brett ($FF-separated) |
 | `$737E` | `ActorRecords` — 8 slots × 8 bytes; slot 0 = alien (its +1 byte $737F = alien's current room), slots 1–7 = crew (slot k ↔ name k). +1 = current room (bit 6 = in ducts), +2 = destination room, +4 = strength (injury 0–3+: Dead/Collapsed/Wounded/OK), +6 = morale (0–4: Broken…Confident), +7 = status (0 alive, $FF removed) |
-| `$73BE` | `CorridorPosTable` — the 19-cell strip that is both the corridor row and the action-menu rows; cell value under the cursor is mirrored to `$836D` and is what the action key dispatches on |
+| `$73BE` | `CorridorPosTable` — the 19-cell strip that is both the corridor row and the action-menu rows; cell value under the cursor is mirrored to `CursorCellValue` `$8395` and is what the action key dispatches on. In the Indicate Location list (modes 2/3) it holds room ids 0–16/17–33 framed by 62 "Other List" and 61 "QUIT" |
 | `$74D1` | `RoomTypeTable` — per-room map-layout type (0–2 pick the templates at `$6474`/`$64EB`/`$658C`, 3 = Narcissus) |
 | `$74F4` | `ItemLocations` — one byte per portable item (ids 0–21): room where it lies (bit 6 = in ducts), or 160+slot / 128+slot = held in that actor's front/back hand, 255 = nonexistent. THE item-system state |
 | `$750A` | `RoomItemList` — item ids lying in the viewed room (built by `BuildRoomItemList` `$7C34`) |
