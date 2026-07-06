@@ -7,7 +7,7 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  16400 DEFB 0,0,0,0,0,0,0,0
  16408 DEFB 0,0,0,0,0,0,0,0
  16416 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_4028
+@label=Screen_R1C8
  16424 DEFB 0,56,0,0,224,0,0,254
  16432 DEFB 0,0,127,0,0,68,0,0
  16440 DEFB 0,0,0,0,0,0,0,0
@@ -231,7 +231,7 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  18184 DEFB 0,0,0,0,0,0,0,0
  18192 DEFB 0,0,0,0,0,0,0,0
  18200 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_4720
+@label=Screen_R1C0L7
  18208 DEFB 0,0,0,0,0,0,0,0
  18216 DEFB 0,0,0,0,0,0,0,0
  18224 DEFB 0,0,0,0,0,0,0,0
@@ -264,7 +264,7 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  18440 DEFB 0,0,0,31,216,32,0,0
  18448 DEFB 0,0,2,192,0,0,0,0
  18456 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_4820
+@label=Screen_R9C0
  18464 DEFB 0,0,0,0,0,0,0,0
  18472 DEFB 0,0,0,252,16,128,0,0
  18480 DEFB 0,0,0,44,0,0,0,0
@@ -278,7 +278,7 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  18544 DEFB 0,0,0,1,192,0,0,0
  18552 DEFB 0,0,0,0,0,0,0,0
  18560 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_4888
+@label=Screen_R12C8
  18568 DEFB 0,0,31,255,167,205,112,0
  18576 DEFB 0,0,2,127,192,0,0,0
  18584 DEFB 0,0,0,0,0,0,0,0
@@ -291,7 +291,7 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  18640 DEFB 255,0,125,252,0,0,0,0
  18648 DEFB 0,0,0,0,0,0,0,0
  18656 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_48E8
+@label=Screen_R15C8
  18664 DEFB 0,0,0,31,255,255,127,127
  18672 DEFB 255,94,255,128,0,0,0,0
  18680 DEFB 0,0,0,0,0,0,0,0
@@ -395,7 +395,7 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  19464 DEFB 0,0,0,126,17,64,0,0
  19472 DEFB 0,0,0,48,0,0,0,0
  19480 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_4C20
+@label=Screen_R9C0L4
  19488 DEFB 0,0,0,0,0,0,0,0
  19496 DEFB 0,0,3,255,17,0,0,0
  19504 DEFB 0,0,0,18,0,0,0,0
@@ -524,7 +524,7 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  20488 DEFB 0,0,0,0,31,254,55,255
  20496 DEFB 183,190,240,0,0,0,0,0
  20504 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5020
+@label=Screen_R17C0
 *20512 DEFB 0,0,0,0,0,0,0,0
  20520 DEFB 0,0,0,4,177,38,255,127
  20528 DEFB 255,208,0,0,0,0,0,0
@@ -533,30 +533,30 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  20552 DEFB 0,0,0,0,0,1,34,66
  20560 DEFB 68,0,0,0,0,0,0,0
  20568 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5060
+@label=Screen_R19C0
  20576 DEFB 0,0,0,0,0,0,0,0
  20584 DEFB 0,0,0,0,0,0,0,0
  20592 DEFB 0,0,0,0,0,0,0,0
  20600 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5080
+@label=Screen_R20C0
  20608 DEFB 0,0,0,0,0,0,0,0
  20616 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5090
+@label=Screen_R20C16
  20624 DEFB 0,0,0,0,0,0,0,0
  20632 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_50A0
+@label=Screen_R21C0
  20640 DEFB 0,0,0,0,0,0,0,0
  20648 DEFB 0,0,0,0,0,0,0,0
  20656 DEFB 0,0,0,0,0,0,0,0
  20664 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_50C0
+@label=Screen_R22C0
  20672 DEFB 0,0,0,0,0,0,0,0
  20680 DEFB 0,0,0,0,0,0,0,0
  20688 DEFB 0,0,0,0,0,0,0,0
  20696 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_50E0
+@label=Screen_R23C0
  20704 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_50E8
+@label=Screen_R23C8
  20712 DEFB 0,0,0,0,0,0,0,0
  20720 DEFB 0,0,0,0,0,0,0,0
  20728 DEFB 0,0,0,0,0,0,0,0
@@ -596,7 +596,7 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  21000 DEFB 0,0,0,0,7,254,239,127
  21008 DEFB 255,127,64,0,0,0,0,0
  21016 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5220
+@label=Screen_R17C0L2
  21024 DEFB 0,0,0,0,0,0,0,0
  21032 DEFB 0,0,0,3,124,203,253,206
  21040 DEFB 165,0,0,0,0,0,0,0
@@ -629,7 +629,7 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  21256 DEFB 0,0,0,0,3,255,95,127
  21264 DEFB 255,244,128,0,0,0,0,0
  21272 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5320
+@label=Screen_R17C0L3
  21280 DEFB 0,0,0,0,0,0,0,0
  21288 DEFB 0,0,0,5,240,105,255,89
  21296 DEFB 170,0,0,0,0,0,0,0
@@ -694,7 +694,7 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  21768 DEFB 0,0,0,32,0,255,255,250
  21776 DEFB 232,246,0,0,0,0,0,0
  21784 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5520
+@label=Screen_R17C0L5
  21792 DEFB 0,0,0,0,0,0,0,0
  21800 DEFB 0,0,0,0,59,106,127,202
  21808 DEFB 32,0,0,0,0,0,0,0
@@ -787,7 +787,7 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  22504 DEFB 0,0,0,0,0,0,0,0
  22512 DEFB 0,0,0,0,0,0,0,0
  22520 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_5800
+@label=AttrFileOrigin
  22528 DEFB 7,7,7,7,7,7,7,7
  22536 DEFB 7,7,7,7,7,7,7,7
  22544 DEFB 7,7,7,7,7,7,7,7
@@ -828,7 +828,7 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  22824 DEFB 7,7,7,7,7,7,7,7
  22832 DEFB 7,7,7,7,7,7,7,7
  22840 DEFB 7,7,7,7,7,7,7,7
-@label=Auto_5940
+@label=AttrRow10
  22848 DEFB 7,7,7,7,7,7,7,7
  22856 DEFB 7,7,7,7,7,7,7,7
  22864 DEFB 7,7,7,7,7,7,7,7
@@ -881,7 +881,7 @@ b16384 DEFB 0,0,0,0,0,0,0,0
  23240 DEFB 7,7,7,7,7,7,7,7
  23248 DEFB 7,7,7,7,7,7,7,7
  23256 DEFB 7,7,7,7,7,7,7,7
-@label=Auto_5AE0
+@label=MsgLineAttrs
  23264 DEFB 7,7,7,7,7,7,7,7
  23272 DEFB 7,7,7,7,7,7,7,7
  23280 DEFB 7,7,7,7,7,7,7,7
@@ -922,7 +922,7 @@ b23296 DEFB 0,0,0,0,0,0,0,0
  23536 DEFB 0,0,0,0,0,0,0,0
  23544 DEFB 0,0,0,0,0,0,0,0
  23552 DEFB 255,0,0,0,255,0,35,13
-@label=Auto_5C08
+@label=SysLastKey
  23560 DEFB 13,35,5,0,0,0,17,0
  23568 DEFB 1,0,6,0,11,0,1,0
  23576 DEFB 1,0,6,0,16,0,0,0
@@ -937,7 +937,7 @@ b23296 DEFB 0,0,0,0,0,0,0,0
  23648 DEFB 94,222,94,222,94,222,94,45
  23656 DEFB 146,92,16,0,0,0,0,0
  23664 DEFB 0,2,108,216,125,26,0,0
-@label=Auto_5C78
+@label=SysFrames
  23672 DEFB 7,0,0,88,255,0,0,33
  23680 DEFB 0,91,33,23,0,64,224,80
  23688 DEFB 33,24,33,23,1,0,0,7
@@ -2020,13 +2020,15 @@ b29940 DEFB 24,21,20 ; 0-2: Elctrc Prd in Lab Stores/Infirmary/Eng Stores
 b29962 DEFB 0,0,0,0,0,0,0,0,0,0,0
  29973 DEFB 0,0,0,0,0,0,0,0,0,0,0
 
-; Per-item carry nudge
+; Per-item courage bonus
 ;
 @ignoreua
-; Pixel offset added to the carrier's sprite X and Y while the item
-; is held in the front hand (applied on Get at $8B26, removed on
-; Leave at $8BAB and on Swap by SwapHeldItems (#R35451)).
-@label=ItemCarryNudge
+; Added to the carrier's courage (record byte +5) and morale (+6)
+; while the item is held in the front hand (applied on Get at $8B26,
+; removed on Leave at $8BAB and adjusted on Swap by SwapHeldItems
+; (#R35451)). Weapons embolden the crew: prods/extinguishers/spanners
+; +1, incinerators/harpoon/lasers +2, trackers and cat gear 0.
+@label=ItemCourageBonus
 b29984 DEFB 1,1,1 ; Elctrc Prd
  29987 DEFB 2,2,2 ; Incineratr
  29990 DEFB 0,0 ; Tracker
@@ -2725,7 +2727,7 @@ c31721 LD A,(31241)  ; A = current draw index (slot 0..7)
  31730 LD IX,29566   ; IX = $7376 (slot table base)
  31734 ADD IX,DE     ; IX = &slot[index]
  31736 LD A,(IX+1)   ; A = slot.byte+1
-@label=Auto_7BFB
+@label=SelectSlot_HostCheck
  31739 CP 255        ; HostMarker?
  31741 RET Z         ; yes → bail out (slot is not a normal crew member)
  31742 LD (31242),A  ; cache slot identity for the rest of the room handler
@@ -3383,7 +3385,7 @@ c31964 LD A,(33703)  ; Android slot chosen for this run
 @label=RedrawRoomScene
 c32719 CALL 32684    ; ResetActionMenu
 @nowarn=32896
-@ssub=LD HL,Auto_8080
+@ssub=LD HL,DrawMenuStrip
  32722 LD HL,32896   ;
  32725 LD (31263),HL ;
  32728 LD A,128      ;
@@ -3459,7 +3461,7 @@ c32719 CALL 32684    ; ResetActionMenu
  32888 CALL 31612    ;
  32891 LD A,61       ;
  32893 LD (33685),A  ;
-@label=Auto_8080
+@label=DrawMenuStrip
  32896 LD A,17       ;
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
@@ -3972,7 +3974,7 @@ c33610 PUSH AF       ;
 ;   #R33690 FrameCounterB     free-running 50Hz counter
 ;   #R33699 SoundRequest      one-shot sound trigger
 ;   #R33700 CrewIndex         current crew member (0..6)
-;   #R33701 Auto_83A5         pointer to current crew record
+;   #R33701 AlienTargetPtr         pointer to current crew record
 ;   #R33703 AlienTargetID     crew ID being targeted (255=none)
 ;   #R33704 AlienActiveFlag   alien is loose flag
 ;   #R33706 JonesRoom         Jones the cat's current room (255 = off-map)
@@ -3982,9 +3984,8 @@ c33610 PUSH AF       ;
 ;   #R33737 MusicActiveFlag   music phrase is playing
 ;   #R33739 AnimFrameCnt      crew animation tick
 ;
-; The remaining Auto_* labels are confirmed RAM cells but their exact
-; semantics are not yet documented; the labels exist so cross-references
-; from the code rename consistently.
+; All cells in this block now carry meaningful labels; the message-queue
+; cluster ($83AC-$83CF) is documented at TickMessageQueue (#R37363).
 @label=AlienFlags
 b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D, 3=U, 4=Fire)
 @label=CorridorCursor
@@ -3999,30 +4000,32 @@ b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D
                              ; what the action key dispatches on
 @label=SprDestA
  33686 DEFB 0                ;
-@label=Auto_8397
- 33687 DEFB 64               ;
+@label=SprDestAHi
+ 33687 DEFB 64               ; high byte of SprDestA (marker A screen address)
 @label=SpriteDestAddr
  33688 DEFW 16384            ; Screen destination pointer used by sprite blitter
 @label=FrameCounterB
  33690 DEFB 25               ; Free-running frame counter (low byte, ~50 Hz)
-@label=Auto_839B
- 33691 DEFB 25               ;
-@label=Auto_839C
- 33692 DEFB 255,255,255      ; Initialised to $FFFFFF
-@label=Auto_839F
- 33695 DEFB 255              ; Initialised to $FF (scratch byte)
+@label=FrameCounterA
+ 33691 DEFB 25               ; frame counter for marker channel A (reset to 10)
+@label=NearRoomList
+@ignoreua
+ 33692 DEFB 255,255,255      ; 3-room scratch list ($FF = empty), matched against actor rooms at $8E30
+@label=NearestCrewC
+@ignoreua
+ 33695 DEFB 255              ; third nearest-crew slot; $839F-$83A1 are also iterated as a 3-list
 @label=NearestCrewA
  33696 DEFB 255              ; nearest crew ID, slot A (255 = none)
 @label=NearestCrewB
  33697 DEFB 255              ; nearest crew ID, slot B (255 = none)
-@label=Auto_83A2
- 33698 DEFB 0                ;
+@label=DistanceAccum
+ 33698 DEFB 0                ; running distance/count accumulator for the nearest-crew scan
 @label=SoundRequest
  33699 DEFB 0                ; One-shot sound request (255 = idle)
 @label=CrewIndex
  33700 DEFB 1                ; Current crew member index (0-6)
-@label=Auto_83A5
- 33701 DEFB 134,115          ; 16-bit pointer to current crew record
+@label=AlienTargetPtr
+ 33701 DEFB 134,115          ; pointer to the alien-target / Android ActorRecords slot
 @label=AlienTargetID
  33703 DEFB 9                ; In the Long Game this is the **Android** slot index (1..7): the dormant traitor crew member that UpdateAlien (#R40826) activates on first encounter with the alien (the first frame AlienActiveFlag is set and the slot still has its template +0=+7=0). Once activated, the Android enters action state 7 and wounds nearby crew via CrewAction7_Handler (#R40757). Values >= 8 (e.g. ShortGameInit's hard-wired 9) disable the mechanic — TriggerAlienEvent (#R41264) treats them as "no valid target".
 @label=AlienActiveFlag
@@ -4033,20 +4036,22 @@ b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D
  33706 DEFB 6                ; Jones the cat's current room (255 = off-map)
 @label=JonesMoveTimer
  33707 DEFB 255              ; frames until Jones's next move
-@label=Auto_83AC
- 33708 DEFB 0                ;
-@label=Auto_83AD
- 33709 DEFB 0                ;
-@label=Auto_83AE
- 33710 DEFB 224,90           ; 16-bit scratch (room/sprite ptr)
-@label=Auto_83B0
- 33712 DEFB 255              ;
-@label=Auto_83B1
- 33713 DEFB 255              ;
-@label=Auto_83B2
- 33714 DEFB 0,0,0            ;
-@label=Auto_83B5
- 33717 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; Crew-pad / message-rendering workspace (14 bytes)
+@label=MsgDrawnCol
+ 33708 DEFB 0                ; message line: column reached by the renderer (bit 7 set)
+@label=MsgVisibleTimer
+ 33709 DEFB 0                ; frames the current message stays on screen
+@label=MsgAttrPtr
+@ignoreua
+ 33710 DEFB 224,90           ; pointer into the message line's attribute row ($5AE0)
+@label=MsgParam1
+ 33712 DEFB 255              ; current message parameter 1 (254 = actor name, 252 = room name)
+@label=MsgParam2
+ 33713 DEFB 255              ; current message parameter 2 (253 = target name)
+@label=MessageQueue
+ 33714 DEFB 0,0,0            ; message queue: 3-byte entries (msg#, param1, param2),
+@label=MessageQueueBody
+@ignoreua
+ 33717 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; ...rest of the queue buffer (write ptr at $83CD)
 @label=SoundReqFlag
  33731 DEFB 0,0,0            ; Sound request word (3 bytes incl. frequency / duration)
 @label=SprScreenAddrA
@@ -4055,22 +4060,27 @@ b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D
  33736 DEFB 0                ; Screen destination low byte for crew sprite B
 @label=MusicActiveFlag
  33737 DEFB 0                ; Non-zero when background music phrase is playing
-@label=Auto_83CA
+@label=Unused83CA
  33738 DEFB 255              ;
 @label=AnimFrameCnt
  33739 DEFB 255              ; Frame counter for crew sprite animation timing
-@label=Auto_83CC
+@label=Unused83CC
  33740 DEFB 255              ;
-@label=Auto_83CD
- 33741 DEFB 178,131          ; 16-bit scratch (animation pointer)
-@label=Auto_83CF
- 33743 DEFB 255,255          ; 16-bit scratch (animation pointer 2)
-@label=Auto_83D1
- 33745 DEFB 15               ;
-@label=Auto_83D2
- 33746 DEFB 0,0,0,0,0,0,0,0  ; Reserved scratch (8 bytes zero on load)
-@label=Auto_83DA
- 33754 DEFB 3,3,3,3,1,8,8,8  ;
+@label=MsgQueueWritePtr
+@ignoreua
+ 33741 DEFB 178,131          ; message-queue write pointer (starts at MessageQueue $83B2)
+@label=MsgLastEnqueued
+ 33743 DEFB 255,255          ; last enqueued (msg#, param1) pair - suppresses duplicates
+@label=AlienStopCell
+@ignoreua
+ 33745 DEFB 15               ; corridor cell at which the walking alien stops (fires $AC5D)
+@label=ItemCharges
+@ignoreua
+ 33746 DEFB 0,0,0,0,0,0,0,0  ; per-item charge counters, items 0-7 (prods, incinerators,
+                             ; trackers): consumed at $9344
+@label=ItemChargesHi
+ 33754 DEFB 3,3,3,3,1,8,8,8  ; ...items 8-15: extinguishers 3 charges, Harpoon Gun 1,
+                             ; laser pistols 8
 @label=JonesCatchBySlot
 @ignoreua
  33762 DEFB 0,14,14,13,13,13,15,14 ; per-slot Get Jones threshold: the catch succeeds
@@ -4631,7 +4641,7 @@ c34967 LD A,(31263)  ; A = animation-freeze / frame-phase byte (#R31263)
  34970 BIT 7,A       ; bit 7 = freeze flag
  34972 RET NZ        ; frozen: skip animation this frame
 @nowarn=33691
-@ssub=LD HL,Auto_839B
+@ssub=LD HL,FrameCounterA
 @ignoreua
  34973 LD HL,33691   ; HL = frame counter A (#R33739)
  34976 DEC (HL)      ; tick down counter
@@ -4952,7 +4962,7 @@ c35314 CALL 45753    ; A = room mode (0 or 1 here)
  35324 JR Z,35327    ;
  35326 ADD HL,DE     ; mode 1: the room-view row table
 @nowarn=33683
-@label=Auto_89FF
+@label=DispatchOnCursorRow
 @ssub=LD A,(CorridorCursor)
 *35327 LD A,(33683)  ; cursor row
  35330 LD E,A        ;
@@ -5012,7 +5022,7 @@ c35382 LD A,64       ;
  35401 LD (IX+2),A   ;
  35404 RET           ;
 @nowarn=33683
-@label=Auto_8A4D
+@label=MoveToRoom_Duct
 @ssub=LD A,(CorridorCursor)
 *35405 LD A,(33683)  ; yes: duct direction = row - 2
  35408 SUB 2         ;
@@ -5057,37 +5067,37 @@ c35449 RET           ;
 ; Action on the back-item row (9): swap the actor's front and back
 ; hands — exchange HeldItemFront/HeldItemBack, flip the two markers
 ; in ItemLocations (#R29940) by +/-32, adjust the sprite position by
-; the difference of the two carry nudges, and redraw the front item's
+; the difference of the two courage bonuses, and redraw the front item's
 ; name.
 @label=SwapHeldItems
 c35451 CALL 31820    ; refresh HeldItemFront/Back for this actor
  35454 LD (IX+0),0   ;
  35458 LD DE,(31248) ; E = front item, D = back item
- 35462 LD HL,29984   ; ItemCarryNudge:
+ 35462 LD HL,29984   ; ItemCourageBonus:
  35465 PUSH HL       ;
  35466 LD C,E        ;
  35467 LD B,0        ;
  35469 ADD HL,BC     ;
- 35470 LD E,(HL)     ; E = nudge[front]
+ 35470 LD E,(HL)     ; E = bonus[front]
  35471 LD C,D        ;
  35472 POP HL        ;
  35473 ADD HL,BC     ;
- 35474 LD D,(HL)     ; D = nudge[back]
- 35475 LD A,(IX+5)   ; X += nudge[back] - nudge[front]
+ 35474 LD D,(HL)     ; D = bonus[back]
+ 35475 LD A,(IX+5)   ; courage += bonus[back] - bonus[front]
  35478 SUB E         ;
  35479 ADD A,D       ;
  35480 CP 127        ; (clamp underflow to 0)
  35482 JR C,35485    ;
  35484 XOR A         ;
-@label=Auto_8A9D
+@label=SwapItems_SetCourage
 *35485 LD (IX+5),A   ;
- 35488 LD A,(IX+6)   ; Y likewise
+ 35488 LD A,(IX+6)   ; morale likewise
  35491 SUB E         ;
  35492 ADD A,D       ;
  35493 CP 127        ;
  35495 JR C,35498    ;
  35497 XOR A         ;
-@label=Auto_8AAA
+@label=SwapItems_SetMorale
 *35498 LD (IX+6),A   ;
  35501 LD BC,(31248) ; C = front item, B = back item
  35505 LD L,B        ; swap HeldItemFront <-> HeldItemBack
@@ -5141,8 +5151,8 @@ c35560 LD A,64       ;
 ; #R35638) and the action key fires on a row. QUIT rebuilds the room
 ; scene; otherwise the picked row's entry in RoomItemList (#R29962)
 ; is the item id to take: it goes into the front hand (marker
-; 160+slot in ItemLocations (#R29940), sprite nudged by
-; ItemCarryNudge) if that hand is free, else into the back hand
+; 160+slot in ItemLocations (#R29940), courage/morale raised by
+; ItemCourageBonus) if that hand is free, else into the back hand
 ; (128+slot).
 @label=GetItemPick
 c35578 LD A,(33685)  ; row value under the cursor
@@ -5160,8 +5170,8 @@ c35578 LD A,(33685)  ; row value under the cursor
  35599 LD A,(31248)  ; front hand free?
  35602 CP 255        ;
  35604 JR NZ,35626   ;
- 35606 LD HL,29984   ; yes: nudge the sprite by
- 35609 ADD HL,DE     ; ItemCarryNudge[item]
+ 35606 LD HL,29984   ; yes: raise courage and morale
+ 35609 ADD HL,DE     ; by ItemCourageBonus[item]
  35610 LD A,(IX+5)   ;
  35613 ADD A,(HL)    ;
  35614 LD (IX+5),A   ;
@@ -5169,7 +5179,7 @@ c35578 LD A,(33685)  ; row value under the cursor
  35620 ADD A,(HL)    ;
  35621 LD (IX+6),A   ;
  35624 LD C,160      ; and use the front hand (slot+160)
-@label=Auto_8B2A
+@label=GetItemPick_Take
 *35626 LD A,(31241)  ; ItemLocations[item] = hand marker:
  35629 ADD A,C       ; the item is now carried
  35630 LD HL,29940   ;
@@ -5189,14 +5199,14 @@ c35578 LD A,(33685)  ; row value under the cursor
 @nowarn=29962
  35645 LD HL,29962   ; HL -> RoomItemList
  35648 LD B,17       ; copy 17 entries
-@label=Auto_8B42
+@label=GetItemMenu_CopyLoop
 *35650 LD A,(HL)     ;
  35651 CP 255        ; 255 = empty row, copied as-is
  35653 JR Z,35660    ;
  35655 PUSH DE       ;
  35656 CALL 31857    ; item id -> name string index
  35659 POP DE        ;
-@label=Auto_8B4C
+@label=GetItemMenu_StoreCell
 *35660 LD (DE),A     ;
  35661 INC HL        ;
  35662 INC DE        ;
@@ -5220,7 +5230,7 @@ c35578 LD A,(33685)  ; row value under the cursor
  35701 LD HL,16438   ;
  35704 LD (31257),HL ;
  35707 LD B,19       ;
-@label=Auto_8B7D
+@label=GetItemMenu_DrawLoop
 *35709 PUSH BC       ;
  35710 CALL 31626    ;
  35713 POP BC        ;
@@ -5231,7 +5241,7 @@ c35578 LD A,(33685)  ; row value under the cursor
  35724 RET           ;
 ; LeaveItemHandler — action on the "Leave Item" row (11): drop the
 ; back-hand item if there is one, otherwise the front-hand item
-; (undoing its carry nudge); the dropped item's ItemLocations entry
+; (undoing its courage bonus); the dropped item's ItemLocations entry
 ; becomes the current room.
 @label=LeaveItemHandler
 *35725 LD (IX+0),0   ;
@@ -5241,31 +5251,31 @@ c35578 LD A,(33685)  ; row value under the cursor
  35736 LD A,(31248)  ; no: drop the front item —
  35739 LD E,A        ;
  35740 LD D,0        ;
- 35742 LD HL,29984   ; undo its carry nudge
+ 35742 LD HL,29984   ; undo its courage bonus
  35745 ADD HL,DE     ;
  35746 LD A,(IX+5)   ;
  35749 SUB (HL)      ;
  35750 CP 127        ; (clamp underflow to 0)
  35752 JR C,35755    ;
  35754 XOR A         ;
-@label=Auto_8BAB
+@label=LeaveItem_SetCourage
 *35755 LD (IX+5),A   ;
  35758 LD A,(IX+6)   ;
  35761 SUB (HL)      ;
  35762 CP 127        ;
  35764 JR C,35767    ;
  35766 XOR A         ;
-@label=Auto_8BB7
+@label=LeaveItem_SetMorale
 *35767 LD (IX+6),A   ;
-@label=Auto_8BBA
+@label=LeaveItem_Drop
 *35770 LD HL,29940   ; ItemLocations[item] = current room:
  35773 ADD HL,DE     ; the item now lies here
  35774 LD A,(31242)  ;
  35777 LD (HL),A     ;
  35778 CALL 32719    ; rebuild the room scene
  35781 RET           ;
-@label=Auto_8BC6
-*35782 LD E,A        ; E = back item id (no nudge to undo)
+@label=LeaveItem_BackHand
+*35782 LD E,A        ; E = back item id (no bonus to undo)
  35783 LD D,0        ;
  35785 JR 35770      ;
 @ignoreua
@@ -5326,7 +5336,7 @@ c35578 LD A,(33685)  ; row value under the cursor
  35854 JR Z,35859    ;
  35856 CP 16         ;
  35858 RET NZ        ;
-@label=Auto_8C13
+@label=GetJones_Threshold
 *35859 LD A,(31241)  ;
  35862 LD E,A        ;
  35863 LD D,0        ;
@@ -5341,7 +5351,7 @@ c35578 LD A,(33685)  ; row value under the cursor
  35877 LD A,E        ;
  35878 SUB 4         ;
  35880 LD E,A        ;
-@label=Auto_8C29
+@label=GetJones_Roll
 *35881 CALL 33589    ;
  35884 CP E          ;
  35885 JR NC,35896   ;
@@ -5349,7 +5359,7 @@ c35578 LD A,(33685)  ; row value under the cursor
  35890 LD (HL),1     ;
  35892 CALL 36859    ;
  35895 RET           ;
-@label=Auto_8C38
+@label=GetJones_Catch
 *35896 LD A,(31248)  ;
  35899 LD HL,29940   ;
  35902 LD E,A        ;
@@ -5394,7 +5404,7 @@ c35973 PUSH IX       ;
  35976 LD (33700),A  ;
  35979 LD IX,29566   ;
  35983 LD B,8        ;
-@label=Auto_8C91
+@label=CrewTimersLoop
 *35985 PUSH BC       ;
  35986 LD A,(IX+0)   ;
  35989 AND A         ;
@@ -5402,7 +5412,7 @@ c35973 PUSH IX       ;
  35992 DEC A         ;
  35993 LD (IX+0),A   ;
  35996 CALL 45232    ;
-@label=Auto_8C9F
+@label=CrewTimersNext
 *35999 LD DE,8       ;
  36002 ADD IX,DE     ;
 @nowarn=33700
@@ -5448,7 +5458,7 @@ c35973 PUSH IX       ;
 @nowarn=33699
 @ssub=LD (SoundRequest),A
  36050 LD (33699),A  ;
-@label=Auto_8CD5
+@label=CrewIdle_AirlockCheck
 *36053 CALL 36187    ;
  36056 LD A,(IX+1)   ;
  36059 LD E,2        ;
@@ -5457,13 +5467,13 @@ c35973 PUSH IX       ;
  36064 CP 1          ;
  36066 JR NZ,36081   ;
  36068 LD E,4        ;
-@label=Auto_8CE6
+@label=CrewIdle_AirlockVented
 *36070 LD A,E        ;
  36071 LD HL,31253   ;
  36074 AND (HL)      ;
  36075 JR Z,36081    ;
  36077 LD (IX+1),13  ;
-@label=Auto_8CF1
+@label=CrewIdle_RefreshView
 *36081 LD A,(31252)  ;
  36084 CP 1          ;
  36086 RET NZ        ;
@@ -5483,12 +5493,12 @@ c35973 PUSH IX       ;
  36109 JR NZ,36113   ;
  36111 DEC A         ;
  36112 DEC A         ;
-@label=Auto_8D11
+@label=CrewMove_BumpCourage
 *36113 INC A         ;
  36114 CP 127        ;
  36116 JR C,36119    ;
  36118 XOR A         ;
-@label=Auto_8D17
+@label=CrewMove_SetCourage
 *36119 LD (IX+5),A   ;
  36122 LD A,E        ;
  36123 XOR 64        ;
@@ -5532,7 +5542,7 @@ c35973 PUSH IX       ;
  36180 CP E          ;
  36181 JP Z,32719    ; yes: full room-view rebuild
  36184 JP 36793      ;
-@label=Auto_8D5B
+@label=RecalcMorale
 *36187 LD HL,65535   ;
  36190 LD (31250),HL ;
  36193 LD HL,29575   ;
@@ -5546,7 +5556,7 @@ c35973 PUSH IX       ;
  36204 LD DE,31250   ;
  36207 LD A,(IX+1)   ;
  36210 LD B,7        ;
-@label=Auto_8D74
+@label=RecalcMorale_ScanLoop
 *36212 CP (HL)       ;
  36213 JR NZ,36224   ;
  36215 EX AF,AF'     ;
@@ -5556,9 +5566,9 @@ c35973 PUSH IX       ;
  36220 LD (HL),C     ;
  36221 EX DE,HL      ;
  36222 INC DE        ;
-@label=Auto_8D7F
+@label=RecalcMorale_SkipSelf
 *36223 EX AF,AF'     ;
-@label=Auto_8D80
+@label=RecalcMorale_NextSlot
 *36224 PUSH DE       ;
  36225 LD DE,8       ;
  36228 ADD HL,DE     ;
@@ -5570,7 +5580,7 @@ c35973 PUSH IX       ;
 @ssub=LD A,(CrewIndex)
  36235 LD A,(33700)  ;
 @nowarn=33695
-@ssub=LD (Auto_839F),A
+@ssub=LD (NearestCrewC),A
  36238 LD (33695),A  ;
  36241 LD HL,(31250) ;
 @nowarn=33696
@@ -5581,44 +5591,44 @@ c35973 PUSH IX       ;
 @ssub=LD HL,(NearestCrewA)
  36250 LD HL,(33696) ;
 @nowarn=33695
-@ssub=LD A,(Auto_839F)
+@ssub=LD A,(NearestCrewC)
  36253 LD A,(33695)  ;
 @nowarn=33697
 @ssub=LD (NearestCrewB),A
  36256 LD (33697),A  ;
 @nowarn=33695
-@ssub=LD (Auto_839F),HL
+@ssub=LD (NearestCrewC),HL
  36259 LD (33695),HL ;
  36262 CALL 36283    ;
 @nowarn=33696
 @ssub=LD HL,(NearestCrewA)
  36265 LD HL,(33696) ;
 @nowarn=33695
-@ssub=LD A,(Auto_839F)
+@ssub=LD A,(NearestCrewC)
  36268 LD A,(33695)  ;
 @nowarn=33697
 @ssub=LD (NearestCrewB),A
  36271 LD (33697),A  ;
 @nowarn=33695
-@ssub=LD (Auto_839F),HL
+@ssub=LD (NearestCrewC),HL
  36274 LD (33695),HL ;
  36277 CALL 36283    ;
  36280 POP IX        ;
  36282 RET           ;
-@label=Auto_8DBB
+@label=MoraleFromCompanion
 *36283 XOR A         ;
 @nowarn=33698
-@ssub=LD (Auto_83A2),A
+@ssub=LD (DistanceAccum),A
  36284 LD (33698),A  ;
 @nowarn=33695
-@ssub=LD A,(Auto_839F)
+@ssub=LD A,(NearestCrewC)
  36287 LD A,(33695)  ;
  36290 CP 255        ;
  36292 RET Z         ;
  36293 LD B,A        ;
  36294 LD IX,29566   ;
  36298 LD DE,8       ;
-@label=Auto_8DCD
+@label=MoraleComp_FindSlot
 *36301 ADD IX,DE     ;
  36303 DJNZ 36301    ;
  36305 XOR A         ;
@@ -5629,7 +5639,7 @@ c35973 PUSH IX       ;
 @nowarn=33696
 @ssub=LD DE,NearestCrewA
  36314 LD DE,33696   ;
-@label=Auto_8DDD
+@label=MoraleComp_PairLoop
 *36317 PUSH BC       ;
  36318 PUSH DE       ;
  36319 LD A,(DE)     ;
@@ -5637,7 +5647,7 @@ c35973 PUSH IX       ;
  36322 JR Z,36385    ;
  36324 LD IX,29566   ;
  36328 LD DE,8       ;
-@label=Auto_8DEB
+@label=MoraleComp_RecSeek
 *36331 ADD IX,DE     ;
  36333 DEC A         ;
  36334 JR NZ,36331   ;
@@ -5652,30 +5662,30 @@ c35973 PUSH IX       ;
  36352 LD A,(DE)     ;
  36353 LD H,A        ;
 @nowarn=33695
-@ssub=LD A,(Auto_839F)
+@ssub=LD A,(NearestCrewC)
  36354 LD A,(33695)  ;
  36357 LD L,A        ; L = the discovering crew slot
  36358 LD A,20       ; msg #20 "{actor} finds {target}'s body"
  36360 CALL 37176    ;
  36363 INC (IX+7)    ;
 @nowarn=33698
-@label=Auto_8E0E
-@ssub=LD HL,Auto_83A2
+@label=MoraleComp_Minus
+@ssub=LD HL,DistanceAccum
 *36366 LD HL,33698   ;
  36369 DEC (HL)      ;
  36370 JR 36385      ;
-@label=Auto_8E14
+@label=MoraleComp_AddCourage
 *36372 LD A,(IX+5)   ;
  36375 SUB 2         ;
  36377 LD E,A        ;
 @nowarn=33698
-@ssub=LD A,(Auto_83A2)
+@ssub=LD A,(DistanceAccum)
  36378 LD A,(33698)  ;
  36381 ADD A,E       ;
 @nowarn=33698
-@ssub=LD (Auto_83A2),A
+@ssub=LD (DistanceAccum),A
  36382 LD (33698),A  ;
-@label=Auto_8E21
+@label=MoraleComp_NextPair
 *36385 POP DE        ;
  36386 INC DE        ;
  36387 POP BC        ;
@@ -5683,52 +5693,52 @@ c35973 PUSH IX       ;
  36390 POP IX        ;
  36392 LD B,3        ;
 @nowarn=33692
-@ssub=LD HL,Auto_839C
+@ssub=LD HL,NearRoomList
  36394 LD HL,33692   ;
  36397 LD A,(IX+1)   ;
-@label=Auto_8E30
+@label=MoraleComp_RoomScan
 *36400 CP (HL)       ;
  36401 JR Z,36408    ;
  36403 INC HL        ;
  36404 DJNZ 36400    ;
  36406 JR 36412      ;
 @nowarn=33698
-@label=Auto_8E38
-@ssub=LD HL,Auto_83A2
+@label=MoraleComp_RoomBonus
+@ssub=LD HL,DistanceAccum
 *36408 LD HL,33698   ;
  36411 INC (HL)      ;
 @nowarn=33698
-@label=Auto_8E3C
-@ssub=LD HL,Auto_83A2
+@label=MoraleComp_Apply
+@ssub=LD HL,DistanceAccum
 *36412 LD HL,33698   ;
  36415 LD A,(IX+5)   ;
  36418 ADD A,(HL)    ;
  36419 CP 127        ;
  36421 JR C,36424    ;
  36423 XOR A         ;
-@label=Auto_8E48
+@label=MoraleComp_SetMorale
 *36424 LD (IX+6),A   ;
  36427 RET           ;
 ; This entry point is used by the routine at #R45401.
-@label=Auto_8E4C
+@label=DecayCrewCourage
 *36428 LD HL,29579   ;
  36431 LD DE,8       ;
  36434 LD B,7        ;
 ; This entry point is used by the routine at #R45401.
-@label=Auto_8E54
+@label=DecayCourageLoop
 *36436 DEC (HL)      ;
  36437 LD A,127      ;
  36439 CP (HL)       ;
  36440 JR NC,36444   ;
  36442 LD (HL),0     ;
-@label=Auto_8E5C
+@label=DecayCourage_Tail
 *36444 JP 45539      ;
  36447 RET           ;
 ; This entry point is used by the routines at #R37490, #R40319, #R42821,
 ; #R44561 and #R44880.
-@label=Auto_8E60
+@label=BusyWait
 *36448 LD BC,4863    ;
-@label=Auto_8E63
+@label=BusyWaitLoop
 *36451 DEC BC        ;
  36452 LD A,C        ;
  36453 OR B          ;
@@ -5951,7 +5961,7 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
 *36830 JP 45019      ;
 ; This entry point is used by the routine at #R44880.
 @nowarn=32896
-@ssub=LD HL,Auto_8080
+@ssub=LD HL,DrawMenuStrip
 *36833 LD HL,32896   ;
  36836 LD (31263),HL ;
  36839 LD A,4        ;
@@ -5987,20 +5997,20 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
 c36859 LD A,(33706)  ; A = primary alien-event timer
  36862 CP 255        ; 255 = disabled
  36864 RET Z         ; disabled: do nothing this frame
- 36865 LD HL,33707   ; HL → secondary counter (Auto_83AB)
+ 36865 LD HL,33707   ; HL → JonesMoveTimer ($83AB)
  36868 DEC (HL)      ; tick it down
  36869 RET NZ        ; not yet zero: wait another frame
  36870 LD (HL),255   ; expired: reset secondary counter to 255
  36872 EX AF,AF'     ; save A for later use
 @nowarn=33706
-@label=Auto_9009
+@label=Jones_PickMove
 @ssub=LD A,(JonesRoom)
 *36873 LD A,(33706)  ; A = Jones's current room
  36876 LD HL,29171   ; corridor adjacency map (RoomAdjCorridors)
  36879 LD E,A        ;
  36880 LD D,0        ;
  36882 LD B,5        ;
-@label=Auto_9014
+@label=Jones_AdjLoop
 *36884 ADD HL,DE     ;
  36885 DJNZ 36884    ; HL = map + room*5
  36887 PUSH HL       ;
@@ -6033,21 +6043,21 @@ c36859 LD A,(33706)  ; A = primary alien-event timer
  36935 CALL Z,34743  ; yes: nudge it forward one position
  36938 CALL 39670    ; one-shot Jones (tail) animation
 @nowarn=33706
-@label=Auto_904D
+@label=Jones_ScanRooms
 @ssub=LD A,(JonesRoom)
 *36941 LD A,(33706)  ; A = Jones's new room
  36944 LD HL,29567   ; slot 0 byte +1: walk the +1 (room) column
  36947 LD BC,2048    ; B = 8 slots, C = slot counter (0)
  36950 LD DE,8       ; record stride
-@label=Auto_9059
+@label=Jones_ScanLoop
 *36953 CP (HL)       ; is this actor in Jones's room?
  36954 JR Z,36961    ;
-@label=Auto_905C
+@label=Jones_ScanNext
 *36956 INC C         ;
  36957 ADD HL,DE     ;
  36958 DJNZ 36953    ; next slot
  36960 RET           ; nobody shares Jones's room
-@label=Auto_9061
+@label=Jones_Companion
 *36961 LD A,C        ;
  36962 AND A         ; slot 0 = the ALIEN's room:
  36963 JR Z,36873    ; the cat won't stay - re-roll the move
@@ -6112,10 +6122,10 @@ c37018 PUSH IX       ; save caller's IX
 ; This entry point is used by the routine at #R45401.
 *37036 LD HL,65535   ;
 @nowarn=33695
-@ssub=LD (Auto_839F),HL
+@ssub=LD (NearestCrewC),HL
  37039 LD (33695),HL ;
 @nowarn=33695
-@ssub=LD DE,Auto_839F
+@ssub=LD DE,NearestCrewC
  37042 LD DE,33695   ;
  37045 LD HL,29575   ;
  37048 LD BC,1793    ;
@@ -6132,7 +6142,7 @@ c37018 PUSH IX       ; save caller's IX
  37064 POP DE        ;
  37065 DJNZ 37051    ;
 @nowarn=33695
-@ssub=LD A,(Auto_839F)
+@ssub=LD A,(NearestCrewC)
  37067 LD A,(33695)  ;
  37070 CP 255        ;
  37072 JR Z,37085    ;
@@ -6182,7 +6192,7 @@ c37018 PUSH IX       ; save caller's IX
 ; #R37490, #R38379, #R40439, #R40826, #R41264 and #R45401.
 *37176 EX DE,HL      ;
 @nowarn=33743
-@ssub=LD HL,(Auto_83CF)
+@ssub=LD HL,(MsgLastEnqueued)
  37177 LD HL,(33743) ;
  37180 CP L          ;
  37181 JR NZ,37187   ;
@@ -6192,7 +6202,7 @@ c37018 PUSH IX       ; save caller's IX
  37186 LD A,L        ;
 *37187 EX AF,AF'     ;
 @nowarn=33741
-@ssub=LD HL,(Auto_83CD)
+@ssub=LD HL,(MsgQueueWritePtr)
  37188 LD HL,(33741) ;
  37191 LD A,(HL)     ;
  37192 CP 255        ;
@@ -6205,21 +6215,21 @@ c37018 PUSH IX       ; save caller's IX
  37200 LD (HL),D     ;
  37201 INC HL        ;
 @nowarn=33741
-@ssub=LD (Auto_83CD),HL
+@ssub=LD (MsgQueueWritePtr),HL
  37202 LD (33741),HL ;
  37205 LD L,A        ;
  37206 LD H,E        ;
 @nowarn=33743
-@ssub=LD (Auto_83CF),HL
+@ssub=LD (MsgLastEnqueued),HL
  37207 LD (33743),HL ;
 @nowarn=33709
-@ssub=LD A,(Auto_83AD)
+@ssub=LD A,(MsgVisibleTimer)
  37210 LD A,(33709)  ;
  37213 AND A         ;
  37214 RET Z         ;
  37215 LD A,1        ;
 @nowarn=33709
-@ssub=LD (Auto_83AD),A
+@ssub=LD (MsgVisibleTimer),A
  37217 LD (33709),A  ;
  37220 RET           ;
 ; This entry point is used by the routine at #R37363.
@@ -6255,11 +6265,11 @@ c37018 PUSH IX       ; save caller's IX
  37268 INC (HL)      ;
  37269 JR 37242      ;
 @nowarn=33712
-@ssub=LD A,(Auto_83B0)
+@ssub=LD A,(MsgParam1)
 *37271 LD A,(33712)  ;
  37274 JR 37279      ;
 @nowarn=33713
-@ssub=LD A,(Auto_83B1)
+@ssub=LD A,(MsgParam2)
 *37276 LD A,(33713)  ;
 *37279 INC DE        ;
  37280 PUSH DE       ;
@@ -6269,7 +6279,7 @@ c37018 PUSH IX       ; save caller's IX
 *37287 INC DE        ;
  37288 PUSH DE       ;
 @nowarn=33712
-@ssub=LD A,(Auto_83B0)
+@ssub=LD A,(MsgParam1)
  37289 LD A,(33712)  ;
  37292 LD HL,(31257) ;
  37295 PUSH HL       ;
@@ -6285,7 +6295,7 @@ c37018 PUSH IX       ; save caller's IX
  37314 AND 31        ;
  37316 OR 128        ;
 @nowarn=33708
-@ssub=LD (Auto_83AC),A
+@ssub=LD (MsgDrawnCol),A
  37318 LD (33708),A  ;
  37321 RET           ;
 ; This entry point is used by the routine at #R45401.
@@ -6302,7 +6312,7 @@ c37018 PUSH IX       ; save caller's IX
  37342 LD HL,23264   ;
  37345 LD (HL),18    ;
 @nowarn=33710
-@ssub=LD (Auto_83AE),HL
+@ssub=LD (MsgAttrPtr),HL
  37347 LD (33710),HL ;
  37350 INC HL        ;
  37351 LD B,31       ;
@@ -6310,7 +6320,7 @@ c37018 PUSH IX       ; save caller's IX
  37355 INC HL        ;
  37356 DJNZ 37353    ;
 @nowarn=33709
-@ssub=LD HL,Auto_83AD
+@ssub=LD HL,MsgVisibleTimer
  37358 LD HL,33709   ;
  37361 LD (HL),B     ;
  37362 RET           ;
@@ -6318,123 +6328,123 @@ c37018 PUSH IX       ; save caller's IX
 ; TickMessageQueue
 ;
 ; Per-frame ticker for the on-screen status-message display. Decrements
-; the message-visible countdown at Auto_83AD; when it expires, peeks at
-; the queued-message head at Auto_83AC and either swaps in the next
-; queued message (copying a 21-byte entry from Auto_83B2 to Auto_83B5
+; the message-visible countdown at MsgVisibleTimer; when it expires, peeks at
+; the queued-message head at MsgDrawnCol and either swaps in the next
+; queued message (copying a 21-byte entry from MessageQueue to MessageQueueBody
 ; and re-invoking the renderer at #R37221) or clears the message line.
 ; Called twice per frame from the main loop at #R36457.
 ;
 ; Used by the routine at #R36457.
 @nowarn=33709
 @label=TickMessageQueue
-@ssub=LD A,(Auto_83AD)
+@ssub=LD A,(MsgVisibleTimer)
 c37363 LD A,(33709)  ; A = current message-visible timer
  37366 AND A         ;
  37367 JR Z,37383    ;
  37369 DEC A         ;
 @nowarn=33709
-@ssub=LD (Auto_83AD),A
+@ssub=LD (MsgVisibleTimer),A
  37370 LD (33709),A  ;
  37373 RET NZ        ;
 @nowarn=33710
-@ssub=LD A,(Auto_83AE)
+@ssub=LD A,(MsgAttrPtr)
  37374 LD A,(33710)  ;
  37377 AND 31        ;
 @nowarn=33708
-@ssub=LD (Auto_83AC),A
+@ssub=LD (MsgDrawnCol),A
  37379 LD (33708),A  ;
  37382 RET           ;
 @nowarn=33708
-@label=Auto_9207
-@ssub=LD A,(Auto_83AC)
+@label=MsgQueue_Fetch
+@ssub=LD A,(MsgDrawnCol)
 *37383 LD A,(33708)  ;
  37386 AND A         ;
  37387 JR NZ,37432   ;
 @nowarn=33741
-@ssub=LD A,(Auto_83CD)
+@ssub=LD A,(MsgQueueWritePtr)
  37389 LD A,(33741)  ;
 @nowarn=33714
-@ssub=LD HL,Auto_83B2
+@ssub=LD HL,MessageQueue
  37392 LD HL,33714   ;
  37395 CP L          ;
  37396 JR NZ,37399   ;
  37398 RET           ;
-@label=Auto_9217
+@label=MsgQueue_Dequeue
 *37399 LD A,(HL)     ;
  37400 INC HL        ;
  37401 LD E,(HL)     ;
  37402 INC HL        ;
  37403 LD D,(HL)     ;
 @nowarn=33712
-@ssub=LD (Auto_83B0),DE
+@ssub=LD (MsgParam1),DE
  37404 LD (33712),DE ;
  37408 LD BC,21      ;
 @nowarn=33714
-@ssub=LD DE,Auto_83B2
+@ssub=LD DE,MessageQueue
  37411 LD DE,33714   ;
 @nowarn=33717
-@ssub=LD HL,Auto_83B5
+@ssub=LD HL,MessageQueueBody
  37414 LD HL,33717   ;
  37417 LDIR          ;
 @nowarn=33741
-@ssub=LD HL,(Auto_83CD)
+@ssub=LD HL,(MsgQueueWritePtr)
  37419 LD HL,(33741) ;
  37422 DEC HL        ;
  37423 DEC HL        ;
  37424 DEC HL        ;
 @nowarn=33741
-@ssub=LD (Auto_83CD),HL
+@ssub=LD (MsgQueueWritePtr),HL
  37425 LD (33741),HL ;
  37428 CALL 37221    ;
  37431 RET           ;
-@label=Auto_9238
+@label=MsgLine_Sweep
 *37432 BIT 7,A       ;
  37434 JR Z,37477    ;
 @nowarn=33710
-@ssub=LD HL,(Auto_83AE)
+@ssub=LD HL,(MsgAttrPtr)
  37436 LD HL,(33710) ;
  37439 LD (HL),40    ;
  37441 INC HL        ;
  37442 LD (HL),82    ;
 @nowarn=33710
-@ssub=LD (Auto_83AE),HL
+@ssub=LD (MsgAttrPtr),HL
  37444 LD (33710),HL ;
  37447 DEC A         ;
  37448 CP 128        ;
  37450 JR Z,37456    ;
 @nowarn=33708
-@ssub=LD (Auto_83AC),A
+@ssub=LD (MsgDrawnCol),A
  37452 LD (33708),A  ;
  37455 RET           ;
-@label=Auto_9250
+@label=MsgLine_SetTimer
 *37456 XOR A         ;
 @nowarn=33708
-@ssub=LD (Auto_83AC),A
+@ssub=LD (MsgDrawnCol),A
  37457 LD (33708),A  ;
 @nowarn=33741
-@ssub=LD A,(Auto_83CD)
+@ssub=LD A,(MsgQueueWritePtr)
  37460 LD A,(33741)  ;
 @nowarn=33714
-@ssub=LD HL,Auto_83B2
+@ssub=LD HL,MessageQueue
  37463 LD HL,33714   ;
  37466 CP L          ;
  37467 LD A,50       ;
  37469 JR Z,37473    ;
  37471 LD A,2        ;
 @nowarn=33709
-@label=Auto_9261
-@ssub=LD (Auto_83AD),A
+@label=MsgLine_StoreTimer
+@ssub=LD (MsgVisibleTimer),A
 *37473 LD (33709),A  ;
  37476 RET           ;
 @nowarn=33710
-@label=Auto_9265
-@ssub=LD HL,(Auto_83AE)
+@label=MsgLine_SweepBack
+@ssub=LD HL,(MsgAttrPtr)
 *37477 LD HL,(33710) ;
  37480 LD (HL),0     ;
  37482 DEC HL        ;
  37483 LD (HL),82    ;
 @nowarn=33710
-@ssub=LD (Auto_83AE),HL
+@ssub=LD (MsgAttrPtr),HL
  37485 LD (33710),HL ;
  37488 DEC A         ;
  37489 DEFB 50        ; opcode of "LD (msg-head var),A": its operands
@@ -6480,7 +6490,7 @@ c37490 XOR H         ;
 ;   2. Else, if AlienActiveFlag is non-zero AND the actor's (IX+1)
 ;      matches the alien-target slot's (IX+1) — i.e. the **Android**
 ;      slot picked by LongGameInit (#R42276) via LongGameTargetTable
-;      (#R41390) and pointed to by Auto_83A5 (#R33701) — → CALL
+;      (#R41390) and pointed to by AlienTargetPtr (#R33701) — → CALL
 ;      #R40941 (CrewHitsAndroid) — message #31 "nets {target}" or
 ;      #32 "hits the Android".
 ;
@@ -6523,7 +6533,7 @@ c37490 XOR H         ;
  37537 LD A,(HL)     ; A = target's identity
  37538 CP (IX+1)     ; current actor IS the alien's target (= the Android)?
  37541 RET NZ        ; no: not in combat with either alien or android
-@label=Auto_92A6
+@label=Combat_HitAlien
  37542 CALL 40941    ; yes → CrewHitsAndroid (msg #32 / #31)
  37545 JR 37550      ;
 @label=DispatchHitsAlien
@@ -6532,7 +6542,7 @@ c37490 XOR H         ;
 *37550 CALL 44924    ; reset IX+3 = 0 (action state cleared post-combat)
  37553 NOP           ;
  37554 RET           ;
-@label=Auto_92B3
+@label=Combat_RefreshRow
 *37555 LD A,(31252)  ;
  37558 CP 1          ;
  37560 RET NZ        ;
@@ -6577,12 +6587,12 @@ c37490 XOR H         ;
 ;                          - 0-5 Elctrc Prd/Incineratr, 18-19 Spanner:
 ;                            INC alien's wound counter at $73B2 (byte
 ;                            +4 of slot 0). If it reaches the
-;                            Auto_83D1 threshold, JP 44125 (alien-
+;                            AlienStopCell threshold, JP 44125 (alien-
 ;                            defeated path).
 ;                          - 6-7 Tracker: enqueue msg #5 "Tracker is
 ;                            broken"
 ;                          - 8-11 Fire Extng: decrement the item's
-;                            charge in Auto_83D2; on underflow enqueue
+;                            charge in ItemCharges; on underflow enqueue
 ;                            msg #6 "extinguisher empty".
 ;                          - 12 Harpn Gun: the kill primitive at
 ;                            #R37733 — see AlienKillPrimitive below.
@@ -6643,16 +6653,16 @@ c37490 XOR H         ;
  37663 JR Z,37669    ;
  37665 CP 19         ;
  37667 JR NZ,37683   ;
-@label=Auto_9325
+@label=AlienStep_Advance
 *37669 LD HL,29570   ;
  37672 INC (HL)      ;
 @nowarn=33745
-@ssub=LD A,(Auto_83D1)
+@ssub=LD A,(AlienStopCell)
  37673 LD A,(33745)  ;
  37676 CP (HL)       ;
  37677 JP Z,44125    ;
  37680 JP 37992      ;
-@label=Auto_9333
+@label=WeaponCheck_Low
 *37683 CP 8          ;
  37685 JR NC,37700   ;
  37687 CALL 37924    ;
@@ -6662,11 +6672,11 @@ c37490 XOR H         ;
  37693 LD A,5        ;
  37695 CALL 37176    ;
  37698 JR 37669      ;
-@label=Auto_9344
+@label=WeaponCheck_Charged
 *37700 CP 12         ;
  37702 JR NC,37730   ;
 @nowarn=33746
-@ssub=LD HL,Auto_83D2
+@ssub=LD HL,ItemCharges
  37704 LD HL,33746   ;
  37707 LD E,A        ;
  37708 LD D,0        ;
@@ -6677,7 +6687,7 @@ c37490 XOR H         ;
  37715 DEC (HL)      ;
  37716 JP 37992      ;
 @nowarn=33700
-@label=Auto_9357
+@label=WeaponSpentMsg
 @ssub=LD HL,(CrewIndex)
 *37719 LD HL,(33700) ;
  37722 LD A,6        ;
@@ -6687,27 +6697,27 @@ c37490 XOR H         ;
 ; AlienKillPrimitive — the Harpoon Gun outcome, reached from
 ; CrewHitsAlien (#R37584) when the attacker's front-hand item
 ; (#R31248) is 12, the Harpn Gun. A harpoon strike is devastating for
-; both sides: #R37876 gathers up to three slots (Auto_839F +
+; both sides: #R37876 gathers up to three slots (NearestCrewC +
 ; NearestCrewA/B) sharing the alien's sprite class; for each, every
 ; ItemLocations (#R29940) entry that the slot carries or that lies in
 ; the alien's room is destroyed (set to 255), and if the slot's byte
 ; +7 is still zero (alive) it is stamped to 1 (killed) with its byte
 ; +4 wound counter cleared. Then the alien's own wound counter is
-; bumped by 5 (harpoon hits push it quickly over the Auto_83D1
+; bumped by 5 (harpoon hits push it quickly over the AlienStopCell
 ; threshold → dies via JP 44125), the corridor view is rebuilt
-; (CALL 31417) and the per-frame chain continues at Auto_9468
+; (CALL 31417) and the per-frame chain continues at AlienScareCheck
 ; (#R37992).
 @ignoreua
 @label=AlienKillPrimitive
-*37730 JP NZ,37831   ; (31248) != 12 → 37831 (decrement Auto_83D2)
-@label=Auto_9365
- 37733 CALL 37876    ; populate Auto_839F + NearestCrewA/B with the
+*37730 JP NZ,37831   ; (31248) != 12 → 37831 (decrement ItemCharges)
+@label=AlienKillPrimitive
+ 37733 CALL 37876    ; populate NearestCrewC + NearestCrewA/B with the
                      ; three slots sharing the alien's sprite class
 @nowarn=33695
-@ssub=LD DE,Auto_839F
+@ssub=LD DE,NearestCrewC
  37736 LD DE,33695   ;
  37739 LD B,3        ;
-@label=Auto_936D
+@label=KillPrim_SlotLoop
 *37741 PUSH BC       ;
  37742 PUSH DE       ;
  37743 LD A,(DE)     ;
@@ -6721,7 +6731,7 @@ c37490 XOR H         ;
  37755 LD C,(IX+1)   ; C = the alien's room
  37758 LD HL,29940   ; destroy every item the victim holds
  37761 LD B,22       ; or that lies in the alien's room:
-@label=Auto_9383
+@label=KillPrim_ItemLoop
 *37763 LD A,(HL)     ;
  37764 CP E          ;
  37765 JR Z,37773    ;
@@ -6729,9 +6739,9 @@ c37490 XOR H         ;
  37768 JR Z,37773    ;
  37770 CP C          ;
  37771 JR NZ,37775   ;
-@label=Auto_938D
+@label=KillPrim_WipeItem
 *37773 LD (HL),255   ; ItemLocations entry -> gone
-@label=Auto_938F
+@label=KillPrim_NextItem
 *37775 INC HL        ;
  37776 DJNZ 37763    ;
  37778 POP AF        ;
@@ -6751,7 +6761,7 @@ c37490 XOR H         ;
  37798 DEC HL        ;
  37799 DEC HL        ;
  37800 LD (HL),A     ;
-@label=Auto_93A9
+@label=KillPrim_NextSlot
 *37801 POP DE        ;
  37802 INC DE        ;
  37803 POP BC        ;
@@ -6763,17 +6773,17 @@ c37490 XOR H         ;
  37815 ADD A,5       ;
  37817 LD (HL),A     ;
 @nowarn=33745
-@ssub=LD HL,Auto_83D1
+@ssub=LD HL,AlienStopCell
  37818 LD HL,33745   ;
  37821 CP (HL)       ;
  37822 JP NC,44125   ;
  37825 CALL 31417    ;
  37828 JP 37992      ;
-@label=Auto_93C7
+@label=WeaponCheck_Laser
 *37831 LD E,A        ;
  37832 LD D,0        ;
 @nowarn=33746
-@ssub=LD HL,Auto_83D2
+@ssub=LD HL,ItemCharges
  37834 LD HL,33746   ;
  37837 ADD HL,DE     ;
  37838 XOR A         ;
@@ -6787,20 +6797,20 @@ c37490 XOR H         ;
  37852 ADD A,2       ;
  37854 LD (HL),A     ;
 @nowarn=33745
-@ssub=LD HL,Auto_83D1
+@ssub=LD HL,AlienStopCell
  37855 LD HL,33745   ;
  37858 CP (HL)       ;
  37859 JP NC,44125   ;
  37862 JP 37992      ;
 @nowarn=33700
-@label=Auto_93E9
+@label=LaserSpentMsg
 @ssub=LD HL,(CrewIndex)
 *37865 LD HL,(33700) ;
  37868 LD A,7        ;
  37870 CALL 37176    ;
  37873 JP 37555      ;
 ; This entry point is used by the routines at #R40439 and #R40826.
-@label=Auto_93F4
+@label=GatherSameClassSlots
 *37876 LD HL,65535   ;
 @nowarn=33696
 @ssub=LD (NearestCrewA),HL
@@ -6812,16 +6822,16 @@ c37490 XOR H         ;
 @ssub=LD A,(CrewIndex)
  37885 LD A,(33700)  ;
 @nowarn=33695
-@ssub=LD (Auto_839F),A
+@ssub=LD (NearestCrewC),A
  37888 LD (33695),A  ;
 ; This entry point is used by the routine at #R38379.
-@label=Auto_9403
+@label=GatherSlots_Scan
 *37891 LD HL,29575   ;
  37894 LD C,1        ;
  37896 EX AF,AF'     ;
  37897 LD A,(IX+1)   ;
  37900 LD B,7        ;
-@label=Auto_940E
+@label=GatherSlots_Loop
 *37902 CP (HL)       ;
  37903 JR NZ,37914   ;
  37905 EX AF,AF'     ;
@@ -6831,9 +6841,9 @@ c37490 XOR H         ;
  37910 LD (HL),C     ;
  37911 EX DE,HL      ;
  37912 INC DE        ;
-@label=Auto_9419
+@label=GatherSlots_Skip
 *37913 EX AF,AF'     ;
-@label=Auto_941A
+@label=GatherSlots_Next
 *37914 PUSH DE       ;
  37915 LD DE,8       ;
  37918 ADD HL,DE     ;
@@ -6842,7 +6852,7 @@ c37490 XOR H         ;
  37921 DJNZ 37902    ;
  37923 RET           ;
 ; This entry point is used by the routine at #R40826.
-@label=Auto_9424
+@label=DrawFrontItem
 *37924 LD HL,18486   ;
  37927 LD (31257),HL ;
  37930 LD BC,(31248) ;
@@ -6852,13 +6862,13 @@ c37490 XOR H         ;
  37940 ADD HL,DE     ;
  37941 JP 44938      ;
 ; This entry point is used by the routine at #R44880.
-@label=Auto_9438
+@label=UpdateHandRows
 *37944 CP B          ;
  37945 JR NZ,37954   ;
  37947 LD (29638),A  ;
  37950 CALL 44974    ;
  37953 RET           ;
-@label=Auto_9442
+@label=UpdateHandRows_Swap
 *37954 LD L,B        ;
  37955 LD H,A        ;
  37956 LD (31248),HL ;
@@ -6871,7 +6881,7 @@ c37490 XOR H         ;
  37974 CALL 31634    ;
  37977 LD A,(31248)  ;
 ; This entry point is used by the routine at #R44880.
-@label=Auto_945C
+@label=GetItemLocation
 *37980 LD HL,29940   ;
  37983 LD E,A        ;
  37984 LD D,0        ;
@@ -6879,18 +6889,18 @@ c37490 XOR H         ;
  37987 LD A,(HL)     ;
  37988 JP 45295      ;
  37991 RET           ;
-@label=Auto_9468
+@label=AlienScareCheck
 *37992 CALL 37876    ;
  37995 XOR A         ;
 @nowarn=33698
-@ssub=LD (Auto_83A2),A
+@ssub=LD (DistanceAccum),A
  37996 LD (33698),A  ;
  37999 PUSH IX       ;
 @nowarn=33695
-@ssub=LD DE,Auto_839F
+@ssub=LD DE,NearestCrewC
  38001 LD DE,33695   ;
  38004 LD B,3        ;
-@label=Auto_9476
+@label=Scare_SlotLoop
 *38006 PUSH BC       ;
  38007 PUSH DE       ;
  38008 LD A,(DE)     ;
@@ -6911,17 +6921,17 @@ c37490 XOR H         ;
  38035 CP (IX+3)     ;
  38038 JR NZ,38083   ;
 @nowarn=33698
-@ssub=LD HL,Auto_83A2
+@ssub=LD HL,DistanceAccum
  38040 LD HL,33698   ;
  38043 DEC A         ;
  38044 CP (IX+6)     ;
  38047 JR NC,38050   ;
  38049 INC (HL)      ;
-@label=Auto_94A2
+@label=Scare_TrackerBonus
 *38050 POP AF        ;
  38051 CALL 31823    ;
 @nowarn=33698
-@ssub=LD HL,Auto_83A2
+@ssub=LD HL,DistanceAccum
  38054 LD HL,33698   ;
  38057 LD A,(31248)  ;
  38060 CP 13         ;
@@ -6931,16 +6941,16 @@ c37490 XOR H         ;
  38068 CP 7          ;
  38070 JR NZ,38073   ;
  38072 INC (HL)      ;
-@label=Auto_94B9
+@label=Scare_AddDistance
 *38073 LD A,(29570)  ;
  38076 SRA A         ;
  38078 SRA A         ;
  38080 ADD A,(HL)    ;
  38081 LD (HL),A     ;
  38082 PUSH AF       ;
-@label=Auto_94C3
+@label=Scare_SkipSlot
 *38083 POP AF        ;
-@label=Auto_94C4
+@label=Scare_NextSlot
 *38084 POP DE        ;
  38085 INC DE        ;
  38086 POP BC        ;
@@ -6949,12 +6959,12 @@ c37490 XOR H         ;
  38092 CP 15         ;
  38094 JR Z,38177    ;
 @nowarn=33698
-@ssub=LD HL,Auto_83A2
+@ssub=LD HL,DistanceAccum
  38096 LD HL,33698   ;
  38099 CP (HL)       ;
  38100 JR NC,38177   ;
  38102 LD IX,29566   ;
-@label=Auto_94DA
+@label=Scare_PickFlee
 *38106 CALL 36717    ;
  38109 LD A,(IX+1)   ;
  38112 CP (IX+2)     ;
@@ -6975,10 +6985,10 @@ c37490 XOR H         ;
  38132 CALL 39695    ;
  38135 LD (IX+0),0   ;
 @nowarn=33695
-@ssub=LD DE,Auto_839F
+@ssub=LD DE,NearestCrewC
  38139 LD DE,33695   ;
  38142 LD B,3        ;
-@label=Auto_9500
+@label=Scare_FleeLoop
 *38144 PUSH BC       ;
  38145 PUSH DE       ;
  38146 LD A,(DE)     ;
@@ -6994,21 +7004,20 @@ c37490 XOR H         ;
  38163 CP 9          ;
  38165 JR C,38169    ;
  38167 LD (HL),8     ;
-@label=Auto_9519
+@label=Scare_FleeNext
 *38169 POP DE        ;
  38170 INC DE        ;
  38171 POP BC        ;
  38172 DJNZ 38144    ;
  38174 JP 45373      ;
-@label=Auto_9521
+@label=Scare_Done
 *38177 POP IX        ;
  38179 JP 37555      ;
 ; This entry point is used by the routine at #R37018.
-@label=Auto_9526
+@label=AddAlienRoomDamage
 *38182 LD HL,29567   ;
  38185 LD E,(HL)     ;
 ; This entry point is used by the routines at #R38379 and #R40826.
-@label=Auto_952A
 ; AddRoomDamage: add A damage points to room E's damage meter — a
 ; 2-digit ASCII pair in RoomDamageDigits (#R30006; tens digit is
 ; the severity the engine scan at #R39041 compares against). Crossing
@@ -7022,7 +7031,7 @@ c37490 XOR H         ;
  38195 ADD HL,DE     ;
  38196 INC HL        ; HL -> units digit
  38197 LD B,A        ; B = damage points to add
-@label=Auto_9536
+@label=Damage_PointLoop
 *38198 PUSH BC       ;
  38199 PUSH HL       ;
  38200 PUSH DE       ;
@@ -7031,7 +7040,7 @@ c37490 XOR H         ;
  38204 JR Z,38210    ;
  38206 LD (HL),53    ;
  38208 JR 38298      ;
-@label=Auto_9542
+@label=Damage_TensCarry
 *38210 LD (HL),48    ;
  38212 DEC HL        ;
  38213 INC (HL)      ;
@@ -7043,22 +7052,22 @@ c37490 XOR H         ;
  38222 JR NZ,38228   ;
  38224 LD A,22       ; msg #22 "Partial loss of control systems"
  38226 JR 38288      ;
-@label=Auto_9554
+@label=Damage_ChkComputer
 *38228 CP 7          ; Computer room?
  38230 JR NZ,38236   ;
  38232 LD A,23       ; msg #23 "Computer Malfunction detected"
  38234 JR 38288      ;
-@label=Auto_955C
+@label=Damage_ChkLifeSupt
 *38236 CP 25         ; Life Support?
  38238 JR NZ,38244   ;
  38240 LD A,24       ; msg #24 "Environmental irregularities"
  38242 JR 38288      ;
-@label=Auto_9564
+@label=Damage_ChkNarcissus
 *38244 CP 34         ;
  38246 JR NZ,38252   ;
  38248 LD A,25       ;
  38250 JR 38288      ;
-@label=Auto_956C
+@label=Damage_ChkEngines
 *38252 CP 17         ;
  38254 JR C,38298    ;
  38256 CP 20         ;
@@ -7066,7 +7075,7 @@ c37490 XOR H         ;
  38260 AND 3         ;
  38262 LD B,A        ;
  38263 LD A,4        ;
-@label=Auto_9579
+@label=Damage_EngineBit
 *38265 ADD A,A       ;
  38266 DJNZ 38265    ;
  38268 LD HL,31253   ;
@@ -7076,18 +7085,18 @@ c37490 XOR H         ;
  38274 LD A,9        ; msg #9 "WARNING: Fire in {room}"
  38276 CALL 37176    ;
  38279 JR 38298      ;
-@label=Auto_9589
+@label=Damage_ChkStructural
 *38281 CP 55         ;
  38283 JR NZ,38293   ;
  38285 LD L,E        ; L = room
  38286 LD A,8        ; msg #8 "Structural Damage in {room}"
-@label=Auto_9590
+@label=Damage_SendMsg
 *38288 CALL 37176    ;
  38291 JR 38298      ;
-@label=Auto_9595
+@label=Damage_ChkOverflow
 *38293 CP 58         ;
  38295 CALL Z,38317  ;
-@label=Auto_959A
+@label=Damage_NextPoint
 *38298 POP DE        ;
  38299 POP HL        ;
  38300 POP BC        ;
@@ -7100,11 +7109,11 @@ c37490 XOR H         ;
  38313 CALL Z,32143  ;
  38316 RET           ;
 ; This entry point is used by the routine at #R38379.
-@label=Auto_95AD
+@label=DamageOverflowFlash
 *38317 PUSH BC       ;
  38318 PUSH AF       ;
  38319 LD B,100      ;
-@label=Auto_95B1
+@label=DamageFlash_Loop
 *38321 PUSH BC       ;
  38322 CALL 36448    ;
  38325 LD A,7        ;
@@ -7195,7 +7204,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  38422 JR Z,38529    ;
  38424 CP 76         ; fire?
 ; This entry point is used by the routine at #R37490.
-@label=Auto_961A
+@label=FixtureDispatch
 *38426 JR Z,38546    ;
  38428 CP 78         ; launch console?
  38430 JP Z,40212    ;
@@ -7259,7 +7268,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  38555 LD E,A        ;
  38556 LD D,0        ;
 @nowarn=33746
-@ssub=LD HL,Auto_83D2
+@ssub=LD HL,ItemCharges
  38558 LD HL,33746   ;
  38561 ADD HL,DE     ; HL -> extinguisher charges for this position
  38562 XOR A         ;
@@ -7342,22 +7351,22 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  38697 LD B,8        ; sweep all 8 actor slots (alien included!)
  38699 LD IX,29566   ;
  38703 LD DE,8       ;
-@label=Auto_9732
+@label=BlowLock_SweepLoop
 *38706 CP (IX+1)     ; actor in the depressurised room?
  38709 JR NZ,38719   ;
  38711 LD (IX+1),255 ; yes: swept into space - room := none,
  38715 LD (IX+7),1   ; status := dead
-@label=Auto_973F
+@label=BlowLock_NextActor
 *38719 ADD IX,DE     ;
  38721 DJNZ 38706    ;
  38723 POP IX        ;
  38725 LD HL,29940   ; clear their markers from the corridor strip
  38728 LD B,22       ;
-@label=Auto_974A
+@label=BlowLock_ItemLoop
 *38730 CP (HL)       ;
  38731 JR NZ,38735   ;
  38733 LD (HL),255   ;
-@label=Auto_974F
+@label=BlowLock_NextItem
 *38735 INC HL        ;
  38736 DJNZ 38730    ;
  38738 LD L,A        ;
@@ -7400,15 +7409,15 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  38811 LD D,A        ;
  38812 LD C,(IX+1)   ;
  38815 LD B,22       ;
-@label=Auto_97A1
+@label=RedirectRoomLoop
 *38817 LD A,(HL)     ;
  38818 CP E          ;
  38819 JR Z,38824    ;
  38821 CP D          ;
  38822 JR NZ,38826   ;
-@label=Auto_97A8
+@label=RedirectRoomSet
 *38824 LD (HL),15    ;
-@label=Auto_97AA
+@label=RedirectRoomNext
 *38826 INC HL        ;
  38827 DJNZ 38817    ;
  38829 LD A,(31252)  ;
@@ -7452,13 +7461,13 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  38890 CP (HL)       ;
  38891 JP Z,38317    ; minutes below '0': BOOM - flash + game over
  38894 JP 39572      ; redraw countdown / oxygen status
-@label=Auto_97F1
+@label=StorePanelPtr
 @nowarn=38366
 *38897 LD (38366),HL ;
  38900 JP 39572      ;
 @nowarn=33692
-@label=Auto_97F7
-@ssub=LD HL,Auto_839C
+@label=FindTrackerHolders
+@ssub=LD HL,NearRoomList
 *38903 LD HL,33692   ;
  38906 LD A,(29946)  ;
  38909 CP 160        ;
@@ -7475,7 +7484,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  38935 CP 160        ;
  38937 CALL NC,38941 ;
  38940 RET           ;
-@label=Auto_981D
+@label=TrackerHolderRoom
 *38941 CP 255        ;
  38943 RET Z         ;
  38944 PUSH HL       ;
@@ -7494,7 +7503,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  38964 BIT 6,A       ;
  38966 JR Z,38971    ;
  38968 CALL 45683    ;
-@label=Auto_983B
+@label=AdjRowFromRoom
 *38971 LD L,A        ;
  38972 LD H,0        ;
  38974 PUSH HL       ;
@@ -7505,7 +7514,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  38979 ADD HL,BC     ;
  38980 LD DE,8       ;
  38983 LD B,5        ;
-@label=Auto_9849
+@label=PickRoomScanLoop
 *38985 PUSH BC       ;
  38986 PUSH HL       ;
  38987 LD C,(HL)     ;
@@ -7518,10 +7527,10 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  38994 LD A,(33706)  ;
  38997 JP 45705      ;
 ; This entry point is used by the routine at #R45401.
-@label=Auto_9858
+@label=PickRoom_ActorScan
 *39000 LD B,8        ;
  39002 LD HL,29567   ;
-@label=Auto_985D
+@label=PickRoom_ActorLoop
 *39005 LD A,(HL)     ;
  39006 AND 63        ;
  39008 CP C          ;
@@ -7534,10 +7543,10 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39016 CP (HL)       ;
  39017 JR Z,39034    ;
  39019 POP HL        ;
-@label=Auto_986C
+@label=PickRoom_ActorNext
 *39020 ADD HL,DE     ;
  39021 DJNZ 39005    ;
-@label=Auto_986F
+@label=PickRoomScanNext
 *39023 POP HL        ;
  39024 INC HL        ;
  39025 POP BC        ;
@@ -7547,10 +7556,10 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39029 LD A,(38356)  ;
  39032 LD (HL),A     ;
  39033 RET           ;
-@label=Auto_987A
+@label=PickRoom_PopReject
 *39034 POP HL        ;
 ; This entry point is used by the routine at #R45401.
-@label=Auto_987B
+@label=PickRoom_Reject
 *39035 POP HL        ;
  39036 POP BC        ;
  39037 POP HL        ;
@@ -7577,7 +7586,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39073 RET NZ        ;
  39074 LD (HL),100   ;
  39076 RET           ;
-@label=Auto_98A5
+@label=FireDamageTick
 *39077 PUSH AF       ;
  39078 PUSH DE       ;
  39079 LD C,1        ;
@@ -7593,7 +7602,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39095 CP 56         ;
  39097 JR C,39100    ;
  39099 INC C         ;
-@label=Auto_98BC
+@label=FireThresholdCheck
 *39100 LD HL,38334   ;
  39103 ADD HL,DE     ;
  39104 LD A,(HL)     ;
@@ -7616,7 +7625,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39141 CALL 31634    ;
  39144 LD A,255      ;
  39146 CALL 31634    ;
-@label=Auto_98ED
+@label=FireExtinguishedMsg
 *39149 POP HL        ;
  39150 PUSH HL       ;
  39151 LD A,15       ; msg #15 "Fire extinguished in {room}"
@@ -7625,7 +7634,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39157 POP AF        ;
  39158 RET           ;
 @nowarn=38354
-@label=Auto_98F7
+@label=FireSpreadCheck
 @ssub=LD A,(ShipTickCounter)
 *39159 LD A,(38354)  ;
  39162 DEC A         ;
@@ -7634,7 +7643,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39168 POP DE        ;
  39169 POP AF        ;
  39170 RET           ;
-@label=Auto_9903
+@label=ViewedTrackerCheck
 *39171 LD A,(31252)  ;
  39174 CP 1          ;
  39176 RET NZ        ;
@@ -7642,7 +7651,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39180 ADD A,160     ;
  39182 LD C,A        ;
 @nowarn=33692
-@ssub=LD HL,Auto_839C
+@ssub=LD HL,NearRoomList
  39183 LD HL,33692   ;
  39186 LD A,(29946)  ;
  39189 CP C          ;
@@ -7659,7 +7668,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39209 CP C          ;
  39210 JR Z,39228    ;
  39212 RET           ;
-@label=Auto_992D
+@label=AmbientBeepTick
 *39213 LD A,(HL)     ;
  39214 CP 255        ;
  39216 RET NZ        ;
@@ -7671,7 +7680,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39222 AND 7         ;
  39224 CALL Z,39242  ;
  39227 RET           ;
-@label=Auto_993C
+@label=JonesUneasyMsg
 *39228 LD A,(HL)     ;
  39229 CP 255        ;
  39231 RET NZ        ;
@@ -7681,7 +7690,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39238 CALL 37176    ;
  39241 RET           ;
 ; This entry point is used by the routine at #R42821.
-@label=Auto_994A
+@label=RomBeep
 *39242 PUSH IX       ;
  39244 LD DE,5       ;
  39247 LD HL,549     ;
@@ -7695,7 +7704,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
 @ssub=LD (NearestCrewA),HL
  39259 LD (33696),HL ;
 @nowarn=33695
-@ssub=LD DE,Auto_839F
+@ssub=LD DE,NearestCrewC
  39262 LD DE,33695   ;
  39265 LD A,255      ;
  39267 LD (DE),A     ;
@@ -7703,15 +7712,15 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39269 CALL 37891    ;
  39272 LD C,0        ;
 @nowarn=33695
-@ssub=LD HL,Auto_839F
+@ssub=LD HL,NearestCrewC
  39274 LD HL,33695   ;
  39277 LD A,255      ;
  39279 LD B,3        ;
-@label=Auto_9971
+@label=Investigate_CountLoop
 *39281 CP (HL)       ;
  39282 JR Z,39285    ;
  39284 INC C         ;
-@label=Auto_9975
+@label=Investigate_CountNext
 *39285 INC HL        ;
  39286 DJNZ 39281    ;
  39288 LD A,C        ;
@@ -7721,27 +7730,27 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39293 JR NZ,39298   ;
  39295 XOR A         ;
  39296 JR 39317      ;
-@label=Auto_9982
+@label=Investigate_PickTwo
 *39298 CP 2          ;
  39300 JR NZ,39309   ;
  39302 CALL 33589    ;
  39305 AND 1         ;
  39307 JR 39317      ;
-@label=Auto_998D
+@label=Investigate_PickAny
 *39309 CALL 33589    ;
  39312 AND 7         ;
  39314 CALL 36763    ;
-@label=Auto_9995
+@label=Investigate_TakeSlot
 *39317 LD E,A        ;
  39318 LD D,0        ;
 @nowarn=33695
-@ssub=LD HL,Auto_839F
+@ssub=LD HL,NearestCrewC
  39320 LD HL,33695   ;
  39323 ADD HL,DE     ;
  39324 LD C,(HL)     ;
  39325 LD (HL),255   ;
  39327 LD A,C        ;
-@label=Auto_99A0
+@label=Investigate_SlotAddr
 *39328 ADD A,A       ;
  39329 ADD A,A       ;
  39330 ADD A,A       ;
@@ -7766,7 +7775,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39359 LD A,1        ; msg #1 "The ALIEN is attacking {actor}"
  39361 CALL 37176    ;
  39364 RET           ;
-@label=Auto_99C5
+@label=WoundMsg
 *39365 LD L,C        ;
  39366 LD A,10       ; msg #10 "{actor} is being wounded"
  39368 CALL 37176    ;
@@ -7786,7 +7795,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39397 POP IX        ;
  39399 RET           ;
 ; This entry point is used by the routine at #R40439.
-@label=Auto_99E8
+@label=VictimItemDrop
 *39400 INC HL        ;
  39401 INC HL        ;
  39402 CALL 45476    ;
@@ -7802,15 +7811,15 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39419 LD C,(IX+1)   ;
  39422 LD B,22       ;
  39424 LD HL,29940   ;
-@label=Auto_9A03
+@label=VictimItems_Loop
 *39427 LD A,(HL)     ;
  39428 CP E          ;
  39429 JR Z,39434    ;
  39431 CP D          ;
  39432 JR NZ,39435   ;
-@label=Auto_9A0A
+@label=VictimItems_Set
 *39434 LD (HL),C     ;
-@label=Auto_9A0B
+@label=VictimItems_Next
 *39435 INC HL        ;
  39436 DJNZ 39427    ;
  39438 POP AF        ;
@@ -7824,7 +7833,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39451 LD A,21       ; msg #21 "{actor} has collapsed"
  39453 CALL 37176    ;
  39456 JP 31417      ;
-@label=Auto_9A23
+@label=Wound_PanicRoll
 *39459 XOR A         ;
  39460 CP (IX+5)     ;
  39463 JR NZ,39484   ;
@@ -7838,10 +7847,10 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39478 LD (HL),255   ;
  39480 CALL 45533    ;
  39483 RET           ;
-@label=Auto_9A3C
+@label=Wound_TrioPick
 *39484 LD DE,1       ;
 @nowarn=33695
-@ssub=LD HL,Auto_839F
+@ssub=LD HL,NearestCrewC
  39487 LD HL,33695   ;
  39490 CP 7          ;
  39492 JR C,39500    ;
@@ -7849,9 +7858,9 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
 @nowarn=33697
 @ssub=LD HL,NearestCrewB
  39497 LD HL,33697   ;
-@label=Auto_9A4C
+@label=Wound_TrioLoop
 *39500 LD B,3        ;
-@label=Auto_9A4E
+@label=Wound_TrioRead
 *39502 LD A,(HL)     ;
  39503 CP 255        ;
  39505 JR Z,39516    ;
@@ -7860,7 +7869,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39510 LD (HL),255   ;
  39512 LD C,A        ;
  39513 JP 39328      ;
-@label=Auto_9A5C
+@label=Wound_TrioNext
 *39516 ADD HL,DE     ;
  39517 DJNZ 39502    ;
  39519 CALL 36717    ;
@@ -7868,7 +7877,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39526 LD (IX+3),1   ;
  39530 RET           ;
 @nowarn=38357
-@label=Auto_9A6B
+@label=OxygenTick
 @ssub=LD HL,OxygenTickInit
 *39531 LD HL,38357   ;
  39534 DEC (HL)      ;
@@ -7877,11 +7886,11 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39539 LD DE,8       ;
  39542 LD BC,2048    ;
  39545 XOR A         ;
-@label=Auto_9A7A
+@label=OxygenTick_CountLoop
 *39546 CP (HL)       ;
  39547 JR Z,39550    ;
  39549 INC C         ;
-@label=Auto_9A7E
+@label=OxygenTick_CountNext
 *39550 ADD HL,DE     ;
  39551 DJNZ 39546    ;
  39553 LD A,C        ;
@@ -7891,7 +7900,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39555 LD (38357),A  ;
  39558 LD A,47       ;
  39560 LD HL,38377   ;
-@label=Auto_9A8B
+@label=OxygenTick_Borrow
 *39563 DEC (HL)      ;
  39564 CP (HL)       ;
  39565 JR NZ,39572   ;
@@ -7899,7 +7908,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39569 DEC HL        ;
  39570 JR 39563      ;
 ; This entry point is used by the routines at #R31577 and #R31634.
-@label=Auto_9A94
+@label=OxygenCheckRedraw
 @nowarn=38374
 *39572 LD HL,(38374) ;
  39575 LD A,L        ;
@@ -7918,7 +7927,7 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39594 JR NZ,39601   ;
  39596 LD A,26       ;
  39598 CALL 37176    ;
-@label=Auto_9AB1
+@label=ClockPanelUpdate
 *39601 LD A,(38373)  ;
  39604 CP 32         ;
  39606 JP NZ,44277   ;
@@ -7930,17 +7939,17 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
  39618 LD HL,20598   ;
  39621 LD (31257),HL ;
 @nowarn=38368
-@ssub=LD DE,Auto_95E0
+@ssub=LD DE,OxygenText
  39624 LD DE,38368   ;
  39627 LD HL,31253   ;
  39630 BIT 0,(HL)    ;
  39632 JR Z,39637    ;
 @nowarn=38358
-@ssub=LD DE,Auto_95D6
+@ssub=LD DE,DestructTimeText
  39634 LD DE,38358   ;
-@label=Auto_9AD5
+@label=ClockDraw10
 *39637 LD B,10       ;
-@label=Auto_9AD7
+@label=ClockDrawLoop
 *39639 PUSH BC       ;
  39640 PUSH DE       ;
  39641 CALL 31369    ;
@@ -8144,7 +8153,7 @@ c39830 LD B,2        ; B=2: advance position then blit
 ; re-uses B to call AdvanceJonesPos when B=2.
 @label=BlitJonesFrame
 c39832 PUSH BC       ; save B (iteration count)
- 39833 LD A,(22528)  ; A = attribute at top-left of screen (Auto_5800)
+ 39833 LD A,(22528)  ; A = attribute at top-left of screen (AttrFileOrigin)
  39836 CPL           ;
  39837 AND 7         ; invert and mask ink colour bits
  39839 LD (39873),A  ; patch XOR 7 opcode operand for attribute flash
@@ -8160,7 +8169,7 @@ c39832 PUSH BC       ; save B (iteration count)
 @nowarn=39751
 @ssub=LD (AlienScreenPtr),HL
  39857 LD (39751),HL ; AlienScreenPtr = screen row ptr
- 39860 LD HL,22848   ; HL = Auto_5940 (attr row, col 0, char-row 1)
+ 39860 LD HL,22848   ; HL = AttrRow10 (attribute row 10, col 0)
  39863 ADD HL,DE     ; HL = attr address for JonesPos char row
  39864 LD DE,29      ; DE = attr row stride - 4 (skip to next pair)
  39867 LD C,2        ; 2 attribute rows
@@ -8401,7 +8410,7 @@ c40040 SUB 4         ; A = (JonesPos&7) - 4, left-shift amount in [0,3]
 ;
 ; Clears the 19x20-character area of the ZX Spectrum display file and attribute RAM
 ; used by the alien body animation. Iterates 19 rows of 20 columns from DisplayFile,
-; calling #R31370 to zero each cell, then repeats for the attribute area at Auto_5800.
+; calling #R31370 to zero each cell, then repeats for the attribute area at AttrFileOrigin.
 @label=ClearAlienArea
 c40149 LD HL,16384   ; HL = DisplayFile: start of display file
  40152 LD (31257),HL ; store current screen cell address
@@ -8430,9 +8439,9 @@ c40149 LD HL,16384   ; HL = DisplayFile: start of display file
  40192 LD DE,12      ;
  40195 LD HL,22528   ;
  40198 LD C,19       ;
-@label=Auto_9D08
+@label=ClearAlien_RowLoop
 *40200 LD B,20       ;
-@label=Auto_9D0A
+@label=ClearAlien_CellLoop
 *40202 LD (HL),4     ;
  40204 INC HL        ;
  40205 DJNZ 40202    ;
@@ -8440,7 +8449,7 @@ c40149 LD HL,16384   ; HL = DisplayFile: start of display file
  40208 DEC C         ;
  40209 JR NZ,40200   ;
  40211 RET           ;
-@label=Auto_9D14
+@label=LaunchGate
 ; LaunchGate: fixture 78 (Narcissus launch console). The launch is
 ; COUNTERMANDED (msg #28) unless every living crew member's room is 34
 ; (Narcissus); then Jones must be aboard too (JonesRoom = 34, or the
@@ -8450,7 +8459,7 @@ c40149 LD HL,16384   ; HL = DisplayFile: start of display file
 *40212 LD HL,29581   ; walk the +7 status column of all 7 crew
  40215 LD DE,8       ;
  40218 LD B,7        ;
-@label=Auto_9D1C
+@label=Launch_CrewLoop
 *40220 XOR A         ;
  40221 CP (HL)       ;
  40222 JR NZ,40235   ;
@@ -8461,7 +8470,7 @@ c40149 LD HL,16384   ; HL = DisplayFile: start of display file
  40230 LD A,(HL)     ;
  40231 CP 34         ;
  40233 JR NZ,40275   ;
-@label=Auto_9D2B
+@label=Launch_NextCrew
 *40235 ADD HL,DE     ;
  40236 DJNZ 40220    ;
 @nowarn=33706
@@ -8473,7 +8482,7 @@ c40149 LD HL,16384   ; HL = DisplayFile: start of display file
  40247 JR NZ,40270   ;
  40249 LD HL,29960   ;
  40252 LD B,2        ;
-@label=Auto_9D3E
+@label=Launch_CatItemLoop
 *40254 LD A,(HL)     ;
  40255 CP 255        ;
  40257 JR Z,40267    ;
@@ -8481,19 +8490,19 @@ c40149 LD HL,16384   ; HL = DisplayFile: start of display file
  40261 JR Z,40281    ;
  40263 CP 128        ;
  40265 JR NC,40281   ;
-@label=Auto_9D4B
+@label=Launch_CatItemNext
 *40267 INC HL        ;
  40268 DJNZ 40254    ;
-@label=Auto_9D4E
+@label=Launch_NoJones
 *40270 LD A,27       ;
  40272 CALL 37176    ;
-@label=Auto_9D53
+@label=Launch_Countermand
 *40275 LD A,28       ;
  40277 CALL 37176    ;
  40280 RET           ;
-@label=Auto_9D59
+@label=LaunchSequence
 *40281 LD B,75       ;
-@label=Auto_9D5B
+@label=Launch_FlashLoop
 *40283 PUSH BC       ;
  40284 LD A,1        ;
 @nowarn=33699
@@ -8503,9 +8512,9 @@ c40149 LD HL,16384   ; HL = DisplayFile: start of display file
  40292 LD DE,12      ;
  40295 LD HL,22528   ;
  40298 LD C,19       ;
-@label=Auto_9D6C
+@label=Launch_AttrRows
 *40300 LD B,20       ;
-@label=Auto_9D6E
+@label=Launch_AttrLoop
 *40302 LD A,(HL)     ;
  40303 XOR 64        ;
  40305 LD (HL),A     ;
@@ -8638,7 +8647,7 @@ c40418 ADD A,A       ; A *= 2
 ; hiB) pair selecting two notes from NoteTable at #R40362 (PlayNoteByIndex).
 ; The inner loop repeats each pair 8 times (so the phrase audibly trills
 ; on its 2-note interval), and the keyboard rows are polled between
-; notes — any key press aborts playback via Auto_9E33.
+; notes — any key press aborts playback via Music_Abort.
 ;
 ; Used by the routine at #R42581 (DrawIntroScreen).
 ;
@@ -8650,7 +8659,7 @@ c40439 LD HL,40398   ; HL = PhrasePairs base
 @ssub=LD (PhraseStateScratch),HL
  40442 LD (40416),HL ;
  40445 LD B,8        ;
-@label=Auto_9DFF
+@label=Music_NextNotePair
 *40447 PUSH BC       ;
 @nowarn=40416
 @ssub=LD HL,(PhraseStateScratch)
@@ -8664,14 +8673,14 @@ c40439 LD HL,40398   ; HL = PhrasePairs base
  40455 LD (40416),HL ;
  40458 LD (40414),DE ;
  40462 LD B,8        ;
-@label=Auto_9E10
+@label=Music_PlayPair
 *40464 PUSH BC       ;
  40465 LD A,(40414)  ;
  40468 CALL 40418    ;
  40471 LD A,(40415)  ;
  40474 CALL 40418    ;
  40477 LD BC,65278   ;
-@label=Auto_9E20
+@label=Music_KeyPoll
 *40480 IN A,(C)      ;
  40482 AND 31        ;
  40484 XOR 31        ;
@@ -8683,13 +8692,13 @@ c40439 LD HL,40398   ; HL = PhrasePairs base
  40495 POP BC        ;
  40496 DJNZ 40447    ;
  40498 RET           ;
-@label=Auto_9E33
+@label=Music_Abort
 *40499 POP BC        ;
  40500 POP BC        ;
  40501 RET           ;
-@label=Auto_9E36
+@label=KeyboardModeFlag
  40502 NOP           ;
-@label=Auto_9E37
+@label=EndgameFlag
  40503 NOP           ;
 
 ; Data block at #R40504
@@ -8762,7 +8771,7 @@ c40757 CALL 37876    ;
  40779 CP (HL)       ;
  40780 JR Z,40802    ;
 @nowarn=33697
-@label=Auto_9F4E
+@label=Android_SecondTarget
 @ssub=LD A,(NearestCrewB)
 *40782 LD A,(33697)  ;
  40785 CP 255        ;
@@ -8778,7 +8787,7 @@ c40757 CALL 37876    ;
  40799 XOR A         ;
  40800 CP (HL)       ;
  40801 RET NZ        ;
-@label=Auto_9F62
+@label=Android_WoundVictim
 *40802 DEC HL        ;
  40803 DEC HL        ;
  40804 DEC HL        ;
@@ -8856,18 +8865,18 @@ c40826 LD A,(33704)  ; A = AlienActiveFlag
  40829 AND A         ; alien loose on ship?
  40830 RET Z         ; no: no encounter yet, nothing to activate
 @ignoreua
- 40831 LD HL,(33701) ; HL = alien_target record (Auto_83A5)
+ 40831 LD HL,(33701) ; HL = alien_target record (AlienTargetPtr)
  40834 LD A,(HL)     ; A = byte +0
  40835 AND A         ; Android already activated (+0 stamped to 80)?
  40836 RET NZ        ; yes: this routine has already fired once, skip
  40837 LD DE,7       ; offset to byte +7 (defeated-lockout sentinel)
  40840 ADD HL,DE     ; HL → +7
-@label=Auto_9F89
+@label=Android_ActivateCheck
  40841 CP (HL)       ; A=0 here; Z iff byte +7 == 0 (template, not defeated)
  40842 RET NZ        ; +7 != 0: Android collapsed earlier, stay dormant
  40843 PUSH IX       ; save caller's IX
  40845 LD IX,(33701) ; IX = Android record (= alien_target)
-@label=Auto_9F91
+@label=Android_Activate
  40849 LD (IX+0),80  ; stamp +0 = 80 — activation marker / blocks re-entry
 @nowarn=33703
 @ssub=LD A,(AlienTargetID)
@@ -8939,7 +8948,7 @@ c40826 LD A,(33704)  ; A = AlienActiveFlag
 @ignoreua
 ; The Android is the slot picked by LongGameInit (#R42276) from
 ; LongGameTargetTable (#R41390) and stored in AlienTargetID (#R33703),
-; record pointer cached at Auto_83A5 (#R33701). It starts dormant and
+; record pointer cached at AlienTargetPtr (#R33701). It starts dormant and
 ; is activated by UpdateAlien (#R40826) on first encounter with the
 ; alien (the first frame AlienActiveFlag is set while the slot's +0/+7
 ; are still template-zero), entering action state 7 and wounding its
@@ -8974,7 +8983,7 @@ c40826 LD A,(33704)  ; A = AlienActiveFlag
 ;                           - if (31248) ∈ {6, 7}: enqueue message #5
 ;                             "{actor}'s Tracker is broken"
 ;                           - if (31248) < 12: decrement the slot's
-;                             entry in Auto_83D2 (#R33746) and enqueue
+;                             entry in ItemCharges (#R33746) and enqueue
 ;                             message #6 if it expires
 ;                           - other (31248) values branch into the
 ;                             corridor-display rebuild at #R41109 /
@@ -9018,7 +9027,7 @@ c40826 LD A,(33704)  ; A = AlienActiveFlag
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
  40984 LD A,(33700)  ; A = CrewIndex
- 40987 LD HL,(33702) ; H = (Auto_83A6) — high byte of target reference
+ 40987 LD HL,(33702) ; H = high byte of AlienTargetPtr ($83A6)
  40990 LD L,A        ; L = actor (CrewIndex)
  40991 LD A,31       ; A = msg #31 "{actor} nets {target}"
  40993 CALL 37176    ; enqueue
@@ -9041,7 +9050,7 @@ c40826 LD A,(33704)  ; A = AlienActiveFlag
  41016 JR Z,41022    ;
  41018 CP 19         ;
  41020 JR NZ,41062   ;
-@label=Auto_A03E
+@label=Android_TakeHit
 *41022 LD HL,(33701) ;
  41025 LD DE,4       ;
  41028 ADD HL,DE     ;
@@ -9052,7 +9061,7 @@ c40826 LD A,(33704)  ; A = AlienActiveFlag
  41036 INC HL        ;
  41037 INC HL        ;
  41038 INC HL        ;
-@label=Auto_A04F
+@label=Android_Collapsed
  41039 LD (HL),2     ;
  41041 LD DE,65529   ;
  41044 ADD HL,DE     ;
@@ -9078,7 +9087,7 @@ c40826 LD A,(33704)  ; A = AlienActiveFlag
 *41079 CP 12         ;
  41081 JR NC,41109   ;
 @nowarn=33746
-@ssub=LD HL,Auto_83D2
+@ssub=LD HL,ItemCharges
  41083 LD HL,33746   ;
  41086 LD E,A        ;
  41087 LD D,0        ;
@@ -9097,7 +9106,7 @@ c40826 LD A,(33704)  ; A = AlienActiveFlag
 *41109 JP NZ,41195   ;
  41112 CALL 37876    ;
 @nowarn=33695
-@ssub=LD DE,Auto_839F
+@ssub=LD DE,NearestCrewC
  41115 LD DE,33695   ;
  41118 LD B,3        ;
 *41120 PUSH BC       ;
@@ -9149,7 +9158,7 @@ c40826 LD A,(33704)  ; A = AlienActiveFlag
 *41195 LD E,A        ;
  41196 LD D,0        ;
 @nowarn=33746
-@ssub=LD HL,Auto_83D2
+@ssub=LD HL,ItemCharges
  41198 LD HL,33746   ;
  41201 ADD HL,DE     ;
  41202 XOR A         ;
@@ -9206,10 +9215,10 @@ c41264 LD HL,29570   ; HL → alien's current corridor index
 @nowarn=33703
 @ssub=LD A,(AlienTargetID)
  41271 LD A,(33703)  ; A = AlienTargetID (crew ID being targeted)
-@label=Auto_A13A
+@label=TriggerAlien_TargetCheck
  41274 CP 8          ; crew IDs are 0..6; 8+ = none/invalid
  41276 RET NC        ; no valid target: nothing to do
- 41277 LD HL,(33701) ; HL = pointer to current crew record (Auto_83A5)
+ 41277 LD HL,(33701) ; HL = pointer to current crew record (AlienTargetPtr)
  41280 LD DE,7       ; offset 7 = alive flag
  41283 ADD HL,DE     ;
  41284 XOR A         ;
@@ -9227,11 +9236,11 @@ c41264 LD HL,29570   ; HL → alien's current corridor index
  41303 BIT 2,A       ;
  41305 JR Z,41309    ;
  41307 SET 3,(HL)    ;
-@label=Auto_A15D
+@label=Kempston_UpBit
 *41309 BIT 3,A       ;
  41311 JR Z,41315    ;
  41313 SET 2,(HL)    ;
-@label=Auto_A163
+@label=Kempston_Merge
 *41315 AND 19        ;
  41317 OR (HL)       ;
  41318 LD (HL),A     ;
@@ -9247,19 +9256,19 @@ c41264 LD HL,29570   ; HL → alien's current corridor index
  41332 RRCA          ;
  41333 JR NC,41337   ;
  41335 SET 2,(HL)    ;
-@label=Auto_A179
+@label=Sinclair_Bit1
 *41337 RRCA          ;
  41338 JR NC,41342   ;
  41340 SET 3,(HL)    ;
-@label=Auto_A17E
+@label=Sinclair_Bit2
 *41342 RRCA          ;
  41343 JR NC,41347   ;
  41345 SET 0,(HL)    ;
-@label=Auto_A183
+@label=Sinclair_Bit3
 *41347 RRCA          ;
  41348 JR NC,41352   ;
  41350 SET 1,(HL)    ;
-@label=Auto_A188
+@label=Sinclair_Fire
 *41352 AND 8         ;
  41354 RET Z         ;
  41355 SET 4,(HL)    ;
@@ -9330,12 +9339,12 @@ b41390 DEFB 1,2,4,6,1,2,4,6,1,2,4,6,1,2,4,6
 b41406 DEFB 24,21,20,6,6,16,6,16,27,17,18,19,32,2,2,2
  41422 DEFB 24,23,31,20,255,255
 
-; CommonInit_WorkspaceTable
+; ItemChargesInit
 ;
 @ignoreua
 ; 16 bytes copied by CommonGameInit (#R42454) to #R33746 ($83D2): zeros
-; the Auto_83D2 area then writes 3,3,3,3,1,8,8,8 into Auto_83DA.
-@label=CommonInit_WorkspaceTable
+; the ItemCharges area then writes 3,3,3,3,1,8,8,8 into ItemChargesHi.
+@label=ItemChargesInit
 b41428 DEFB 0,0,0,0,0,0,0,0,3,3,3,3,1,8,8,8
 
 ; LongGameCrewInit
@@ -9426,51 +9435,51 @@ b41508 DEFB 0,0,0,0,0,0,0,0      ; slot 0 ALIEN (room written by CommonGameInit)
 ; Runtime-patched cells: the Competence Rating digits (#R42066), the
 ; destruct countdown minutes and seconds (the blank fields after
 ; #R42119), poked by the endgame renderer before drawing.
-@label=Auto_A264
+@label=UITextBlock
 t41572 DEFM "MAPPING SYMBOLS"  ; "MAPPING SYMBOLS" (ship-map legend title)
-@label=Auto_A273
+@label=StrConnectingDoor
  41587 DEFM 1,15,1," : Connecting Door"  ; 1,15,1 + " : Connecting Door" (legend)
-@label=Auto_A288
+@label=StrLadderUp
  41608 DEFM "{  : Ladder to Deck Above"  ; "{  : Ladder to Deck Above" (legend)
-@label=Auto_A2A1
+@label=StrHatchDown
  41633 DEFM "|  : Hatchway to Deck Below"  ; "|  : Hatchway to Deck Below" (legend)
-@label=Auto_A2BC
+@label=StrSubjectInd
  41660 DEFM ": Subject Indicator"  ; ": Subject Indicator" (legend)
-@label=Auto_A2CF
+@label=StrRoomInd
  41679 DEFM ": Room Indicator"  ; ": Room Indicator" (legend)
-@label=Auto_A2DF
+@label=StrGrilleDuct
  41695 DEFM "}  : Grille to Ducting"  ; "}  : Grille to Ducting" (legend)
-@label=Auto_A2F5
+@label=StrSelectDevice
  41717 DEFM "Select Keyboard or joystick"  ; "Select Keyboard or Joystick" (options title)
-@label=Auto_A310
+@label=StrKempston
  41744 DEFM "1 : KEMPSTON"  ; "1 : KEMPSTON"
-@label=Auto_A31C
+@label=StrAGFProtek
  41756 DEFM "2 : AGF",144,"PROTEK"  ; "2 : AGF/PROTEK"
-@label=Auto_A32A
+@label=StrSinclair
  41770 DEFM "3 : SINCLAIR"  ; "3 : SINCLAIR"
-@label=Auto_A336
+@label=StrKeyboard
  41782 DEFM "4 : KEYBOARD"  ; "4 : KEYBOARD"
-@label=Auto_A342
+@label=StrSelect
  41794 DEFM "5 : SELECT"  ; "5 : SELECT"
-@label=Auto_A34C
+@label=StrPressKey
  41804 DEFM "PRESS APPROPRIATE KEY"  ; "PRESS APPROPRIATE KEY"
-@label=Auto_A361
+@label=StrPressPause
  41825 DEFM "During Game Press 1 to Pause"  ; "During Game Press 1 to Pause"
-@label=Auto_A37D
+@label=StrUserDefinable
  41853 DEFM "The keyboard is user definable"  ; "The keyboard is user definable"
-@label=Auto_A39B
+@label=StrRedefineKeys
  41883 DEFM "Press Y to redefine keys"  ; "Press Y to redefine keys"
-@label=Auto_A3B3
+@label=StrAnyOtherKey
  41907 DEFM "Any other key to continue"  ; "Any other key to continue"
-@label=Auto_A3CC
+@label=StrWhichKey
  41932 DEFM "Which key do you wish to"  ; "Which key do you wish to"
-@label=Auto_A3E4
+@label=StrUseForUp
  41956 DEFM "use for: UP"  ; "use for: UP"
-@label=Auto_A3EF
+@label=StrDown
  41967 DEFM "DOWN"  ; "DOWN"
-@label=Auto_A3F3
+@label=StrFire
  41971 DEFM "FIRE"  ; "FIRE"
-@label=Auto_A3F7
+@label=StrReturnTo
  41975 DEFM "Return to "  ; "Return to " prefix
  41985 DEFM "QUIT"  ; "QUIT"
 @ignoreua
@@ -9483,19 +9492,19 @@ t41572 DEFM "MAPPING SYMBOLS"  ; "MAPPING SYMBOLS" (ship-map legend title)
 @label=InputScannerTable
 @ignoreua
  41989 DEFM "M",161,"P",135,"h",161,9,172  ; DEFW 41293,34640,41320,44041
-@label=Auto_A40D
+@label=StrAlienKilled
  41997 DEFM "The Alien has been killed"  ; "The Alien has been kil"
-@label=Auto_A426
+@label=StrIsDead
  42022 DEFM " is dead"  ; "led" / " is dead"
-@label=Auto_A42E
+@label=StrWasAndroid
  42030 DEFM " was the Android"  ; " was the Android"
-@label=Auto_A43E
+@label=StrCompetence
  42046 DEFM "Competence Rating: 0"  ; "Competence Rating: "
-@label=Auto_A452
+@label=StrRatingDigits
  42066 DEFM "0",135  ; rating digits "00" (runtime-patched)
-@label=Auto_A454
+@label=StrNarcissusLaunched
  42068 DEFM "The Narcissus is launched"  ; "The Narcissus is launched" (escape ending)
-@label=Auto_A46D
+@label=StrWillExplode
  42093 DEFM "The Nostromo will explode "  ; "The Nostromo will explode "
 @label=DestructTextIn
  42119 DEFM "in"  ; "in"
@@ -9503,15 +9512,15 @@ t41572 DEFM "MAPPING SYMBOLS"  ; "MAPPING SYMBOLS" (ship-map legend title)
  42124 DEFM "minutes"  ; "minutes"
  42131 DEFM "   "  ; destruct seconds field (runtime-patched)
  42134 DEFM " seconds"  ; " seconds"
-@label=Auto_A49E
+@label=StrAlienUnleashed
  42142 DEFM "The Alien will be unleashed"  ; "The Alien will be unleashed" (no-destruct ending)
-@label=Auto_A4B9
+@label=StrUponEarth
  42169 DEFM "upon the Earth"  ; "upon the Earth"
-@label=Auto_A4C7
+@label=StrNostromoExploded
  42183 DEFM "Nostromo has exploded"  ; "Nostromo has exploded" (destruct ending)
-@label=Auto_A4DC
+@label=StrLifeSupportGone
  42204 DEFM "Life Support Systems exhausted"  ; "Life Support Systems exhausted"
-@label=Auto_A4FA
+@label=StrLifeLevelsMinimal
  42234 DEFM "Humanoid life levels minimal "  ; "Humanoid life levels minimal"
 @label=PressAnyKeyText
  42263 DEFM "PRESS ANY KEY"  ; "PRESS ANY KEY"
@@ -9551,10 +9560,10 @@ t41572 DEFM "MAPPING SYMBOLS"  ; "MAPPING SYMBOLS" (ship-map legend title)
 ;
 @ignoreua
 ; Steps:
-;   1. Point the message queue head (Auto_83CD #R33741) at the queue base
-;      Auto_83B2 (#R33714) and clear the two run-state bytes #R33708/#R33709.
+;   1. Point the message queue head (MsgQueueWritePtr #R33741) at the queue base
+;      MessageQueue (#R33714) and clear the two run-state bytes #R33708/#R33709.
 ;   2. CALL #R45222: reseed the script pointer from the ZX SEED system
-;      variable and reset the message-dup marker (Auto_83CF #R33743)
+;      variable and reset the message-dup marker (MsgLastEnqueued #R33743)
 ;      to $FFFF.
 ;   3. LDIR 64 bytes from #R41444 (LongGameCrewInit) into $7376 to populate
 ;      the alien slot and the seven crew slots with the long-game starting
@@ -9574,24 +9583,24 @@ t41572 DEFM "MAPPING SYMBOLS"  ; "MAPPING SYMBOLS" (ship-map legend title)
 ;   7. Enqueue message #33 ("Alien has hatched from {actor}") via
 ;      #R37176, with the host slot index as the actor parameter — this
 ;      is the long game's opening narrative beat.
-;   8. Store &slot[A_target] in #R33701 (Auto_83A5) so UpdateAlien and
+;   8. Store &slot[A_target] in #R33701 (AlienTargetPtr) so UpdateAlien and
 ;      CrewHitsAndroid can access the Android's crew record directly.
 ;   9. Fall through into the common init at #R42380 (CommonGameInit).
 ;
 ; Used by the dispatcher at #R43134 via the table at #R43135.
 @nowarn=33714
 @label=LongGameInit
-@ssub=LD HL,Auto_83B2
-c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
+@ssub=LD HL,MessageQueue
+c42276 LD HL,33714   ; HL = MessageQueue (event queue base)
 @nowarn=33741
-@ssub=LD (Auto_83CD),HL
+@ssub=LD (MsgQueueWritePtr),HL
  42279 LD (33741),HL ; event queue head = queue base (empty queue)
  42282 XOR A         ; A = 0
 @nowarn=33709
-@ssub=LD (Auto_83AD),A
+@ssub=LD (MsgVisibleTimer),A
  42283 LD (33709),A  ; clear run-state byte #R33709
 @nowarn=33708
-@ssub=LD (Auto_83AC),A
+@ssub=LD (MsgDrawnCol),A
  42286 LD (33708),A  ; clear run-state byte #R33708
  42289 CALL 45222    ; reset message-dup marker + reseed script pointer
 @nowarn=41444
@@ -9600,9 +9609,9 @@ c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
  42292 LD HL,41444   ; HL = LongGameCrewInit ($A1E4)
 @ignoreua
  42295 LD DE,29566   ; DE = $7376 (alien slot + crew table base)
-@label=Auto_A53A
+@label=LongGame_SetupRecords
 *42298 LD BC,64      ; 64 bytes = 8 × 8-byte records
-@label=Auto_A53D
+@label=LongGame_CopyRecords
 *42301 LDIR          ; copy long-game starting crew/alien state
  42303 CALL 33589    ; A = script nibble (0-15)
  42306 LD E,A        ;
@@ -9612,7 +9621,7 @@ c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
 @ignoreua
  42309 LD HL,41374   ; HL = LongGameHostSlotTable ($A19E)
  42312 ADD HL,DE     ;
-@label=Auto_A549
+@label=LongGame_PickHost
  42313 LD A,(HL)     ; A_host = chestburster-host slot index for this run
  42314 PUSH AF       ; stash A_host
  42315 ADD A,A       ;
@@ -9628,7 +9637,7 @@ c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
  42328 LD (HL),255   ; stamp HostMarker: slot[A_host].byte+1 = $FF
  42330 LD DE,6       ;
  42333 ADD HL,DE     ; HL = &slot[A_host] + 7 (alive flag)
-@label=Auto_A55E
+@label=LongGame_PickTarget
  42334 LD (HL),255   ; stamp HostMarker: slot[A_host].byte+7 = $FF
 @label=PickAlienTargetLoop
 *42336 CALL 33589    ; A = next script nibble
@@ -9642,23 +9651,23 @@ c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
  42346 LD C,(HL)     ; C = candidate alien-target index
  42347 POP AF        ; A = A_host
  42348 CP C          ;
-@label=Auto_A56D
+@label=LongGame_TargetOk
 *42349 JR NZ,42354   ; if C != A_host → accept
  42351 PUSH AF       ;
-@label=Auto_A570
+@label=LongGame_Retry
 *42352 JR 42336      ; else: pull another nibble (avoid colliding with host)
 @nowarn=33703
 @label=StoreAlienTarget
 @ssub=LD HL,AlienTargetID
 *42354 LD HL,33703   ; HL = &AlienTargetID
-@label=Auto_A575
+@label=LongGame_SetTarget
 *42357 LD (HL),C     ; AlienTargetID = C (randomised)
  42358 PUSH BC       ;
  42359 LD L,A        ; L = A_host (actor param for message)
  42360 LD A,33       ; A = 33 → message "Alien has hatched from {actor}"
-@label=Auto_A57A
+@label=LongGame_HatchMsg
  42362 CALL 37176    ; enqueue opening narrative naming the host
-@label=Auto_A57D
+@label=LongGame_StoreTargetPtr
 *42365 POP BC        ;
  42366 LD A,C        ; A = AlienTargetID
  42367 ADD A,A       ;
@@ -9668,7 +9677,7 @@ c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
  42371 LD D,0        ;
  42373 LD HL,29566   ;
  42376 ADD HL,DE     ; HL = &slot[AlienTargetID]
- 42377 LD (33701),HL ; store alien-target record pointer at Auto_83A5
+ 42377 LD (33701),HL ; store alien-target record pointer at AlienTargetPtr
 @ignoreua
 ; This entry point is used by the routine at #R44561.
 ; CommonGameInit: shared post-init for both Short and Long modes. Called
@@ -9683,8 +9692,8 @@ c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
 @ssub=LD (AlienActiveFlag),A
  42381 LD (33704),A  ;
 @nowarn=32896
-@ssub=LD HL,Auto_8080
- 42384 LD HL,32896   ;
+@ignoreua
+ 42384 LD HL,32896   ; HL = $8080: two "frozen" bytes for both channels
  42387 LD (31263),HL ;
  42390 LD A,L        ;
 @nowarn=39741
@@ -9694,7 +9703,7 @@ c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
 @ssub=LD (JonesPhase),A
  42394 LD (39753),A  ;
 @nowarn=41406
-@label=Auto_A59D
+@label=CommonInit_ItemsGrilles
 @ssub=LD HL,InitialItemRooms
 @ignoreua
  42397 LD HL,41406   ; HL = InitialItemRooms ($A1BE)
@@ -9705,7 +9714,7 @@ c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
  42408 LD B,33       ; RoomGrilleState: put all grilles in place
  42410 LD HL,30076   ; (33 bytes; room 33's byte stays 0 = open)
  42413 LD A,255      ;
-@label=Auto_A5AF
+@label=CommonInit_GrilleLoop
 *42415 LD (HL),A     ;
  42416 INC HL        ;
  42417 DJNZ 42415    ;
@@ -9730,16 +9739,16 @@ c42276 LD HL,33714   ; HL = Auto_83B2 (event queue base)
  42447 ADD HL,DE     ;
  42448 LD A,(HL)     ; A = AlienInitTable[script_byte]
  42449 OR 64         ; set direction bit (bit 6)
-@label=Auto_A5D3
+@label=CommonInit_AlienRoom
 @ignoreua
  42451 LD (29567),A  ; set the alien's starting room (slot 0 byte +1)
 @nowarn=41428
-@label=Auto_A5D6
-@ssub=LD HL,CommonInit_WorkspaceTable
+@label=CommonInit_Charges
+@ssub=LD HL,ItemChargesInit
 @ignoreua
- 42454 LD HL,41428   ; HL = CommonInit_WorkspaceTable ($A1D4)
+ 42454 LD HL,41428   ; HL = ItemChargesInit ($A1D4)
 @nowarn=33746
-@ssub=LD DE,Auto_83D2
+@ssub=LD DE,ItemCharges
  42457 LD DE,33746   ;
  42460 LD BC,16      ;
  42463 LDIR          ;
@@ -9796,59 +9805,28 @@ c42515 LD HL,22528   ; HL = #R22528 (start of attribute file)
  42522 LD BC,767     ; BC = 767 remaining bytes
  42525 LDIR          ; propagate across entire attribute file
  42527 RET           ;
-@label=Auto_A620
- 42528 LD B,C        ;
- 42529 LD C,H        ;
- 42530 LD C,C        ;
- 42531 LD B,L        ;
- 42532 LD C,(HL)     ;
- 42533 JR NZ,42567   ;
- 42535 JR NZ,42569   ;
- 42537 JR NZ,42571   ;
- 42539 JR NZ,42573   ;
-@label=Auto_A62D
- 42541 LD C,D        ;
- 42542 LD L,A        ;
- 42543 LD L,B        ;
- 42544 LD L,(HL)     ;
-@label=Auto_A631
- 42545 LD C,B        ;
- 42546 LD H,L        ;
- 42547 LD H,C        ;
- 42548 LD (HL),B     ;
-@label=Auto_A635
- 42549 LD B,C        ;
- 42550 LD (HL),D     ;
- 42551 LD H,A        ;
- 42552 LD (HL),L     ;
- 42553 LD (HL),E     ;
-@label=Auto_A63A
- 42554 LD D,B        ;
- 42555 LD (HL),D     ;
- 42556 LD H,L        ;
- 42557 LD (HL),E     ;
- 42558 LD (HL),E     ;
-@label=Auto_A63F
- 42559 LD D,E        ;
- 42560 LD L,A        ;
- 42561 LD H,(HL)     ;
- 42562 LD (HL),H     ;
- 42563 LD (HL),A     ;
- 42564 LD H,C        ;
- 42565 LD (HL),D     ;
- 42566 LD H,L        ;
-*42567 LD B,E        ;
- 42568 LD L,A        ;
-*42569 LD (HL),B     ;
- 42570 LD A,C        ;
-*42571 LD (HL),D     ;
- 42572 LD L,C        ;
-*42573 LD H,A        ;
- 42574 LD L,B        ;
- 42575 LD (HL),H     ;
- 42576 JR NZ,42627   ;
- 42578 ADD HL,SP     ;
- 42579 JR C,42633    ;
+
+; Ship-map screen title and credits
+;
+; Plain ASCII (previously misclassified as code), drawn by DrawShipMap
+; (#R42821): the big "ALIEN" title (one glyph per cell, 3-column
+; spacing) and the author/publisher credit lines "John Heap" /
+; "Argus Press Software".
+@label=StrAlien
+t42528 DEFM "ALIEN"
+ 42533 DEFM "        "
+@label=StrJohn
+ 42541 DEFM "John"
+@label=StrHeap
+ 42545 DEFM "Heap"
+@label=StrArgus
+ 42549 DEFM "Argus"
+@label=StrPress
+ 42554 DEFM "Press"
+@label=StrSoftware
+ 42559 DEFM "Software"
+@label=StrCopyright
+ 42567 DEFM "Copyright 1984"
 
 ; DrawIntroScreen
 @ignoreua
@@ -9933,7 +9911,7 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
  42688 LD HL,16425   ;
  42691 LD (31257),HL ;
 @nowarn=42528
-@ssub=LD DE,Auto_A620
+@ssub=LD DE,StrAlien
  42694 LD DE,42528   ;
  42697 LD B,5        ;
 *42699 PUSH BC       ;
@@ -9952,35 +9930,35 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
  42721 LD (31257),HL ;
  42724 LD B,4        ;
 @nowarn=42541
-@ssub=LD DE,Auto_A62D
+@ssub=LD DE,StrJohn
  42726 LD DE,42541   ;
  42729 CALL 44509    ;
  42732 LD HL,20644   ;
  42735 LD (31257),HL ;
  42738 LD B,4        ;
 @nowarn=42545
-@ssub=LD DE,Auto_A631
+@ssub=LD DE,StrHeap
  42740 LD DE,42545   ;
  42743 CALL 44509    ;
  42746 LD HL,20630   ;
  42749 LD (31257),HL ;
  42752 LD B,5        ;
 @nowarn=42549
-@ssub=LD DE,Auto_A635
+@ssub=LD DE,StrArgus
  42754 LD DE,42549   ;
  42757 CALL 44509    ;
  42760 LD HL,20662   ;
  42763 LD (31257),HL ;
  42766 LD B,5        ;
 @nowarn=42554
-@ssub=LD DE,Auto_A63A
+@ssub=LD DE,StrPress
  42768 LD DE,42554   ;
  42771 CALL 44509    ;
  42774 LD HL,20694   ;
  42777 LD (31257),HL ;
  42780 LD B,8        ;
 @nowarn=42559
-@ssub=LD DE,Auto_A63F
+@ssub=LD DE,StrSoftware
  42782 LD DE,42559   ;
  42785 CALL 44509    ;
  42788 LD HL,20712   ;
@@ -10304,49 +10282,49 @@ c43242 CALL 42501    ;
  43253 LD HL,16424   ;
  43256 LD (31257),HL ;
 @nowarn=41572
-@ssub=LD DE,Auto_A264
+@ssub=LD DE,UITextBlock
  43259 LD DE,41572   ;
  43262 LD B,15       ;
  43264 CALL 44509    ;
  43267 LD HL,16548   ;
  43270 LD (31257),HL ;
 @nowarn=41587
-@ssub=LD DE,Auto_A273
+@ssub=LD DE,StrConnectingDoor
  43273 LD DE,41587   ;
  43276 LD B,21       ;
  43278 CALL 44509    ;
  43281 LD HL,16613   ;
  43284 LD (31257),HL ;
 @nowarn=41608
-@ssub=LD DE,Auto_A288
+@ssub=LD DE,StrLadderUp
  43287 LD DE,41608   ;
  43290 LD B,25       ;
  43292 CALL 44509    ;
  43295 LD HL,18469   ;
  43298 LD (31257),HL ;
 @nowarn=41633
-@ssub=LD DE,Auto_A2A1
+@ssub=LD DE,StrHatchDown
  43301 LD DE,41633   ;
  43304 LD B,27       ;
  43306 CALL 44509    ;
  43309 LD HL,18568   ;
  43312 LD (31257),HL ;
 @nowarn=41660
-@ssub=LD DE,Auto_A2BC
+@ssub=LD DE,StrSubjectInd
  43315 LD DE,41660   ;
  43318 LD B,19       ;
  43320 CALL 44509    ;
  43323 LD HL,18664   ;
  43326 LD (31257),HL ;
 @nowarn=41679
-@ssub=LD DE,Auto_A2CF
+@ssub=LD DE,StrRoomInd
  43329 LD DE,41679   ;
  43332 LD B,16       ;
  43334 CALL 44509    ;
  43337 LD HL,20517   ;
  43340 LD (31257),HL ;
 @nowarn=41695
-@ssub=LD DE,Auto_A2DF
+@ssub=LD DE,StrGrilleDuct
  43343 LD DE,41695   ;
  43346 LD B,22       ;
  43348 CALL 44509    ;
@@ -10369,14 +10347,14 @@ c43242 CALL 42501    ;
  43381 LD HL,20613   ;
  43384 LD (31257),HL ;
 @nowarn=43527
-@ssub=LD DE,Auto_AA07
+@ssub=LD DE,StrSoundOfA
  43387 LD DE,43527   ;
  43390 LD B,22       ;
  43392 CALL 44509    ;
  43395 LD HL,20677   ;
  43398 LD (31257),HL ;
 @nowarn=43549
-@ssub=LD DE,Auto_AA1D
+@ssub=LD DE,StrDoorOpened
  43401 LD DE,43549   ;
  43404 LD B,17       ;
  43406 CALL 44509    ;
@@ -10393,7 +10371,7 @@ c43242 CALL 42501    ;
  43426 LD HL,20677   ;
  43429 LD (31257),HL ;
 @nowarn=43566
-@ssub=LD DE,Auto_AA2E
+@ssub=LD DE,StrGrilleRemoved
  43432 LD DE,43566   ;
  43435 LD B,20       ;
  43437 CALL 44509    ;
@@ -10410,7 +10388,7 @@ c43242 CALL 42501    ;
  43457 LD HL,20677   ;
  43460 LD (31257),HL ;
 @nowarn=43586
-@ssub=LD DE,Auto_AA42
+@ssub=LD DE,StrTrackerReading
  43463 LD DE,43586   ;
  43466 LD B,24       ;
  43468 CALL 44509    ;
@@ -10439,82 +10417,20 @@ c43242 CALL 42501    ;
  43523 POP BC        ;
  43524 DJNZ 43507    ;
  43526 RET           ;
-@label=Auto_AA07
- 43527 LD D,H        ;
- 43528 LD L,B        ;
- 43529 LD L,C        ;
- 43530 LD (HL),E     ;
- 43531 JR NZ,43638   ;
- 43533 LD (HL),E     ;
- 43534 JR NZ,43652   ;
- 43536 LD L,B        ;
- 43537 LD H,L        ;
- 43538 JR NZ,43655   ;
- 43540 LD L,A        ;
- 43541 LD (HL),L     ;
- 43542 LD L,(HL)     ;
- 43543 LD H,H        ;
- 43544 JR NZ,43657   ;
- 43546 LD H,(HL)     ;
- 43547 JR NZ,43646   ;
-@label=Auto_AA1D
- 43549 LD B,H        ;
- 43550 LD L,A        ;
- 43551 LD L,A        ;
- 43552 LD (HL),D     ;
- 43553 JR NZ,43653   ;
- 43555 LD H,L        ;
- 43556 LD L,C        ;
- 43557 LD L,(HL)     ;
- 43558 LD H,A        ;
- 43559 JR NZ,43672   ;
- 43561 LD (HL),B     ;
- 43562 LD H,L        ;
- 43563 LD L,(HL)     ;
- 43564 LD H,L        ;
- 43565 LD H,H        ;
-@label=Auto_AA2E
- 43566 LD B,A        ;
- 43567 LD (HL),D     ;
- 43568 LD L,C        ;
- 43569 LD L,H        ;
- 43570 LD L,H        ;
- 43571 LD H,L        ;
- 43572 JR NZ,43672   ;
- 43574 LD H,L        ;
- 43575 LD L,C        ;
- 43576 LD L,(HL)     ;
- 43577 LD H,A        ;
- 43578 JR NZ,43694   ;
- 43580 LD H,L        ;
- 43581 LD L,L        ;
- 43582 LD L,A        ;
- 43583 HALT          ;
- 43584 LD H,L        ;
- 43585 LD H,H        ;
-@label=Auto_AA42
- 43586 LD D,B        ;
- 43587 LD L,A        ;
- 43588 LD (HL),E     ;
- 43589 LD L,C        ;
- 43590 LD (HL),H     ;
- 43591 LD L,C        ;
- 43592 HALT          ;
- 43593 LD H,L        ;
- 43594 JR NZ,43680   ;
- 43596 LD (HL),D     ;
- 43597 LD H,C        ;
- 43598 LD H,E        ;
- 43599 LD L,E        ;
- 43600 LD H,L        ;
- 43601 LD (HL),D     ;
- 43602 JR NZ,43686   ;
- 43604 LD H,L        ;
- 43605 LD H,C        ;
- 43606 LD H,H        ;
- 43607 LD L,C        ;
- 43608 LD L,(HL)     ;
- 43609 LD H,A        ;
+
+; Introduction-mode sound-demo captions
+;
+; Plain ASCII (previously misclassified as code): the caption prefix
+; and the three effect names shown while the Introduction mode plays
+; each sound.
+@label=StrSoundOfA
+t43527 DEFM "This is the sound of a"
+@label=StrDoorOpened
+ 43549 DEFM "Door being opened"
+@label=StrGrilleRemoved
+ 43566 DEFM "Grille being removed"
+@label=StrTrackerReading
+ 43586 DEFM "Positive Tracker Reading"
 
 ; OptionsScreen
 @ignoreua
@@ -10536,7 +10452,7 @@ c43610 CALL 42501    ; ClearDisplay
  43618 LD HL,16450   ; HL = $4042 (screen row for title)
  43621 LD (31257),HL ; set draw pointer
 @nowarn=41717
-@ssub=LD DE,Auto_A2F5
+@ssub=LD DE,StrSelectDevice
  43624 LD DE,41717   ; DE = #R41717 (title tile data)
  43627 LD B,27       ; 27 characters wide
  43629 CALL 44509    ; blit title text
@@ -10544,7 +10460,7 @@ c43610 CALL 42501    ; ClearDisplay
  43635 LD (31257),HL ;
 ; This entry point is used by the routine at #R42821.
 @nowarn=41744
-@ssub=LD DE,Auto_A310
+@ssub=LD DE,StrKempston
 *43638 LD DE,41744   ;
  43641 LD B,12       ;
  43643 CALL 44509    ;
@@ -10553,7 +10469,7 @@ c43610 CALL 42501    ; ClearDisplay
  43649 LD (31257),HL ;
 ; This entry point is used by the routine at #R42821.
 @nowarn=41756
-@ssub=LD DE,Auto_A31C
+@ssub=LD DE,StrAGFProtek
 *43652 LD DE,41756   ;
 ; This entry point is used by the routine at #R42821.
 *43655 LD B,14       ;
@@ -10562,7 +10478,7 @@ c43610 CALL 42501    ; ClearDisplay
  43660 LD HL,18539   ;
  43663 LD (31257),HL ;
 @nowarn=41770
-@ssub=LD DE,Auto_A32A
+@ssub=LD DE,StrSinclair
  43666 LD DE,41770   ;
  43669 LD B,12       ;
  43671 CALL 44509    ;
@@ -10570,7 +10486,7 @@ c43610 CALL 42501    ; ClearDisplay
  43677 LD (31257),HL ;
 ; This entry point is used by the routine at #R42821.
 @nowarn=41782
-@ssub=LD DE,Auto_A336
+@ssub=LD DE,StrKeyboard
 *43680 LD DE,41782   ;
  43683 LD B,12       ;
  43685 CALL 44509    ;
@@ -10578,21 +10494,21 @@ c43610 CALL 42501    ; ClearDisplay
  43691 LD (31257),HL ;
 ; This entry point is used by the routine at #R42821.
 @nowarn=41794
-@ssub=LD DE,Auto_A342
+@ssub=LD DE,StrSelect
 *43694 LD DE,41794   ;
  43697 LD B,10       ;
  43699 CALL 44509    ;
  43702 LD HL,20582   ;
  43705 LD (31257),HL ;
 @nowarn=41804
-@ssub=LD DE,Auto_A34C
+@ssub=LD DE,StrPressKey
  43708 LD DE,41804   ;
  43711 LD B,21       ;
  43713 CALL 44509    ;
  43716 LD HL,20674   ;
  43719 LD (31257),HL ;
 @nowarn=41825
-@ssub=LD DE,Auto_A361
+@ssub=LD DE,StrPressPause
  43722 LD DE,41825   ;
  43725 LD B,28       ;
  43727 CALL 44509    ;
@@ -10666,26 +10582,26 @@ c43610 CALL 42501    ; ClearDisplay
  43842 LD HL,16449   ;
  43845 LD (31257),HL ;
 @nowarn=41853
-@ssub=LD DE,Auto_A37D
+@ssub=LD DE,StrUserDefinable
  43848 LD DE,41853   ;
  43851 LD B,30       ;
  43853 CALL 44509    ;
 @nowarn=40502
-@ssub=LD A,(Auto_9E36)
+@ssub=LD A,(KeyboardModeFlag)
  43856 LD A,(40502)  ;
  43859 AND A         ;
  43860 JR Z,43904    ;
  43862 LD HL,16516   ;
  43865 LD (31257),HL ;
 @nowarn=41883
-@ssub=LD DE,Auto_A39B
+@ssub=LD DE,StrRedefineKeys
  43868 LD DE,41883   ;
  43871 LD B,24       ;
  43873 CALL 44509    ;
  43876 LD HL,16548   ;
  43879 LD (31257),HL ;
 @nowarn=41907
-@ssub=LD DE,Auto_A3B3
+@ssub=LD DE,StrAnyOtherKey
  43882 LD DE,41907   ;
  43885 LD B,25       ;
  43887 CALL 44509    ;
@@ -10699,14 +10615,14 @@ c43610 CALL 42501    ; ClearDisplay
 *43904 LD HL,18436   ;
  43907 LD (31257),HL ;
 @nowarn=41932
-@ssub=LD DE,Auto_A3CC
+@ssub=LD DE,StrWhichKey
  43910 LD DE,41932   ;
  43913 LD B,24       ;
  43915 CALL 44509    ;
  43918 LD HL,18500   ;
  43921 LD (31257),HL ;
 @nowarn=41956
-@ssub=LD DE,Auto_A3E4
+@ssub=LD DE,StrUseForUp
  43924 LD DE,41956   ;
  43927 LD B,11       ;
  43929 CALL 44509    ;
@@ -10717,7 +10633,7 @@ c43610 CALL 42501    ; ClearDisplay
  43945 LD HL,18509   ;
  43948 LD (31257),HL ;
 @nowarn=41967
-@ssub=LD DE,Auto_A3EF
+@ssub=LD DE,StrDown
  43951 LD DE,41967   ;
  43954 LD B,4        ;
  43956 CALL 44509    ;
@@ -10728,7 +10644,7 @@ c43610 CALL 42501    ; ClearDisplay
  43972 LD HL,18509   ;
  43975 LD (31257),HL ;
 @nowarn=41971
-@ssub=LD DE,Auto_A3F3
+@ssub=LD DE,StrFire
  43978 LD DE,41971   ;
  43981 LD B,4        ;
  43983 CALL 44509    ;
@@ -10739,7 +10655,7 @@ c43610 CALL 42501    ; ClearDisplay
  43999 LD HL,18509   ;
  44002 LD (31257),HL ;
 @nowarn=41975
-@ssub=LD DE,Auto_A3F7
+@ssub=LD DE,StrReturnTo
  44005 LD DE,41975   ;
  44008 LD B,14       ;
  44010 CALL 44509    ;
@@ -10749,7 +10665,7 @@ c43610 CALL 42501    ; ClearDisplay
  44023 CALL 44109    ;
  44026 LD A,255      ;
 @nowarn=40502
-@ssub=LD (Auto_9E36),A
+@ssub=LD (KeyboardModeFlag),A
  44028 LD (40502),A  ;
  44031 RET           ;
 *44032 PUSH HL       ;
@@ -10804,11 +10720,11 @@ c43610 CALL 42501    ; ClearDisplay
  44122 JR C,44112    ;
  44124 RET           ;
 ; This entry point is used by the routines at #R37490 and #R38379.
-@label=Auto_AC5D
+@label=EndgameScreen
 *44125 CALL 44561    ;
  44128 XOR A         ;
 @nowarn=40503
-@ssub=LD (Auto_9E37),A
+@ssub=LD (EndgameFlag),A
  44129 LD (40503),A  ;
  44132 CALL 44651    ;
  44135 CALL 44698    ;
@@ -10824,10 +10740,10 @@ c43610 CALL 42501    ; ClearDisplay
 *44159 CALL 44561    ;
  44162 XOR A         ;
 @nowarn=40503
-@ssub=LD (Auto_9E37),A
+@ssub=LD (EndgameFlag),A
  44163 LD (40503),A  ;
 @nowarn=42068
-@ssub=LD DE,Auto_A454
+@ssub=LD DE,StrNarcissusLaunched
  44166 LD DE,42068   ;
  44169 LD B,25       ;
  44171 LD HL,16387   ;
@@ -10848,7 +10764,7 @@ c43610 CALL 42501    ; ClearDisplay
  44208 LD (31257),HL ;
  44211 LD B,25       ;
 @nowarn=42093
-@ssub=LD DE,Auto_A46D
+@ssub=LD DE,StrWillExplode
  44213 LD DE,42093   ;
  44216 CALL 44509    ;
  44219 LD HL,16483   ;
@@ -10863,12 +10779,12 @@ c43610 CALL 42501    ; ClearDisplay
 *44242 CALL 44561    ;
  44245 XOR A         ;
 @nowarn=40503
-@ssub=LD (Auto_9E37),A
+@ssub=LD (EndgameFlag),A
  44246 LD (40503),A  ;
  44249 LD HL,16386   ;
  44252 LD (31257),HL ;
 @nowarn=42234
-@ssub=LD DE,Auto_A4FA
+@ssub=LD DE,StrLifeLevelsMinimal
  44255 LD DE,42234   ;
  44258 LD B,28       ;
  44260 CALL 44509    ;
@@ -10882,13 +10798,13 @@ c43610 CALL 42501    ; ClearDisplay
  44280 LD HL,16385   ;
  44283 LD (31257),HL ;
 @nowarn=42204
-@ssub=LD DE,Auto_A4DC
+@ssub=LD DE,StrLifeSupportGone
  44286 LD DE,42204   ;
  44289 LD B,30       ;
  44291 CALL 44509    ;
  44294 XOR A         ;
 @nowarn=40503
-@ssub=LD (Auto_9E37),A
+@ssub=LD (EndgameFlag),A
  44295 LD (40503),A  ;
  44298 LD HL,29581   ;
  44301 LD DE,8       ;
@@ -10931,7 +10847,7 @@ c44313 LD HL,29581   ; HL = slot 1's +7 status byte (#R29581)
  44342 LD (31257),HL ;
  44345 LD B,25       ;
 @nowarn=41997
-@ssub=LD DE,Auto_A40D
+@ssub=LD DE,StrAlienKilled
  44347 LD DE,41997   ;
  44350 CALL 44509    ;
  44353 RET           ;
@@ -10958,7 +10874,7 @@ c44313 LD HL,29581   ; HL = slot 1's +7 status byte (#R29581)
  44392 LD A,C        ;
  44393 CALL 31690    ;
 @nowarn=42022
-@ssub=LD DE,Auto_A426
+@ssub=LD DE,StrIsDead
  44396 LD DE,42022   ;
  44399 LD B,8        ;
  44401 CALL 44509    ;
@@ -10986,14 +10902,14 @@ c44313 LD HL,29581   ; HL = slot 1's +7 status byte (#R29581)
  44439 RET NC        ;
  44440 CALL 31690    ;
 @nowarn=42030
-@ssub=LD DE,Auto_A42E
+@ssub=LD DE,StrWasAndroid
  44443 LD DE,42030   ;
  44446 LD B,16       ;
  44448 CALL 44509    ;
  44451 RET           ;
 ; This entry point is used by the routine at #R43610.
 @nowarn=40503
-@ssub=LD A,(Auto_9E37)
+@ssub=LD A,(EndgameFlag)
 *44452 LD A,(40503)  ;
  44455 CP 100        ;
  44457 JR C,44461    ;
@@ -11004,7 +10920,7 @@ c44313 LD HL,29581   ; HL = slot 1's +7 status byte (#R29581)
  44468 JR Z,44494    ;
  44470 LD B,A        ;
 @nowarn=42066
-@ssub=LD HL,Auto_A452
+@ssub=LD HL,StrRatingDigits
  44471 LD HL,42066   ;
  44474 LD A,58       ;
 *44476 INC (HL)      ;
@@ -11022,7 +10938,7 @@ c44313 LD HL,29581   ; HL = slot 1's +7 status byte (#R29581)
 *44494 LD HL,20612   ;
  44497 LD (31257),HL ;
 @nowarn=42046
-@ssub=LD DE,Auto_A43E
+@ssub=LD DE,StrCompetence
  44500 LD DE,42046   ;
  44503 LD B,22       ;
  44505 CALL 44509    ;
@@ -11050,13 +10966,13 @@ c44313 LD HL,29581   ; HL = slot 1's +7 status byte (#R29581)
  44540 LD HL,16389   ;
  44543 LD (31257),HL ;
 @nowarn=42183
-@ssub=LD DE,Auto_A4C7
+@ssub=LD DE,StrNostromoExploded
  44546 LD DE,42183   ;
  44549 LD B,21       ;
  44551 CALL 44509    ;
  44554 XOR A         ;
 @nowarn=40503
-@ssub=LD (Auto_9E37),A
+@ssub=LD (EndgameFlag),A
  44555 LD (40503),A  ;
  44558 JP 44138      ;
 
@@ -11103,14 +11019,14 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
  44621 RET           ;
 ; This entry point is used by the routine at #R43610.
 @nowarn=42142
-@ssub=LD DE,Auto_A49E
+@ssub=LD DE,StrAlienUnleashed
 *44622 LD DE,42142   ;
  44625 LD HL,16451   ;
  44628 LD (31257),HL ;
  44631 LD B,27       ;
  44633 CALL 44509    ;
 @nowarn=42169
-@ssub=LD DE,Auto_A4B9
+@ssub=LD DE,StrUponEarth
  44636 LD DE,42169   ;
  44639 LD HL,16489   ;
  44642 LD (31257),HL ;
@@ -11142,11 +11058,11 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
  44688 EX AF,AF'     ;
  44689 LD C,A        ;
 @nowarn=40503
-@ssub=LD A,(Auto_9E37)
+@ssub=LD A,(EndgameFlag)
  44690 LD A,(40503)  ;
  44693 ADD A,C       ;
 @nowarn=40503
-@ssub=LD (Auto_9E37),A
+@ssub=LD (EndgameFlag),A
  44694 LD (40503),A  ;
  44697 RET           ;
 ; This entry point is used by the routine at #R43610.
@@ -11160,11 +11076,11 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
  44711 INC HL        ;
  44712 DJNZ 44704    ;
 @nowarn=40503
-@ssub=LD A,(Auto_9E37)
+@ssub=LD A,(EndgameFlag)
  44714 LD A,(40503)  ;
  44717 ADD A,C       ;
 @nowarn=40503
-@ssub=LD (Auto_9E37),A
+@ssub=LD (EndgameFlag),A
  44718 LD (40503),A  ;
  44721 RET           ;
 ; This entry point is used by the routine at #R43610.
@@ -11174,11 +11090,11 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
  44727 SLA A         ;
  44729 LD C,A        ;
 @nowarn=40503
-@ssub=LD A,(Auto_9E37)
+@ssub=LD A,(EndgameFlag)
  44730 LD A,(40503)  ;
  44733 ADD A,C       ;
 @nowarn=40503
-@ssub=LD (Auto_9E37),A
+@ssub=LD (EndgameFlag),A
  44734 LD (40503),A  ;
  44737 RET           ;
 
@@ -11199,8 +11115,8 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
 @ignoreua
 ; Steps:
 ;   1. Clear the two run-state bytes at #R33708 / #R33709.
-;   2. Point the message queue head (Auto_83CD #R33741) at the queue
-;      base Auto_83B2 (#R33714).
+;   2. Point the message queue head (MsgQueueWritePtr #R33741) at the queue
+;      base MessageQueue (#R33714).
 ;   3. Hard-wire #R33703 (AlienTargetID) = 9 — disables alien hunt logic.
 ;   4. LDIR 64 bytes from #R41508 (ShortGameCrewInit) into $7376 to populate
 ;      the alien slot and the seven crew slots with the short-game starting
@@ -11213,18 +11129,18 @@ c44561 LD HL,22528   ; HL = #R22528 (start of attribute file)
 @label=ShortGameInit
 c44738 XOR A         ; A = 0
 @nowarn=33708
-@ssub=LD (Auto_83AC),A
+@ssub=LD (MsgDrawnCol),A
  44739 LD (33708),A  ; clear run-state byte #R33708
 @nowarn=33709
-@ssub=LD (Auto_83AD),A
+@ssub=LD (MsgVisibleTimer),A
  44742 LD (33709),A  ; clear run-state byte #R33709
 @nowarn=33714
-@ssub=LD HL,Auto_83B2
- 44745 LD HL,33714   ; HL = Auto_83B2 (event queue base)
+@ssub=LD HL,MessageQueue
+ 44745 LD HL,33714   ; HL = MessageQueue (event queue base)
 @nowarn=33741
-@ssub=LD (Auto_83CD),HL
+@ssub=LD (MsgQueueWritePtr),HL
  44748 LD (33741),HL ; event queue head = queue base (empty queue)
-@label=Auto_AECF
+@label=ShortGame_SetTarget
  44751 LD A,9        ; A = 9 (fixed Short Game alien target)
 @nowarn=33703
 @ssub=LD (AlienTargetID),A
@@ -11237,47 +11153,17 @@ c44738 XOR A         ; A = 0
  44759 LD DE,29566   ; DE = $7376 (alien slot + crew table base)
  44762 LD BC,64      ; 64 bytes = 8 × 8-byte records
  44765 LDIR          ; copy short-game starting crew/alien state
-@label=Auto_AEDF
+@label=ShortGameInit_Done
  44767 JP 42380      ; → CommonGameInit (skip Long Game randomisation)
-@label=Auto_AEE2
- 44770 LD D,B        ;
- 44771 LD D,D        ;
- 44772 LD B,L        ;
- 44773 LD D,E        ;
- 44774 LD D,E        ;
- 44775 JR NZ,44826   ;
- 44777 JR NZ,44849   ;
- 44779 LD C,A        ;
- 44780 LD D,D        ;
- 44781 JR NZ,44861   ;
- 44783 LD B,L        ;
- 44784 LD D,A        ;
- 44785 JR NZ,44858   ;
- 44787 LD B,C        ;
- 44788 LD C,L        ;
- 44789 LD B,L        ;
-@label=Auto_AEF6
- 44790 LD B,C        ;
- 44791 LD C,(HL)     ;
- 44792 LD E,C        ;
- 44793 JR NZ,44874   ;
- 44795 LD D,H        ;
- 44796 LD C,B        ;
- 44797 LD B,L        ;
- 44798 LD D,D        ;
- 44799 JR NZ,44876   ;
- 44801 LD B,L        ;
- 44802 LD E,C        ;
- 44803 JR NZ,44889   ;
- 44805 LD C,A        ;
- 44806 JR NZ,44875   ;
- 44808 LD C,A        ;
- 44809 LD C,(HL)     ;
- 44810 LD D,H        ;
- 44811 LD C,C        ;
- 44812 LD C,(HL)     ;
- 44813 LD D,L        ;
- 44814 LD B,L        ;
+
+; Pause-menu texts
+;
+; Plain ASCII (previously misclassified as code): the two lines
+; PauseMenu (#R44815) draws.
+@label=StrPress1NewGame
+t44770 DEFM "PRESS 1 FOR NEW GAME"
+@label=StrAnyKeyContinue
+ 44790 DEFM "ANY OTHER KEY TO CONTINUE"
 
 ; PauseMenu
 ;
@@ -11298,14 +11184,14 @@ c44815 CALL 33479    ; draw game-window border
  44824 LD B,20       ; 20-character message line
 ; This entry point is used by the routine at #R44561.
 @nowarn=44770
-@ssub=LD DE,Auto_AEE2
+@ssub=LD DE,StrPress1NewGame
 *44826 LD DE,44770   ; DE = text data for pause message line 1
  44829 CALL 44509    ; blit text
  44832 LD HL,20675   ; next screen row
  44835 LD (31257),HL ;
  44838 LD B,25       ; 25-character second line
 @nowarn=44790
-@ssub=LD DE,Auto_AEF6
+@ssub=LD DE,StrAnyKeyContinue
  44840 LD DE,44790   ; text data for "PRESS 1 TO RESTART" line
  44843 CALL 44509    ; blit text
  44846 CALL 44109    ; short wait (debounce key release)
@@ -11449,7 +11335,7 @@ c44880 LD A,(33705)  ; A = sound-pending flag (queued by e.g.
  45063 POP IX        ;
  45065 CALL 39687    ;
 @nowarn=32896
-@ssub=LD HL,Auto_8080
+@ssub=LD HL,DrawMenuStrip
  45068 LD HL,32896   ;
  45071 LD (31263),HL ;
  45074 LD A,4        ;
@@ -11534,7 +11420,7 @@ c44880 LD A,(33705)  ; A = sound-pending flag (queued by e.g.
 ; This entry point is used by the routine at #R41264.
 *45222 LD HL,65535   ;
 @nowarn=33743
-@ssub=LD (Auto_83CF),HL
+@ssub=LD (MsgLastEnqueued),HL
  45225 LD (33743),HL ;
  45228 CALL 33600    ;
  45231 RET           ;
@@ -11582,7 +11468,7 @@ c45290 LD A,H        ;
  45293 LD H,A        ;
  45294 RET           ;
 ; This entry point is used by the routine at #R37490.
-@label=Auto_B0EF
+@label=PickupItemBoost
 *45295 ADD A,32      ;
  45297 LD (HL),A     ;
  45298 LD C,E        ;
@@ -11608,7 +11494,7 @@ c45290 LD A,H        ;
  45334 CALL 32385    ;
  45337 RET           ;
 ; This entry point is used by the routine at #R35973.
-@label=Auto_B11A
+@label=RefreshCrewCondition
 *45338 CALL 36793    ;
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
@@ -11619,13 +11505,13 @@ c45290 LD A,H        ;
  45350 LD B,A        ;
  45351 LD IX,29566   ;
  45355 LD DE,8       ;
-@label=Auto_B12E
+@label=RefreshCrewCond_Seek
 *45358 ADD IX,DE     ;
  45360 DJNZ 45358    ;
  45362 CALL 32385    ;
  45365 RET           ;
 ; This entry point is used by the routine at #R37490.
-@label=Auto_B136
+@label=IncPairAt
 *45366 ADD HL,DE     ;
  45367 INC (HL)      ;
  45368 INC HL        ;
@@ -11634,7 +11520,7 @@ c45290 LD A,H        ;
  45371 LD A,(HL)     ;
  45372 RET           ;
 ; This entry point is used by the routine at #R37490.
-@label=Auto_B13D
+@label=RefreshCondIfViewed
 *45373 LD A,(31252)  ;
  45376 CP 1          ;
  45378 JR NZ,45398   ;
@@ -11642,11 +11528,11 @@ c45290 LD A,H        ;
  45383 LD B,A        ;
  45384 LD IX,29566   ;
  45388 LD DE,8       ;
-@label=Auto_B14F
+@label=RefreshCond_Seek2
 *45391 ADD IX,DE     ;
  45393 DJNZ 45391    ;
  45395 CALL 32385    ;
-@label=Auto_B156
+@label=RefreshCond_Done
 *45398 POP IX        ;
  45400 RET           ;
 
@@ -11656,17 +11542,17 @@ c45290 LD A,H        ;
 @label=UpdateAllCrew
 c45401 LD IX,29574   ;
  45405 LD C,6        ;
-@label=Auto_B15F
+@label=CrewPass_Next
 *45407 LD H,(IX+1)   ;
  45410 LD L,(IX+5)   ;
  45413 LD B,C        ;
  45414 PUSH IX       ;
-@label=Auto_B168
+@label=CrewPass_Scan
 *45416 CALL 45470    ;
  45419 LD A,H        ;
  45420 CP (IX+1)     ;
  45423 JR Z,45444    ;
-@label=Auto_B171
+@label=CrewPass_NoMate
 *45425 DJNZ 45416    ;
  45427 POP IX        ;
  45429 DEC C         ;
@@ -11677,7 +11563,7 @@ c45401 LD IX,29574   ;
  45439 CALL 37322    ;
  45442 RET           ;
  45443 NOP           ;
-@label=Auto_B184
+@label=CrewPass_MateBoost
 *45444 LD A,L        ;
  45445 SUB 2         ;
  45447 ADD A,(IX+6)  ;
@@ -11695,21 +11581,21 @@ c45401 LD IX,29574   ;
  45465 SUB 2         ;
  45467 LD (DE),A     ;
  45468 JR 45425      ;
-@label=Auto_B19E
+@label=NextSlotIX
 *45470 LD DE,8       ;
  45473 ADD IX,DE     ;
  45475 RET           ;
 ; This entry point is used by the routine at #R38379.
-@label=Auto_B1A4
+@label=KillActorRefresh
 *45476 CALL 45585    ;
-@label=Auto_B1A7
+@label=KillActor_View
 *45479 LD A,(31252)  ;
  45482 CP 1          ;
  45484 RET NZ        ;
  45485 LD A,(31241)  ;
  45488 CP C          ;
  45489 RET Z         ;
-@label=Auto_B1B2
+@label=KillActor_Redraw
 *45490 PUSH BC       ;
  45491 PUSH DE       ;
  45492 PUSH HL       ;
@@ -11723,7 +11609,7 @@ c45401 LD IX,29574   ;
  45508 POP BC        ;
  45509 RET           ;
 ; This entry point is used by the routine at #R35578.
-@label=Auto_B1C6
+@label=BumpCourageMorale
 *45510 LD A,(IX+5)   ;
  45513 ADD A,1       ;
  45515 LD (IX+5),A   ;
@@ -11736,18 +11622,18 @@ c45401 LD IX,29574   ;
  45529 LD HL,33706   ;
  45532 RET           ;
 ; This entry point is used by the routine at #R38379.
-@label=Auto_B1DD
+@label=SetCourageRefresh
 *45533 LD (IX+5),C   ;
  45536 JP 45479      ;
 ; This entry point is used by the routine at #R35973.
-@label=Auto_B1E3
+@label=DecayMoraleStep
 *45539 INC HL        ;
  45540 DEC (HL)      ;
  45541 LD A,127      ;
  45543 CP (HL)       ;
  45544 JR NC,45548   ;
  45546 LD (HL),0     ;
-@label=Auto_B1EC
+@label=DecayMorale_Next
 *45548 DEC HL        ;
  45549 ADD HL,DE     ;
  45550 DEC B         ;
@@ -11761,14 +11647,14 @@ c45401 LD IX,29574   ;
  45566 LD B,A        ;
  45567 LD IX,29566   ;
  45571 LD DE,8       ;
-@label=Auto_B206
+@label=ViewedSlotSeek
 *45574 ADD IX,DE     ;
  45576 DJNZ 45574    ;
  45578 CALL 32385    ;
  45581 POP IX        ;
  45583 POP BC        ;
  45584 RET           ;
-@label=Auto_B211
+@label=KillActorMoraleHit
 *45585 INC HL        ;
  45586 LD (HL),1     ;
  45588 PUSH BC       ;
@@ -11776,7 +11662,7 @@ c45401 LD IX,29574   ;
  45591 PUSH HL       ;
  45592 LD H,0        ;
 @nowarn=33695
-@ssub=LD A,(Auto_839F)
+@ssub=LD A,(NearestCrewC)
  45594 LD A,(33695)  ;
  45597 CP 255        ;
  45599 CALL NZ,45642 ;
@@ -11801,16 +11687,16 @@ c45401 LD IX,29574   ;
  45629 LD A,20       ;
  45631 CALL 37176    ;
  45634 CALL 36428    ;
-@label=Auto_B245
+@label=KillMorale_Done
 *45637 POP HL        ;
  45638 POP IX        ;
  45640 POP BC        ;
  45641 RET           ;
-@label=Auto_B24A
+@label=WitnessMoraleLoss
 *45642 LD B,A        ;
  45643 LD IX,29566   ;
  45647 LD DE,8       ;
-@label=Auto_B252
+@label=WitnessMorale_Seek
 *45650 ADD IX,DE     ;
  45652 DJNZ 45650    ;
  45654 LD B,A        ;
@@ -11822,33 +11708,33 @@ c45401 LD IX,29574   ;
  45665 CP (IX+6)     ;
  45668 JR NC,45674   ;
  45670 LD (IX+6),0   ;
-@label=Auto_B26A
+@label=WitnessMorale_Keep
 *45674 LD H,B        ;
  45675 RET           ;
 ; This entry point is used by the routine at #R38379.
-@label=Auto_B26C
+@label=KillActor_Bounce
 *45676 CP (HL)       ;
  45677 JP Z,31417    ;
  45680 JP 45490      ;
 ; This entry point is used by the routine at #R38379.
-@label=Auto_B273
+@label=DuctSearchInit
 *45683 LD BC,29346   ;
  45686 AND 63        ;
 @nowarn=38356
  45688 LD (38356),A  ;
  45691 RET           ;
 ; This entry point is used by the routine at #R31634.
-@label=Auto_B27C
+@label=PrintNameThenPanel
 *45692 CALL 31690    ;
 ; This entry point is used by the routine at #R31634.
-@label=Auto_B27F
+@label=PanelColCheck
 *45695 LD HL,31257   ;
  45698 LD A,(HL)     ;
  45699 AND 31        ;
  45701 RET Z         ;
  45702 JP 32670      ;
 ; This entry point is used by the routine at #R38379.
-@label=Auto_B289
+@label=RoomRejectCheck
 *45705 CP C          ;
  45706 JP Z,39035    ;
  45709 LD A,(29567)  ;
@@ -11857,14 +11743,14 @@ c45401 LD IX,29574   ;
  45715 JP Z,39035    ;
  45718 JP 39000      ;
 ; This entry point is used by the routine at #R37018.
-@label=Auto_B299
+@label=AIActionSelect
 *45721 LD A,(IX+1)   ;
  45724 CP 98         ;
  45726 JP Z,37132    ;
  45729 JP 37036      ;
 ; This entry point is used by the routine at #R41264.
 @nowarn=33704
-@label=Auto_B2A4
+@label=AlienEventDispatch
 @ssub=LD (AlienActiveFlag),A
 *45732 LD (33704),A  ;
  45735 LD A,(31252)  ;
@@ -12440,7 +12326,7 @@ b61936 DEFB 0,0,0,0,0,0,0,0
  61976 DEFB 0,0,0,0,0,0,0,0
  61984 DEFB 0,0,0,0,0,0,0,0
  61992 DEFB 0,0,0,0,0,0,0,0
-@label=Auto_F230
+@label=TileBitmaps
  62000 DEFB 0,0,0,0,0,0,0,0
  62008 DEFB 0,0,0,0,0,1,3,7
  62016 DEFB 1,15,31,61,198,238,246,237

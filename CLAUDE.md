@@ -91,7 +91,7 @@ Addresses in `alien.skool` are **decimal** (`36457`, not `$8E69`); hex appears o
 | `$74D1` | `RoomTypeTable` — per-room map-layout type (0–2 pick the templates at `$6474`/`$64EB`/`$658C`, 3 = Narcissus) |
 | `$74F4` | `ItemLocations` — one byte per portable item (ids 0–21): room where it lies (bit 6 = in ducts), or 160+slot / 128+slot = held in that actor's front/back hand, 255 = nonexistent. THE item-system state |
 | `$750A` | `RoomItemList` — item ids lying in the viewed room (built by `BuildRoomItemList` `$7C34`) |
-| `$7520` | `ItemCarryNudge` — per-item sprite offset applied while carried in the front hand |
+| `$7520` | `ItemCourageBonus` — per-item courage/morale bonus applied while carried in the front hand (weapons embolden the crew: prods/extinguishers/spanners +1, incinerators/harpoon/lasers +2) |
 | `$7536` | `RoomDamageDigits` — per-room 2-digit ASCII damage meters |
 | `$757C` | `RoomGrilleState` — per-room duct-grille byte (255 = in place, 0 = removed; room 13 starts removed, room 33's byte is always 0) |
 | `$759E` | `CrewInjuryText`/`CrewMoraleText` — "NAME is Dead and Broken" strings |
@@ -115,11 +115,11 @@ Addresses in `alien.skool` are **decimal** (`36457`, not `$8E69`); hex appears o
 6. `ProcessAnimQueue` — step corridor animations (×2 passes)
 7. `UpdateJones` `$8FFB` — walk Jones the cat one room per ~5s (room in `$83AA`); draws the cat into corridor cell 14, enqueues msg #0 when seen, avoids the alien's room
 8. `UpdateCorridors` — advance crew along corridor (×2 passes)
-9. `AnimateCrewA` `$88B7` / `AnimateCrewB` `$88E8` — XOR-blit sprite frames
+9. `AnimateCrewA` `$88A7` / `AnimateCrewB` `$88D8` — animate the two map markers: channel A = walking crew figure on the viewed room, channel B = blinking box on a candidate room (XOR-blit)
 10. `PlayMusic` `$AF60` — beeper tone phrase
 11. `DrawStatusPanel` `$AD09` — crew-alive portrait column
 
-Key 1 opens `PauseMenu` `$AEF7`; pressing again restarts.
+Key 1 opens `PauseMenu` `$AF0F`; pressing 1 again restarts.
 
 ### Screen flow
 
@@ -174,17 +174,20 @@ room's 5 direction slots (slot value = destination; own ID = no exit).
 
 The alien and crew AI consumes a "script" of commands by walking ZX Spectrum ROM bytes. The low nibble of each byte is used as a command (0–15). The script pointer lives at `$7A21` and is seeded from ZX system variable `SEED` (`$5C78`) via `ResetScriptPtr` `$8370`. This provides deterministic but varied behaviour without any RNG code.
 
-### Crew Data Record (8 bytes, base `$7386`, accessed via IX)
+### Actor record (8 bytes, base `$737E` + slot×8, accessed via IX)
+
+Same records as `ActorRecords` above (`$7386` = slot 1); in the room view the per-frame code re-points IX at the selected slot (`$7A09`), so the menu dispatch handlers can use IX+n directly.
 
 | Offset | Field |
 |--------|-------|
-| `IX+0` | Sprite index |
-| `IX+1` | Crew ID (bits 0–5) + direction flag (bit 6) |
-| `IX+2` | Current corridor position |
+| `IX+0` | Action countdown — fires the queued action via `DispatchCrewAction` on the 1→0 transition; 0 = parked (`SetActionTimer` `$8BE6` = base + per-slot + per-strength adjustments) |
+| `IX+1` | Current room (bits 0–5) + in-ducts flag (bit 6); `$FF` = HostMarker |
+| `IX+2` | Destination room |
 | `IX+3` | Action state (1=idle, 2=move, 3=remove grille, 4=combat/ATTACK order, 5=investigate, 7=Android attack) |
-| `IX+5` | Pixel X coordinate |
-| `IX+6` | Pixel Y coordinate |
-| `IX+7` | Alive flag (0 = dead) |
+| `IX+4` | Strength/injury (0=Dead, 1=Collapsed, 2=Wounded, 3+=OK) |
+| `IX+5` | Base courage — raised by carried weapons (`ItemCourageBonus`), decays over time (`DecayCrewCourage` `$8E4C`) |
+| `IX+6` | Morale (0–4 index into `CrewMoraleText`) = courage + companion support, recomputed by `RecalcMorale` `$8D5B`; witnesses of a death lose morale (`KillActorMoraleHit` `$B211`) |
+| `IX+7` | Status (0 = alive, 1 = dead, `$FF` = removed / chestburster host) |
 
 ### Key Annotated Routines
 
