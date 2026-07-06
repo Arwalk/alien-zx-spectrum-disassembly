@@ -6354,23 +6354,28 @@ c36763 CP 3          ; nibble 0..2?
 
 ; RefreshRoomInfo
 ;
+; Refresh the viewed room's info: redraw the "Also here" room-mate
+; lists, then handle a hostile presence — the alien in the room hands
+; off to AlienInfoCheck (encounter screen / ATTACK row), the Android
+; (once hostile) to AndroidInfoCheck.
+; .
 ; Used by the routines at #R35451, #R36150 and #R45338.
 @label=RefreshRoomInfo
-c36793 LD HL,65535   ;
- 36796 LD (31250),HL ;
+c36793 LD HL,65535   ; forget the cached room-mates and
+ 36796 LD (31250),HL ; redraw the "Also here" lists
  36799 CALL 32536    ;
- 36802 LD A,(31242)  ;
+ 36802 LD A,(31242)  ; the alien in the viewed room?
  36805 LD HL,29567   ;
  36808 CP (HL)       ;
- 36809 JR Z,36830    ;
- 36811 CALL 39695    ;
+ 36809 JR Z,36830    ; yes: AlienInfoCheck
+ 36811 CALL 39695    ; no: restart the encounter animation
 @nowarn=33704
 @ssub=LD A,(AlienActiveFlag)
- 36814 LD A,(33704)  ;
+ 36814 LD A,(33704)  ; Android hostile yet?
  36817 AND A         ;
- 36818 RET Z         ;
- 36819 LD HL,(33701) ;
- 36822 INC HL        ;
+ 36818 RET Z         ; no: done
+ 36819 LD HL,(33701) ; is the Android in the viewed room
+ 36822 INC HL        ; (Z flag for AndroidInfoCheck)?
  36823 LD A,(31242)  ;
  36826 CP (HL)       ;
  36827 JP 45080      ;
@@ -6380,16 +6385,17 @@ c36793 LD HL,65535   ;
 @nowarn=32896
 @ssub=LD HL,DrawMenuStrip
 @label=RefreshInfo_Encounter
-*36833 LD HL,32896   ;
- 36836 LD (31263),HL ;
- 36839 LD A,4        ;
+*36833 LD HL,32896   ; freeze both animation channels
+@ignoreua
+ 36836 LD (31263),HL ; ($8080) and switch to view type 4:
+ 36839 LD A,4        ; the alien-encounter screen
  36841 LD (31243),A  ;
 ; This entry point is used by the routine at #R45080.
 @label=RefreshInfo_AttackRow
-*36844 LD A,52       ;
+*36844 LD A,52       ; Special cell (13) = "  ATTACK  "
  36846 LD (29643),A  ;
- 36849 LD HL,18646   ;
- 36852 LD (31257),HL ;
+ 36849 LD HL,18646   ; and redraw the special row
+ 36852 LD (31257),HL ; (screen row 14, col 22)
  36855 CALL 31634    ;
  36858 RET           ;
 
@@ -6412,14 +6418,14 @@ c36793 LD HL,65535   ;
 ;     drawn into corridor cell 14.
 @label=UpdateJones
 @ssub=LD A,(JonesRoom)
-c36859 LD A,(33706)  ; A = primary alien-event timer
- 36862 CP 255        ; 255 = disabled
- 36864 RET Z         ; disabled: do nothing this frame
+c36859 LD A,(33706)  ; A = Jones's room —
+ 36862 CP 255        ; 255 = caught / off the map:
+ 36864 RET Z         ; nothing to walk
  36865 LD HL,33707   ; HL → JonesMoveTimer
  36868 DEC (HL)      ; tick it down
  36869 RET NZ        ; not yet zero: wait another frame
- 36870 LD (HL),255   ; expired: reset secondary counter to 255
- 36872 EX AF,AF'     ; save A for later use
+ 36870 LD (HL),255   ; expired: next move in ~255 frames
+ 36872 EX AF,AF'     ; keep the OLD room in A'
 @nowarn=33706
 @label=Jones_PickMove
 @ssub=LD A,(JonesRoom)
@@ -6632,27 +6638,27 @@ c37018 PUSH IX       ; save caller's IX
 ; #R38784, #R39077, #R39228, #R39256, #R39365, #R39400, #R39572, #R40212,
 ; #R40757, #R40826, #R40941, #R42276 and #R45585.
 @label=EnqueueMessage
-c37176 EX DE,HL      ;
+c37176 EX DE,HL      ; E = actor, D = target
 @nowarn=33743
 @ssub=LD HL,(MsgLastEnqueued)
- 37177 LD HL,(33743) ;
- 37180 CP L          ;
+ 37177 LD HL,(33743) ; same msg# and actor as the last
+ 37180 CP L          ; one enqueued?
  37181 JR NZ,37187   ;
  37183 LD A,E        ;
  37184 CP H          ;
- 37185 RET Z         ;
- 37186 LD A,L        ;
+ 37185 RET Z         ; yes: drop the duplicate
+ 37186 LD A,L        ; (A = the msg# again)
 @label=EnqMsg_Append
 *37187 EX AF,AF'     ;
 @nowarn=33741
 @ssub=LD HL,(MsgQueueWritePtr)
- 37188 LD HL,(33741) ;
- 37191 LD A,(HL)     ;
- 37192 CP 255        ;
- 37194 RET Z         ;
+ 37188 LD HL,(33741) ; queue full? (the write ptr has hit
+ 37191 LD A,(HL)     ; the 255 that starts MsgLastEnqueued,
+ 37192 CP 255        ; ~9 entries in)
+ 37194 RET Z         ; yes: drop the message
  37195 EX AF,AF'     ;
- 37196 LD (HL),A     ;
- 37197 INC HL        ;
+ 37196 LD (HL),A     ; append the 3-byte entry:
+ 37197 INC HL        ; msg#, actor, target
  37198 LD (HL),E     ;
  37199 INC HL        ;
  37200 LD (HL),D     ;
@@ -6660,33 +6666,39 @@ c37176 EX DE,HL      ;
 @nowarn=33741
 @ssub=LD (MsgQueueWritePtr),HL
  37202 LD (33741),HL ;
- 37205 LD L,A        ;
- 37206 LD H,E        ;
+ 37205 LD L,A        ; remember (msg#, actor) for the
+ 37206 LD H,E        ; duplicate check
 @nowarn=33743
 @ssub=LD (MsgLastEnqueued),HL
  37207 LD (33743),HL ;
 @nowarn=33709
 @ssub=LD A,(MsgVisibleTimer)
- 37210 LD A,(33709)  ;
+ 37210 LD A,(33709)  ; a message currently on display?
  37213 AND A         ;
  37214 RET Z         ;
- 37215 LD A,1        ;
+ 37215 LD A,1        ; yes: cut its hold time short so
 @nowarn=33709
 @ssub=LD (MsgVisibleTimer),A
- 37217 LD (33709),A  ;
+ 37217 LD (33709),A  ; the new one appears promptly
  37220 RET           ;
 
 ; RenderMessage
 ;
+; Draw message number A onto the bottom message line (screen row 23). The
+; text is drawn over BLACK attributes, so it stays invisible until
+; TickMessageQueue's cursor sweep reveals it column by column.
+; Substitution codes: 254 = actor name (MsgParam1), 253 = target name
+; (MsgParam2), 252 = room name (MsgParam1 as a room id).
+; .
 ; Used by the routine at #R37363.
 @ignoreua
 @label=RenderMessage
-c37221 LD HL,20704   ; HL = screen address for bottom status line
+c37221 LD HL,20704   ; draw at the message line (row 23)
  37224 LD (31257),HL ;
 @nowarn=33892
 @ssub=LD DE,MessageTextTable
- 37227 LD DE,33892   ;
- 37230 AND A         ;
+ 37227 LD DE,33892   ; find string number A: skip A
+ 37230 AND A         ; 255-terminated strings
  37231 JR Z,37242    ;
  37233 LD B,A        ;
 @label=RenderMsg_SkipLoop
@@ -6696,34 +6708,34 @@ c37221 LD HL,20704   ; HL = screen address for bottom status line
  37238 JR NZ,37234   ;
  37240 DJNZ 37234    ;
 @label=RenderMsg_CharLoop
-*37242 LD A,(DE)     ;
- 37243 CP 255        ;
+*37242 LD A,(DE)     ; next message byte:
+ 37243 CP 255        ; end of string?
  37245 JR Z,37310    ;
- 37247 CP 254        ;
+ 37247 CP 254        ; the actor's name?
  37249 JR Z,37271    ;
- 37251 CP 253        ;
+ 37251 CP 253        ; the target's name?
  37253 JR Z,37276    ;
- 37255 CP 252        ;
+ 37255 CP 252        ; a room name?
  37257 JR Z,37287    ;
- 37259 PUSH DE       ;
+ 37259 PUSH DE       ; plain character: blit it
  37260 CALL 31369    ;
  37263 POP DE        ;
  37264 INC DE        ;
- 37265 LD HL,31257   ;
+ 37265 LD HL,31257   ; one column right
  37268 INC (HL)      ;
  37269 JR 37242      ;
 @nowarn=33712
 @ssub=LD A,(MsgParam1)
 @label=RenderMsg_ActorName
-*37271 LD A,(33712)  ;
+*37271 LD A,(33712)  ; A = the actor's slot
  37274 JR 37279      ;
 @nowarn=33713
 @ssub=LD A,(MsgParam2)
 @label=RenderMsg_TargetName
-*37276 LD A,(33713)  ;
+*37276 LD A,(33713)  ; A = the target's slot
 @label=RenderMsg_PrintName
 *37279 INC DE        ;
- 37280 PUSH DE       ;
+ 37280 PUSH DE       ; print crew name A (CrewNameTable)
  37281 CALL 31690    ;
  37284 POP DE        ;
  37285 JR 37242      ;
@@ -6732,19 +6744,19 @@ c37221 LD HL,20704   ; HL = screen address for bottom status line
  37288 PUSH DE       ;
 @nowarn=33712
 @ssub=LD A,(MsgParam1)
- 37289 LD A,(33712)  ;
- 37292 LD HL,(31257) ;
- 37295 PUSH HL       ;
+ 37289 LD A,(33712)  ; A = the room id = its name's
+ 37292 LD HL,(31257) ; string index — a 10-character
+ 37295 PUSH HL       ; strip via DrawSprite
  37296 CALL 31634    ;
  37299 POP HL        ;
- 37300 LD DE,10      ;
+ 37300 LD DE,10      ; advance 10 columns
  37303 ADD HL,DE     ;
  37304 LD (31257),HL ;
  37307 POP DE        ;
  37308 JR 37242      ;
 @label=RenderMsg_Finish
-*37310 LD HL,(31257) ;
- 37313 LD A,L        ;
+*37310 LD HL,(31257) ; MsgDrawnCol = the end column,
+ 37313 LD A,L        ; bit 7 set = "reveal sweep due"
  37314 AND 31        ;
  37316 OR 128        ;
 @nowarn=33708
@@ -6754,93 +6766,99 @@ c37221 LD HL,20704   ; HL = screen address for bottom status line
 
 ; ClearMessageRow
 ;
+; Blank the bottom message line: erase the 32 tile columns, black out
+; the attribute row (with a red marker at column 0 priming the reveal
+; sweep) and reset the display timer.
+; .
 ; Used by the routine at #R45401.
 @label=ClearMessageRow
-c37322 LD HL,20704   ;
+c37322 LD HL,20704   ; the message line (row 23)
  37325 LD (31257),HL ;
- 37328 LD B,32       ;
+ 37328 LD B,32       ; blank all 32 columns
 @label=ClearMsg_TileLoop
 *37330 PUSH BC       ;
- 37331 XOR A         ;
- 37332 CALL 31370    ;
+ 37331 XOR A         ; (entering DrawSpriteRow past its
+ 37332 CALL 31370    ; (DE) fetch draws tile A = blank)
  37335 LD HL,31257   ;
  37338 INC (HL)      ;
  37339 POP BC        ;
  37340 DJNZ 37330    ;
- 37342 LD HL,23264   ;
- 37345 LD (HL),18    ;
+ 37342 LD HL,23264   ; attr row 23: a red block at col 0
+ 37345 LD (HL),18    ; (the sweep cursor's start),
 @nowarn=33710
 @ssub=LD (MsgAttrPtr),HL
- 37347 LD (33710),HL ;
+ 37347 LD (33710),HL ; MsgAttrPtr = col 0,
  37350 INC HL        ;
- 37351 LD B,31       ;
+ 37351 LD B,31       ; and black over cols 1-31
 @label=ClearMsg_AttrLoop
 *37353 LD (HL),0     ;
  37355 INC HL        ;
  37356 DJNZ 37353    ;
 @nowarn=33709
 @ssub=LD HL,MsgVisibleTimer
- 37358 LD HL,33709   ;
+ 37358 LD HL,33709   ; display timer = 0
  37361 LD (HL),B     ;
  37362 RET           ;
 
 ; TickMessageQueue
 ;
-; Per-frame ticker for the on-screen status-message display. Decrements
-; the message-visible countdown at MsgVisibleTimer; when it expires, peeks at
-; the queued-message head at MsgDrawnCol and either swaps in the next
-; queued message (copying a 21-byte entry from MessageQueue to MessageQueueBody
-; and re-invoking the renderer at #R37221) or clears the message line.
-; Called twice per frame from the main loop at #R36457.
+; Per-frame driver of the message line's teletype effect. A message's
+; life: dequeue -> RenderMessage draws it over black attributes ->
+; a bright-red cursor sweeps left-to-right, turning each column
+; black-on-cyan (the reveal) -> the message holds (timer 50, or just
+; 2 when more messages wait) -> the cursor sweeps back right-to-left
+; blacking it out -> the next message is fetched. MsgDrawnCol encodes
+; the phase: 0 = line free, bit 7 set = revealing, bit 7 clear =
+; erasing. Called twice per frame, so the sweeps run at ~100 cells/s.
 ; .
 ; Used by the routine at #R36457.
 @nowarn=33709
 @label=TickMessageQueue
 @ssub=LD A,(MsgVisibleTimer)
-c37363 LD A,(33709)  ; A = current message-visible timer
+c37363 LD A,(33709)  ; message currently holding?
  37366 AND A         ;
  37367 JR Z,37383    ;
- 37369 DEC A         ;
+ 37369 DEC A         ; yes: run down the hold time
 @nowarn=33709
 @ssub=LD (MsgVisibleTimer),A
  37370 LD (33709),A  ;
  37373 RET NZ        ;
 @nowarn=33710
 @ssub=LD A,(MsgAttrPtr)
- 37374 LD A,(33710)  ;
- 37377 AND 31        ;
+ 37374 LD A,(33710)  ; hold over: start the erase sweep —
+ 37377 AND 31        ; MsgDrawnCol = current column,
 @nowarn=33708
 @ssub=LD (MsgDrawnCol),A
- 37379 LD (33708),A  ;
+ 37379 LD (33708),A  ; bit 7 clear
  37382 RET           ;
 @nowarn=33708
 @label=MsgQueue_Fetch
 @ssub=LD A,(MsgDrawnCol)
-*37383 LD A,(33708)  ;
+*37383 LD A,(33708)  ; a sweep in progress?
  37386 AND A         ;
  37387 JR NZ,37432   ;
 @nowarn=33741
 @ssub=LD A,(MsgQueueWritePtr)
- 37389 LD A,(33741)  ;
+ 37389 LD A,(33741)  ; line free: anything queued?
 @nowarn=33714
 @ssub=LD HL,MessageQueue
  37392 LD HL,33714   ;
  37395 CP L          ;
  37396 JR NZ,37399   ;
- 37398 RET           ;
+ 37398 RET           ; no: idle
 @label=MsgQueue_Dequeue
-*37399 LD A,(HL)     ;
- 37400 INC HL        ;
- 37401 LD E,(HL)     ;
+*37399 LD A,(HL)     ; pop the head entry:
+ 37400 INC HL        ; A = msg#,
+ 37401 LD E,(HL)     ; E/D = actor/target params
  37402 INC HL        ;
  37403 LD D,(HL)     ;
 @nowarn=33712
 @ssub=LD (MsgParam1),DE
  37404 LD (33712),DE ;
- 37408 LD BC,21      ;
+ 37408 LD BC,21      ; compact the queue down
 @nowarn=33714
 @ssub=LD DE,MessageQueue
- 37411 LD DE,33714   ;
+ 37411 LD DE,33714   ; by one 3-byte entry
 @nowarn=33717
 @ssub=LD HL,MessageQueueBody
  37414 LD HL,33717   ;
@@ -6854,39 +6872,39 @@ c37363 LD A,(33709)  ; A = current message-visible timer
 @nowarn=33741
 @ssub=LD (MsgQueueWritePtr),HL
  37425 LD (33741),HL ;
- 37428 CALL 37221    ;
+ 37428 CALL 37221    ; draw it (still invisible)
  37431 RET           ;
 @label=MsgLine_Sweep
-*37432 BIT 7,A       ;
- 37434 JR Z,37477    ;
+*37432 BIT 7,A       ; which sweep phase?
+ 37434 JR Z,37477    ; bit 7 clear: erasing
 @nowarn=33710
 @ssub=LD HL,(MsgAttrPtr)
- 37436 LD HL,(33710) ;
- 37439 LD (HL),40    ;
- 37441 INC HL        ;
- 37442 LD (HL),82    ;
+ 37436 LD HL,(33710) ; revealing: the column behind turns
+ 37439 LD (HL),40    ; black-on-cyan (readable),
+ 37441 INC HL        ; the cursor block (bright red)
+ 37442 LD (HL),82    ; moves one right
 @nowarn=33710
 @ssub=LD (MsgAttrPtr),HL
  37444 LD (33710),HL ;
- 37447 DEC A         ;
+ 37447 DEC A         ; reached the end of the text?
  37448 CP 128        ;
  37450 JR Z,37456    ;
 @nowarn=33708
 @ssub=LD (MsgDrawnCol),A
- 37452 LD (33708),A  ;
+ 37452 LD (33708),A  ; not yet: keep sweeping
  37455 RET           ;
 @label=MsgLine_SetTimer
-*37456 XOR A         ;
+*37456 XOR A         ; reveal done: line phase = idle,
 @nowarn=33708
 @ssub=LD (MsgDrawnCol),A
  37457 LD (33708),A  ;
 @nowarn=33741
 @ssub=LD A,(MsgQueueWritePtr)
- 37460 LD A,(33741)  ;
+ 37460 LD A,(33741)  ; hold the message for 50 ticks —
 @nowarn=33714
 @ssub=LD HL,MessageQueue
- 37463 LD HL,33714   ;
- 37466 CP L          ;
+ 37463 LD HL,33714   ; only 2 when more messages
+ 37466 CP L          ; are waiting
  37467 LD A,50       ;
  37469 JR Z,37473    ;
  37471 LD A,2        ;
@@ -6898,14 +6916,14 @@ c37363 LD A,(33709)  ; A = current message-visible timer
 @nowarn=33710
 @label=MsgLine_SweepBack
 @ssub=LD HL,(MsgAttrPtr)
-*37477 LD HL,(33710) ;
- 37480 LD (HL),0     ;
+*37477 LD HL,(33710) ; erasing: black out this column,
+ 37480 LD (HL),0     ; the cursor block moves one left
  37482 DEC HL        ;
  37483 LD (HL),82    ;
 @nowarn=33710
 @ssub=LD (MsgAttrPtr),HL
  37485 LD (33710),HL ;
- 37488 DEC A         ;
+ 37488 DEC A         ; A = columns left (0 frees the line)
  37489 DEFB 50        ; opcode of "LD (msg-head var),A": its operands
                       ; are the XOR H / ADD A,E at #R37490, so falling
                       ; through stores A and hits that entry's RET
@@ -12507,8 +12525,8 @@ c45401 LD IX,29574   ; IX = slot 1 record
  45414 PUSH IX       ;
 @label=CrewPass_Scan
 *45416 CALL 45470    ; step IX to the next slot
- 45419 LD A,H        ;
- 45420 CP (IX+1)     ; same room?
+ 45419 LD A,H        ; same room?
+ 45420 CP (IX+1)     ;
  45423 JR Z,45444    ; yes: apply the mutual boost
 @label=CrewPass_NoMate
 *45425 DJNZ 45416    ;
@@ -12519,7 +12537,7 @@ c45401 LD IX,29574   ; IX = slot 1 record
 @ignoreua
  45435 CP 182        ; stop after slot 7 ($73B6)
  45437 JR NZ,45407   ;
- 45439 CALL 37322    ;
+ 45439 CALL 37322    ; blank the message line
  45442 RET           ;
  45443 NOP           ;
 @label=CrewPass_MateBoost
@@ -12527,15 +12545,15 @@ c45401 LD IX,29574   ; IX = slot 1 record
  45445 SUB 2         ;
  45447 ADD A,(IX+6)  ;
  45450 LD (IX+6),A   ;
- 45453 POP DE        ;
- 45454 PUSH DE       ;
+ 45453 POP DE        ; and the other way round:
+ 45454 PUSH DE       ; DE -> this actor's morale byte (+6)
  45455 INC E         ;
  45456 INC E         ;
  45457 INC E         ;
  45458 INC E         ;
  45459 INC E         ;
  45460 INC E         ;
- 45461 LD A,(DE)     ;
+ 45461 LD A,(DE)     ; += the mate's courage - 2
  45462 ADD A,(IX+5)  ;
  45465 SUB 2         ;
  45467 LD (DE),A     ;
