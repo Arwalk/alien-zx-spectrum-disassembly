@@ -2898,39 +2898,39 @@ c31823 ADD A,128     ; C = slot + 128, E = slot + 160
 ; (Jones captured) -> strings 68 "Cat in Net" / 69 "Cat in Box".
 @label=ItemIdToString
 c31857 LD E,35       ; E = first item string ("Elctrc Prd")
- 31859 CP 3          ;
+ 31859 CP 3          ; ids 0-2: prods
  31861 JR C,31899    ;
- 31863 INC E         ;
+ 31863 INC E         ; 3-5: incinerators
  31864 CP 6          ;
  31866 JR C,31899    ;
- 31868 INC E         ;
+ 31868 INC E         ; 6-7: trackers
  31869 CP 8          ;
  31871 JR C,31899    ;
- 31873 INC E         ;
+ 31873 INC E         ; 8-11: extinguishers
  31874 CP 12         ;
  31876 JR C,31899    ;
- 31878 INC E         ;
+ 31878 INC E         ; 12: the harpoon gun
  31879 CP 12         ;
  31881 JR Z,31899    ;
- 31883 INC E         ;
+ 31883 INC E         ; 13-15: laser pistols
  31884 CP 16         ;
  31886 JR C,31899    ;
- 31888 INC E         ;
+ 31888 INC E         ; 16: the net
  31889 CP 16         ;
  31891 JR Z,31899    ;
- 31893 INC E         ;
+ 31893 INC E         ; 17: the cat box
  31894 CP 17         ;
  31896 JR Z,31899    ;
- 31898 INC E         ;
+ 31898 INC E         ; 18-19: spanners
 @label=ItemIdStr_Specials
-*31899 CP 20         ;
- 31901 JR NZ,31907   ;
- 31903 LD E,68       ;
+*31899 CP 20         ; ids 20/21 (the caught cat)
+ 31901 JR NZ,31907   ; override the chain:
+ 31903 LD E,68       ; 68 "Cat in Net"
  31905 JR 31913      ;
 @label=ItemIdStr_CatBox
 *31907 CP 21         ;
  31909 JR NZ,31913   ;
- 31911 LD E,69       ;
+ 31911 LD E,69       ; 69 "Cat in Box"
 @label=ItemIdStr_Done
 *31913 LD A,E        ;
  31914 RET           ;
@@ -5346,9 +5346,9 @@ c35382 LD A,64       ;
 ; Action on the QUIT row (17): freeze the crew
 ; animation and return to the ship view.
 @label=QuitRoomView
-c35440 LD HL,31263   ;
+c35440 LD HL,31263   ; freeze animation channel A
  35443 SET 7,(HL)    ;
- 35445 JP 31417      ;
+ 35445 JP 31417      ; back to the orders/ship view
 
 ; No-op room-action handler
 ;
@@ -5374,7 +5374,7 @@ c35449 RET           ;
 ; name.
 @label=SwapHeldItems
 c35451 CALL 31820    ; refresh HeldItemFront/Back for this actor
- 35454 LD (IX+0),0   ;
+ 35454 LD (IX+0),0   ; park the actor's countdown
  35458 LD DE,(31248) ; E = front item, D = back item
  35462 LD HL,29984   ; ItemCourageBonus:
  35465 PUSH HL       ;
@@ -5428,8 +5428,8 @@ c35451 CALL 31820    ; refresh HeldItemFront/Back for this actor
  35544 LD A,(31249)  ;
  35547 CALL 31857    ; and the new back item's name
  35550 CALL 31634    ;
- 35553 CALL 32385    ;
- 35556 CALL 36793    ;
+ 35553 CALL 32385    ; refresh the condition line
+ 35556 CALL 36793    ; and the room info
  35559 RET           ;
 
 ; MoveThroughGrille
@@ -5440,9 +5440,9 @@ c35451 CALL 31820    ; refresh HeldItemFront/Back for this actor
 ; .
 ; Used by the routines at #R33794 and #R36579.
 @label=MoveThroughGrille
-c35560 LD A,64       ;
+c35560 LD A,64       ; base time 64
  35562 CALL 35814    ; set the actor's action timer
- 35565 LD (IX+3),2   ; action state = 2 (move)
+ 35565 LD (IX+3),2   ; action state = 2 (duct transit)
  35569 LD A,(31242)  ;
  35572 XOR 64        ; same room, other side of the grille
  35574 LD (IX+2),A   ;
@@ -9452,9 +9452,10 @@ c40439 LD HL,40398   ; HL = PhrasePairs base
  40500 POP BC        ;
  40501 RET           ;
 @label=KeyboardModeFlag
- 40502 NOP           ;
-@label=EndgameFlag
- 40503 NOP           ;
+ 40502 NOP           ; variable: 255 = keyboard input chosen
+@label=RatingScore
+ 40503 NOP           ; variable: the endgame Competence Rating
+                     ; accumulator (see ComputeRating)
 
 ; Intro-screen tile map and attribute table
 ;
@@ -11504,76 +11505,97 @@ c44109 LD BC,65278   ;
  44122 JR C,44112    ;
  44124 RET           ;
 
-; EndgameScreen
+; EndgameScreen — every way the game can end
 ;
+; Five entry points, one per outcome; each wipes the screen, zeroes
+; RatingScore and adds the terms that outcome earns before the shared
+; roster/rating/wait-key tail (which restarts at GameEntry):
+; .
+;   EndgameScreen (#R44125) — the alien was killed in combat or died
+;     in space: "The Alien has been killed"; scores crew + rooms +
+;     oxygen (the only ending that counts ship condition).
+;   Endgame_Escape (#R44159) — the Narcissus got away: with the
+;     self-destruct armed, the frozen countdown digits are patched
+;     into "The Nostromo will explode in m minutes ss seconds" and
+;     crew + oxygen are scored; WITHOUT it the alien survives — "The
+;     Alien will be unleashed upon the Earth", Competence Rating 0.
+;   Endgame_CrewLost (#R44242) — no human left alive: "Humanoid life
+;     levels minimal", then the same destruct-armed split.
+;   Endgame_OxygenOut (#R44277) — the air ran out: "Life Support
+;     Systems exhausted", every crew member is marked dead, then
+;     the same destruct-armed split.
+;   Endgame_Summary (#R44138) — from DamageGameOver (the ship broke
+;     up or the countdown expired): the alien died with the ship, but
+;     only the oxygen term is scored.
+; .
 ; Used by the routines at #R37584 and #R38674.
 @label=EndgameScreen
-c44125 CALL 44561    ;
- 44128 XOR A         ;
+c44125 CALL 44561    ; wipe the screen
+ 44128 XOR A         ; RatingScore = 0,
 @nowarn=40503
-@ssub=LD (EndgameFlag),A
+@ssub=LD (RatingScore),A
  44129 LD (40503),A  ;
- 44132 CALL 44651    ;
- 44135 CALL 44698    ;
+ 44132 CALL 44651    ; + crew term
+ 44135 CALL 44698    ; + room-condition term
 ; This entry point is used by the routine at #R44524.
 @label=Endgame_Summary
-*44138 CALL 44722    ;
- 44141 CALL 44339    ;
+*44138 CALL 44722    ; + oxygen term
+ 44141 CALL 44339    ; "The Alien has been killed"
 @label=Endgame_Roster
-*44144 CALL 44354    ;
- 44147 CALL 44428    ;
- 44150 CALL 44452    ;
- 44153 CALL 44591    ;
- 44156 JP 36457      ;
+*44144 CALL 44354    ; the dead-crew roster,
+ 44147 CALL 44428    ; "<name> was the Android",
+ 44150 CALL 44452    ; "Competence Rating nnn",
+ 44153 CALL 44591    ; wait for a key,
+ 44156 JP 36457      ; and restart the game
 ; This entry point is used by the routine at #R40281.
 @label=Endgame_Escape
-*44159 CALL 44561    ;
- 44162 XOR A         ;
+*44159 CALL 44561    ; wipe the screen
+ 44162 XOR A         ; RatingScore = 0
 @nowarn=40503
-@ssub=LD (EndgameFlag),A
+@ssub=LD (RatingScore),A
  44163 LD (40503),A  ;
 @nowarn=42068
 @ssub=LD DE,StrNarcissusLaunched
- 44166 LD DE,42068   ;
+ 44166 LD DE,42068   ; "The Narcissus is launched"
  44169 LD B,25       ;
  44171 LD HL,16387   ;
  44174 LD (31257),HL ;
  44177 CALL 44509    ;
- 44180 LD HL,31253   ;
+ 44180 LD HL,31253   ; was the self-destruct armed?
  44183 BIT 0,(HL)    ;
- 44185 JR NZ,44193   ;
- 44187 CALL 44622    ;
- 44190 JP 44144      ;
+ 44185 JR NZ,44193   ; yes: the Nostromo (and alien) die
+ 44187 CALL 44622    ; no: the alien reaches Earth —
+ 44190 JP 44144      ; rating stays 0
 @nowarn=38364
 @label=Endgame_ExplodeText
-*44193 LD A,(38364)  ;
- 44196 LD (42122),A  ;
+*44193 LD A,(38364)  ; patch the frozen countdown into
+ 44196 LD (42122),A  ; the message: minutes digit,
 @nowarn=38366
- 44199 LD HL,(38366) ;
+ 44199 LD HL,(38366) ; seconds digits
  44202 LD (42132),HL ;
- 44205 LD HL,16451   ;
+ 44205 LD HL,16451   ; "The Nostromo will explode"
  44208 LD (31257),HL ;
  44211 LD B,25       ;
 @nowarn=42093
 @ssub=LD DE,StrWillExplode
  44213 LD DE,42093   ;
  44216 CALL 44509    ;
- 44219 LD HL,16483   ;
+ 44219 LD HL,16483   ; "in m minutes ss seconds"
  44222 LD (31257),HL ;
  44225 LD B,23       ;
  44227 LD DE,42119   ;
  44230 CALL 44509    ;
- 44233 CALL 44651    ;
- 44236 CALL 44722    ;
+ 44233 CALL 44651    ; + crew term
+ 44236 CALL 44722    ; + oxygen term
  44239 JP 44144      ;
 ; This entry point is used by the routine at #R44313.
 @label=Endgame_CrewLost
-*44242 CALL 44561    ;
- 44245 XOR A         ;
+*44242 CALL 44561    ; wipe the screen
+ 44245 XOR A         ; RatingScore = 0
 @nowarn=40503
-@ssub=LD (EndgameFlag),A
+@ssub=LD (RatingScore),A
  44246 LD (40503),A  ;
- 44249 LD HL,16386   ;
+ 44249 LD HL,16386   ; "Humanoid life levels minimal"
  44252 LD (31257),HL ;
 @nowarn=42234
 @ssub=LD DE,StrLifeLevelsMinimal
@@ -11581,33 +11603,33 @@ c44125 CALL 44561    ;
  44258 LD B,28       ;
  44260 CALL 44509    ;
 @label=Endgame_DestructChk
-*44263 LD HL,31253   ;
+*44263 LD HL,31253   ; was the self-destruct armed?
  44266 BIT 0,(HL)    ;
- 44268 JP NZ,44193   ;
- 44271 CALL 44622    ;
+ 44268 JP NZ,44193   ; yes: the explode ending
+ 44271 CALL 44622    ; no: the alien reaches Earth
  44274 JP 44144      ;
 ; This entry point is used by the routine at #R39572.
 @label=Endgame_OxygenOut
-*44277 CALL 44561    ;
- 44280 LD HL,16385   ;
- 44283 LD (31257),HL ;
+*44277 CALL 44561    ; wipe the screen
+ 44280 LD HL,16385   ; "Life Support Systems
+ 44283 LD (31257),HL ; exhausted"
 @nowarn=42204
 @ssub=LD DE,StrLifeSupportGone
  44286 LD DE,42204   ;
  44289 LD B,30       ;
  44291 CALL 44509    ;
- 44294 XOR A         ;
+ 44294 XOR A         ; RatingScore = 0
 @nowarn=40503
-@ssub=LD (EndgameFlag),A
+@ssub=LD (RatingScore),A
  44295 LD (40503),A  ;
- 44298 LD HL,29581   ;
- 44301 LD DE,8       ;
+ 44298 LD HL,29581   ; everyone suffocates: all 7 crew
+ 44301 LD DE,8       ; status bytes = 2 (dead, found)
  44304 LD B,7        ;
 @label=Endgame_MarkCrew
 *44306 LD (HL),2     ;
  44308 ADD HL,DE     ;
  44309 DJNZ 44306    ;
- 44311 JR 44263      ;
+ 44311 JR 44263      ; then the destruct-armed split
 
 ; CheckCrewAlive — the per-frame crew-extinction gate
 ;
@@ -11645,8 +11667,8 @@ c44313 LD HL,29581   ; HL = slot 1's +7 status byte (#R29581)
 ;
 ; Used by the routine at #R44125.
 @label=PrintAlienKilled
-c44339 LD HL,16452   ;
- 44342 LD (31257),HL ;
+c44339 LD HL,16452   ; "The Alien has been killed"
+ 44342 LD (31257),HL ; on screen row 2
  44345 LD B,25       ;
 @nowarn=41997
 @ssub=LD DE,StrAlienKilled
@@ -11656,11 +11678,15 @@ c44339 LD HL,16452   ;
 
 ; PrintDeadRoster
 ;
+; List the fallen: one "<name> is dead" line per crew slot whose
+; status is neither alive (0) nor removed-from-play (255) — the
+; Android excluded (its reveal line follows separately).
+; .
 ; Used by the routine at #R44125.
 @label=PrintDeadRoster
-c44354 LD HL,16548   ;
+c44354 LD HL,16548   ; from screen row 5, col 4
  44357 LD (31257),HL ;
- 44360 LD BC,1793    ;
+ 44360 LD BC,1793    ; B = 7 slots, C = slot 1
  44363 LD IX,29574   ;
  44367 LD DE,8       ;
 @label=DeadRoster_Loop
@@ -11668,25 +11694,25 @@ c44354 LD HL,16548   ;
  44371 PUSH DE       ;
 @nowarn=33703
 @ssub=LD A,(AlienTargetID)
- 44372 LD A,(33703)  ;
+ 44372 LD A,(33703)  ; the Android gets its own line
  44375 CP C          ;
  44376 JR Z,44420    ;
- 44378 LD A,(IX+7)   ;
+ 44378 LD A,(IX+7)   ; alive, or never in play?
  44381 AND A         ;
- 44382 JR Z,44420    ;
+ 44382 JR Z,44420    ; then not on the roster
  44384 CP 255        ;
  44386 JR Z,44420    ;
  44388 LD HL,(31257) ;
  44391 PUSH HL       ;
- 44392 LD A,C        ;
+ 44392 LD A,C        ; "<name> is dead"
  44393 CALL 31690    ;
 @nowarn=42022
 @ssub=LD DE,StrIsDead
  44396 LD DE,42022   ;
  44399 LD B,8        ;
  44401 CALL 44509    ;
- 44404 POP HL        ;
- 44405 LD DE,64      ;
+ 44404 POP HL        ; two screen rows down (+64,
+ 44405 LD DE,64      ; or the screen-third stride)
  44408 LD A,L        ;
  44409 CP 224        ;
  44411 JR C,44416    ;
@@ -11704,61 +11730,69 @@ c44354 LD HL,16548   ;
 
 ; PrintAndroidReveal
 ;
+; The post-mortem twist: name the traitor ("<name> was the Android")
+; — Long Game only (a valid AlienTargetID).
+; .
 ; Used by the routine at #R44125.
 @label=PrintAndroidReveal
-c44428 LD HL,20516   ;
+c44428 LD HL,20516   ; on screen row 16, col 4
  44431 LD (31257),HL ;
 @nowarn=33703
 @ssub=LD A,(AlienTargetID)
- 44434 LD A,(33703)  ;
+ 44434 LD A,(33703)  ; was there an Android this game?
  44437 CP 8          ;
- 44439 RET NC        ;
- 44440 CALL 31690    ;
+ 44439 RET NC        ; no (Short Game): keep the secret
+ 44440 CALL 31690    ; print its name +
 @nowarn=42030
 @ssub=LD DE,StrWasAndroid
- 44443 LD DE,42030   ;
+ 44443 LD DE,42030   ; " was the Android"
  44446 LD B,16       ;
  44448 CALL 44509    ;
  44451 RET           ;
 
 ; PrintRating
 ;
+; Print "Competence Rating: nnn": clamp RatingScore to 100, reset the
+; ASCII digits inside the label string to "00", bump them A times
+; with decimal carries (RatingHundred patches in the leading "1" for
+; a perfect 100), then print the patched 22-character string.
+; .
 ; Used by the routine at #R44125.
 @nowarn=40503
-@ssub=LD A,(EndgameFlag)
+@ssub=LD A,(RatingScore)
 @label=PrintRating
-c44452 LD A,(40503)  ;
- 44455 CP 100        ;
+c44452 LD A,(40503)  ; A = RatingScore,
+ 44455 CP 100        ; clamped to 100
  44457 JR C,44461    ;
  44459 LD A,100      ;
 @label=Rating_Digits
-*44461 CALL 45207    ;
+*44461 CALL 45207    ; digits = "  00"
  44464 LD (42065),HL ;
- 44467 AND A         ;
+ 44467 AND A         ; zero: print as-is
  44468 JR Z,44494    ;
- 44470 LD B,A        ;
+ 44470 LD B,A        ; else count the score out
 @nowarn=42066
 @ssub=LD HL,StrRatingDigits
- 44471 LD HL,42066   ;
+ 44471 LD HL,42066   ; in ASCII: units +1,
  44474 LD A,58       ;
 @label=Rating_IncLoop
 *44476 INC (HL)      ;
- 44477 CP (HL)       ;
+ 44477 CP (HL)       ; past '9'?
  44478 JR NZ,44492   ;
- 44480 LD (HL),48    ;
- 44482 DEC HL        ;
+ 44480 LD (HL),48    ; wrap to '0',
+ 44482 DEC HL        ; carry into the tens,
  44483 INC (HL)      ;
  44484 CP (HL)       ;
  44485 JR NZ,44491   ;
- 44487 CALL 45216    ;
- 44490 INC HL        ;
+ 44487 CALL 45216    ; and past 99 write the "10"
+ 44490 INC HL        ; of a perfect 100
 @label=Rating_CarryDone
 *44491 INC HL        ;
 @label=Rating_Next
 *44492 DJNZ 44476    ;
 @label=Rating_PrintLabel
-*44494 LD HL,20612   ;
- 44497 LD (31257),HL ;
+*44494 LD HL,20612   ; print "Competence Rating: nnn"
+ 44497 LD (31257),HL ; on screen row 19
 @nowarn=42046
 @ssub=LD DE,StrCompetence
  44500 LD DE,42046   ;
@@ -11807,7 +11841,7 @@ c44524 CALL 44561    ;
  44551 CALL 44509    ;
  44554 XOR A         ;
 @nowarn=40503
-@ssub=LD (EndgameFlag),A
+@ssub=LD (RatingScore),A
  44555 LD (40503),A  ;
  44558 JP 44138      ;
 
@@ -11877,25 +11911,32 @@ c44591 CALL 36448    ;
  44647 CALL 44509    ;
  44650 RET           ;
 
-; ComputeRating
+; ComputeRating — the crew term of the Competence Rating
 ;
+; RatingScore += 2 x strength for every crew member who is still
+; alive (+7 = 0), the Android's slot excluded. Which terms an ending
+; adds is what distinguishes the outcomes (see the EndgameScreen
+; header): destroying the alien scores crew + rooms + oxygen; going
+; up with the ship scores oxygen only; escaping with the destruct
+; armed scores crew + oxygen; letting the alien survive scores 0.
+; .
 ; Used by the routine at #R44125.
 @label=ComputeRating
-c44651 LD IX,29574   ;
+c44651 LD IX,29574   ; IX -> slot 1's record
  44655 LD DE,8       ;
- 44658 XOR A         ;
+ 44658 XOR A         ; A' = running total 0
  44659 EX AF,AF'     ;
- 44660 LD BC,1793    ;
+ 44660 LD BC,1793    ; B = 7 slots, C = slot 1
 @nowarn=33703
 @ssub=LD A,(AlienTargetID)
 @label=Rating_CrewLoop
-*44663 LD A,(33703)  ;
+*44663 LD A,(33703)  ; the Android earns nothing
  44666 CP C          ;
  44667 JR Z,44683    ;
- 44669 LD A,(IX+7)   ;
+ 44669 LD A,(IX+7)   ; alive?
  44672 AND A         ;
  44673 JR NZ,44683   ;
- 44675 LD L,(IX+4)   ;
+ 44675 LD L,(IX+4)   ; yes: total += 2 x strength
  44678 SLA L         ;
  44680 EX AF,AF'     ;
  44681 ADD A,L       ;
@@ -11904,56 +11945,62 @@ c44651 LD IX,29574   ;
 *44683 ADD IX,DE     ;
  44685 INC C         ;
  44686 DJNZ 44663    ;
- 44688 EX AF,AF'     ;
+ 44688 EX AF,AF'     ; RatingScore += the total
  44689 LD C,A        ;
 @nowarn=40503
-@ssub=LD A,(EndgameFlag)
+@ssub=LD A,(RatingScore)
  44690 LD A,(40503)  ;
  44693 ADD A,C       ;
 @nowarn=40503
-@ssub=LD (EndgameFlag),A
+@ssub=LD (RatingScore),A
  44694 LD (40503),A  ;
  44697 RET           ;
 
-; CountRoomDamage
+; CountRoomDamage — the ship-condition term of the Competence Rating
 ;
+; RatingScore += 1 for every room whose damage meter is still below
+; "20" (tens digit < '2') — 34 rooms, up to 34 points.
+; .
 ; Used by the routine at #R44125.
 @label=CountRoomDamage
-c44698 LD BC,8704    ;
- 44701 LD HL,30006   ;
+c44698 LD BC,8704    ; B = 34 rooms, C = 0 points
+ 44701 LD HL,30006   ; walk the damage TENS digits
 @label=CountDmg_Loop
-*44704 LD A,(HL)     ;
+*44704 LD A,(HL)     ; below '2' (under 20 damage)?
  44705 CP 50         ;
  44707 JR NC,44710   ;
- 44709 INC C         ;
+ 44709 INC C         ; yes: +1
 @label=CountDmg_Next
 *44710 INC HL        ;
  44711 INC HL        ;
  44712 DJNZ 44704    ;
 @nowarn=40503
-@ssub=LD A,(EndgameFlag)
- 44714 LD A,(40503)  ;
+@ssub=LD A,(RatingScore)
+ 44714 LD A,(40503)  ; RatingScore += the count
  44717 ADD A,C       ;
 @nowarn=40503
-@ssub=LD (EndgameFlag),A
+@ssub=LD (RatingScore),A
  44718 LD (40503),A  ;
  44721 RET           ;
 
-; OxygenScore
+; OxygenScore — the oxygen term of the Competence Rating
 ;
+; RatingScore += 2 x the oxygen counter's leading digit ('7' at the
+; start of a game, so up to 14 points for a quick finish).
+; .
 ; Used by the routine at #R44125.
 @nowarn=38374
 @label=OxygenScore
-c44722 LD A,(38374)  ;
+c44722 LD A,(38374)  ; the oxygen counter's first digit
  44725 SUB 48        ;
- 44727 SLA A         ;
+ 44727 SLA A         ; x 2
  44729 LD C,A        ;
 @nowarn=40503
-@ssub=LD A,(EndgameFlag)
- 44730 LD A,(40503)  ;
+@ssub=LD A,(RatingScore)
+ 44730 LD A,(40503)  ; RatingScore += it
  44733 ADD A,C       ;
 @nowarn=40503
-@ssub=LD (EndgameFlag),A
+@ssub=LD (RatingScore),A
  44734 LD (40503),A  ;
  44737 RET           ;
 
