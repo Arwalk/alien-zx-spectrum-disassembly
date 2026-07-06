@@ -4210,7 +4210,11 @@ b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D
  33691 DEFB 25               ; frame counter for marker channel A (reset to 10)
 @label=NearRoomList
 @ignoreua
- 33692 DEFB 255,255,255      ; 3-room scratch list ($FF = empty), matched against actor rooms at $8E30
+ 33692 DEFB 255,255,255      ; motion-tracker results (scan at $9707): entries
+                             ; for Tracker #1/#2 and the carried cat = the
+                             ; holder's room when nothing moves next door
+                             ; (+1 morale for actors there, tested at $8E30),
+                             ; or 255 = motion detected (beep / uneasy cat)
 @label=NearestCrewC
 @ignoreua
  33695 DEFB 255              ; third nearest-crew slot; $839F-$83A1 are also iterated as a 3-list
@@ -6132,7 +6136,7 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
  36484 CALL 40319    ; FrameTiming: ~1/50s frame wait or play queued sound
  36487 CALL 40826    ; UpdateAlien: alien movement & crew-attack logic
  36490 CALL 41264    ; TriggerAlienEvent: poll alien event timer
- 36493 CALL 37018    ; UpdateCrewAI: give first idle crew member a new action
+ 36493 CALL 37018    ; UpdateAlienAI: give the idle alien its next action
  36496 CALL 37363    ; TickMessageQueue: tick the queued per-crew animation slots
  36499 CALL 36859    ; UpdateJones: walk Jones the cat one room when due
  36502 CALL 35973    ; ResetCrewTimers / corridor pass 1
@@ -6323,8 +6327,7 @@ c36717 LD A,(IX+1)   ; A = actor's current room (bit 6 = duct network)
 ; 9-11 → 3, 12-15 → 4. Used to translate the deterministic ROM-byte stream
 ; into AI movement decisions.
 ; .
-; Used by PickNextRoom (#R36717), UpdateJones (#R36859), UpdateCrewAI
-; (#R37018) and CrewAction5_Investigate (#R39256).
+; Used by the routines at #R36717, #R36859, #R37018 and #R39256.
 @label=ScriptNibbleToDirection
 c36763 CP 3          ; nibble 0..2?
  36765 JR NC,36769   ;
@@ -6509,106 +6512,112 @@ c36859 LD A,(33706)  ; A = primary alien-event timer
  37014 CALL 39655    ; start the Jones animation from frame 0
  37017 RET           ;
 
-; UpdateCrewAI
+; UpdateAlienAI — give the idle alien its next action
 @ignoreua
 ;
-; Assigns a new action to the first idle crew member. Scans the 7-entry crew
-; data table at #R29566 (IX+0 = action counter). If a crew member's counter
-; is non-zero they are busy; the first one with counter = 0 gets a new action
-; sourced from the ROM-traversal script via #R33589 (AdvanceScriptPtr) and
-; #R36763 (ScriptNibbleToDirection). The action sets IX+3 to one of:
-;     1 = idle (action timer 80 frames)
-;     2 = move (action timer 50 frames)
-;     3 = wait (action timer 50 frames)
-;     5 = investigate (action timer 60 frames)
-; and IX+0 to the appropriate frame countdown.
+; Despite the old "UpdateCrewAI" name, this is the ALIEN's brain (IX
+; -> slot 0; crew get their actions from the player). When the
+; alien's countdown is parked (0), pick its next move from the ROM
+; script:
+;   - crew share its room -> action state 5 (attack tick, timer 60)
+;   - alone with the grille still in place -> 3-in-16 chance to rip
+;     the grille out itself (state 3, timer 50)
+;   - alone, grille open -> 6-in-16 chance to slip through it into /
+;     out of the ducts (state 2, timer 50)
+;   - otherwise wander to an adjacent room (state 1, timer 80); when
+;     the roll leaves it where it stands, it damages the room instead
+;     (+1 damage point — the alien trashes whatever it is lurking in)
+; .
+; The entry goes through AIActionSelect (#R45721), which first
+; rescues the alien from spot 98 (ducts "over" the Narcissus, an
+; escape artifact — see that routine).
 ; .
 ; Used by the routine at #R36457.
-@label=UpdateCrewAI
+@label=UpdateAlienAI
 c37018 PUSH IX       ; save caller's IX
 @ignoreua
- 37020 LD IX,29566   ; IX = crew data base (first 7-entry crew table)
- 37024 XOR A         ; A = 0
- 37025 CP (IX+0)     ; is crew member 0's action counter zero (idle)?
- 37028 JR Z,37033    ; yes: assign new action at #R45721
- 37030 POP IX        ; crew member busy: restore IX
- 37032 RET           ; return without change
-@label=CrewAI_Assign
-*37033 JP 45721      ; tail-call: assign action from script byte
+ 37020 LD IX,29566   ; IX -> the alien's record (slot 0)
+ 37024 XOR A         ; is its action countdown parked (0)?
+ 37025 CP (IX+0)     ;
+ 37028 JR Z,37033    ; yes: pick a new action
+ 37030 POP IX        ; no: it is busy
+ 37032 RET           ;
+@label=AlienAI_Assign
+*37033 JP 45721      ; duct-escape guard, then FindVictims
 ; This entry point is used by the routine at #R45721.
-@label=CrewAI_FindTarget
-*37036 LD HL,65535   ;
+@label=AlienAI_FindVictims
+*37036 LD HL,65535   ; NearestCrewC/A = 255/255
 @nowarn=33695
 @ssub=LD (NearestCrewC),HL
  37039 LD (33695),HL ;
 @nowarn=33695
 @ssub=LD DE,NearestCrewC
- 37042 LD DE,33695   ;
- 37045 LD HL,29575   ;
- 37048 LD BC,1793    ;
-@label=CrewAI_ScanLoop
-*37051 CP (HL)       ;
+ 37042 LD DE,33695   ; collect crew on the alien's spot
+ 37045 LD HL,29575   ; (A = its room byte, from AIActionSelect)
+ 37048 LD BC,1793    ; B = 7 slots, C = slot 1
+@label=AlienAI_ScanLoop
+*37051 CP (HL)       ; on the same spot?
  37052 JR NZ,37058   ;
- 37054 EX DE,HL      ;
- 37055 LD (HL),C     ;
+ 37054 EX DE,HL      ; record the slot in
+ 37055 LD (HL),C     ; NearestCrewC, then A, then B
  37056 EX DE,HL      ;
  37057 INC DE        ;
-@label=CrewAI_ScanNext
+@label=AlienAI_ScanNext
 *37058 INC C         ;
  37059 PUSH DE       ;
- 37060 LD DE,8       ;
+ 37060 LD DE,8       ; next record's room byte
  37063 ADD HL,DE     ;
  37064 POP DE        ;
  37065 DJNZ 37051    ;
 @nowarn=33695
 @ssub=LD A,(NearestCrewC)
- 37067 LD A,(33695)  ;
+ 37067 LD A,(33695)  ; anyone there?
  37070 CP 255        ;
- 37072 JR Z,37085    ;
- 37074 LD (IX+0),60  ; timer = 60 frames
- 37078 LD (IX+3),5   ; action state = 5 (investigate)
+ 37072 JR Z,37085    ; no: movement options
+ 37074 LD (IX+0),60  ; yes: attack them —
+ 37078 LD (IX+3),5   ; action state 5, timer 60
  37082 POP IX        ;
  37084 RET           ;
-@label=CrewAI_HaveTarget
-*37085 LD A,(IX+1)   ; actor's current room
- 37088 AND 63        ;
+@label=AlienAI_GrilleCheck
+*37085 LD A,(IX+1)   ; alien alone: is this room's
+ 37088 AND 63        ; grille still in place?
  37090 LD E,A        ;
  37091 LD D,0        ;
  37093 LD HL,30076   ; RoomGrilleState[room]
  37096 ADD HL,DE     ;
  37097 LD A,(HL)     ;
- 37098 CP 255        ; grille still in place here?
- 37100 JR NZ,37122   ; no: consider moving out instead
- 37102 CALL 33589    ; AdvanceScriptPtr → A = next script nibble
- 37105 CALL 36763    ; ScriptNibbleToDirection → A ∈ [0..4]
- 37108 AND A         ; direction 0?
- 37109 JR NZ,37151   ; no: branch to idle assignment
- 37111 LD (IX+0),50  ; timer = 50 frames
- 37115 LD (IX+3),3   ; action state = 3 (remove the grille)
+ 37098 CP 255        ;
+ 37100 JR NZ,37122   ; no: it may slip through
+ 37102 CALL 33589    ; yes: roll the script —
+ 37105 CALL 36763    ; direction 0 (3 in 16)?
+ 37108 AND A         ;
+ 37109 JR NZ,37151   ; no: wander instead
+ 37111 LD (IX+0),50  ; yes: the alien rips the grille
+ 37115 LD (IX+3),3   ; out itself (state 3, timer 50)
  37119 POP IX        ;
  37121 RET           ;
-@label=CrewAI_TryMove
-*37122 CALL 33589    ; AdvanceScriptPtr → A
- 37125 CALL 36763    ; ScriptNibbleToDirection
- 37128 CP 2          ; direction < 2?
- 37130 JR NC,37151   ; no: idle
+@label=AlienAI_TryDuct
+*37122 CALL 33589    ; roll the script —
+ 37125 CALL 36763    ; direction 0 or 1 (6 in 16)?
+ 37128 CP 2          ;
+ 37130 JR NC,37151   ; no: wander
 ; This entry point is used by the routine at #R45721.
-@label=CrewAI_DuctFlip
-*37132 LD A,(IX+1)   ;
- 37135 XOR 64        ;
+@label=AlienAI_DuctFlip
+*37132 LD A,(IX+1)   ; yes: through the open grille —
+ 37135 XOR 64        ; same room, other side
  37137 LD (IX+2),A   ;
  37140 LD (IX+0),50  ; timer = 50 frames
- 37144 LD (IX+3),2   ; action state = 2 (move)
+ 37144 LD (IX+3),2   ; action state = 2 (duct transit)
  37148 POP IX        ;
  37150 RET           ;
-@label=CrewAI_Wander
-*37151 CALL 36717    ;
+@label=AlienAI_Wander
+*37151 CALL 36717    ; pick an adjacent room
  37154 LD (IX+0),80  ; timer = 80 frames
- 37158 LD (IX+3),1   ; action state = 1 (idle / wander)
- 37162 LD A,(IX+1)   ;
+ 37158 LD (IX+3),1   ; action state = 1 (move/idle)
+ 37162 LD A,(IX+1)   ; going nowhere (dest = current)?
  37165 CP (IX+2)     ;
- 37168 LD A,1        ;
- 37170 CALL Z,38182  ;
+ 37168 LD A,1        ; then the alien trashes the room:
+ 37170 CALL Z,38182  ; +1 damage point
  37173 POP IX        ;
  37175 RET           ;
 
@@ -7519,9 +7528,12 @@ c37992 CALL 37876    ; gather the attacker + up to two other
 
 ; AddAlienRoomDamage
 ;
+; Add A damage points to the ALIEN's current room (then fall into the
+; general AddRoomDamage below).
+; .
 ; Used by the routines at #R37018 and #R37584.
 @label=AddAlienRoomDamage
-c38182 LD HL,29567   ;
+c38182 LD HL,29567   ; E = the alien's current room
  38185 LD E,(HL)     ;
 ; This entry point is used by the routines at #R39159 and #R40941.
 ; AddRoomDamage: add A damage points to room E's damage meter — a
@@ -7538,19 +7550,19 @@ c38182 LD HL,29567   ;
  38196 INC HL        ; HL -> units digit
  38197 LD B,A        ; B = damage points to add
 @label=Damage_PointLoop
-*38198 PUSH BC       ;
- 38199 PUSH HL       ;
+*38198 PUSH BC       ; per damage point: the meter climbs
+ 38199 PUSH HL       ; in half-steps of the tens digit —
  38200 PUSH DE       ;
- 38201 LD A,(HL)     ;
+ 38201 LD A,(HL)     ; units already '5'?
  38202 CP 53         ;
  38204 JR Z,38210    ;
- 38206 LD (HL),53    ;
+ 38206 LD (HL),53    ; no: units 0 -> 5
  38208 JR 38298      ;
 @label=Damage_TensCarry
-*38210 LD (HL),48    ;
- 38212 DEC HL        ;
+*38210 LD (HL),48    ; yes: units '5' -> '0',
+ 38212 DEC HL        ; carry into the tens digit
  38213 INC (HL)      ;
- 38214 LD A,(HL)     ;
+ 38214 LD A,(HL)     ; tens reached '3'?
  38215 CP 51         ;
  38217 JR NZ,38281   ;
  38219 LD A,E        ; damage tens digit reached '3': room alarms
@@ -7569,30 +7581,30 @@ c38182 LD HL,29567   ;
  38240 LD A,24       ; msg #24 "Environmental irregularities"
  38242 JR 38288      ;
 @label=Damage_ChkNarcissus
-*38244 CP 34         ;
+*38244 CP 34         ; the Narcissus?
  38246 JR NZ,38252   ;
- 38248 LD A,25       ;
+ 38248 LD A,25       ; msg #25 "Narcissus status RED"
  38250 JR 38288      ;
 @label=Damage_ChkEngines
-*38252 CP 17         ;
+*38252 CP 17         ; an engine room (17-19)?
  38254 JR C,38298    ;
  38256 CP 20         ;
- 38258 JR NC,38298   ;
- 38260 AND 3         ;
+ 38258 JR NC,38298   ; other rooms: no "30" alarm
+ 38260 AND 3         ; room 17/18/19 -> flag bit 3/4/5:
  38262 LD B,A        ;
  38263 LD A,4        ;
 @label=Damage_EngineBit
-*38265 ADD A,A       ;
+*38265 ADD A,A       ; A = 4 << (room & 3)
  38266 DJNZ 38265    ;
- 38268 LD HL,31253   ;
- 38271 OR (HL)       ;
+ 38268 LD HL,31253   ; the engine room catches FIRE —
+ 38271 OR (HL)       ; set its ShipSystemFlags bit
  38272 LD (HL),A     ;
- 38273 LD L,E        ; L = room for the [251] room-name field
+ 38273 LD L,E        ; L = room for the {room} field
  38274 LD A,9        ; msg #9 "WARNING: Fire in {room}"
  38276 CALL 37176    ;
  38279 JR 38298      ;
 @label=Damage_ChkStructural
-*38281 CP 55         ;
+*38281 CP 55         ; tens reached '7' (70 damage)?
  38283 JR NZ,38293   ;
  38285 LD L,E        ; L = room
  38286 LD A,8        ; msg #8 "Structural Damage in {room}"
@@ -7600,44 +7612,48 @@ c38182 LD HL,29567   ;
 *38288 CALL 37176    ;
  38291 JR 38298      ;
 @label=Damage_ChkOverflow
-*38293 CP 58         ;
- 38295 CALL Z,38317  ;
+*38293 CP 58         ; tens past '9' (100 damage)?
+ 38295 CALL Z,38317  ; the ship breaks up - game over
 @label=Damage_NextPoint
 *38298 POP DE        ;
  38299 POP HL        ;
  38300 POP BC        ;
- 38301 DJNZ 38198    ;
- 38303 LD A,(31252)  ;
- 38306 CP 1          ;
+ 38301 DJNZ 38198    ; next damage point
+ 38303 LD A,(31252)  ; is the damaged room the one on
+ 38306 CP 1          ; screen?
  38308 RET NZ        ;
  38309 LD A,(31242)  ;
  38312 CP E          ;
- 38313 CALL Z,32143  ;
+ 38313 CALL Z,32143  ; yes: redraw the title/damage line
  38316 RET           ;
 
-; DamageOverflowFlash
+; DamageOverflowFlash — the hull gives way
 ;
+; A room's damage meter has passed 99 (or the destruct countdown ran
+; out): ~7 seconds of screen flashing with a rainbow border, then the
+; ship is lost (DamageGameOver #R44524).
+; .
 ; Used by the routines at #R38182 and #R38784.
 @label=DamageOverflowFlash
 c38317 PUSH BC       ;
  38318 PUSH AF       ;
- 38319 LD B,100      ;
+ 38319 LD B,100      ; 100 flash cycles:
 @label=DamageFlash_Loop
 *38321 PUSH BC       ;
- 38322 CALL 36448    ;
- 38325 LD A,7        ;
+ 38322 CALL 36448    ; ~36 ms delay,
+ 38325 LD A,7        ; attributes = white ink on black,
  38327 CALL 42515    ;
- 38330 CALL 36448    ;
- 38333 LD A,56       ;
+ 38330 CALL 36448    ; ~36 ms delay,
+ 38333 LD A,56       ; attributes = black ink on white
  38335 CALL 42515    ;
  38338 POP BC        ;
- 38339 LD A,B        ;
- 38340 AND 7         ;
+ 38339 LD A,B        ; border cycles through
+ 38340 AND 7         ; all 8 colours
  38342 OUT (254),A   ;
  38344 DJNZ 38321    ;
  38346 POP AF        ;
  38347 POP BC        ;
- 38348 JP 44524      ;
+ 38348 JP 44524      ; game over: the Nostromo is lost
 ; Ship-status dashboard: counters and ASCII digit cells (previously
 ; mis-disassembled as code). The digit cells double as the source text
 ; drawn on the status bar, and the endgame renderer copies them into
@@ -7685,10 +7701,10 @@ c38317 PUSH BC       ;
 ; Used by the routine at #R36457.
 @label=UpdateRoomActors
 c38379 CALL 38846    ; DestructTicker: countdown + border flash
- 38382 CALL 38903    ; fixture-proximity checks on strip cells 6/7/20
+ 38382 CALL 38903    ; FindTrackerHolders: motion-tracker scan
  38385 CALL 39531    ; oxygen clock / status line
- 38388 CALL 39171    ; event pacing / ambient events
- 38391 CALL 39041    ; EngineStateScan: engine damage/repair states
+ 38388 CALL 39171    ; ViewedTrackerCheck: beep / uneasy cat
+ 38391 CALL 39041    ; EngineStateScan: engine fires
  38394 CALL 39718    ; alien encounter animation layers
  38397 RET           ;
 
@@ -7702,9 +7718,9 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
 ;   78 -> Narcissus launch      53/54 -> blow airlock #1/#2
 ;   55/56 -> seal airlock #1/#2
 @label=FixtureAction
-c38398 CALL 45846    ;
- 38401 LD HL,29630   ; corridor position table
- 38404 LD E,A        ;
+c38398 CALL 45846    ; cancel any pending countdown;
+ 38401 LD HL,29630   ; A = the cursor row —
+ 38404 LD E,A        ; index CorridorPosTable by it
  38405 LD D,0        ;
  38407 ADD HL,DE     ;
  38408 LD A,(HL)     ; A = cell value under the cursor
@@ -7735,8 +7751,8 @@ c38454 LD A,13       ; msg #13 "DESTRUCT SEQUENCE INITIATED"
  38456 CALL 37176    ;
  38459 LD A,72       ; cells 15/16 := armed lever sprites 72/73
  38461 LD (29645),A  ;
- 38464 LD HL,20502   ;
- 38467 LD (31257),HL ;
+ 38464 LD HL,20502   ; redraw both rows
+ 38467 LD (31257),HL ; (screen rows 16/17, col 22)
  38470 CALL 31634    ;
  38473 LD A,73       ;
  38475 LD (29646),A  ;
@@ -7749,8 +7765,8 @@ c38483 LD A,14       ; msg #14 "DESTRUCT SEQUENCE ABORTED"
  38485 CALL 37176    ;
  38488 LD A,70       ; cells 15/16 := off lever sprites 70/71
  38490 LD (29645),A  ;
- 38493 LD HL,20502   ;
- 38496 LD (31257),HL ;
+ 38493 LD HL,20502   ; redraw both rows
+ 38496 LD (31257),HL ; (screen rows 16/17, col 22)
  38499 CALL 31634    ;
  38502 LD A,71       ;
  38504 LD (29646),A  ;
@@ -7771,29 +7787,33 @@ c38483 LD A,14       ; msg #14 "DESTRUCT SEQUENCE ABORTED"
 ; HypersleepStart
 @label=HypersleepStart
 c38529 LD (IX+3),6   ; action state 6 = entering hypersleep
- 38533 LD (IX+0),255 ;
+ 38533 LD (IX+0),255 ; over a long 255-frame countdown
  38537 LD A,11       ; msg #11 "{actor} prepares for hypersleep"
- 38539 LD HL,(31241) ;
+ 38539 LD HL,(31241) ; L = the viewed crew member
  38542 CALL 37176    ;
  38545 RET           ;
 
-; FightFire
+; FightFire — action on the fire label (cell value 76)
+;
+; Needs a Fire Extng (item 8-11) in the front hand; a charged one
+; delivers a squirt towards putting the engine-room fire out
+; (FireDamageTick decides how many are needed).
 @label=FightFire
-c38546 LD A,(31248)  ; A = actor's corridor cell
- 38549 CP 8          ; fire cells occupy positions 8-11
- 38551 RET C         ;
+c38546 LD A,(31248)  ; front-hand item an extinguisher
+ 38549 CP 8          ; (8-11)?
+ 38551 RET C         ; no: nothing to fight with
  38552 CP 12         ;
  38554 RET NC        ;
  38555 LD E,A        ;
  38556 LD D,0        ;
 @nowarn=33746
 @ssub=LD HL,ItemCharges
- 38558 LD HL,33746   ;
- 38561 ADD HL,DE     ; HL -> extinguisher charges for this position
- 38562 XOR A         ;
+ 38558 LD HL,33746   ; HL -> that extinguisher's charges
+ 38561 ADD HL,DE     ;
+ 38562 XOR A         ; any CO2 left?
  38563 CP (HL)       ;
- 38564 JR NZ,38575   ;
- 38566 LD HL,(31241) ; empty:
+ 38564 JR NZ,38575   ; yes: squirt
+ 38566 LD HL,(31241) ; empty: L = the viewed crew member,
  38569 LD A,6        ; msg #6 "{actor}'s extinguisher is empty"
  38571 CALL 37176    ;
  38574 RET           ;
@@ -7920,30 +7940,34 @@ c38674 LD A,55       ; cell := blown-door sprite 55
  38781 LD (HL),0     ; reset the alien's action byte
  38783 RET           ;
 
-; CrewAction6_Handler
+; CrewAction6_Handler — hypersleep completed (action state 6)
 ;
-; Dispatched via CrewActionDispatch entry 6.
+; Dispatched via CrewActionDispatch entry 6: the 255-frame countdown
+; queued by HypersleepStart (#R38529) has expired. The sleeper leaves
+; play (+7 = 255, room = 255 — the same removed pattern as the
+; chestburster host) and whatever he carried is stacked in the Cryo
+; Vault (room 15).
 @label=CrewAction6_Handler
 @nowarn=33700
 @ssub=LD HL,(CrewIndex)
-c38784 LD HL,(33700) ;
- 38787 LD A,12       ;
+c38784 LD HL,(33700) ; L = the sleeper
+ 38787 LD A,12       ; msg #12 "{actor} enters hypersleep"
  38789 CALL 37176    ;
- 38792 LD (IX+7),255 ;
- 38796 LD (IX+1),255 ;
+ 38792 LD (IX+7),255 ; status = removed from play,
+ 38796 LD (IX+1),255 ; room = none
  38800 LD HL,29940   ;
 @nowarn=33700
 @ssub=LD A,(CrewIndex)
  38803 LD A,(33700)  ;
- 38806 ADD A,128     ;
+ 38806 ADD A,128     ; E = his back-hand marker
  38808 LD E,A        ;
- 38809 ADD A,32      ;
+ 38809 ADD A,32      ; D = his front-hand marker
  38811 LD D,A        ;
- 38812 LD C,(IX+1)   ;
- 38815 LD B,22       ;
+ 38812 LD C,(IX+1)   ; (C = 255 now, unused)
+ 38815 LD B,22       ; anything he carried
 @label=RedirectRoomLoop
-*38817 LD A,(HL)     ;
- 38818 CP E          ;
+*38817 LD A,(HL)     ; is left in the
+ 38818 CP E          ; Cryo Vault (room 15):
  38819 JR Z,38824    ;
  38821 CP D          ;
  38822 JR NZ,38826   ;
@@ -7952,14 +7976,14 @@ c38784 LD HL,(33700) ;
 @label=RedirectRoomNext
 *38826 INC HL        ;
  38827 DJNZ 38817    ;
- 38829 LD A,(31252)  ;
+ 38829 LD A,(31252)  ; room view on screen (mode 1)?
  38832 CP 1          ;
- 38834 RET NZ        ;
- 38835 LD A,(31241)  ;
+ 38834 RET NZ        ; no: done
+ 38835 LD A,(31241)  ; sleeper viewed -> rebuild the view,
 @nowarn=33700
 @ssub=LD HL,CrewIndex
- 38838 LD HL,33700   ;
- 38841 JP 45676      ;
+ 38838 LD HL,33700   ; else redraw the room-mate lists
+ 38841 JP 45676      ; (KillActor_Bounce)
  38844 NOP           ;
  38845 NOP           ;
 @label=DestructTicker
@@ -7998,50 +8022,71 @@ c38784 LD HL,(33700) ;
 *38897 LD (38366),HL ;
  38900 JP 39572      ;
 
-; FindTrackerHolders
+; FindTrackerHolders — run the motion-tracker scan
+;
+; The two Trackers (items 6/7) and the carried cat ("Cat in Net"/"Cat
+; in Box", items 20/21) are motion detectors: for each one held in a
+; FRONT hand (marker >= 160), TrackerHolderRoom (#R38941) sweeps the
+; rooms adjacent to the holder and fills the matching NearRoomList
+; entry (#R33692: tracker #1, tracker #2, the cat) with the holder's
+; room if nothing moves next door ("all clear" — worth +1 morale to
+; everyone standing there, #R36283), or 255 if something does (which
+; makes the viewed holder's tracker beep, or Jones grow uneasy —
+; ViewedTrackerCheck #R39171).
+; .
+; Used by the routine at #R38379.
 @nowarn=33692
 @label=FindTrackerHolders
 @ssub=LD HL,NearRoomList
-c38903 LD HL,33692   ;
- 38906 LD A,(29946)  ;
- 38909 CP 160        ;
- 38911 CALL NC,38941 ;
- 38914 INC HL        ;
- 38915 LD A,(29947)  ;
+c38903 LD HL,33692   ; HL -> NearRoomList entry 0
+ 38906 LD A,(29946)  ; Tracker #1 (item 6) in a front
+ 38909 CP 160        ; hand (marker >= 160)?
+ 38911 CALL NC,38941 ; yes: scan around its holder
+ 38914 INC HL        ; entry 1:
+ 38915 LD A,(29947)  ; Tracker #2 (item 7)
  38918 CP 160        ;
  38920 CALL NC,38941 ;
- 38923 INC HL        ;
- 38924 LD A,(29960)  ;
+ 38923 INC HL        ; entry 2 (shared):
+ 38924 LD A,(29960)  ; Cat in Net (item 20)
  38927 CP 160        ;
  38929 CALL NC,38941 ;
- 38932 LD A,(29961)  ;
+ 38932 LD A,(29961)  ; Cat in Box (item 21)
  38935 CP 160        ;
  38937 CALL NC,38941 ;
  38940 RET           ;
 
-; TrackerHolderRoom
+; TrackerHolderRoom — sweep the rooms around one tracker holder
+;
+; A = the front-hand marker (160+slot), HL -> the NearRoomList entry
+; to fill: walk the holder's 5 adjacency slots (corridor map, or duct
+; map when he is in the ducts) and write the holder's room ("all
+; clear") — unless Jones, the alien, or any live actor is in an
+; adjacent room, in which case the entry becomes 255 ("motion
+; detected", via PickRoom_Reject).
+; .
+; Used by the routine at #R38903.
 @label=TrackerHolderRoom
-c38941 CP 255        ;
+c38941 CP 255        ; marker 255 = the item does not exist
  38943 RET Z         ;
- 38944 PUSH HL       ;
- 38945 SUB 160       ;
- 38947 ADD A,A       ;
+ 38944 PUSH HL       ; save the NearRoomList entry ptr
+ 38945 SUB 160       ; A = the holder's slot;
+ 38947 ADD A,A       ; HL -> his room byte (+1)
  38948 ADD A,A       ;
  38949 ADD A,A       ;
  38950 LD E,A        ;
  38951 LD D,0        ;
  38953 LD HL,29567   ;
  38956 ADD HL,DE     ;
- 38957 LD A,(HL)     ;
+ 38957 LD A,(HL)     ; AdjTestRoom = the holder's room
 @nowarn=38356
  38958 LD (38356),A  ;
- 38961 LD BC,29171   ;
- 38964 BIT 6,A       ;
+ 38961 LD BC,29171   ; BC = RoomAdjCorridors...
+ 38964 BIT 6,A       ; ...unless he is in the ducts:
  38966 JR Z,38971    ;
- 38968 CALL 45683    ;
+ 38968 CALL 45683    ; then RoomAdjDucts (DuctSearchInit)
 @label=AdjRowFromRoom
-*38971 LD L,A        ;
- 38972 LD H,0        ;
+*38971 LD L,A        ; HL = map + room*5:
+ 38972 LD H,0        ; the room's 5 direction slots
  38974 PUSH HL       ;
  38975 ADD HL,HL     ;
  38976 ADD HL,HL     ;
@@ -8049,127 +8094,146 @@ c38941 CP 255        ;
  38978 ADD HL,DE     ;
  38979 ADD HL,BC     ;
  38980 LD DE,8       ;
- 38983 LD B,5        ;
+ 38983 LD B,5        ; each direction slot:
 @label=PickRoomScanLoop
 *38985 PUSH BC       ;
  38986 PUSH HL       ;
- 38987 LD C,(HL)     ;
+ 38987 LD C,(HL)     ; C = the adjacent room
 @nowarn=38356
- 38988 LD A,(38356)  ;
- 38991 CP C          ;
+ 38988 LD A,(38356)  ; own room = no exit that way:
+ 38991 CP C          ; skip the slot
  38992 JR Z,39023    ;
 @nowarn=33706
 @ssub=LD A,(JonesRoom)
- 38994 LD A,(33706)  ;
- 38997 JP 45705      ;
+ 38994 LD A,(33706)  ; anything moving in there?
+ 38997 JP 45705      ; Jones / the alien / live actors
 
-; PickRoom_ActorScan
+; PickRoom_ActorScan — tail of the tracker sweep
 ;
+; C = an adjacent room: reject the sweep (motion detected) if any
+; live actor stands in it; otherwise continue with the next direction
+; slot, and after all five write the "all clear" result.
+; .
 ; Used by the routine at #R45705.
 @label=PickRoom_ActorScan
-c39000 LD B,8        ;
- 39002 LD HL,29567   ;
+c39000 LD B,8        ; all 8 actor slots:
+ 39002 LD HL,29567   ; walk the +1 (room) column
 @label=PickRoom_ActorLoop
-*39005 LD A,(HL)     ;
+*39005 LD A,(HL)     ; in the adjacent room?
  39006 AND 63        ;
  39008 CP C          ;
  39009 JR NZ,39020   ;
- 39011 PUSH HL       ;
+ 39011 PUSH HL       ; yes: alive (+7 = 0)?
  39012 ADD HL,DE     ;
  39013 DEC HL        ;
  39014 DEC HL        ;
  39015 XOR A         ;
  39016 CP (HL)       ;
- 39017 JR Z,39034    ;
+ 39017 JR Z,39034    ; yes: motion detected
  39019 POP HL        ;
 @label=PickRoom_ActorNext
 *39020 ADD HL,DE     ;
  39021 DJNZ 39005    ;
 @label=PickRoomScanNext
-*39023 POP HL        ;
- 39024 INC HL        ;
+*39023 POP HL        ; this direction is quiet:
+ 39024 INC HL        ; next direction slot
  39025 POP BC        ;
  39026 DJNZ 38985    ;
- 39028 POP HL        ;
+ 39028 POP HL        ; all five quiet: NearRoomList
 @nowarn=38356
- 39029 LD A,(38356)  ;
- 39032 LD (HL),A     ;
+ 39029 LD A,(38356)  ; entry = the holder's room
+ 39032 LD (HL),A     ; ("all clear")
  39033 RET           ;
 @label=PickRoom_PopReject
 *39034 POP HL        ;
 ; This entry point is used by the routine at #R45705.
 @label=PickRoom_Reject
-*39035 POP HL        ;
- 39036 POP BC        ;
- 39037 POP HL        ;
+*39035 POP HL        ; motion detected: unwind the scan
+ 39036 POP BC        ; and write 255 into the
+ 39037 POP HL        ; NearRoomList entry
  39038 LD (HL),255   ;
  39040 RET           ;
 
-; EngineStateScan
+; EngineStateScan — tick the three engine-room fires
+;
+; ShipSystemFlags bits 3-5 mark fires in Engine #1/#2/#3 (rooms
+; 17-19, lit by the damage-meter alarm at #R38252). Each burning
+; engine goes through FireDamageTick; then the 100-frame ship tick
+; that paces fire damage is advanced.
+; .
+; Used by the routine at #R38379.
 @label=EngineStateScan
-c39041 LD D,8        ;
- 39043 LD A,(31253)  ;
- 39046 LD E,17       ;
- 39048 BIT 3,A       ;
+c39041 LD D,8        ; D = bit mask (bit 3),
+ 39043 LD A,(31253)  ; A = ShipSystemFlags,
+ 39046 LD E,17       ; E = Engine #1's room
+ 39048 BIT 3,A       ; Engine #1 on fire?
  39050 CALL NZ,39077 ;
- 39053 SLA D         ;
+ 39053 SLA D         ; next bit / next room:
  39055 INC E         ;
- 39056 BIT 4,A       ;
+ 39056 BIT 4,A       ; Engine #2 on fire?
  39058 CALL NZ,39077 ;
  39061 SLA D         ;
  39063 INC E         ;
- 39064 BIT 5,A       ;
+ 39064 BIT 5,A       ; Engine #3 on fire?
  39066 CALL NZ,39077 ;
 @nowarn=38354
 @ssub=LD HL,ShipTickCounter
- 39069 LD HL,38354   ;
+ 39069 LD HL,38354   ; advance the 100-frame ship tick
  39072 DEC (HL)      ;
  39073 RET NZ        ;
  39074 LD (HL),100   ;
  39076 RET           ;
 
-; FireDamageTick
+; FireDamageTick — one burning engine room (E), fire bit in D
+;
+; The number of extinguisher squirts needed grows with the damage
+; already done (1, 2 from "60", 3 from "80"). Enough squirts put the
+; fire out: clear its ShipSystemFlags bit, blank the on-screen fire
+; label, msg #15. Not enough: the fire keeps burning and adds a
+; damage point every 100 frames (FireSpreadCheck).
+; .
+; Used by the routine at #R39041.
 @label=FireDamageTick
 c39077 PUSH AF       ;
  39078 PUSH DE       ;
- 39079 LD C,1        ;
- 39081 LD B,D        ;
+ 39079 LD C,1        ; C = squirts needed: 1,
+ 39081 LD B,D        ; (B = the engine's fire bit)
  39082 LD D,0        ;
- 39084 LD HL,30006   ;
+ 39084 LD HL,30006   ; HL -> the room's damage tens digit
  39087 ADD HL,DE     ;
  39088 ADD HL,DE     ;
  39089 LD A,(HL)     ;
- 39090 CP 54         ;
+ 39090 CP 54         ; +1 from "60" damage,
  39092 JR C,39100    ;
  39094 INC C         ;
- 39095 CP 56         ;
+ 39095 CP 56         ; +1 more from "80"
  39097 JR C,39100    ;
  39099 INC C         ;
 @label=FireThresholdCheck
-*39100 LD HL,38334   ;
- 39103 ADD HL,DE     ;
+*39100 LD HL,38334   ; A = squirts delivered so far
+ 39103 ADD HL,DE     ; (EngineFixCounts, base-17 indexed)
  39104 LD A,(HL)     ;
- 39105 CP C          ;
- 39106 JR C,39159    ;
- 39108 LD A,(31253)  ;
+ 39105 CP C          ; enough to put it out?
+ 39106 JR C,39159    ; no: the fire keeps burning
+ 39108 LD A,(31253)  ; yes: clear the engine's fire bit
  39111 XOR B         ;
  39112 LD (31253),A  ;
- 39115 LD A,(31252)  ;
+ 39115 LD A,(31252)  ; is the burning room on screen?
  39118 CP 1          ;
  39120 JR NZ,39149   ;
  39122 LD A,(31242)  ;
  39125 CP E          ;
  39126 JR NZ,39149   ;
- 39128 LD HL,65535   ;
- 39131 LD (29645),HL ;
+ 39128 LD HL,65535   ; yes: blank the fire label —
+ 39131 LD (29645),HL ; cells 15/16 = empty
  39134 LD A,L        ;
- 39135 LD HL,20502   ;
- 39138 LD (31257),HL ;
+ 39135 LD HL,20502   ; and redraw those rows
+ 39138 LD (31257),HL ; (screen rows 16/17, col 22)
  39141 CALL 31634    ;
  39144 LD A,255      ;
  39146 CALL 31634    ;
 @label=FireExtinguishedMsg
-*39149 POP HL        ;
+*39149 POP HL        ; L = the room
  39150 PUSH HL       ;
  39151 LD A,15       ; msg #15 "Fire extinguished in {room}"
  39153 CALL 37176    ;
@@ -8178,63 +8242,86 @@ c39077 PUSH AF       ;
  39158 RET           ;
 
 ; FireSpreadCheck
+;
+; The fire is still burning: on the frame the 100-frame ship tick
+; expires, it does another damage point to the room.
+; .
+; Used by the routine at #R39077.
 @nowarn=38354
 @label=FireSpreadCheck
 @ssub=LD A,(ShipTickCounter)
-c39159 LD A,(38354)  ;
+c39159 LD A,(38354)  ; ship tick about to expire?
  39162 DEC A         ;
- 39163 LD A,1        ;
- 39165 CALL Z,38186  ;
+ 39163 LD A,1        ; then the fire adds
+ 39165 CALL Z,38186  ; +1 damage point to room E
  39168 POP DE        ;
  39169 POP AF        ;
  39170 RET           ;
 
-; ViewedTrackerCheck
+; ViewedTrackerCheck — sound the viewed crew member's detector
+;
+; In the room view: if the viewed crew member holds a Tracker in the
+; front hand, and its NearRoomList entry reads 255 (motion detected
+; next door — the sweep at #R38903), the tracker beeps every 8th
+; pass; if he carries the caught cat instead, msg #19 "Jones is
+; looking uneasy" fires.
+; .
+; Used by the routine at #R38379.
 @label=ViewedTrackerCheck
-c39171 LD A,(31252)  ;
+c39171 LD A,(31252)  ; room view on screen (mode 1)?
  39174 CP 1          ;
- 39176 RET NZ        ;
- 39177 LD A,(31241)  ;
- 39180 ADD A,160     ;
+ 39176 RET NZ        ; no: done
+ 39177 LD A,(31241)  ; C = the viewed crew member's
+ 39180 ADD A,160     ; front-hand marker
  39182 LD C,A        ;
 @nowarn=33692
 @ssub=LD HL,NearRoomList
- 39183 LD HL,33692   ;
+ 39183 LD HL,33692   ; is he holding Tracker #1?
  39186 LD A,(29946)  ;
  39189 CP C          ;
- 39190 JR Z,39213    ;
- 39192 LD A,(29947)  ;
+ 39190 JR Z,39213    ; yes: beep check on entry 0
+ 39192 LD A,(29947)  ; Tracker #2?
  39195 INC HL        ;
  39196 CP C          ;
- 39197 JR Z,39213    ;
- 39199 INC HL        ;
+ 39197 JR Z,39213    ; yes: beep check on entry 1
+ 39199 INC HL        ; the caught cat?
  39200 LD A,(29960)  ;
  39203 CP C          ;
- 39204 JR Z,39228    ;
+ 39204 JR Z,39228    ; yes: unease check on entry 2
  39206 LD A,(29961)  ;
  39209 CP C          ;
  39210 JR Z,39228    ;
- 39212 RET           ;
+ 39212 RET           ; holding no detector
 
-; AmbientBeepTick
-@label=AmbientBeepTick
-c39213 LD A,(HL)     ;
+; TrackerBeepTick
+;
+; (HL) = the tracker's NearRoomList entry: when it reads 255 (motion
+; detected next door), beep on every 8th pass.
+; .
+; Used by the routine at #R39171.
+@label=TrackerBeepTick
+c39213 LD A,(HL)     ; motion detected (entry = 255)?
  39214 CP 255        ;
- 39216 RET NZ        ;
+ 39216 RET NZ        ; no: silence
 @nowarn=38378
 @ssub=LD HL,EventPaceCounter
- 39217 LD HL,38378   ;
- 39220 INC (HL)      ;
+ 39217 LD HL,38378   ; yes: pace the alert —
+ 39220 INC (HL)      ; a ROM beep every 8th pass
  39221 LD A,(HL)     ;
  39222 AND 7         ;
  39224 CALL Z,39242  ;
  39227 RET           ;
 
 ; JonesUneasyMsg
+;
+; (HL) = the carried cat's NearRoomList entry: when it reads 255
+; (motion detected next door), the cat senses it.
+; .
+; Used by the routine at #R39171.
 @label=JonesUneasyMsg
-c39228 LD A,(HL)     ;
+c39228 LD A,(HL)     ; motion detected (entry = 255)?
  39229 CP 255        ;
- 39231 RET NZ        ;
+ 39231 RET NZ        ; no: the cat is calm
  39232 LD A,(31242)  ;
  39235 LD L,A        ; L = current room
  39236 LD A,19       ; msg #19 "Jones is looking uneasy"
@@ -8243,72 +8330,84 @@ c39228 LD A,(HL)     ;
 
 ; RomBeep
 ;
+; One short beep via the ZX ROM BEEPER routine ($03B5): DE = 5
+; cycles, HL = 549 (~790 Hz).
+; .
 ; Used by the routines at #R39213 and #R43242.
 @label=RomBeep
-c39242 PUSH IX       ;
- 39244 LD DE,5       ;
- 39247 LD HL,549     ;
- 39250 CALL 949      ;
+c39242 PUSH IX       ; (BEEPER corrupts IX)
+ 39244 LD DE,5       ; 5 cycles
+ 39247 LD HL,549     ; at ~755 Hz
+ 39250 CALL 949      ; ROM BEEPER
  39253 POP IX        ;
  39255 RET           ;
 
-; CrewAction5_Investigate
+; CrewAction5_AlienAttack — the alien's attack tick (action state 5)
 ;
-; Dispatched via CrewActionDispatch entry 5.
-@label=CrewAction5_Investigate
-c39256 LD HL,65535   ;
+; Dispatched via CrewActionDispatch entry 5, queued by UpdateAlienAI
+; (#R37018) when crew share the alien's spot. Re-gathers the crew on
+; the alien's spot (up to three into NearestCrewC/A/B), picks one by
+; script roll, and drains a strength point: below 2 the victim
+; collapses (VictimItemDrop #R39400, msg #21), at 2-3 msg #10 "is
+; being wounded", and a still-fit victim (4+) gets msg #1 "The ALIEN
+; is attacking {actor}". A chosen victim who is already dead may be
+; dragged off the ship (Wound_PanicRoll, in the #R39400 block), else
+; another gathered slot is tried; with nobody left the alien moves
+; on.
+@label=CrewAction5_AlienAttack
+c39256 LD HL,65535   ; NearestCrewA/B = 255/255
 @nowarn=33696
 @ssub=LD (NearestCrewA),HL
  39259 LD (33696),HL ;
 @nowarn=33695
 @ssub=LD DE,NearestCrewC
- 39262 LD DE,33695   ;
+ 39262 LD DE,33695   ; NearestCrewC = 255 too
  39265 LD A,255      ;
  39267 LD (DE),A     ;
- 39268 XOR A         ;
- 39269 CALL 37891    ;
- 39272 LD C,0        ;
+ 39268 XOR A         ; gather the crew on the alien's spot
+ 39269 CALL 37891    ; into C/A/B ("self" = slot 0)
+ 39272 LD C,0        ; count them:
 @nowarn=33695
 @ssub=LD HL,NearestCrewC
  39274 LD HL,33695   ;
  39277 LD A,255      ;
  39279 LD B,3        ;
-@label=Investigate_CountLoop
+@label=AlienAtk_CountLoop
 *39281 CP (HL)       ;
  39282 JR Z,39285    ;
  39284 INC C         ;
-@label=Investigate_CountNext
+@label=AlienAtk_CountNext
 *39285 INC HL        ;
  39286 DJNZ 39281    ;
- 39288 LD A,C        ;
+ 39288 LD A,C        ; nobody there after all?
  39289 AND A         ;
- 39290 RET Z         ;
- 39291 CP 1          ;
+ 39290 RET Z         ; then no attack
+ 39291 CP 1          ; one victim:
  39293 JR NZ,39298   ;
- 39295 XOR A         ;
+ 39295 XOR A         ; take entry 0
  39296 JR 39317      ;
-@label=Investigate_PickTwo
-*39298 CP 2          ;
+@label=AlienAtk_PickTwo
+*39298 CP 2          ; two victims:
  39300 JR NZ,39309   ;
- 39302 CALL 33589    ;
- 39305 AND 1         ;
+ 39302 CALL 33589    ; a script roll picks
+ 39305 AND 1         ; entry 0 or 1
  39307 JR 39317      ;
-@label=Investigate_PickAny
-*39309 CALL 33589    ;
- 39312 AND 7         ;
- 39314 CALL 36763    ;
-@label=Investigate_TakeSlot
+@label=AlienAtk_PickAny
+*39309 CALL 33589    ; three victims: script roll & 7,
+ 39312 AND 7         ; mapped through the direction table,
+ 39314 CALL 36763    ; picks entry 0-2
+@label=AlienAtk_TakeSlot
 *39317 LD E,A        ;
  39318 LD D,0        ;
 @nowarn=33695
 @ssub=LD HL,NearestCrewC
- 39320 LD HL,33695   ;
+ 39320 LD HL,33695   ; C = the chosen victim's slot,
  39323 ADD HL,DE     ;
  39324 LD C,(HL)     ;
- 39325 LD (HL),255   ;
+ 39325 LD (HL),255   ; taken off the list
  39327 LD A,C        ;
-@label=Investigate_SlotAddr
-*39328 ADD A,A       ;
+@label=AlienAtk_SlotAddr
+*39328 ADD A,A       ; HL -> the victim's status byte (+7)
  39329 ADD A,A       ;
  39330 ADD A,A       ;
  39331 ADD A,7       ;
@@ -8316,9 +8415,9 @@ c39256 LD HL,65535   ;
  39334 LD D,0        ;
  39336 LD HL,29566   ;
  39339 ADD HL,DE     ;
- 39340 XOR A         ;
+ 39340 XOR A         ; still alive?
  39341 CP (HL)       ;
- 39342 JP NZ,39459   ;
+ 39342 JP NZ,39459   ; no: a corpse — maybe drag it off
  39345 DEC HL        ;
  39346 DEC HL        ;
  39347 DEC HL        ; HL -> victim's +4 strength
@@ -8404,27 +8503,32 @@ c39400 INC HL        ; HL -> his morale byte (+6):
  39451 LD A,21       ; msg #21 "{actor} has collapsed"
  39453 CALL 37176    ;
  39456 JP 31417      ; and rebuild the whole view
+; Wound_PanicRoll — the alien's chosen victim is already dead.
+; If the alien is not carrying a body (+5 = 0), a 4-in-16 script roll
+; lets it DRAG THE CORPSE OFF: the body's room becomes 255 (gone from
+; the ship) and its slot is remembered in the alien's +5. Otherwise
+; another gathered slot is attacked instead, or the alien moves on.
 @label=Wound_PanicRoll
-*39459 XOR A         ;
+*39459 XOR A         ; already carrying a body (+5 != 0)?
  39460 CP (IX+5)     ;
- 39463 JR NZ,39484   ;
- 39465 PUSH HL       ;
- 39466 CALL 33589    ;
+ 39463 JR NZ,39484   ; yes: try another victim
+ 39465 PUSH HL       ; no: script roll < 4
+ 39466 CALL 33589    ; (4 in 16)?
  39469 POP HL        ;
  39470 CP 4          ;
  39472 JR NC,39484   ;
- 39474 LD DE,65530   ;
- 39477 ADD HL,DE     ;
- 39478 LD (HL),255   ;
- 39480 CALL 45533    ;
+ 39474 LD DE,65530   ; yes: drag the corpse away —
+ 39477 ADD HL,DE     ; its room byte (+1) = 255,
+ 39478 LD (HL),255   ; gone from the ship,
+ 39480 CALL 45533    ; and the alien's +5 = the slot
  39483 RET           ;
 @label=Wound_TrioPick
-*39484 LD DE,1       ;
+*39484 LD DE,1       ; scan the gathered slots for another
 @nowarn=33695
 @ssub=LD HL,NearestCrewC
- 39487 LD HL,33695   ;
- 39490 CP 7          ;
- 39492 JR C,39500    ;
+ 39487 LD HL,33695   ; victim (direction picked by the
+ 39490 CP 7          ; leftover roll: < 7 forward from C,
+ 39492 JR C,39500    ; else backward from B)
  39494 LD DE,65535   ;
 @nowarn=33697
 @ssub=LD HL,NearestCrewB
@@ -8432,32 +8536,41 @@ c39400 INC HL        ; HL -> his morale byte (+6):
 @label=Wound_TrioLoop
 *39500 LD B,3        ;
 @label=Wound_TrioRead
-*39502 LD A,(HL)     ;
- 39503 CP 255        ;
+*39502 LD A,(HL)     ; skip empties and the corpse
+ 39503 CP 255        ; we just tried
  39505 JR Z,39516    ;
  39507 CP C          ;
  39508 JR Z,39516    ;
- 39510 LD (HL),255   ;
+ 39510 LD (HL),255   ; take this one off the list
  39512 LD C,A        ;
- 39513 JP 39328      ;
+ 39513 JP 39328      ; and attack him instead
 @label=Wound_TrioNext
 *39516 ADD HL,DE     ;
  39517 DJNZ 39502    ;
- 39519 CALL 36717    ;
- 39522 LD (IX+0),40  ;
+ 39519 CALL 36717    ; nobody left: the alien moves on
+ 39522 LD (IX+0),40  ; (move/idle, timer 40)
  39526 LD (IX+3),1   ;
  39530 RET           ;
 
-; OxygenTick
+; OxygenTick — the oxygen clock
+;
+; A countdown whose period is 2 x the number of live actors: the
+; fewer are left to run the ship, the faster the oxygen drains. Each
+; expiry knocks one off the 4-digit ASCII oxygen counter ("7500" at
+; the start), with the borrow rippling left; when the borrow runs
+; past the digits into the label, the air is gone (see
+; OxygenCheckRedraw).
+; .
+; Used by the routine at #R38379.
 @nowarn=38357
 @label=OxygenTick
 @ssub=LD HL,OxygenTickInit
-c39531 LD HL,38357   ;
+c39531 LD HL,38357   ; tick the oxygen countdown
  39534 DEC (HL)      ;
  39535 RET NZ        ;
- 39536 LD HL,29573   ;
- 39539 LD DE,8       ;
- 39542 LD BC,2048    ;
+ 39536 LD HL,29573   ; expired: count the live actors
+ 39539 LD DE,8       ; (status +7 = 0, alien included)
+ 39542 LD BC,2048    ; over all 8 slots
  39545 XOR A         ;
 @label=OxygenTick_CountLoop
 *39546 CP (HL)       ;
@@ -8466,27 +8579,33 @@ c39531 LD HL,38357   ;
 @label=OxygenTick_CountNext
 *39550 ADD HL,DE     ;
  39551 DJNZ 39546    ;
- 39553 LD A,C        ;
+ 39553 LD A,C        ; reload period = 2 x live count
  39554 ADD A,A       ;
 @nowarn=38357
 @ssub=LD (OxygenTickInit),A
  39555 LD (38357),A  ;
- 39558 LD A,47       ;
- 39560 LD HL,38377   ;
+ 39558 LD A,47       ; multi-digit ASCII decrement:
+ 39560 LD HL,38377   ; units digit first,
 @label=OxygenTick_Borrow
 *39563 DEC (HL)      ;
- 39564 CP (HL)       ;
+ 39564 CP (HL)       ; on '0'-1 ('/')
  39565 JR NZ,39572   ;
- 39567 LD (HL),57    ;
- 39569 DEC HL        ;
+ 39567 LD (HL),57    ; wrap to '9' and
+ 39569 DEC HL        ; borrow one digit left
  39570 JR 39563      ;
 
-; OxygenCheckRedraw
+; OxygenCheckRedraw — oxygen alarms + the bottom status line
 ;
+; Fire msg #26 when the oxygen counter reads exactly "0500"; jump to
+; Endgame_OxygenOut when the borrow has eaten past the digits (the
+; air ran out); otherwise redraw the bottom-right status line —
+; "TOOH: nnnn" (the oxygen counter), or "TIME: m:ss" while the
+; self-destruct is armed.
+; .
 ; Used by the routines at #R31577, #R32816, #R38784 and #R39531.
 @label=OxygenCheckRedraw
 @nowarn=38374
-c39572 LD HL,(38374) ;
+c39572 LD HL,(38374) ; high digits = "05"...
  39575 LD A,L        ;
  39576 CP 48         ;
  39578 JR NZ,39601   ;
@@ -8495,36 +8614,36 @@ c39572 LD HL,(38374) ;
  39583 JR NZ,39601   ;
 @nowarn=38376
 @ssub=LD HL,(OxygenLo)
- 39585 LD HL,(38376) ;
+ 39585 LD HL,(38376) ; ...and low digits = "00"?
  39588 LD A,48       ;
  39590 CP L          ;
  39591 JR NZ,39601   ;
  39593 CP H          ;
  39594 JR NZ,39601   ;
- 39596 LD A,26       ;
+ 39596 LD A,26       ; msg #26 "Oxygen status CRITICAL"
  39598 CALL 37176    ;
 @label=ClockPanelUpdate
-*39601 LD A,(38373)  ;
- 39604 CP 32         ;
- 39606 JP NZ,44277   ;
- 39609 LD A,(31252)  ;
- 39612 CP 2          ;
- 39614 RET Z         ;
+*39601 LD A,(38373)  ; did the borrow ripple past the
+ 39604 CP 32         ; digits (oxygen fully exhausted)?
+ 39606 JP NZ,44277   ; yes: Endgame_OxygenOut
+ 39609 LD A,(31252)  ; no status line over the
+ 39612 CP 2          ; Indicate Location list
+ 39614 RET Z         ; (modes 2/3)
  39615 CP 3          ;
  39617 RET Z         ;
- 39618 LD HL,20598   ;
+ 39618 LD HL,20598   ; draw at screen row 19, col 22:
  39621 LD (31257),HL ;
 @nowarn=38368
 @ssub=LD DE,OxygenText
- 39624 LD DE,38368   ;
- 39627 LD HL,31253   ;
+ 39624 LD DE,38368   ; "TOOH: nnnn" — unless the
+ 39627 LD HL,31253   ; self-destruct is armed:
  39630 BIT 0,(HL)    ;
  39632 JR Z,39637    ;
 @nowarn=38358
 @ssub=LD DE,DestructTimeText
- 39634 LD DE,38358   ;
+ 39634 LD DE,38358   ; then "TIME: m:ss"
 @label=ClockDraw10
-*39637 LD B,10       ;
+*39637 LD B,10       ; blit the 10 characters
 @label=ClockDrawLoop
 *39639 PUSH BC       ;
  39640 PUSH DE       ;
@@ -8532,7 +8651,7 @@ c39572 LD HL,(38374) ;
  39644 POP DE        ;
  39645 POP BC        ;
  39646 INC DE        ;
- 39647 LD HL,31257   ;
+ 39647 LD HL,31257   ; one column right each time
  39650 INC (HL)      ;
  39651 DJNZ 39639    ;
  39653 RET           ;
@@ -9028,69 +9147,84 @@ c40149 LD HL,16384   ; HL = DisplayFile: start of display file
 
 ; LaunchGate
 ;
-; Fixture 78 (Narcissus launch console). The launch is
+; Fixture 78 (Narcissus launch console). Intended rule: the launch is
 ; COUNTERMANDED (msg #28) unless every living crew member's room is 34
 ; (Narcissus); then Jones must be aboard too (JonesRoom = 34, or the
-; cat present in the shuttle strip cells) or msg #27 "BioUnit Jones
-; not present" fires first.
+; cat caught and the Cat in Net/Box item aboard or held) or msg #27
+; "BioUnit Jones not present" fires first.
+; .
+; BUG (simulator-verified): the crew walk drifts off the +7 status
+; column after the first LIVE crew member — the "back to the next
+; record" step adds 8 from the +1 room byte instead of returning to
+; +7, so every later slot has its ROOM byte read as a status byte.
+; Rooms are almost never 0, so later crew are simply skipped: the
+; launch really only requires the first-listed living crew member
+; (plus Jones) to be aboard, and the rest are left behind. The one
+; side effect: a later crew member standing in Airlock #1 (room 0)
+; bogusly countermands the launch.
 @label=LaunchGate
 c40212 LD HL,29581   ; walk the +7 status column of all 7 crew
  40215 LD DE,8       ;
  40218 LD B,7        ;
 @label=Launch_CrewLoop
-*40220 XOR A         ;
+*40220 XOR A         ; is this crew member alive?
  40221 CP (HL)       ;
- 40222 JR NZ,40235   ;
- 40224 PUSH DE       ;
+ 40222 JR NZ,40235   ; no: he needn't board
+ 40224 PUSH DE       ; yes: HL -> his room byte (+1)
  40225 LD DE,65530   ;
  40228 ADD HL,DE     ;
  40229 POP DE        ;
- 40230 LD A,(HL)     ;
+ 40230 LD A,(HL)     ; aboard the Narcissus (34)?
  40231 CP 34         ;
- 40233 JR NZ,40275   ;
+ 40233 JR NZ,40275   ; no: LAUNCH COUNTERMANDED
 @label=Launch_NextCrew
-*40235 ADD HL,DE     ;
- 40236 DJNZ 40220    ;
+*40235 ADD HL,DE     ; +8 — but from +1 after a live crew
+ 40236 DJNZ 40220    ; member: the walk drifts (see BUG)
 @nowarn=33706
 @ssub=LD A,(JonesRoom)
- 40238 LD A,(33706)  ;
+ 40238 LD A,(33706)  ; Jones aboard on his own paws?
  40241 CP 34         ;
- 40243 JR Z,40281    ;
- 40245 CP 255        ;
- 40247 JR NZ,40270   ;
- 40249 LD HL,29960   ;
- 40252 LD B,2        ;
+ 40243 JR Z,40281    ; yes: LAUNCH
+ 40245 CP 255        ; or caught (carried, room 255)?
+ 40247 JR NZ,40270   ; neither: he is missing
+ 40249 LD HL,29960   ; caught: where is the Cat in
+ 40252 LD B,2        ; Net (20) / Cat in Box (21)?
 @label=Launch_CatItemLoop
 *40254 LD A,(HL)     ;
- 40255 CP 255        ;
+ 40255 CP 255        ; (nonexistent: try the other)
  40257 JR Z,40267    ;
- 40259 CP 34         ;
+ 40259 CP 34         ; lying in the Narcissus,
  40261 JR Z,40281    ;
- 40263 CP 128        ;
- 40265 JR NC,40281   ;
+ 40263 CP 128        ; or in somebody's hand?
+ 40265 JR NC,40281   ; either way: LAUNCH
 @label=Launch_CatItemNext
 *40267 INC HL        ;
  40268 DJNZ 40254    ;
 @label=Launch_NoJones
-*40270 LD A,27       ;
+*40270 LD A,27       ; msg #27 "BioUnit Jones not present"
  40272 CALL 37176    ;
 @label=Launch_Countermand
-*40275 LD A,28       ;
+*40275 LD A,28       ; msg #28 "LAUNCH COUNTERMANDED"
  40277 CALL 37176    ;
  40280 RET           ;
 
-; LaunchSequence
+; LaunchSequence — the Narcissus lifts off
+;
+; 75 frames of engine noise with the whole room-view area flashing
+; (BRIGHT bit XOR), then the escape ending (Endgame_Escape).
+; .
+; Used by the routine at #R40212.
 @label=LaunchSequence
-c40281 LD B,75       ;
+c40281 LD B,75       ; 75 flash frames:
 @label=Launch_FlashLoop
 *40283 PUSH BC       ;
- 40284 LD A,1        ;
+ 40284 LD A,1        ; queue the engine-noise effect
 @nowarn=33699
 @ssub=LD (SoundRequest),A
  40286 LD (33699),A  ;
- 40289 CALL 40319    ;
- 40292 LD DE,12      ;
- 40295 LD HL,22528   ;
+ 40289 CALL 40319    ; play it (FrameTiming)
+ 40292 LD DE,12      ; toggle the BRIGHT bit across the
+ 40295 LD HL,22528   ; 20x19 room-view attribute window
  40298 LD C,19       ;
 @label=Launch_AttrRows
 *40300 LD B,20       ;
@@ -9105,7 +9239,7 @@ c40281 LD B,75       ;
  40311 JR NZ,40300   ;
  40313 POP BC        ;
  40314 DJNZ 40283    ;
- 40316 JP 44159      ;
+ 40316 JP 44159      ; you got away: Endgame_Escape
 
 ; FrameTiming
 ;
@@ -10286,11 +10420,11 @@ c42276 LD HL,33714   ; HL = MessageQueue (event queue base)
  42427 LD (HL),D     ;
  42428 LD HL,31253   ;
  42431 LD (HL),D     ;
- 42432 CALL 33589    ;
+ 42432 CALL 33589    ; Jones starts in a random
 @nowarn=33706
-@ssub=LD (AlienEventTimer),A
- 42435 LD (33706),A  ;
- 42438 CALL 33589    ;
+@ssub=LD (JonesRoom),A
+ 42435 LD (33706),A  ; room 0-15 (script nibble)
+ 42438 CALL 33589    ; the alien's lair is drawn from
  42441 LD E,A        ;
  42442 LD D,0        ;
 @nowarn=41358
@@ -10299,7 +10433,7 @@ c42276 LD HL,33714   ; HL = MessageQueue (event queue base)
  42444 LD HL,41358   ; HL = AlienInitTable ($A18E)
  42447 ADD HL,DE     ;
  42448 LD A,(HL)     ; A = AlienInitTable[script_byte]
- 42449 OR 64         ; set direction bit (bit 6)
+ 42449 OR 64         ; ...hidden in the ducts above it (bit 6)
 @label=CommonInit_AlienRoom
 @ignoreua
  42451 LD (29567),A  ; set the alien's starting room (slot 0 byte +1)
@@ -12463,8 +12597,10 @@ c45510 LD A,(IX+5)   ; courage += 1
 
 ; SetCourageRefresh
 ;
-; Set the actor's courage (+5) to C, then refresh the room-mate
-; display via KillActor_View.
+; Set the actor's +5 byte to C, then refresh the room-mate display
+; via KillActor_View. (For its one caller the "actor" is the ALIEN,
+; whose +5 holds the slot of a dragged-off body — see Wound_PanicRoll
+; — not courage.)
 ; .
 ; Used by the routine at #R39400.
 @label=SetCourageRefresh
@@ -12582,20 +12718,26 @@ c45642 LD B,A        ; IX -> the witness's record
 
 ; KillActor_Bounce
 ;
+; A = the viewed slot, (HL) = the departing actor's slot: full view
+; rebuild when they match, room-mate list redraw when they don't.
+; .
 ; Used by the routine at #R38784.
 @label=KillActor_Bounce
-c45676 CP (HL)       ;
- 45677 JP Z,31417    ;
- 45680 JP 45490      ;
+c45676 CP (HL)       ; is the departed the viewed slot?
+ 45677 JP Z,31417    ; yes: rebuild the whole view
+ 45680 JP 45490      ; no: redraw the room-mate lists
 
 ; DuctSearchInit
 ;
+; The tracker holder is in the ducts: switch the sweep to the duct
+; adjacency map and strip the network flag from his room.
+; .
 ; Used by the routine at #R38941.
 @label=DuctSearchInit
-c45683 LD BC,29346   ;
- 45686 AND 63        ;
+c45683 LD BC,29346   ; BC = RoomAdjDucts
+ 45686 AND 63        ; A = plain room id
 @nowarn=38356
- 45688 LD (38356),A  ;
+ 45688 LD (38356),A  ; update AdjTestRoom
  45691 RET           ;
 
 ; PrintNameThenPanel
@@ -12613,24 +12755,34 @@ c45692 CALL 31690    ;
 
 ; RoomRejectCheck
 ;
+; Tracker-sweep test for one adjacent room (in C, A = JonesRoom):
+; Jones or the alien there = motion detected; otherwise scan the
+; actors too.
+; .
 ; Used by the routine at #R38941.
 @label=RoomRejectCheck
-c45705 CP C          ;
- 45706 JP Z,39035    ;
- 45709 LD A,(29567)  ;
+c45705 CP C          ; Jones in the adjacent room?
+ 45706 JP Z,39035    ; yes: motion detected
+ 45709 LD A,(29567)  ; the alien in it?
  45712 AND 63        ;
  45714 CP C          ;
- 45715 JP Z,39035    ;
- 45718 JP 39000      ;
+ 45715 JP Z,39035    ; yes: motion detected
+ 45718 JP 39000      ; else check the actors
 
 ; AIActionSelect
 ;
+; Entry shim for the alien's AI: spot 98 (= room 34 | 64, the ducts
+; "over" the Narcissus) is an escape artifact — the Narcissus has no
+; grille byte, so the alien can duct-flip into a network that does
+; not connect anywhere. If it is stuck there, flip it straight back
+; out; otherwise run the victim scan.
+; .
 ; Used by the routine at #R37018.
 @label=AIActionSelect
-c45721 LD A,(IX+1)   ;
+c45721 LD A,(IX+1)   ; stuck in the Narcissus "ducts" (98)?
  45724 CP 98         ;
- 45726 JP Z,37132    ;
- 45729 JP 37036      ;
+ 45726 JP Z,37132    ; yes: climb straight back out
+ 45729 JP 37036      ; no: scan for victims (A = its spot)
 
 ; AlienEventDispatch
 ;
