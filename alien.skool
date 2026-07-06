@@ -1082,18 +1082,16 @@ b23756 DEFB 0,108,0,234,221,33,0,64
  24564 DEFB 93,28,186,205,82,28,118,27
  24572 DEFB 3,19,0,62
 
-; Ship-map screen data — three deck maps
+; Ship-map data — the Nostromo's three deck maps
 ;
-; The map screen shown by DrawShipMap (#R42821) as three stacked deck
-; views: 3 decks x 19 rows x 20 columns of tile codes (the same 20-wide
-; grid format the room views use). Row texts like "UPPER DECK" are
-; plain ASCII tile codes; other values are map glyphs (room outlines,
-; corridors, and the legend symbols: 123 '{' ladder up, 124 '|'
-; hatchway down, 125 '}' duct grille).
-; .
-; Double duty: in play, DrawRoomBackground (#R31267) renders the
-; single deck selected by RoomTypeByte (380 bytes per deck) as the
-; room view's background map.
+; 3 decks x 19 rows x 20 columns of tile codes (the same 20-wide grid
+; format the room views use), drawn one deck at a time (380 bytes,
+; selected by RoomTypeByte) by DrawRoomBackground (#R31267) as the
+; map pane / room-view background; the Upper/Middle/Lower rows of the
+; orders menu switch decks via SelectDeckMap (#R35210). Row texts
+; like "UPPER DECK" are plain ASCII tile codes; other values are map
+; glyphs (room outlines, corridors, and the legend symbols: 123 '{'
+; ladder up, 124 '|' hatchway down, 125 '}' duct grille).
 @label=ShipMapData
 b24576 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  ; UPPER deck row 0
  24596 DEFB 0,85,80,80,69,82,0,0,0,0,0,0,0,0,0,0,0,0,0,0  ; UPPER deck row 1
@@ -2170,7 +2168,7 @@ b30197 DEFB 83,52,52,52,52,52,52,52
 ; Crew portrait bitmaps
 ;
 ; Seven 3x3-character (24x24 pixel) raw bitmap portraits, drawn by #R33539.
-; Used by #R42821 (DrawShipMap -- all 7 at once) and by the crew-status
+; Used by #R42821 (GameModeScreen -- all 7 at once) and by the crew-status
 ; display (single-portrait draw, crew index from #R31241, via #R31634).
 ; Crew member names from #R29516 (CrewNameTable); portrait N is at
 ; address #R30216 + (N-1)*72. Portrait data continues into #R30492 and
@@ -4015,7 +4013,7 @@ c33479 LD HL,20576   ;
 ; Draw the selected crew member's 24x24-pixel portrait (CrewPortraits
 ; #R30216, 72 bytes each) at the bottom-left of the room view (screen
 ; rows 15-17, cols 1-3), blue ink on white. BlitPortrait is also
-; entered directly by DrawShipMap with HL/DE preloaded.
+; entered directly by GameModeScreen with HL/DE preloaded.
 @label=DrawCrewPortrait
 c33500 LD HL,23009   ; paint the 3x3 attribute square
  33503 LD DE,29      ; (row 15, col 1) blue-on-white (57)
@@ -6145,7 +6143,7 @@ c36448 LD BC,4863    ; 4863 iterations of 26 T-states
 c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
  36460 CALL 33600    ; ResetScriptPtr: seed ROM-traversal script pointer
  36463 CALL 42581    ; DrawIntroScreen: animated Alien title screen
- 36466 CALL 42821    ; DrawShipMap: ship layout / room-selection screen
+ 36466 CALL 42821    ; GameModeScreen: crew roster + game-mode menu
  36469 CALL 43610    ; OptionsScreen: difficulty selection (keys 1-4)
  36472 CALL 44561    ; ScreenTransition: wipe to black, set white attributes
  36475 CALL 45401    ; UpdateAllCrew: pairwise companion morale support
@@ -10543,7 +10541,7 @@ c42515 LD HL,22528   ; HL = #R22528 (start of attribute file)
 
 ; Ship-map screen title and credits
 ;
-; Plain ASCII (previously misclassified as code), drawn by DrawShipMap
+; Plain ASCII (previously misclassified as code), drawn by GameModeScreen
 ; (#R42821): the big "ALIEN" title (one glyph per cell, 3-column
 ; spacing) and the author/publisher credit lines "John Heap" /
 ; "Argus Press Software".
@@ -10722,57 +10720,55 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
  42817 JR C,42808    ;
  42819 JR 42802      ;
 
-; DrawShipMap
+; GameModeScreen — crew roster + game-mode menu
 @ignoreua
 ;
-; Draws the Nostromo ship overview map and handles game-mode selection.
-; Sets border green, fills attributes (32), clears display, then blits the
-; deck plan as tile blocks at fixed screen positions. After drawing, prints
-; the crew names via #R31690 (one name per corridor segment) and the
-; four-line menu ("1: Short Game", "2: Long Game", "3: Introduction",
-; "4: Select") from the text table at #R43141 (#R43141).
+; Despite the old "DrawShipMap" name, no ship map is drawn here. The
+; screen shows the seven crew portraits (four across the top, three
+; below) with their names, then the menu "1: Short Game / 2: Long
+; Game / 3: Introduction / 4: Select" from the text table at #R43141.
 ; .
 ; Key input loop reads port $F7FE:
 ;   Key 1 — highlight "Short Game"   (selection 0)
 ;   Key 2 — highlight "Long Game"    (selection 1)
 ;   Key 3 — highlight "Introduction" (selection 2)
-;   Key 4 — confirm: dispatch through 3-word table at #R43135 (#R43135)
-;            to the handler for the highlighted mode, then return
+;   Key 4 — confirm: dispatch through the 3-word table at #R43135
+;            to the handler for the highlighted mode
 ; .
 ; "4: Select" is a confirm key, not a fourth game mode.
 ; .
 ; Used by the routines at #R36457 and #R43242.
-@label=DrawShipMap
-c42821 LD A,4        ; A = 4 (green border)
- 42823 OUT (254),A   ; set border green
- 42825 LD A,32       ; attribute 32 = green ink on black paper
+@label=GameModeScreen
+c42821 LD A,4        ; green border,
+ 42823 OUT (254),A   ;
+ 42825 LD A,32       ; green paper, black ink
  42827 CALL 42515    ; FillAttributes(32)
  42830 CALL 42501    ; ClearDisplay
- 42833 CALL 44109    ; wait for display to stabilise
- 42836 LD DE,30216   ;
- 42839 LD HL,16452   ;
- 42842 LD B,4        ;
+ 42833 CALL 44109    ; wait for the keys to clear
+ 42836 LD DE,30216   ; four crew portraits across the
+ 42839 LD HL,16452   ; top (from row 2, col 4; 72 data
+ 42842 LD B,4        ; bytes / 7 columns each)
 @label=ShipMap_Portraits1
 *42844 PUSH BC       ;
  42845 PUSH HL       ;
  42846 PUSH DE       ;
- 42847 CALL 33539    ;
+ 42847 CALL 33539    ; BlitPortrait
  42850 POP DE        ;
- 42851 LD HL,72      ;
+ 42851 LD HL,72      ; next portrait's data,
  42854 ADD HL,DE     ;
  42855 EX DE,HL      ;
  42856 POP HL        ;
- 42857 LD BC,7       ;
+ 42857 LD BC,7       ; 7 columns right
  42860 ADD HL,BC     ;
  42861 POP BC        ;
  42862 DJNZ 42844    ;
- 42864 LD HL,18439   ;
- 42867 LD B,3        ;
+ 42864 LD HL,18439   ; three more below
+ 42867 LD B,3        ; (from row 8, col 7)
 @label=ShipMap_Portraits2
 *42869 PUSH BC       ;
  42870 PUSH HL       ;
  42871 PUSH DE       ;
- 42872 CALL 33539    ;
+ 42872 CALL 33539    ; BlitPortrait
  42875 POP DE        ;
  42876 LD HL,72      ;
  42879 ADD HL,DE     ;
@@ -10782,100 +10778,100 @@ c42821 LD A,4        ; A = 4 (green border)
  42885 ADD HL,BC     ;
  42886 POP BC        ;
  42887 DJNZ 42869    ;
- 42889 LD HL,16579   ;
- 42892 LD A,1        ;
+ 42889 LD HL,16579   ; the names under the portraits:
+ 42892 LD A,1        ; Dallas,
  42894 LD (31257),HL ;
  42897 CALL 31690    ;
- 42900 LD HL,16587   ;
+ 42900 LD HL,16587   ; Kane,
  42903 LD (31257),HL ;
  42906 LD A,2        ;
  42908 CALL 31690    ;
- 42911 LD HL,16593   ;
+ 42911 LD HL,16593   ; Ripley,
  42914 LD (31257),HL ;
  42917 LD A,3        ;
  42919 CALL 31690    ;
- 42922 LD HL,16601   ;
+ 42922 LD HL,16601   ; Ash,
  42925 LD (31257),HL ;
  42928 LD A,4        ;
  42930 CALL 31690    ;
- 42933 LD HL,18565   ;
+ 42933 LD HL,18565   ; Lambert,
  42936 LD (31257),HL ;
  42939 LD A,5        ;
  42941 CALL 31690    ;
- 42944 LD HL,18573   ;
+ 42944 LD HL,18573   ; Parker,
  42947 LD (31257),HL ;
  42950 LD A,6        ;
  42952 CALL 31690    ;
- 42955 LD HL,18581   ;
+ 42955 LD HL,18581   ; Brett
  42958 LD (31257),HL ;
  42961 LD A,7        ;
  42963 CALL 31690    ;
- 42966 LD DE,43141   ;
- 42969 LD HL,18665   ;
+ 42966 LD DE,43141   ; the menu lines:
+ 42969 LD HL,18665   ; "1: Short Game" (row 15)
  42972 LD (31257),HL ;
  42975 PUSH DE       ;
  42976 XOR A         ;
  42977 CALL 31693    ;
- 42980 LD HL,20521   ;
+ 42980 LD HL,20521   ; "2: Long Game" (row 17)
  42983 LD (31257),HL ;
  42986 POP DE        ;
  42987 PUSH DE       ;
  42988 LD A,1        ;
  42990 CALL 31693    ;
- 42993 LD HL,20585   ;
+ 42993 LD HL,20585   ; "3: Introduction" (row 19)
  42996 LD (31257),HL ;
  42999 POP DE        ;
  43000 PUSH DE       ;
  43001 LD A,2        ;
  43003 CALL 31693    ;
- 43006 LD HL,20649   ;
+ 43006 LD HL,20649   ; "4: Select" (row 21)
  43009 LD (31257),HL ;
  43012 POP DE        ;
  43013 PUSH DE       ;
  43014 LD A,3        ;
  43016 CALL 31693    ;
- 43019 LD HL,20710   ;
+ 43019 LD HL,20710   ; "Press Appropriate Key" (row 22)
  43022 LD (31257),HL ;
  43025 POP DE        ;
  43026 LD A,4        ;
  43028 CALL 31693    ;
- 43031 XOR A         ;
+ 43031 XOR A         ; selection = 0 (Short Game),
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
  43032 LD (33683),A  ;
- 43035 CALL 43216    ;
+ 43035 CALL 43216    ; highlighted
 @label=ShipMap_KeyLoop
-*43038 LD BC,63486   ;
+*43038 LD BC,63486   ; scan half-row 1-5:
  43041 IN A,(C)      ;
- 43043 BIT 0,A       ;
+ 43043 BIT 0,A       ; key 1?
  43045 JR Z,43061    ;
- 43047 BIT 1,A       ;
+ 43047 BIT 1,A       ; key 2?
  43049 JR Z,43079    ;
- 43051 BIT 2,A       ;
+ 43051 BIT 2,A       ; key 3?
  43053 JR Z,43099    ;
- 43055 BIT 3,A       ;
+ 43055 BIT 3,A       ; key 4 = confirm?
  43057 JR Z,43119    ;
  43059 JR 43038      ;
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
 @label=ShipMap_Pick1
-*43061 LD A,(33683)  ;
+*43061 LD A,(33683)  ; already on Short Game?
  43064 AND A         ;
  43065 JR Z,43038    ;
- 43067 CALL 43216    ;
- 43070 XOR A         ;
+ 43067 CALL 43216    ; no: unhighlight the old pick,
+ 43070 XOR A         ; select mode 0,
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
  43071 LD (33683),A  ;
- 43074 CALL 43216    ;
+ 43074 CALL 43216    ; highlight it
  43077 JR 43038      ;
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
 @label=ShipMap_Pick2
-*43079 LD A,(33683)  ;
+*43079 LD A,(33683)  ; already on Long Game?
  43082 CP 1          ;
  43084 JR Z,43038    ;
- 43086 CALL 43216    ;
+ 43086 CALL 43216    ; no: repick mode 1
  43089 LD A,1        ;
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
@@ -10885,10 +10881,10 @@ c42821 LD A,4        ; A = 4 (green border)
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
 @label=ShipMap_Pick3
-*43099 LD A,(33683)  ;
+*43099 LD A,(33683)  ; already on Introduction?
  43102 CP 2          ;
  43104 JR Z,43038    ;
- 43106 CALL 43216    ;
+ 43106 CALL 43216    ; no: repick mode 2
  43109 LD A,2        ;
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
@@ -10898,8 +10894,8 @@ c42821 LD A,4        ; A = 4 (green border)
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
 @label=ShipMap_Confirm
-*43119 LD A,(33683)  ;
- 43122 ADD A,A       ;
+*43119 LD A,(33683)  ; key 4: dispatch the picked mode
+ 43122 ADD A,A       ; through GameModeDispatchTable
  43123 LD HL,43135   ;
  43126 LD E,A        ;
  43127 LD D,0        ;
@@ -10979,7 +10975,7 @@ w43135 DEFW 44738,42276,43242
 ; GameModeText
 ;
 ; $FF-terminated text strings for the game-mode menu, rendered by
-; #R42821 (DrawShipMap) via five calls to #R31693.
+; #R42821 (GameModeScreen) via five calls to #R31693.
 ; Indices 0-3 are the four menu lines; index 4 is the footer prompt.
 @label=GameModeText
 b43141 DEFB 49,58,32,83,104,111,114,116,32,71,97,109,101,255     ; "1: Short Game"
@@ -10994,7 +10990,7 @@ b43141 DEFB 49,58,32,83,104,111,114,116,32,71,97,109,101,255     ; "1: Short Gam
 @ignoreua
 ;
 ; XOR-toggles the attribute colour of the currently selected menu
-; row, used by DrawShipMap (#R42821) to highlight or erase the
+; row, used by GameModeScreen (#R42821) to highlight or erase the
 ; cursor. Loads the base attribute address $59E9 (row 15, col 9),
 ; steps 64 bytes per row (selection × 64), then XORs 15 consecutive
 ; attribute bytes with 36 (flipping ink/paper to show highlight).

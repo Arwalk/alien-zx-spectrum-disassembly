@@ -123,8 +123,9 @@ Key 1 opens `PauseMenu` `$AF0F`; pressing 1 again restarts.
 
 ### Screen flow
 
-Intro (any key) → ship map + game-mode menu (1 = Short Game, 2 = Long Game,
-3 = Introduction; **4 = confirm** via `GameModeDispatchTable` `$A87F`) →
+Intro (any key) → crew roster + game-mode menu (`GameModeScreen`: 1 = Short
+Game, 2 = Long Game, 3 = Introduction; **4 = confirm** via
+`GameModeDispatchTable` `$A87F`) →
 input-device menu (`OptionsScreen`: 1 Kempston / 2 AGF-Protek / 3 Sinclair /
 4 Keyboard, **5 = SELECT**; choosing Keyboard offers Y = redefine keys) →
 gameplay. The Long Game opens with the film's dinner scene (Dallas/Kane/Ripley
@@ -230,7 +231,7 @@ Same records as `ActorRecords` above (`$7386` = slot 1); in the room view the pe
 | `DrawSpriteRow` | `$7A71` | Blit one 8px-tall tile column onto display |
 | `DrawSprite` | `$7BA2` | Blit full 10-column × 8-row sprite |
 | `DrawIntroScreen` | `$A665` | Animated Alien title screen |
-| `DrawShipMap` | `$A785` | Nostromo ship-map / room-selection screen |
+| `GameModeScreen` | `$A785` | Crew-roster + game-mode menu screen (ex-"DrawShipMap" — no map is drawn) |
 | `OptionsScreen` | `$AA5A` | Input-device menu: 1–4 pick joystick/keyboard, 5 = start; Y = redefine keys |
 | `PickNextRoom` | `$8F6D` | Choose an actor's next room from the adjacency maps |
 | `RedrawRoomScene` | `$7FCF` | Rebuild the full room view: menu strip, info panel, actors |
