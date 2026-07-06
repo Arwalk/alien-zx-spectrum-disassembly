@@ -2975,105 +2975,107 @@ c31915 LD C,255      ; C = "empty" sentinel
 
 ; DrawRoomSpecials
 ;
-; Draws the special actors into the room view when the viewed room
-; hosts them: the activated Android (via AlienTargetID's record) and
-; Jones the cat, plus follow-on room furniture.
+; Fill the strip cells for the viewed room's special occupants and
+; fixtures: the hostile Android and the alien (ATTACK on the Special
+; slot), Jones ("Get Jones " on row 14), then the room's fixture
+; label on cells 15/16 (destruct lever, airlock doors, hypersleep
+; pod, engine fire, launch console).
 @label=DrawRoomSpecials
 @nowarn=33703
 @ssub=LD A,(AlienTargetID)
-c31964 LD A,(33703)  ; Android slot chosen for this run
+c31964 LD A,(33703)  ; is there an Android this game,
  31967 CP 8          ;
  31969 JR NC,31988   ;
 @nowarn=33704
 @ssub=LD A,(AlienActiveFlag)
- 31971 LD A,(33704)  ;
+ 31971 LD A,(33704)  ; already hostile,
  31974 AND A         ;
  31975 JR Z,31988    ;
- 31977 LD HL,(33701) ;
+ 31977 LD HL,(33701) ; and in the viewed room?
  31980 INC HL        ;
  31981 LD A,(31242)  ;
  31984 CP (HL)       ;
- 31985 CALL Z,32134  ;
+ 31985 CALL Z,32134  ; yes: offer ATTACK
 @label=DrawSpec_RoomChecks
-*31988 LD A,(31242)  ;
+*31988 LD A,(31242)  ; Jones in the viewed room?
 @nowarn=33706
 @ssub=LD HL,JonesRoom
  31991 LD HL,33706   ;
  31994 CP (HL)       ;
- 31995 CALL Z,32109  ;
- 31998 LD HL,29567   ;
+ 31995 CALL Z,32109  ; yes: cat + "Get Jones " row
+ 31998 LD HL,29567   ; the alien in the viewed room?
  32001 CP (HL)       ;
- 32002 CALL Z,32121  ;
- 32005 LD HL,31253   ;
- 32008 LD DE,29645   ;
- 32011 CP 6          ;
- 32013 JR Z,32051    ;
- 32015 CP 13         ;
+ 32002 CALL Z,32121  ; yes: offer ATTACK
+ 32005 LD HL,31253   ; HL -> ShipSystemFlags,
+ 32008 LD DE,29645   ; DE -> strip cells 15/16: which
+ 32011 CP 6          ; fixture lives in this room?
+ 32013 JR Z,32051    ; CommdCentr: the destruct lever
+ 32015 CP 13         ; Corridor#6: the airlock doors
  32017 JR Z,32089    ;
- 32019 CP 15         ;
+ 32019 CP 15         ; Cryo Vault: the hypersleep pod
  32021 JR Z,32064    ;
- 32023 CP 17         ;
- 32025 JR Z,32071    ;
+ 32023 CP 17         ; engine rooms: a fire,
+ 32025 JR Z,32071    ; if one is burning
  32027 CP 18         ;
  32029 JR Z,32075    ;
  32031 CP 19         ;
  32033 JR Z,32079    ;
- 32035 CP 34         ;
+ 32035 CP 34         ; Narcissus: the launch console
  32037 JR Z,32040    ;
- 32039 RET           ;
+ 32039 RET           ; other rooms: no fixture
 @label=DrawSpec_LaunchConsole
-*32040 BIT 6,(HL)    ;
- 32042 RET NZ        ;
- 32043 LD A,78       ;
- 32045 LD (DE),A     ;
+*32040 BIT 6,(HL)    ; (flag bit 6 would hide the console;
+ 32042 RET NZ        ; nothing sets it in this build)
+ 32043 LD A,78       ; cells 15/16 = launch-console
+ 32045 LD (DE),A     ; label (strings 78/81)
  32046 LD A,81       ;
  32048 INC DE        ;
  32049 LD (DE),A     ;
  32050 RET           ;
 @label=DrawSpec_DestructLever
-*32051 LD A,70       ;
- 32053 BIT 0,(HL)    ;
- 32055 JR Z,32059    ;
+*32051 LD A,70       ; lever off (70/71), or
+ 32053 BIT 0,(HL)    ; armed (72/73) when the
+ 32055 JR Z,32059    ; destruct bit is set
  32057 LD A,72       ;
 @label=DrawSpec_LeverStore
-*32059 LD (DE),A     ;
- 32060 INC DE        ;
+*32059 LD (DE),A     ; write the two-row label
+ 32060 INC DE        ; into cells 15/16
  32061 INC A         ;
  32062 LD (DE),A     ;
  32063 RET           ;
 @label=DrawSpec_HyperPod
-*32064 LD A,74       ;
- 32066 LD (DE),A     ;
+*32064 LD A,74       ; hypersleep pod label (74/75)
+ 32066 LD (DE),A     ; into cells 15/16
  32067 INC DE        ;
  32068 INC A         ;
  32069 LD (DE),A     ;
  32070 RET           ;
 @label=DrawSpec_Engine1Fire
-*32071 BIT 3,(HL)    ;
+*32071 BIT 3,(HL)    ; Engine #1 burning?
  32073 JR 32081      ;
 @label=DrawSpec_Engine2Fire
-*32075 BIT 4,(HL)    ;
+*32075 BIT 4,(HL)    ; Engine #2 burning?
  32077 JR 32081      ;
 @label=DrawSpec_Engine3Fire
-*32079 BIT 5,(HL)    ;
+*32079 BIT 5,(HL)    ; Engine #3 burning?
 @label=DrawSpec_FireCells
-*32081 RET Z         ;
- 32082 LD A,76       ;
- 32084 LD (DE),A     ;
+*32081 RET Z         ; no fire: no label
+ 32082 LD A,76       ; fire label (76/77)
+ 32084 LD (DE),A     ; into cells 15/16
  32085 INC A         ;
  32086 INC DE        ;
  32087 LD (DE),A     ;
  32088 RET           ;
 @label=DrawSpec_Airlock
-*32089 LD A,53       ;
- 32091 BIT 1,(HL)    ;
+*32089 LD A,53       ; cell 15 = airlock #1 door:
+ 32091 BIT 1,(HL)    ; closed (53) or blown (55)
  32093 JR Z,32097    ;
  32095 LD A,55       ;
 @label=DrawSpec_StoreDoor1
 *32097 LD (DE),A     ;
  32098 INC DE        ;
- 32099 LD A,54       ;
- 32101 BIT 2,(HL)    ;
+ 32099 LD A,54       ; cell 16 = airlock #2 door:
+ 32101 BIT 2,(HL)    ; closed (54) or blown (56)
  32103 JR Z,32107    ;
  32105 LD A,56       ;
 @label=DrawSpec_StoreDoor2
@@ -3510,107 +3512,114 @@ c32684 LD DE,29630   ;
 c32719 CALL 32684    ; ResetActionMenu
 @nowarn=32896
 @ssub=LD HL,DrawMenuStrip
- 32722 LD HL,32896   ;
- 32725 LD (31263),HL ;
- 32728 LD A,128      ;
+ 32722 LD HL,32896   ; freeze both animation channels
+@ignoreua
+ 32725 LD (31263),HL ; ($8080)
+ 32728 LD A,128      ; and the Jones / alien-body
 @nowarn=39753
 @ssub=LD (JonesPhase),A
- 32730 LD (39753),A  ;
+ 32730 LD (39753),A  ; animation phases too
 @nowarn=39741
 @ssub=LD (AlienXPhase),A
  32733 LD (39741),A  ;
- 32736 CALL 31721    ;
- 32739 LD A,(31242)  ;
+ 32736 CALL 31721    ; point IX at the selected slot
+ 32739 LD A,(31242)  ; sharing the room with the alien?
  32742 LD HL,29567   ;
  32745 CP (HL)       ;
  32746 JR NZ,32753   ;
- 32748 LD HL,31243   ;
- 32751 LD (HL),4     ;
+ 32748 LD HL,31243   ; yes: view type 4 —
+ 32751 LD (HL),4     ; the encounter screen
 @label=Redraw_DuctCheck
-*32753 BIT 6,A       ;
+*32753 BIT 6,A       ; viewing a duct position?
  32755 JR NZ,32765   ;
- 32757 CALL 31267    ;
- 32760 CALL 31759    ;
+ 32757 CALL 31267    ; no: draw the room background
+ 32760 CALL 31759    ; and build the exit list
  32763 JR 32768      ;
 @label=Redraw_Ducts
-*32765 CALL 32967    ;
+*32765 CALL 32967    ; yes: the duct/room interior view
 @label=Redraw_Common
-*32768 CALL 33500    ;
- 32771 CALL 31796    ;
- 32774 CALL 31820    ;
- 32777 CALL 31915    ;
- 32780 CALL 33479    ;
- 32783 CALL 32143    ;
- 32786 CALL 32280    ;
- 32789 CALL 32385    ;
- 32792 CALL 32536    ;
- 32795 CALL 31964    ;
- 32798 CALL 32816    ;
- 32801 LD A,(31243)  ;
+*32768 CALL 33500    ; the crew portrait,
+ 32771 CALL 31796    ; the room's item list,
+ 32774 CALL 31820    ; the held-items cache,
+ 32777 CALL 31915    ; the " use:" menu rows,
+ 32780 CALL 33479    ; a clear info panel,
+ 32783 CALL 32143    ; room name + damage meter,
+ 32786 CALL 32280    ; "Items Present" / grille state,
+ 32789 CALL 32385    ; the condition line,
+ 32792 CALL 32536    ; the "Also here" lists,
+ 32795 CALL 31964    ; hostiles/Jones/fixtures,
+ 32798 CALL 32816    ; the menu strip + status line
+ 32801 LD A,(31243)  ; encounter screen?
  32804 CP 4          ;
- 32806 RET Z         ;
- 32807 LD A,(31242)  ;
- 32810 BIT 6,A       ;
- 32812 CALL Z,35101  ;
+ 32806 RET Z         ; then no map marker
+ 32807 LD A,(31242)  ; in a room (not the ducts):
+ 32810 BIT 6,A       ; place the walking-figure marker
+ 32812 CALL Z,35101  ; on the deck map
  32815 RET           ;
 
-; DrawSelectedName
+; DrawSelectedName — the menu column's name row and colour bands
 ;
+; Rebuild the right-hand menu column's fixed dressing: the selected
+; crew member's name on screen row 0, the coloured attribute bands
+; behind the 19 menu rows, then (falling into DrawMenuStrip) the
+; mode-1 strip itself from CorridorPosTable, the cursor highlight on
+; the QUIT row and the status line.
+; .
 ; Used by the routines at #R32719, #R44938 and #R45148.
 @label=DrawSelectedName
-c32816 LD HL,16406   ;
- 32819 LD (31257),HL ;
+c32816 LD HL,16406   ; blank the name row
+ 32819 LD (31257),HL ; (screen row 0, col 22)
  32822 PUSH HL       ;
  32823 LD A,255      ;
  32825 CALL 31634    ;
  32828 POP HL        ;
- 32829 INC HL        ;
- 32830 LD (31257),HL ;
+ 32829 INC HL        ; and print the selected crew
+ 32830 LD (31257),HL ; member's name at col 23
  32833 LD A,(31241)  ;
  32836 CALL 31690    ;
- 32839 LD HL,22550   ;
- 32842 LD A,7        ;
+ 32839 LD HL,22550   ; paint the colour bands (attr
+ 32842 LD A,7        ; col 22): the name row white,
  32844 LD C,1        ;
  32846 CALL 31612    ;
- 32849 LD A,15       ;
- 32851 LD C,7        ;
+ 32849 LD A,15       ; cells 0-6 white-on-blue
+ 32851 LD C,7        ; (the "move to:" block),
  32853 CALL 31612    ;
- 32856 LD A,32       ;
- 32858 LD C,3        ;
+ 32856 LD A,32       ; cells 7-9 green paper
+ 32858 LD C,3        ; (" use:" + the two hands),
  32860 CALL 31612    ;
- 32863 LD A,23       ;
+ 32863 LD A,23       ; cell 10 white-on-red (Get Item),
  32865 LD C,1        ;
  32867 CALL 31612    ;
- 32870 LD A,48       ;
+ 32870 LD A,48       ; cell 11 yellow paper (Leave Item),
  32872 LD C,1        ;
  32874 CALL 31612    ;
- 32877 LD A,31       ;
- 32879 LD C,5        ;
+ 32877 LD A,31       ; cells 12-16 white-on-magenta
+ 32879 LD C,5        ; (the Special block),
  32881 CALL 31612    ;
- 32884 LD A,56       ;
+ 32884 LD A,56       ; cells 17-18 white paper (QUIT)
  32886 LD C,2        ;
  32888 CALL 31612    ;
- 32891 LD A,61       ;
+ 32891 LD A,61       ; mirror = 61 "   QUIT   "
  32893 LD (33685),A  ;
 @label=DrawMenuStrip
- 32896 LD A,17       ;
+ 32896 LD A,17       ; park the cursor on the QUIT row
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
  32898 LD (33683),A  ;
- 32901 LD A,1        ;
+ 32901 LD A,1        ; room mode 1 (the room view)
  32903 LD (31252),A  ;
- 32906 LD HL,29630   ;
+ 32906 LD HL,29630   ; tile source = CorridorPosTable
  32909 LD (31261),HL ;
- 32912 LD HL,16438   ;
- 32915 LD (31257),HL ;
+ 32912 LD HL,16438   ; draw the 18 strip rows from
+ 32915 LD (31257),HL ; screen row 1, col 22
  32918 LD B,18       ;
 @label=Redraw_StripLoop
 *32920 PUSH BC       ;
  32921 CALL 31626    ;
  32924 POP BC        ;
  32925 DJNZ 32920    ;
- 32927 CALL 34882    ;
- 32930 CALL 39572    ;
+ 32927 CALL 34882    ; highlight the cursor row
+ 32930 CALL 39572    ; and redraw the status line
  32933 RET           ;
 ; Cell-glyph walk-handler table (was mis-disassembled as code):
 ; 3-byte records (glyph, handler word) looked up by DrawDoorArm
@@ -3919,8 +3928,8 @@ c33275 RET           ;
 
 ; ClearRoomAttrs
 @label=ClearRoomAttrs
-c33395 LD DE,12      ;
- 33398 LD HL,22528   ;
+c33395 LD DE,12      ; black out the 20x19 room-view
+ 33398 LD HL,22528   ; attribute window
  33401 LD C,19       ;
 @label=ClearRoomAttrs_RowLoop
 *33403 LD B,20       ;
@@ -3931,13 +3940,19 @@ c33395 LD DE,12      ;
  33410 ADD HL,DE     ;
  33411 DEC C         ;
  33412 JR NZ,33403   ;
- 33414 LD HL,26121   ;
- 33417 CALL 31312    ;
+ 33414 LD HL,26121   ; then render the grid buffer
+ 33417 CALL 31312    ; (DrawRoomBackground_0)
  33420 RET           ;
 
 ; BuildDuctExitList
+;
+; The duct view's "move to:" rows: fill strip cells 2-5 from the
+; room's four RoomAdjDucts slots (skipping no-exit entries), then
+; overwrite each present exit with an anonymous direction arrow —
+; strings 57-60 "North/East/South/West" — so the player sees where
+; the crawlway leads but not what it leads to.
 @label=BuildDuctExitList
-c33421 LD A,(31242)  ;
+c33421 LD A,(31242)  ; HL = RoomAdjDucts + room * 5
  33424 AND 63        ;
  33426 LD L,A        ;
  33427 LD H,0        ;
@@ -3948,25 +3963,25 @@ c33421 LD A,(31242)  ;
  33433 ADD HL,DE     ;
  33434 LD DE,29346   ;
  33437 ADD HL,DE     ;
- 33438 LD DE,29632   ;
- 33441 LD B,4        ;
+ 33438 LD DE,29632   ; DE -> strip cell 2
+ 33441 LD B,4        ; four duct directions:
 @label=DuctExits_SlotLoop
-*33443 LD C,(HL)     ;
- 33444 CP C          ;
- 33445 JR Z,33457    ;
- 33447 LD A,(31242)  ;
- 33450 AND 63        ;
- 33452 CP C          ;
+*33443 LD C,(HL)     ; C = the destination that way;
+ 33444 CP C          ; own room = no exit: leave the
+ 33445 JR Z,33457    ; cell empty (checked twice — A
+ 33447 LD A,(31242)  ; holds a stale destination after
+ 33450 AND 63        ; a stored exit, so the reload
+ 33452 CP C          ; makes the second test reliable)
  33453 JR Z,33457    ;
- 33455 LD A,C        ;
+ 33455 LD A,C        ; else cell = the destination room
  33456 LD (DE),A     ;
 @label=DuctExits_NextSlot
 *33457 INC DE        ;
  33458 INC HL        ;
  33459 DJNZ 33443    ;
- 33461 LD B,4        ;
- 33463 LD HL,29632   ;
- 33466 LD C,57       ;
+ 33461 LD B,4        ; second pass: disguise each
+ 33463 LD HL,29632   ; present exit as a direction
+ 33466 LD C,57       ; arrow (57 North ... 60 West)
 @label=DuctExits_ArrowLoop
 *33468 LD A,(HL)     ;
  33469 CP 255        ;
@@ -3996,9 +4011,14 @@ c33479 LD HL,20576   ;
  33499 RET           ;
 
 ; DrawCrewPortrait
+;
+; Draw the selected crew member's 24x24-pixel portrait (CrewPortraits
+; #R30216, 72 bytes each) at the bottom-left of the room view (screen
+; rows 15-17, cols 1-3), blue ink on white. BlitPortrait is also
+; entered directly by DrawShipMap with HL/DE preloaded.
 @label=DrawCrewPortrait
-c33500 LD HL,23009   ;
- 33503 LD DE,29      ;
+c33500 LD HL,23009   ; paint the 3x3 attribute square
+ 33503 LD DE,29      ; (row 15, col 1) blue-on-white (57)
  33506 LD C,3        ;
 @label=Portrait_AttrRowLoop
 *33508 LD B,3        ;
@@ -4009,8 +4029,8 @@ c33500 LD HL,23009   ;
  33515 DEC C         ;
  33516 ADD HL,DE     ;
  33517 JR NZ,33508   ;
- 33519 LD DE,72      ;
- 33522 LD HL,30216   ;
+ 33519 LD DE,72      ; DE -> CrewPortraits +
+ 33522 LD HL,30216   ; (slot-1) * 72 bytes
  33525 LD A,(31241)  ;
  33528 DEC A         ;
  33529 JR Z,33535    ;
@@ -4020,32 +4040,32 @@ c33500 LD HL,23009   ;
  33533 DJNZ 33532    ;
 @label=Portrait_AddrDone
 *33535 EX DE,HL      ;
- 33536 LD HL,18657   ;
+ 33536 LD HL,18657   ; blit at screen row 15, col 1
 ; This entry point is used by the routine at #R42821.
 @label=BlitPortrait
 *33539 LD (31257),HL ;
- 33542 LD B,3        ;
+ 33542 LD B,3        ; 3 cell rows
 @label=BlitPortrait_RowLoop
-*33544 LD C,3        ;
+*33544 LD C,3        ; of 3 cell columns
 @label=BlitPortrait_ColLoop
 *33546 PUSH BC       ;
  33547 LD HL,(31257) ;
- 33550 LD B,8        ;
+ 33550 LD B,8        ; 8 pixel bytes straight down
 @label=BlitPortrait_PixLoop
 *33552 LD A,(DE)     ;
  33553 LD (HL),A     ;
  33554 INC H         ;
  33555 INC DE        ;
  33556 DJNZ 33552    ;
- 33558 LD HL,31257   ;
+ 33558 LD HL,31257   ; next cell column
  33561 INC (HL)      ;
  33562 POP BC        ;
  33563 DEC C         ;
  33564 JR NZ,33546   ;
- 33566 PUSH DE       ;
- 33567 LD HL,(31257) ;
- 33570 LD DE,29      ;
- 33573 LD A,L        ;
+ 33566 PUSH DE       ; next cell row: usually -3 +32,
+ 33567 LD HL,(31257) ; but crossing into the next
+ 33570 LD DE,29      ; screen third needs the big
+ 33573 LD A,L        ; +1821 stride
  33574 CP 224        ;
  33576 JR C,33581    ;
  33578 LD DE,1821    ;
