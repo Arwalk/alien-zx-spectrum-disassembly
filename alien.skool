@@ -2982,143 +2982,143 @@ c31915 LD C,255      ; C = "empty" sentinel
 @nowarn=33703
 @ssub=LD A,(AlienTargetID)
 c31964 LD A,(33703)  ; is there an Android this game,
- 31967 CP 8          ;
- 31969 JR NC,31988   ;
+ 31967 CP 8          ; 
+ 31969 JR NC,31988   ; 
 @nowarn=33704
 @ssub=LD A,(AlienActiveFlag)
  31971 LD A,(33704)  ; already hostile,
- 31974 AND A         ;
- 31975 JR Z,31988    ;
+ 31974 AND A         ; 
+ 31975 JR Z,31988    ; 
  31977 LD HL,(33701) ; and in the viewed room?
- 31980 INC HL        ;
- 31981 LD A,(31242)  ;
- 31984 CP (HL)       ;
+ 31980 INC HL        ; (AlienTargetPtr +1 = the Android's room)
+ 31981 LD A,(31242)  ; 
+ 31984 CP (HL)       ; 
  31985 CALL Z,32134  ; yes: offer ATTACK
 @label=DrawSpec_RoomChecks
 *31988 LD A,(31242)  ; Jones in the viewed room?
 @nowarn=33706
 @ssub=LD HL,JonesRoom
  31991 LD HL,33706   ;
- 31994 CP (HL)       ;
+ 31994 CP (HL)       ; 
  31995 CALL Z,32109  ; yes: cat + "Get Jones " row
  31998 LD HL,29567   ; the alien in the viewed room?
- 32001 CP (HL)       ;
+ 32001 CP (HL)       ; 
  32002 CALL Z,32121  ; yes: offer ATTACK
  32005 LD HL,31253   ; HL -> ShipSystemFlags,
  32008 LD DE,29645   ; DE -> strip cells 15/16: which
  32011 CP 6          ; fixture lives in this room?
  32013 JR Z,32051    ; CommdCentr: the destruct lever
  32015 CP 13         ; Corridor#6: the airlock doors
- 32017 JR Z,32089    ;
+ 32017 JR Z,32089    ; 
  32019 CP 15         ; Cryo Vault: the hypersleep pod
- 32021 JR Z,32064    ;
+ 32021 JR Z,32064    ; 
  32023 CP 17         ; engine rooms: a fire,
  32025 JR Z,32071    ; if one is burning
- 32027 CP 18         ;
- 32029 JR Z,32075    ;
- 32031 CP 19         ;
- 32033 JR Z,32079    ;
+ 32027 CP 18         ; 
+ 32029 JR Z,32075    ; 
+ 32031 CP 19         ; 
+ 32033 JR Z,32079    ; 
  32035 CP 34         ; Narcissus: the launch console
- 32037 JR Z,32040    ;
+ 32037 JR Z,32040    ; 
  32039 RET           ; other rooms: no fixture
 @label=DrawSpec_LaunchConsole
 *32040 BIT 6,(HL)    ; (flag bit 6 would hide the console;
  32042 RET NZ        ; nothing sets it in this build)
  32043 LD A,78       ; cells 15/16 = launch-console
  32045 LD (DE),A     ; label (strings 78/81)
- 32046 LD A,81       ;
- 32048 INC DE        ;
- 32049 LD (DE),A     ;
- 32050 RET           ;
+ 32046 LD A,81       ; 
+ 32048 INC DE        ; 
+ 32049 LD (DE),A     ; 
+ 32050 RET           ; 
 @label=DrawSpec_DestructLever
 *32051 LD A,70       ; lever off (70/71), or
  32053 BIT 0,(HL)    ; armed (72/73) when the
  32055 JR Z,32059    ; destruct bit is set
- 32057 LD A,72       ;
+ 32057 LD A,72       ; 
 @label=DrawSpec_LeverStore
 *32059 LD (DE),A     ; write the two-row label
  32060 INC DE        ; into cells 15/16
- 32061 INC A         ;
- 32062 LD (DE),A     ;
- 32063 RET           ;
+ 32061 INC A         ; 
+ 32062 LD (DE),A     ; 
+ 32063 RET           ; 
 @label=DrawSpec_HyperPod
 *32064 LD A,74       ; hypersleep pod label (74/75)
  32066 LD (DE),A     ; into cells 15/16
- 32067 INC DE        ;
- 32068 INC A         ;
- 32069 LD (DE),A     ;
- 32070 RET           ;
+ 32067 INC DE        ; 
+ 32068 INC A         ; 
+ 32069 LD (DE),A     ; 
+ 32070 RET           ; 
 @label=DrawSpec_Engine1Fire
 *32071 BIT 3,(HL)    ; Engine #1 burning?
- 32073 JR 32081      ;
+ 32073 JR 32081      ; 
 @label=DrawSpec_Engine2Fire
 *32075 BIT 4,(HL)    ; Engine #2 burning?
- 32077 JR 32081      ;
+ 32077 JR 32081      ; 
 @label=DrawSpec_Engine3Fire
 *32079 BIT 5,(HL)    ; Engine #3 burning?
 @label=DrawSpec_FireCells
 *32081 RET Z         ; no fire: no label
  32082 LD A,76       ; fire label (76/77)
  32084 LD (DE),A     ; into cells 15/16
- 32085 INC A         ;
- 32086 INC DE        ;
- 32087 LD (DE),A     ;
- 32088 RET           ;
+ 32085 INC A         ; 
+ 32086 INC DE        ; 
+ 32087 LD (DE),A     ; 
+ 32088 RET           ; 
 @label=DrawSpec_Airlock
 *32089 LD A,53       ; cell 15 = airlock #1 door:
  32091 BIT 1,(HL)    ; closed (53) or blown (55)
- 32093 JR Z,32097    ;
- 32095 LD A,55       ;
+ 32093 JR Z,32097    ; 
+ 32095 LD A,55       ; 
 @label=DrawSpec_StoreDoor1
-*32097 LD (DE),A     ;
- 32098 INC DE        ;
+*32097 LD (DE),A     ; 
+ 32098 INC DE        ; 
  32099 LD A,54       ; cell 16 = airlock #2 door:
  32101 BIT 2,(HL)    ; closed (54) or blown (56)
- 32103 JR Z,32107    ;
- 32105 LD A,56       ;
+ 32103 JR Z,32107    ; 
+ 32105 LD A,56       ; 
 @label=DrawSpec_StoreDoor2
-*32107 LD (DE),A     ;
- 32108 RET           ;
+*32107 LD (DE),A     ; 
+ 32108 RET           ; 
 @ignoreua
 ; Jones is in the viewed room: menu Special row 14 ($73CC) offers
 ; string 51 "Get Jones " (its handler needs the Net or the Cat Box),
 ; and the cat is drawn.
 @label=DrawSpec_JonesHere
-*32109 PUSH AF       ;
- 32110 LD DE,29644   ;
- 32113 LD A,51       ;
- 32115 LD (DE),A     ;
- 32116 CALL 39655    ;
- 32119 POP AF        ;
- 32120 RET           ;
+*32109 PUSH AF       ; 
+ 32110 LD DE,29644   ; cell 14 = the Special row
+ 32113 LD A,51       ; 
+ 32115 LD (DE),A     ; 
+ 32116 CALL 39655    ; InitJonesAnim: draw the cat, ready to run
+ 32119 POP AF        ; 
+ 32120 RET           ; 
 ; The alien is in the viewed room: draw it and offer "  ATTACK  ".
 @label=DrawSpec_AlienHere
-*32121 PUSH AF       ;
- 32122 JP 44996      ;
+*32121 PUSH AF       ; 
+ 32122 JP 44996      ; AttackRowGate (returns to #R32125 if clear)
 ; This entry point is used by the routine at #R44996.
 @label=DrawSpec_AlienAttackRow
 *32125 LD A,52       ; menu row = "  ATTACK  "
- 32127 LD (DE),A     ;
- 32128 XOR A         ;
+ 32127 LD (DE),A     ; 
+ 32128 XOR A         ; unfreeze the alien-body layer
 @nowarn=39741
 @ssub=LD (AlienXPhase),A
- 32129 LD (39741),A  ;
+ 32129 LD (39741),A  ; 
 ; This entry point is used by the routine at #R44996.
 @label=DrawSpec_AlienDone
-*32132 POP AF        ;
- 32133 RET           ;
+*32132 POP AF        ; 
+ 32133 RET           ; 
 ; The activated Android is in the viewed room: draw it, offer ATTACK.
 @label=DrawSpec_AndroidHere
-*32134 PUSH AF       ;
- 32135 JP 45125      ;
+*32134 PUSH AF       ; 
+ 32135 JP 45125      ; AndroidRowGate (returns to #R32138 if clear)
 ; This entry point is used by the routine at #R45125.
 @label=DrawSpec_AndroidAttackRow
 *32138 LD A,52       ; menu row = "  ATTACK  "
- 32140 LD (DE),A     ;
+ 32140 LD (DE),A     ; 
 ; This entry point is used by the routine at #R45125.
 @label=DrawSpec_AndroidDone
-*32141 POP AF        ;
- 32142 RET           ;
+*32141 POP AF        ; 
+ 32142 RET           ; 
 
 ; DrawRoomTitle
 ;
@@ -3129,40 +3129,40 @@ c31964 LD A,(33703)  ; is there an Android this game,
 @label=DrawRoomTitle
 c32143 LD A,(31242)  ; room-name string = room number,
  32146 BIT 6,A       ; or 93 "In Duct" inside the ducts
- 32148 JR Z,32152    ;
- 32150 LD A,93       ;
+ 32148 JR Z,32152    ; 
+ 32150 LD A,93       ; 
 @label=DrawTitle_Print
 *32152 LD HL,20576   ; draw pointer -> title row
- 32155 LD (31257),HL ;
- 32158 CALL 31634    ;
+ 32155 LD (31257),HL ; (row 19, col 0)
+ 32158 CALL 31634    ; DrawSprite: the 10-char name entry
  32161 LD HL,31242   ; in the ducts: no damage meter
- 32164 BIT 6,(HL)    ;
- 32166 RET NZ        ;
+ 32164 BIT 6,(HL)    ; 
+ 32166 RET NZ        ; 
  32167 LD HL,20587   ; "Damage    " (89)
- 32170 LD (31257),HL ;
- 32173 LD A,89       ;
- 32175 CALL 31634    ;
+ 32170 LD (31257),HL ; (row 19, col 11)
+ 32173 LD A,89       ; 
+ 32175 CALL 31634    ; DrawSprite
  32178 LD A,(31242)  ; DE -> RoomDamageDigits[room]
- 32181 ADD A,A       ;
- 32182 LD L,A        ;
- 32183 LD H,0        ;
- 32185 LD DE,30006   ;
- 32188 ADD HL,DE     ;
- 32189 EX DE,HL      ;
+ 32181 ADD A,A       ; 
+ 32182 LD L,A        ; 
+ 32183 LD H,0        ; 
+ 32185 LD DE,30006   ; 
+ 32188 ADD HL,DE     ; 
+ 32189 EX DE,HL      ; 
  32190 LD HL,20594   ; draw the two ASCII digits
- 32193 LD (31257),HL ;
- 32196 PUSH DE       ;
- 32197 CALL 31369    ;
- 32200 POP DE        ;
- 32201 LD HL,31257   ;
- 32204 INC (HL)      ;
- 32205 INC DE        ;
- 32206 CALL 31369    ;
- 32209 LD HL,31257   ;
- 32212 INC (HL)      ;
+ 32193 LD (31257),HL ; (row 19, col 18)
+ 32196 PUSH DE       ; 
+ 32197 CALL 31369    ; DrawSpriteRow: the tens digit
+ 32200 POP DE        ; 
+ 32201 LD HL,31257   ; advance one cell
+ 32204 INC (HL)      ; 
+ 32205 INC DE        ; 
+ 32206 CALL 31369    ; the units digit
+ 32209 LD HL,31257   ; 
+ 32212 INC (HL)      ; 
  32213 LD A,135      ; damage-meter icon glyph
- 32215 CALL 31370    ;
- 32218 RET           ;
+ 32215 CALL 31370    ; DrawTileA
+ 32218 RET           ; 
 ; Room-info panel text fragments (was mis-disassembled as code):
 ; ASCII strings drawn one glyph at a time by the panel routines below.
 ; Byte 136 is the grille-icon UDG.
