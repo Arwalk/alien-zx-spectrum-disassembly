@@ -3275,31 +3275,31 @@ c32143 LD A,(31242)  ; room-name string = room number,
 @label=DrawCrewCondition
 c32385 LD A,(31241)  ; A = selected crew slot
  32388 LD HL,20640   ; draw pointer -> condition row
- 32391 LD (31257),HL ;
+ 32391 LD (31257),HL ; (row 21, col 0)
  32394 CALL 31690    ; PrintName
 @nowarn=32238
 @ssub=LD DE,IsText
  32397 LD DE,32238   ; " is " (shared tail of the grille text)
  32400 LD B,4        ; 4 characters
 @label=DrawCond_IsLoop
-*32402 PUSH BC       ;
- 32403 PUSH DE       ;
- 32404 CALL 31369    ;
- 32407 POP DE        ;
- 32408 INC DE        ;
- 32409 LD HL,31257   ;
- 32412 INC (HL)      ;
- 32413 POP BC        ;
- 32414 DJNZ 32402    ;
+*32402 PUSH BC       ; 
+ 32403 PUSH DE       ; 
+ 32404 CALL 31369    ; DrawSpriteRow: one glyph
+ 32407 POP DE        ; 
+ 32408 INC DE        ; 
+ 32409 LD HL,31257   ; advance one cell
+ 32412 INC (HL)      ; 
+ 32413 POP BC        ; 
+ 32414 DJNZ 32402    ; 
  32416 LD A,(IX+4)   ; injury index from strength:
  32419 CP 3          ; 0/1/2 as-is (Dead/Collapsed/Wounded),
  32421 JR C,32429    ; 3 -> 2 (Wounded), >3 -> 3 (OK)
- 32423 LD A,3        ;
- 32425 JR NZ,32429   ;
- 32427 LD A,2        ;
+ 32423 LD A,3        ; 
+ 32425 JR NZ,32429   ; 
+ 32427 LD A,2        ; 
 @label=DrawCond_Injury
 *32429 LD DE,30110   ; print CrewInjuryText[A]
- 32432 CALL 31693    ;
+ 32432 CALL 31693    ; PrintName's list-walk entry: skip A entries
 @nowarn=32254
 @ssub=LD DE,AndText
  32435 LD DE,32254   ; "and "
@@ -3307,13 +3307,13 @@ c32385 LD A,(31241)  ; A = selected crew slot
  32441 CP 4          ; injury and morale disagree (healthy
  32443 JR C,32454    ; but low morale, or hurt but high
  32445 LD A,(IX+6)   ; morale), else "and "
- 32448 CP 3          ;
- 32450 JR NC,32464   ;
- 32452 JR 32461      ;
+ 32448 CP 3          ; 
+ 32450 JR NC,32464   ; 
+ 32452 JR 32461      ; 
 @label=DrawCond_MoraleCheck
 *32454 LD A,(IX+6)   ;
- 32457 CP 3          ;
- 32459 JR C,32464    ;
+ 32457 CP 3          ; 
+ 32459 JR C,32464    ; 
 @nowarn=32258
 @ssub=LD DE,ButText
 @label=DrawCond_But
@@ -3321,23 +3321,23 @@ c32385 LD A,(31241)  ; A = selected crew slot
 @label=DrawCond_Conj
 *32464 LD B,4        ; draw the 4-character conjunction
 @label=DrawCond_ConjLoop
-*32466 PUSH BC       ;
- 32467 PUSH DE       ;
- 32468 CALL 31369    ;
- 32471 POP DE        ;
- 32472 INC DE        ;
- 32473 LD HL,31257   ;
- 32476 INC (HL)      ;
- 32477 POP BC        ;
- 32478 DJNZ 32466    ;
+*32466 PUSH BC       ; 
+ 32467 PUSH DE       ; 
+ 32468 CALL 31369    ; DrawSpriteRow: one glyph
+ 32471 POP DE        ; 
+ 32472 INC DE        ; 
+ 32473 LD HL,31257   ; advance one cell
+ 32476 INC (HL)      ; 
+ 32477 POP BC        ; 
+ 32478 DJNZ 32466    ; 
  32480 LD A,(IX+6)   ; morale index, clamped to 0-4
- 32483 CP 5          ;
- 32485 JR C,32489    ;
- 32487 LD A,4        ;
+ 32483 CP 5          ; 
+ 32485 JR C,32489    ; 
+ 32487 LD A,4        ; 
 @label=DrawCond_Morale
 *32489 LD DE,30140   ; print CrewMoraleText[A]
- 32492 CALL 31693    ;
- 32495 JP 45695      ;
+ 32492 CALL 31693    ; PrintName's list-walk entry
+ 32495 JP 45695      ; PanelColCheck: blank-pad the rest of the row
 
 ; FindRoomMates
 ;
@@ -9437,45 +9437,45 @@ c40418 ADD A,A       ; A *= 2
 c40439 LD HL,40398   ; HL = PhrasePairs base
 @nowarn=40416
 @ssub=LD (PhraseStateScratch),HL
- 40442 LD (40416),HL ;
- 40445 LD B,8        ;
+ 40442 LD (40416),HL ; phrase cursor = start of the table
+ 40445 LD B,8        ; 8 two-note phrases
 @label=Music_NextNotePair
-*40447 PUSH BC       ;
+*40447 PUSH BC       ; 
 @nowarn=40416
 @ssub=LD HL,(PhraseStateScratch)
- 40448 LD HL,(40416) ;
- 40451 LD E,(HL)     ;
- 40452 INC HL        ;
- 40453 LD D,(HL)     ;
- 40454 INC HL        ;
+ 40448 LD HL,(40416) ; 
+ 40451 LD E,(HL)     ; E = 1st note index,
+ 40452 INC HL        ; 
+ 40453 LD D,(HL)     ; D = 2nd note index
+ 40454 INC HL        ; 
 @nowarn=40416
 @ssub=LD (PhraseStateScratch),HL
- 40455 LD (40416),HL ;
- 40458 LD (40414),DE ;
- 40462 LD B,8        ;
+ 40455 LD (40416),HL ; advance the phrase cursor
+ 40458 LD (40414),DE ; stash the pair where the player below reads it
+ 40462 LD B,8        ; trill the pair 8 times
 @label=Music_PlayPair
-*40464 PUSH BC       ;
- 40465 LD A,(40414)  ;
- 40468 CALL 40418    ;
- 40471 LD A,(40415)  ;
- 40474 CALL 40418    ;
- 40477 LD BC,65278   ;
+*40464 PUSH BC       ; 
+ 40465 LD A,(40414)  ; 1st note
+ 40468 CALL 40418    ; PlayNoteByIndex
+ 40471 LD A,(40415)  ; 2nd note
+ 40474 CALL 40418    ; 
+ 40477 LD BC,65278   ; sweep the whole keyboard between notes
 @label=Music_KeyPoll
-*40480 IN A,(C)      ;
- 40482 AND 31        ;
- 40484 XOR 31        ;
- 40486 JR NZ,40499   ;
- 40488 RLC B         ;
- 40490 JR C,40480    ;
- 40492 POP BC        ;
- 40493 DJNZ 40464    ;
- 40495 POP BC        ;
- 40496 DJNZ 40447    ;
- 40498 RET           ;
+*40480 IN A,(C)      ; 
+ 40482 AND 31        ; keep the 5 key bits
+ 40484 XOR 31        ; pressed keys read 0
+ 40486 JR NZ,40499   ; any key: abort playback
+ 40488 RLC B         ; next half-row
+ 40490 JR C,40480    ; 
+ 40492 POP BC        ; 
+ 40493 DJNZ 40464    ; 
+ 40495 POP BC        ; 
+ 40496 DJNZ 40447    ; 
+ 40498 RET           ; 
 @label=Music_Abort
-*40499 POP BC        ;
- 40500 POP BC        ;
- 40501 RET           ;
+*40499 POP BC        ; drop the two saved loop counters
+ 40500 POP BC        ; 
+ 40501 RET           ; 
 @label=KeyboardModeFlag
  40502 NOP           ; variable: 255 = keyboard input chosen
 @label=RatingScore
@@ -12882,14 +12882,14 @@ c45683 LD BC,29346   ; BC = RoomAdjDucts
 ;
 ; Used by the routine at #R32536.
 @label=PrintNameThenPanel
-c45692 CALL 31690    ;
+c45692 CALL 31690    ; PrintName
 ; This entry point is used by the routine at #R32385.
 @label=PanelColCheck
-*45695 LD HL,31257   ;
- 45698 LD A,(HL)     ;
- 45699 AND 31        ;
- 45701 RET Z         ;
- 45702 JP 32670      ;
+*45695 LD HL,31257   ; at column 0 already?
+ 45698 LD A,(HL)     ; 
+ 45699 AND 31        ; 
+ 45701 RET Z         ; 
+ 45702 JP 32670      ; no: BlankRestOfRow
 
 ; RoomRejectCheck
 ;
