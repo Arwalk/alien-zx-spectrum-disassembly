@@ -130,7 +130,19 @@ input-device menu (`OptionsScreen`: 1 Kempston / 2 AGF-Protek / 3 Sinclair /
 4 Keyboard, **5 = SELECT**; choosing Keyboard offers Y = redefine keys) →
 gameplay. The Long Game opens with the film's dinner scene (Dallas/Kane/Ripley
 on the bridge, Ash/Lambert/Parker in the Mess, chestburster host picked by ROM
-script); the Short Game is the final act (only Ripley, Lambert, Parker aboard).
+script from {Dallas, Kane, Lambert}; Brett — initialised in room 0 — is
+seated into the host's vacated place so both groups stay at three); the
+Short Game is the final act (only Ripley, Lambert, Parker aboard).
+
+Mode 3 "Introduction" (`IntroductionMode` `$A8EA`) is a MAPPING SYMBOLS
+legend page: map-symbol key, the two animated map markers beside their
+captions, and three captioned sound demos (door / grille / tracker).
+
+The alien-encounter screen (view type 4) has two animation layers: the big
+alien body (4 LDIR frames, 48×63 px, `BlitAlienFrame` `$9B54`) and the
+"Jones" channel — the cat sprinting horizontally across char rows 9–11
+(5-frame run cycle, XOR erase/advance/redraw 4 px per tick,
+`BlitJonesFrame` `$9B98`; `JonesPos` `$9B46` is a pixel **X** offset).
 
 ### Ship simulation (driven by `UpdateRoomActors` `$95EB`; the fixture handlers follow it as their own routines from `FixtureAction` `$95FE`)
 
