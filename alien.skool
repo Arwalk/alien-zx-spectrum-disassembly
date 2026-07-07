@@ -11250,116 +11250,116 @@ c43610 CALL 42501    ; ClearDisplay
  43621 LD (31257),HL ; on screen row 2
 @nowarn=41717
 @ssub=LD DE,StrSelectDevice
- 43624 LD DE,41717   ;
- 43627 LD B,27       ;
- 43629 CALL 44509    ;
+ 43624 LD DE,41717   ; 
+ 43627 LD B,27       ; 
+ 43629 CALL 44509    ; PrintStr
  43632 LD HL,16619   ; "1 : KEMPSTON" (row 5)
- 43635 LD (31257),HL ;
+ 43635 LD (31257),HL ; 
 ; This entry point is used by the routine at #R42821.
 @nowarn=41744
 @ssub=LD DE,StrKempston
- 43638 LD DE,41744   ;
- 43641 LD B,12       ;
- 43643 CALL 44509    ;
+ 43638 LD DE,41744   ; 
+ 43641 LD B,12       ; 
+ 43643 CALL 44509    ; PrintStr
 ; This entry point is used by the routine at #R42821.
  43646 LD HL,18475   ; "2 : AGF-PROTEK" (row 9)
- 43649 LD (31257),HL ;
+ 43649 LD (31257),HL ; 
 ; This entry point is used by the routine at #R42821.
 @nowarn=41756
 @ssub=LD DE,StrAGFProtek
- 43652 LD DE,41756   ;
+ 43652 LD DE,41756   ; 
 ; This entry point is used by the routine at #R42821.
- 43655 LD B,14       ;
+ 43655 LD B,14       ; 
 ; This entry point is used by the routine at #R42821.
- 43657 CALL 44509    ;
+ 43657 CALL 44509    ; PrintStr
  43660 LD HL,18539   ; "3 : SINCLAIR" (row 11)
- 43663 LD (31257),HL ;
+ 43663 LD (31257),HL ; 
 @nowarn=41770
 @ssub=LD DE,StrSinclair
- 43666 LD DE,41770   ;
- 43669 LD B,12       ;
- 43671 CALL 44509    ;
+ 43666 LD DE,41770   ; 
+ 43669 LD B,12       ; 
+ 43671 CALL 44509    ; PrintStr
  43674 LD HL,18603   ; "4 : KEYBOARD" (row 13)
- 43677 LD (31257),HL ;
+ 43677 LD (31257),HL ; 
 ; This entry point is used by the routine at #R42821.
 @nowarn=41782
 @ssub=LD DE,StrKeyboard
- 43680 LD DE,41782   ;
- 43683 LD B,12       ;
- 43685 CALL 44509    ;
+ 43680 LD DE,41782   ; 
+ 43683 LD B,12       ; 
+ 43685 CALL 44509    ; PrintStr
  43688 LD HL,18667   ; "5 : SELECT" (row 15)
- 43691 LD (31257),HL ;
+ 43691 LD (31257),HL ; 
 ; This entry point is used by the routine at #R42821.
 @nowarn=41794
 @ssub=LD DE,StrSelect
- 43694 LD DE,41794   ;
- 43697 LD B,10       ;
- 43699 CALL 44509    ;
+ 43694 LD DE,41794   ; 
+ 43697 LD B,10       ; 
+ 43699 CALL 44509    ; PrintStr
  43702 LD HL,20582   ; "PRESS APPROPRIATE KEY" (row 19)
- 43705 LD (31257),HL ;
+ 43705 LD (31257),HL ; 
 @nowarn=41804
 @ssub=LD DE,StrPressKey
- 43708 LD DE,41804   ;
- 43711 LD B,21       ;
- 43713 CALL 44509    ;
+ 43708 LD DE,41804   ; 
+ 43711 LD B,21       ; 
+ 43713 CALL 44509    ; PrintStr
  43716 LD HL,20674   ; "During Game Press 1 to Pause"
  43719 LD (31257),HL ; (row 22)
 @nowarn=41825
 @ssub=LD DE,StrPressPause
- 43722 LD DE,41825   ;
- 43725 LD B,28       ;
- 43727 CALL 44509    ;
+ 43722 LD DE,41825   ; 
+ 43725 LD B,28       ; 
+ 43727 CALL 44509    ; PrintStr
  43730 XOR A         ; picked device = 0 (Kempston)
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
- 43731 LD (33683),A  ;
+ 43731 LD (33683),A  ; 
 @label=Options_Redraw
 *43734 CALL 44032    ; toggle the pick's highlight
 @nowarn=33683
 @ssub=LD HL,CorridorCursor
 @label=Options_KeyLoop
 *43737 LD HL,33683   ; scan half-row 1-5:
- 43740 LD BC,63486   ;
- 43743 IN A,(C)      ;
+ 43740 LD BC,63486   ; 
+ 43743 IN A,(C)      ; 
  43745 RRA           ; key 1?
- 43746 JR NC,43762   ;
+ 43746 JR NC,43762   ; 
  43748 RRA           ; key 2?
- 43749 JR NC,43773   ;
+ 43749 JR NC,43773   ; 
  43751 RRA           ; key 3?
- 43752 JR NC,43785   ;
+ 43752 JR NC,43785   ; 
  43754 RRA           ; key 4?
- 43755 JR NC,43797   ;
+ 43755 JR NC,43797   ; 
  43757 RRA           ; key 5?
- 43758 JR NC,43809   ;
- 43760 JR 43737      ;
+ 43758 JR NC,43809   ; 
+ 43760 JR 43737      ; 
 @label=Options_Pick1
 *43762 LD A,(HL)     ; already on device 0?
- 43763 AND A         ;
- 43764 JR Z,43737    ;
+ 43763 AND A         ; 
+ 43764 JR Z,43737    ; 
  43766 CALL 44032    ; no: unhighlight the old pick,
  43769 LD (HL),0     ; pick Kempston,
  43771 JR 43734      ; highlight it
 @label=Options_Pick2
 *43773 LD A,(HL)     ; already on device 1?
- 43774 CP 1          ;
- 43776 JR Z,43737    ;
+ 43774 CP 1          ; 
+ 43776 JR Z,43737    ; 
  43778 CALL 44032    ; no: repick AGF-Protek
- 43781 LD (HL),1     ;
- 43783 JR 43734      ;
+ 43781 LD (HL),1     ; 
+ 43783 JR 43734      ; 
 @label=Options_Pick3
 *43785 LD A,(HL)     ; already on device 2?
- 43786 CP 2          ;
- 43788 JR Z,43737    ;
+ 43786 CP 2          ; 
+ 43788 JR Z,43737    ; 
  43790 CALL 44032    ; no: repick Sinclair
- 43793 LD (HL),2     ;
- 43795 JR 43734      ;
+ 43793 LD (HL),2     ; 
+ 43795 JR 43734      ; 
 @label=Options_Pick4
 *43797 LD A,(HL)     ; already on device 3?
- 43798 CP 3          ;
- 43800 JR Z,43737    ;
+ 43798 CP 3          ; 
+ 43800 JR Z,43737    ; 
  43802 CALL 44032    ; no: repick the keyboard
- 43805 LD (HL),3     ;
- 43807 JR 43734      ;
+ 43805 LD (HL),3     ; 
+ 43807 JR 43734      ; 
 @label=Options_Select
 *43809 LD A,(HL)     ; key 5: commit the pick —
  43810 ADD A,A       ; patch the input-scanner CALL
@@ -11369,121 +11369,121 @@ c43610 CALL 42501    ; ClearDisplay
 @nowarn=41989
 @ssub=LD HL,InputScannerTable
  43814 LD HL,41989   ;
- 43817 ADD HL,DE     ;
- 43818 LD A,(HL)     ;
- 43819 INC HL        ;
- 43820 LD H,(HL)     ;
- 43821 LD L,A        ;
- 43822 LD (34637),HL ;
+ 43817 ADD HL,DE     ; 
+ 43818 LD A,(HL)     ; 
+ 43819 INC HL        ; 
+ 43820 LD H,(HL)     ; 
+ 43821 LD L,A        ; 
+ 43822 LD (34637),HL ; patch the scanner CALL's operand word
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
  43825 LD A,(33683)  ; a joystick (device < 3)?
- 43828 CP 3          ;
+ 43828 CP 3          ; 
  43830 RET NZ        ; yes: done — into the game
  43831 CALL 42501    ; keyboard: fresh green screen
- 43834 LD A,32       ;
- 43836 CALL 42515    ;
- 43839 CALL 44109    ;
+ 43834 LD A,32       ; 
+ 43836 CALL 42515    ; FillAttributes(32)
+ 43839 CALL 44109    ; wait for the keys to clear
  43842 LD HL,16449   ; "The keyboard is user definable"
- 43845 LD (31257),HL ;
+ 43845 LD (31257),HL ; 
 @nowarn=41853
 @ssub=LD DE,StrUserDefinable
- 43848 LD DE,41853   ;
- 43851 LD B,30       ;
- 43853 CALL 44509    ;
+ 43848 LD DE,41853   ; 
+ 43851 LD B,30       ; 
+ 43853 CALL 44509    ; PrintStr
 @nowarn=40502
 @ssub=LD A,(KeyboardModeFlag)
  43856 LD A,(40502)  ; first time on this screen the
  43859 AND A         ; redefinition is compulsory;
  43860 JR Z,43904    ; afterwards it is offered:
  43862 LD HL,16516   ; "Press Y to redefine keys"
- 43865 LD (31257),HL ;
+ 43865 LD (31257),HL ; 
 @nowarn=41883
 @ssub=LD DE,StrRedefineKeys
- 43868 LD DE,41883   ;
- 43871 LD B,24       ;
- 43873 CALL 44509    ;
+ 43868 LD DE,41883   ; 
+ 43871 LD B,24       ; 
+ 43873 CALL 44509    ; PrintStr
  43876 LD HL,16548   ; "Any other key to continue"
- 43879 LD (31257),HL ;
+ 43879 LD (31257),HL ; 
 @nowarn=41907
 @ssub=LD DE,StrAnyOtherKey
- 43882 LD DE,41907   ;
- 43885 LD B,25       ;
- 43887 CALL 44509    ;
+ 43882 LD DE,41907   ; 
+ 43885 LD B,25       ; 
+ 43887 CALL 44509    ; PrintStr
  43890 CALL 44093    ; wait for a key
 @ignoreua
  43893 LD BC,57342   ; BC = port 57342 ($DFFE): keyboard half-row P,O,I,U,Y
  43896 IN A,(C)      ; read keyboard row
  43898 AND 16        ; bit 4 = the Y key (active low)
  43900 RET NZ        ; return if Y not pressed (keep the current keys)
- 43901 CALL 44109    ;
+ 43901 CALL 44109    ; wait for the keys to clear
 ; Key redefinition: each prompt waits for a press (WaitKeyPress
 ; returns BC = the port and A = the bit mask of the key found) and
 ; patches that (port, mask) pair straight into KeyboardScanner's
 ; self-modifying operands (#R44041).
 @label=Options_Redefine
 *43904 LD HL,18436   ; "Which key do you wish to"
- 43907 LD (31257),HL ;
+ 43907 LD (31257),HL ; 
 @nowarn=41932
 @ssub=LD DE,StrWhichKey
- 43910 LD DE,41932   ;
- 43913 LD B,24       ;
- 43915 CALL 44509    ;
+ 43910 LD DE,41932   ; 
+ 43913 LD B,24       ; 
+ 43915 CALL 44509    ; PrintStr
  43918 LD HL,18500   ; "use for: UP"
- 43921 LD (31257),HL ;
+ 43921 LD (31257),HL ; 
 @nowarn=41956
 @ssub=LD DE,StrUseForUp
- 43924 LD DE,41956   ;
- 43927 LD B,11       ;
- 43929 CALL 44509    ;
+ 43924 LD DE,41956   ; 
+ 43927 LD B,11       ; 
+ 43929 CALL 44509    ; PrintStr
  43932 CALL 44093    ; the pressed key becomes
  43935 LD (44047),BC ; UP (advance): patch the
  43939 LD (44052),A  ; scanner's port + mask
  43942 CALL 44109    ;
  43945 LD HL,18509   ; overwrite the word: "DOWN"
- 43948 LD (31257),HL ;
+ 43948 LD (31257),HL ; 
 @nowarn=41967
 @ssub=LD DE,StrDown
- 43951 LD DE,41967   ;
- 43954 LD B,4        ;
- 43956 CALL 44509    ;
+ 43951 LD DE,41967   ; 
+ 43954 LD B,4        ; 
+ 43956 CALL 44509    ; PrintStr
  43959 CALL 44093    ; the pressed key becomes
  43962 LD (44059),BC ; DOWN (retreat)
- 43966 LD (44064),A  ;
- 43969 CALL 44109    ;
+ 43966 LD (44064),A  ; 
+ 43969 CALL 44109    ; 
  43972 LD HL,18509   ; "FIRE"
- 43975 LD (31257),HL ;
+ 43975 LD (31257),HL ; 
 @nowarn=41971
 @ssub=LD DE,StrFire
- 43978 LD DE,41971   ;
- 43981 LD B,4        ;
- 43983 CALL 44509    ;
+ 43978 LD DE,41971   ; 
+ 43981 LD B,4        ; 
+ 43983 CALL 44509    ; PrintStr
  43986 CALL 44093    ; the pressed key becomes
  43989 LD (44071),BC ; FIRE (action)
  43993 LD (44076),A  ;
- 43996 CALL 44109    ;
+ 43996 CALL 44109    ; 
  43999 LD HL,18509   ; "Return to QUIT"
- 44002 LD (31257),HL ;
+ 44002 LD (31257),HL ; 
 @nowarn=41975
 @ssub=LD DE,StrReturnTo
- 44005 LD DE,41975   ;
- 44008 LD B,14       ;
- 44010 CALL 44509    ;
+ 44005 LD DE,41975   ; 
+ 44008 LD B,14       ; 
+ 44010 CALL 44509    ; PrintStr
  44013 CALL 44093    ; the pressed key becomes
  44016 LD (44083),BC ; the row-move key
- 44020 LD (44088),A  ;
- 44023 CALL 44109    ;
+ 44020 LD (44088),A  ; 
+ 44023 CALL 44109    ; 
  44026 LD A,255      ; remember the keyboard was
 @nowarn=40502
 @ssub=LD (KeyboardModeFlag),A
  44028 LD (40502),A  ; configured once
- 44031 RET           ;
+ 44031 RET           ; 
 @label=Options_HighlightRow
 *44032 PUSH HL       ; XOR-toggle the highlight on
  44033 LD HL,22763   ; option row (HL) (shared with
  44036 CALL 43219    ; HighlightGameMode's helper)
- 44039 POP HL        ;
- 44040 RET           ;
+ 44039 POP HL        ; 
+ 44040 RET           ; 
 
 ; KeyboardScanner — the (redefinable) keyboard input device
 ;
