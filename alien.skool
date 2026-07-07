@@ -10564,13 +10564,17 @@ t42528 DEFM "ALIEN"
 ; DrawIntroScreen
 @ignoreua
 ;
-; Draws and animates the Alien title screen. Clears the display, sets border
-; to black, fills attributes (0 = black on black = hidden). Renders a 15×11
-; tile grid: each byte of the tile map at #R40504 is a tile index; multiplied
-; by 8 gives an offset into the 8-byte-per-tile bitmap array at #R62000
-; (actually at #R62000 = #R62000 decimal, in the extra-data area loaded at #R60000).
-; Tile rows are blitted column by column down into the display file. After
-; drawing, loops animating colours until any key on row $F7FE is pressed.
+; Draws and animates the Alien title screen. Clears the display, sets the
+; border black and fills attributes with 0 (black-on-black) so the picture
+; is built invisibly. Renders the title picture — 15 rows × 11 tiles from
+; row 4, col 10: each byte of the tile map at #R40504 indexes the
+; 8-byte-per-tile bitmap array at #R62000, blitted cell by cell, left to
+; right, top to bottom. FillAttributes(7) then reveals it white-on-black,
+; and an 8×11 attribute patch from #R40669 colours the picture's lower
+; half. The five "ALIEN" title letters appear one at a time (3-column
+; spacing) with a phrase of theme music between letters, the credits are
+; printed, and the routine keeps playing music phrases while sweeping the
+; whole keyboard, returning on any keypress.
 ; .
 ; Used by the routine at #R36457.
 @label=DrawIntroScreen
@@ -10587,138 +10591,138 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
  42596 LD (31257),HL ; store as current draw pointer (#R31257)
  42599 LD B,15       ; 15 tile columns
 @label=Intro_ColLoop
-*42601 PUSH BC       ;
- 42602 LD B,11       ;
+*42601 PUSH BC       ; outer loop: 15 picture rows
+ 42602 LD B,11       ; inner loop: 11 tiles across each row
 @label=Intro_TileLoop
-*42604 PUSH BC       ;
- 42605 PUSH DE       ;
- 42606 LD A,(DE)     ;
- 42607 LD L,A        ;
- 42608 LD H,0        ;
- 42610 ADD HL,HL     ;
- 42611 ADD HL,HL     ;
- 42612 ADD HL,HL     ;
- 42613 LD DE,62000   ;
- 42616 ADD HL,DE     ;
- 42617 LD DE,(31257) ;
- 42621 LD B,8        ;
+*42604 PUSH BC       ; 
+ 42605 PUSH DE       ; save map pointer
+ 42606 LD A,(DE)     ; A = next tile index from the map
+ 42607 LD L,A        ; HL = index * 8
+ 42608 LD H,0        ; 
+ 42610 ADD HL,HL     ; 
+ 42611 ADD HL,HL     ; 
+ 42612 ADD HL,HL     ; 
+ 42613 LD DE,62000   ; + base of the 8-byte-per-tile bitmap array
+ 42616 ADD HL,DE     ; HL -> the tile's 8 bitmap bytes
+ 42617 LD DE,(31257) ; DE = current screen cell (from the draw pointer)
+ 42621 LD B,8        ; blit 8 pixel rows:
 @label=Intro_PixLoop
-*42623 LD A,(HL)     ;
- 42624 LD (DE),A     ;
- 42625 INC D         ;
- 42626 INC HL        ;
+*42623 LD A,(HL)     ; copy one bitmap byte
+ 42624 LD (DE),A     ; 
+ 42625 INC D         ; next pixel row down (same cell)
+ 42626 INC HL        ; next bitmap byte
 ; This entry point is used by the routine at #R42515.
- 42627 DJNZ 42623    ;
- 42629 LD HL,31257   ;
- 42632 INC (HL)      ;
+ 42627 DJNZ 42623    ; 
+ 42629 LD HL,31257   ; bump the draw pointer's low byte:
+ 42632 INC (HL)      ; one cell to the right
 ; This entry point is used by the routine at #R42515.
- 42633 POP DE        ;
- 42634 INC DE        ;
- 42635 POP BC        ;
- 42636 DJNZ 42604    ;
- 42638 LD BC,21      ;
- 42641 LD HL,(31257) ;
- 42644 LD A,L        ;
- 42645 CP 224        ;
- 42647 JR C,42652    ;
- 42649 LD BC,1813    ;
+ 42633 POP DE        ; restore map pointer,
+ 42634 INC DE        ; advance to the next map byte
+ 42635 POP BC        ; 
+ 42636 DJNZ 42604    ; next tile in this row
+ 42638 LD BC,21      ; row advance: 11 cells drawn + 21 = 32, i.e. next char row
+ 42641 LD HL,(31257) ; 
+ 42644 LD A,L        ; low byte >= 224 means we just drew on the last
+ 42645 CP 224        ; char row of a screen third...
+ 42647 JR C,42652    ; 
+ 42649 LD BC,1813    ; ...so add $0715 instead: +$0700 hops D into the next third
 @label=Intro_Advance
-*42652 ADD HL,BC     ;
- 42653 LD (31257),HL ;
- 42656 POP BC        ;
- 42657 DJNZ 42601    ;
- 42659 LD A,7        ;
- 42661 CALL 42515    ;
- 42664 LD HL,22890   ;
+*42652 ADD HL,BC     ; move the draw pointer to the next picture row
+ 42653 LD (31257),HL ; 
+ 42656 POP BC        ; 
+ 42657 DJNZ 42601    ; next of the 15 rows
+ 42659 LD A,7        ; FillAttributes(7): reveal the finished picture
+ 42661 CALL 42515    ; in white-on-black
+ 42664 LD HL,22890   ; attribute address of row 11, col 10
 @nowarn=40669
 @ssub=LD DE,IntroAttributes
- 42667 LD DE,40669   ;
- 42670 LD B,8        ;
+ 42667 LD DE,40669   ; per-cell colour map for the picture's lower half
+ 42670 LD B,8        ; 8 attribute rows...
 @label=Intro_AttrRowLoop
-*42672 PUSH BC       ;
- 42673 LD B,11       ;
+*42672 PUSH BC       ; 
+ 42673 LD B,11       ; ...of 11 cells each
 @label=Intro_AttrCellLoop
-*42675 LD A,(DE)     ;
- 42676 LD (HL),A     ;
- 42677 INC DE        ;
- 42678 INC HL        ;
- 42679 DJNZ 42675    ;
- 42681 LD BC,21      ;
- 42684 ADD HL,BC     ;
- 42685 POP BC        ;
- 42686 DJNZ 42672    ;
- 42688 LD HL,16425   ;
- 42691 LD (31257),HL ;
+*42675 LD A,(DE)     ; copy one attribute byte
+ 42676 LD (HL),A     ; 
+ 42677 INC DE        ; 
+ 42678 INC HL        ; 
+ 42679 DJNZ 42675    ; 
+ 42681 LD BC,21      ; 11 cells written + 21 = 32: next attribute row
+ 42684 ADD HL,BC     ; 
+ 42685 POP BC        ; 
+ 42686 DJNZ 42672    ; 
+ 42688 LD HL,16425   ; draw the big "ALIEN" title from row 1, col 9
+ 42691 LD (31257),HL ; 
 @nowarn=42528
 @ssub=LD DE,StrAlien
- 42694 LD DE,42528   ;
- 42697 LD B,5        ;
+ 42694 LD DE,42528   ; 
+ 42697 LD B,5        ; 5 letters
 @label=Intro_TitleLoop
-*42699 PUSH BC       ;
- 42700 PUSH DE       ;
- 42701 CALL 31369    ;
- 42704 LD HL,31257   ;
- 42707 INC (HL)      ;
- 42708 INC (HL)      ;
- 42709 INC (HL)      ;
- 42710 CALL 40439    ;
- 42713 POP DE        ;
- 42714 INC DE        ;
- 42715 POP BC        ;
- 42716 DJNZ 42699    ;
- 42718 LD HL,20612   ;
- 42721 LD (31257),HL ;
- 42724 LD B,4        ;
+*42699 PUSH BC       ; 
+ 42700 PUSH DE       ; 
+ 42701 CALL 31369    ; DrawSpriteRow: draw one letter glyph
+ 42704 LD HL,31257   ; advance the draw pointer 3 columns
+ 42707 INC (HL)      ; (one glyph + 2 blank columns)
+ 42708 INC (HL)      ; 
+ 42709 INC (HL)      ; 
+ 42710 CALL 40439    ; PlayMusicPhrase: a burst of theme music per letter
+ 42713 POP DE        ; 
+ 42714 INC DE        ; next letter
+ 42715 POP BC        ; 
+ 42716 DJNZ 42699    ; 
+ 42718 LD HL,20612   ; "John" at row 20, col 4
+ 42721 LD (31257),HL ; 
+ 42724 LD B,4        ; 
 @nowarn=42541
 @ssub=LD DE,StrJohn
- 42726 LD DE,42541   ;
- 42729 CALL 44509    ;
- 42732 LD HL,20644   ;
- 42735 LD (31257),HL ;
- 42738 LD B,4        ;
+ 42726 LD DE,42541   ; 
+ 42729 CALL 44509    ; PrintStr
+ 42732 LD HL,20644   ; "Heap" at row 21, col 4
+ 42735 LD (31257),HL ; 
+ 42738 LD B,4        ; 
 @nowarn=42545
 @ssub=LD DE,StrHeap
- 42740 LD DE,42545   ;
- 42743 CALL 44509    ;
- 42746 LD HL,20630   ;
- 42749 LD (31257),HL ;
- 42752 LD B,5        ;
+ 42740 LD DE,42545   ; 
+ 42743 CALL 44509    ; PrintStr
+ 42746 LD HL,20630   ; "Argus" at row 20, col 22
+ 42749 LD (31257),HL ; 
+ 42752 LD B,5        ; 
 @nowarn=42549
 @ssub=LD DE,StrArgus
- 42754 LD DE,42549   ;
- 42757 CALL 44509    ;
- 42760 LD HL,20662   ;
- 42763 LD (31257),HL ;
- 42766 LD B,5        ;
+ 42754 LD DE,42549   ; 
+ 42757 CALL 44509    ; PrintStr
+ 42760 LD HL,20662   ; "Press" at row 21, col 22
+ 42763 LD (31257),HL ; 
+ 42766 LD B,5        ; 
 @nowarn=42554
 @ssub=LD DE,StrPress
- 42768 LD DE,42554   ;
- 42771 CALL 44509    ;
- 42774 LD HL,20694   ;
- 42777 LD (31257),HL ;
- 42780 LD B,8        ;
+ 42768 LD DE,42554   ; 
+ 42771 CALL 44509    ; PrintStr
+ 42774 LD HL,20694   ; "Software" at row 22, col 22
+ 42777 LD (31257),HL ; 
+ 42780 LD B,8        ; 
 @nowarn=42559
 @ssub=LD DE,StrSoftware
- 42782 LD DE,42559   ;
- 42785 CALL 44509    ;
- 42788 LD HL,20712   ;
- 42791 LD (31257),HL ;
- 42794 LD B,14       ;
+ 42782 LD DE,42559   ; 
+ 42785 CALL 44509    ; PrintStr
+ 42788 LD HL,20712   ; "Copyright 1984" at row 23, col 8
+ 42791 LD (31257),HL ; 
+ 42794 LD B,14       ; 
 @nowarn=42567
 @ssub=LD DE,FillAttributes_0
- 42796 LD DE,42567   ;
- 42799 CALL 44509    ;
+ 42796 LD DE,42567   ; 
+ 42799 CALL 44509    ; PrintStr
 @label=Intro_WaitLoop
-*42802 CALL 40439    ;
- 42805 LD BC,65278   ;
+*42802 CALL 40439    ; keep playing theme-music phrases while polling
+ 42805 LD BC,65278   ; B = $FE: first keyboard half-row (port $FEFE)
 @label=Intro_KeyPoll
-*42808 IN A,(C)      ;
- 42810 AND 31        ;
- 42812 XOR 31        ;
- 42814 RET NZ        ;
- 42815 RLC B         ;
- 42817 JR C,42808    ;
- 42819 JR 42802      ;
+*42808 IN A,(C)      ; read this half-row
+ 42810 AND 31        ; keep the 5 key bits
+ 42812 XOR 31        ; pressed keys read 0, so any press leaves a 1
+ 42814 RET NZ        ; any key anywhere: leave the title screen
+ 42815 RLC B         ; next half-row ($FE, $FD, $FB, ...)
+ 42817 JR C,42808    ; carry set until all 8 half-rows scanned
+ 42819 JR 42802      ; swept the whole keyboard: play another phrase
 
 ; GameModeScreen — crew roster + game-mode menu
 @ignoreua
