@@ -2516,12 +2516,13 @@ NextScanLine_NextThird:
 
 ; InitGameView
 ;
-; Initialises the corridor view for the current room. Clears the room mode
-; byte, freezes both crew animation channels (sets bit 7 of
-; CrewAnimFlags/AnimFramePhase), resets the corridor cursor to segment 8,
-; copies the 19-byte corridor position template from OrdersMenuTemplate to
-; CorridorPosTable, then draws the room's attribute colours and initial crew
-; sprites.
+; Initialises the room view. Clears the room-mode byte, freezes both map-marker
+; channels (bit 7 of CrewAnimFlags/AnimFramePhase) and the two encounter
+; layers, resets the corridor cursor to segment 8, clears the game window,
+; draws the room background (resetting view type 4 — the encounter screen — to
+; a normal deck view first), seeds the corridor strip from the 19-byte template
+; at OrdersMenuTemplate, then paints the menu column's colour bands and prints
+; its header row and the seven crew-name rows.
 ;
 ; Used by the routines at OpenCrewRoomView, LocationListAction, QuitRoomView,
 ; GameEntry, CrewHitsAlien, VictimItemDrop, CrewHitsAndroid, KillActor_Bounce
@@ -2534,16 +2535,16 @@ InitGameView:
   INC HL
   SET 7,(HL)              ; freeze animation channel B
   LD A,$80                ; $80
-  LD (AlienXPhase),A      ; set alien pixel X sentinel (AlienXPhase)
-  LD (JonesPhase),A       ; set alien pixel Y sentinel (JonesPhase)
+  LD (AlienXPhase),A      ; freeze the alien-body encounter layer
+  LD (JonesPhase),A       ; freeze the Jones run layer
   LD A,$08                ; segment 8 = centre of 19-segment corridor
   LD (CorridorCursor),A   ; store as current corridor cursor (CorridorCursor)
   LD A,$20                ; space char
   CALL ClearTextWindow    ; draw blank room border / clear game window
   LD A,(RoomTypeByte)     ; read room-type byte (RoomTypeByte)
-  CP $04                  ; room type 4 = special (engine room)
+  CP $04                  ; type 4 = the encounter screen:
   JR NZ,InitView_DrawBg
-  LD A,$01                ; remap type 4 → type 1
+  LD A,$01                ; reset it to a normal deck view (type 1)
   LD (RoomTypeByte),A
 InitView_DrawBg:
   CALL DrawRoomBackground ; draw room background (walls, doors, floor tiles)
@@ -2555,42 +2556,42 @@ InitView_DrawBg:
   LDIR                    ; initialise position table from template
   LD HL,$5816             ; HL = $5816 (attribute row for top of game window)
   LD A,$07                ; white ink on black paper
-  LD C,$01                ; 1 column wide
+  LD C,$01                ; 1 row of the 10-cell menu column
   CALL FillAttrColumn     ; paint attribute column
-  LD A,$28
+  LD A,$28                ; 8 rows of black-on-cyan (40)
   LD C,$08
   CALL FillAttrColumn
-  LD A,$20
+  LD A,$20                ; 2 rows of black-on-green (32)
   LD C,$02
   CALL FillAttrColumn
-  LD A,$17
+  LD A,$17                ; 5 rows of white-on-red (23)
   LD C,$05
   CALL FillAttrColumn
-  XOR A
+  XOR A                   ; 3 rows of black (0)
   LD C,$03
   CALL FillAttrColumn
-  LD C,$01
+  LD C,$01                ; and 1 more row of white-on-black (7)
   LD A,$07
   CALL FillAttrColumn
-  LD HL,$4016
+  LD HL,$4016             ; menu-column header (row 0, col 22)
   LD (DrawScreenPtr),HL
-  LD A,$52
-  CALL DrawSprite
-  LD HL,OrdersMenuTemplate
+  LD A,$52                ; string 82
+  CALL DrawSprite         ; DrawSprite
+  LD HL,OrdersMenuTemplate ; tile source = the corridor strip template
   LD (CorridorTilePtr),HL
-  CALL DrawNextCorridorTile
-  LD B,$07
+  CALL DrawNextCorridorTile ; DrawNextCorridorTile: draw its first entry
+  LD B,$07                ; then 7 blank rows (string 92)
 InitView_BlankLoop:
   PUSH BC
   LD A,$5C
-  CALL DrawSprite
+  CALL DrawSprite         ; DrawSprite
   POP BC
   DJNZ InitView_BlankLoop
-  LD HL,$4056
+  LD HL,$4056             ; crew names from row 2, col 22
   LD (DrawScreenPtr),HL
-  LD A,$01
+  LD A,$01                ; A' = crew id 1 (Dallas)
   EX AF,AF'
-  LD A,$07
+  LD A,$07                ; 7 name rows
 ; This entry point is used by the routine at OrdersMenuNextRow. Orders-screen
 ; crew-name loop head: A' holds the next crew id, A the remaining row count (7
 ; names on menu rows 2-8).
@@ -3018,7 +3019,7 @@ DrawRoomSpecials:
   AND A
   JR Z,DrawSpec_RoomChecks
   LD HL,(AlienTargetPtr)  ; and in the viewed room?
-  INC HL
+  INC HL                  ; (AlienTargetPtr +1 = the Android's room)
   LD A,(CurrentRoom)
   CP (HL)
   CALL Z,DrawSpec_AndroidHere ; yes: offer ATTACK
@@ -3110,21 +3111,22 @@ DrawSpec_StoreDoor2:
 ; drawn.
 DrawSpec_JonesHere:
   PUSH AF
-  LD DE,$73CC
+  LD DE,$73CC             ; cell 14 = the Special row
   LD A,$33
   LD (DE),A
-  CALL InitJonesAnim
+  CALL InitJonesAnim      ; InitJonesAnim: draw the cat, ready to run
   POP AF
   RET
 ; The alien is in the viewed room: draw it and offer "  ATTACK  ".
 DrawSpec_AlienHere:
   PUSH AF
-  JP AttackRowGate
+  JP AttackRowGate        ; AttackRowGate (returns to DrawSpec_AlienAttackRow
+                          ; if clear)
 ; This entry point is used by the routine at AttackRowGate.
 DrawSpec_AlienAttackRow:
   LD A,$34                ; menu row = "  ATTACK  "
   LD (DE),A
-  XOR A
+  XOR A                   ; unfreeze the alien-body layer
   LD (AlienXPhase),A
 ; This entry point is used by the routine at AttackRowGate.
 DrawSpec_AlienDone:
@@ -3133,7 +3135,8 @@ DrawSpec_AlienDone:
 ; The activated Android is in the viewed room: draw it, offer ATTACK.
 DrawSpec_AndroidHere:
   PUSH AF
-  JP AndroidRowGate
+  JP AndroidRowGate       ; AndroidRowGate (returns to
+                          ; DrawSpec_AndroidAttackRow if clear)
 ; This entry point is used by the routine at AndroidRowGate.
 DrawSpec_AndroidAttackRow:
   LD A,$34                ; menu row = "  ATTACK  "
@@ -3156,15 +3159,15 @@ DrawRoomTitle:
   LD A,$5D
 DrawTitle_Print:
   LD HL,Screen_R19C0      ; draw pointer -> title row
-  LD (DrawScreenPtr),HL
-  CALL DrawSprite
+  LD (DrawScreenPtr),HL   ; (row 19, col 0)
+  CALL DrawSprite         ; DrawSprite: the 10-char name entry
   LD HL,CurrentRoom       ; in the ducts: no damage meter
   BIT 6,(HL)
   RET NZ
   LD HL,$506B             ; "Damage    " (89)
-  LD (DrawScreenPtr),HL
+  LD (DrawScreenPtr),HL   ; (row 19, col 11)
   LD A,$59
-  CALL DrawSprite
+  CALL DrawSprite         ; DrawSprite
   LD A,(CurrentRoom)      ; DE -> RoomDamageDigits[room]
   ADD A,A
   LD L,A
@@ -3173,18 +3176,18 @@ DrawTitle_Print:
   ADD HL,DE
   EX DE,HL
   LD HL,$5072             ; draw the two ASCII digits
-  LD (DrawScreenPtr),HL
+  LD (DrawScreenPtr),HL   ; (row 19, col 18)
   PUSH DE
-  CALL DrawSpriteRow
+  CALL DrawSpriteRow      ; DrawSpriteRow: the tens digit
   POP DE
-  LD HL,DrawScreenPtr
+  LD HL,DrawScreenPtr     ; advance one cell
   INC (HL)
   INC DE
-  CALL DrawSpriteRow
+  CALL DrawSpriteRow      ; the units digit
   LD HL,DrawScreenPtr
   INC (HL)
   LD A,$87                ; damage-meter icon glyph
-  CALL DrawTileA
+  CALL DrawTileA          ; DrawTileA
   RET
 ; Room-info panel text fragments (was mis-disassembled as code): ASCII strings
 ; drawn one glyph at a time by the panel routines below. Byte 136 is the
@@ -3288,17 +3291,17 @@ DrawTitle_GrilleInPlace:
 DrawCrewCondition:
   LD A,(DrawSlotIndex)    ; A = selected crew slot
   LD HL,Screen_R21C0      ; draw pointer -> condition row
-  LD (DrawScreenPtr),HL
+  LD (DrawScreenPtr),HL   ; (row 21, col 0)
   CALL PrintName          ; PrintName
   LD DE,IsText            ; " is " (shared tail of the grille text)
   LD B,$04                ; 4 characters
 DrawCond_IsLoop:
   PUSH BC
   PUSH DE
-  CALL DrawSpriteRow
+  CALL DrawSpriteRow      ; DrawSpriteRow: one glyph
   POP DE
   INC DE
-  LD HL,DrawScreenPtr
+  LD HL,DrawScreenPtr     ; advance one cell
   INC (HL)
   POP BC
   DJNZ DrawCond_IsLoop
@@ -3310,7 +3313,7 @@ DrawCond_IsLoop:
   LD A,$02
 DrawCond_Injury:
   LD DE,CrewInjuryText    ; print CrewInjuryText[A]
-  CALL PrintNameDE
+  CALL PrintNameDE        ; PrintName's list-walk entry: skip A entries
   LD DE,AndText           ; "and "
   LD A,(IX+$04)           ; pick the conjunction: "but " when
   CP $04                  ; injury and morale disagree (healthy
@@ -3330,10 +3333,10 @@ DrawCond_Conj:
 DrawCond_ConjLoop:
   PUSH BC
   PUSH DE
-  CALL DrawSpriteRow
+  CALL DrawSpriteRow      ; DrawSpriteRow: one glyph
   POP DE
   INC DE
-  LD HL,DrawScreenPtr
+  LD HL,DrawScreenPtr     ; advance one cell
   INC (HL)
   POP BC
   DJNZ DrawCond_ConjLoop
@@ -3343,8 +3346,8 @@ DrawCond_ConjLoop:
   LD A,$04
 DrawCond_Morale:
   LD DE,CrewMoraleText    ; print CrewMoraleText[A]
-  CALL PrintNameDE
-  JP PanelColCheck
+  CALL PrintNameDE        ; PrintName's list-walk entry
+  JP PanelColCheck        ; PanelColCheck: blank-pad the rest of the row
 
 ; FindRoomMates
 ;
@@ -3392,7 +3395,7 @@ FindMates_Next:
 DrawRoomMates:
   CALL FindRoomMates      ; FindRoomMates -> RoomMateA/B
   LD HL,Screen_R22C0      ; draw pointer -> "Also here" row
-  LD (DrawScreenPtr),HL
+  LD (DrawScreenPtr),HL   ; (row 22, col 0)
   LD BC,$0200             ; B = 2 mates to check, C = 0
   LD DE,RoomMateA         ; DE -> RoomMateA
 DrawMates_DeadScan:
@@ -3419,12 +3422,12 @@ DrawMates_DeadScan:
   LD B,$0F                ; all mates dead:
   CALL PrintStr           ; draw "Also Bodies of "
   LD A,(RoomMateA)        ; first body's name
-  CALL PrintName
+  CALL PrintName          ; PrintName
   LD DE,GrilleIconText    ; " ",136," " grille-icon spacer
   LD B,$03
   CALL PrintStr
   LD A,(RoomMateB)        ; second body's name
-  CALL PrintName
+  CALL PrintName          ; PrintName
   JP BlankRestOfRow       ; blank-pad the rest of the row
 DrawMates_Alive:
   POP BC
@@ -3438,26 +3441,26 @@ DrawMates_Alive:
 DrawMates_HereLoop:
   PUSH BC
   PUSH DE
-  CALL DrawSpriteRow
+  CALL DrawSpriteRow      ; DrawSpriteRow: one glyph
   POP DE
   INC DE
-  LD HL,DrawScreenPtr
+  LD HL,DrawScreenPtr     ; advance one cell
   INC (HL)
   POP BC
   DJNZ DrawMates_HereLoop
   LD A,(RoomMateA)        ; mate A: dead-overprint check + name
-  CALL DrawCrewStatusHalf
-  CALL PrintName
+  CALL DrawCrewStatusHalf ; DrawCrewStatusHalf
+  CALL PrintName          ; PrintName
   LD A,(RoomMateB)        ; a second mate too?
   CP $FF
   JR Z,BlankRestOfRow
   LD A,$90                ; separator glyph
-  CALL DrawTileA
-  LD HL,DrawScreenPtr
+  CALL DrawTileA          ; DrawTileA
+  LD HL,DrawScreenPtr     ; advance one cell
   INC (HL)
   LD A,(RoomMateB)        ; mate B: dead-overprint check + name
-  CALL DrawCrewStatusHalf
-  JP PrintNameThenPanel
+  CALL DrawCrewStatusHalf ; DrawCrewStatusHalf
+  JP PrintNameThenPanel   ; PrintNameThenPanel: name B, then blank-pad
 
 ; BlankRestOfRow
 ;
@@ -3466,11 +3469,11 @@ DrawMates_HereLoop:
 ; Draw blank tiles until the draw pointer reaches column 0 of the next row.
 BlankRestOfRow:
   XOR A
-  CALL DrawTileA
-  LD HL,DrawScreenPtr
+  CALL DrawTileA          ; DrawTileA(0): one blank cell
+  LD HL,DrawScreenPtr     ; advance one cell
   INC (HL)
   LD A,(HL)
-  AND $1F
+  AND $1F                 ; reached column 0 of the next row?
   RET Z
   JR BlankRestOfRow
 
@@ -3637,38 +3640,42 @@ CellDrawTable:
 
 ; RedrawRoomView
 ;
-; Rebuilds the room-interior view for the current room: picks the layout
-; template by room type, decompresses it into the grid buffer, draws
-; walls/furniture, then walks the exit list drawing one door arm per neighbour
-; (and grille arms for duct openings). Room type 4 (the alien's lair view)
-; resets the encounter animation instead.
+; Called from RedrawRoomScene only when the viewed position has bit 6 set
+; (inside the ducts). Expands the deck's wall-glyph template into the grid
+; buffer, redraws it with all attributes black (so the deck outline is present
+; but invisible), builds the anonymous N/E/S/W "move to:" rows, then marks the
+; room's anchor cell bright white and walks a cyan arm along the hidden walls
+; toward each present duct exit — the player sees only the anchor and the
+; crawlway arms. View type 4 (the encounter screen) resets the alien-body
+; animation and just rebuilds the duct move-to rows instead.
 RedrawRoomView:
   LD A,(RoomTypeByte)     ; A = room type
   CP $04                  ; alien-lair view?
   JR NZ,PickRoomLayout
   CALL ResetAlienXAnim    ; yes: reset alien body animation
-  CALL BuildDuctExitList
+  CALL BuildDuctExitList  ; and rebuild the duct move-to rows
   RET
 
 ; PickRoomLayout
 PickRoomLayout:
   LD HL,RoomLayout0       ; room type 0: layout template 0
-  AND A
+  AND A                   ; type 0?
   JR Z,PickLayout_Expand
-  LD HL,RoomLayout1
+  LD HL,RoomLayout1       ; room type 1: layout template 1
   CP $01
   JR Z,PickLayout_Expand
-  LD HL,RoomLayout2
+  LD HL,RoomLayout2       ; room type 2: layout template 2
 PickLayout_Expand:
-  CALL RoomLayoutExpand
-  CALL BuildDuctExitList
-  CALL ClearRoomAttrs
-  CALL SetRoomOrigin
+  CALL RoomLayoutExpand   ; RoomLayoutExpand: wall-glyph template -> grid
+                          ; buffer
+  CALL BuildDuctExitList  ; BuildDuctExitList: N/E/S/W move-to rows
+  CALL ClearRoomAttrs     ; ClearRoomAttrs: hide the view, redraw the glyphs
+  CALL SetRoomOrigin      ; SetRoomOrigin: cursors -> the room's anchor
   LD HL,(RoomAttrCursor)  ; mark the room's anchor cell (attr 71:
   LD (HL),$47             ; bright white) — the arms start here
-  PUSH HL
+  PUSH HL                 ; save the anchor attr address...
   LD HL,(RoomCellCursor)
-  PUSH HL
+  PUSH HL                 ; ...and the anchor grid address
   LD A,($73C0)            ; 1st exit (menu strip cell 2)?
   CP $FF
   JR Z,PickLayout_Exit2
@@ -3682,7 +3689,7 @@ PickLayout_Expand:
   LD (RoomAttrStep),DE
   ADD HL,DE
   LD (RoomAttrCursor),HL
-  CALL DrawDoorArm
+  CALL DrawDoorArm        ; DrawDoorArm
 PickLayout_Exit2:
   LD A,($73C1)            ; 2nd exit (menu strip cell 3)?
   CP $FF
@@ -3698,7 +3705,7 @@ PickLayout_Exit2:
   LD (RoomAttrCursor),DE
   LD (RoomAttrStep),BC
   LD (RoomCellStep),BC
-  CALL DrawDoorArm
+  CALL DrawDoorArm        ; DrawDoorArm
 PickLayout_Exit3:
   LD A,($73C2)            ; 3rd exit (menu strip cell 4)?
   CP $FF
@@ -3715,13 +3722,13 @@ PickLayout_Exit3:
   LD (RoomAttrStep),HL
   ADD HL,DE
   LD (RoomAttrCursor),HL
-  CALL DrawDoorArm
+  CALL DrawDoorArm        ; DrawDoorArm
 PickLayout_Exit4:
-  POP HL
+  POP HL                  ; restore the anchor grid/attr addresses
   POP DE
   LD A,($73C3)            ; 4th exit (menu strip cell 5)?
   CP $FF
-  RET Z
+  RET Z                   ; no more exits
   DEC DE                  ; yes: walk the WEST arm — heading -1/-1,
   DEC HL                  ; starting one cell left of the anchor
   LD (RoomCellCursor),HL
@@ -3729,7 +3736,7 @@ PickLayout_Exit4:
   LD HL,$FFFF
   LD (RoomAttrStep),HL
   LD (RoomCellStep),HL
-  CALL DrawDoorArm
+  CALL DrawDoorArm        ; DrawDoorArm
   RET
 
 ; RoomLayoutExpand
@@ -3742,17 +3749,17 @@ PickLayout_Exit4:
 RoomLayoutExpand:
   LD DE,RoomGridBuffer    ; DE = grid buffer; HL = RLE source
 RleExpand_Loop:
-  LD A,(HL)
-  CP $1E
+  LD A,(HL)               ; next RLE byte
+  CP $1E                  ; < 30: a run of that many zero cells
   JR C,RleExpand_Zeros
-  CP $FF
+  CP $FF                  ; 255: end of template
   RET Z
-  LD (DE),A
+  LD (DE),A               ; 30-254: literal cell code
   INC HL
   INC DE
   JR RleExpand_Loop
 RleExpand_Zeros:
-  LD B,A
+  LD B,A                  ; B = run length
   XOR A
 RleExpand_ZeroLoop:
   LD (DE),A
@@ -3768,31 +3775,31 @@ RleExpand_ZeroLoop:
 ; file + 32*row + col) for the door drawing pass.
 SetRoomOrigin:
   LD A,(CurrentRoom)      ; A = current room
-  AND $3F
+  AND $3F                 ; index RoomOriginTable (2 bytes/room)
   ADD A,A
   LD D,$00
   LD E,A
-  LD HL,RoomOriginTable
+  LD HL,RoomOriginTable   ; RoomOriginTable
   ADD HL,DE
-  LD B,(HL)
+  LD B,(HL)               ; B = row, C = column
   INC HL
   LD C,(HL)
   PUSH BC
-  LD DE,$0014
+  LD DE,$0014             ; grid buffer + 20*row + col
   LD HL,RoomGridBuffer
 RoomOrigin_GridLoop:
   ADD HL,DE
   DJNZ RoomOrigin_GridLoop
   ADD HL,BC
-  LD (RoomCellCursor),HL
+  LD (RoomCellCursor),HL  ; -> RoomCellCursor
   POP BC
-  LD HL,AttrFileOrigin
+  LD HL,AttrFileOrigin    ; attribute file + 32*row + col
   LD DE,$0020
 RoomOrigin_AttrLoop:
   ADD HL,DE
   DJNZ RoomOrigin_AttrLoop
   ADD HL,BC
-  LD (RoomAttrCursor),HL
+  LD (RoomAttrCursor),HL  ; -> RoomAttrCursor
   RET
 
 ; DrawDoorArm
@@ -3809,7 +3816,7 @@ RoomOrigin_AttrLoop:
 ; the grid being 20 cells wide).
 DrawDoorArm:
   LD HL,(RoomCellCursor)  ; read grid cell under the cursor
-  LD A,(HL)
+  LD A,(HL)               ; A = the wall glyph there
   LD HL,CellDrawTable     ; find its 3-byte record in CellDrawTable
 DoorArm_FindCell:
   CP (HL)
@@ -3850,13 +3857,13 @@ ArmCornerTopLeft:
   LD HL,(RoomAttrStep)    ; L = low byte of current heading
   LD A,L
   LD DE,$0020             ; default: turn south
-  LD HL,$0014
+  LD HL,$0014             ; (attr step 32, grid step 20)
   CP $E0                  ; heading north (-32, low byte 224)?
   JR NZ,ArmCornerTL_SetSteps
   LD DE,$0001             ; yes: turn east
-  LD HL,$0001
+  LD HL,$0001             ; (attr step 1, grid step 1)
 ArmCornerTL_SetSteps:
-  LD (RoomAttrStep),DE
+  LD (RoomAttrStep),DE    ; store the new heading
   LD (RoomCellStep),HL
   RET
 ; ArmCornerBottomLeft — corner glyph 129 joins a north-going edge to an
@@ -3865,13 +3872,13 @@ ArmCornerBottomLeft:
   LD HL,(RoomAttrStep)    ; L = low byte of current heading
   LD A,L
   LD DE,$0001             ; default: turn east
-  LD HL,$0001
+  LD HL,$0001             ; (attr step 1, grid step 1)
   CP $20                  ; heading south?
   JR Z,ArmCornerBL_SetSteps
   LD DE,$FFE0             ; no: turn north (DE = -32, HL = -20)
   LD HL,$FFEC
 ArmCornerBL_SetSteps:
-  LD (RoomAttrStep),DE
+  LD (RoomAttrStep),DE    ; store the new heading
   LD (RoomCellStep),HL
   RET
 ; ArmCornerBottomRight — corner glyph 130 joins a west-going edge to a
@@ -3886,7 +3893,7 @@ ArmCornerBottomRight:
   LD DE,$FFFF             ; no: turn west
   LD HL,$FFFF
 ArmCornerBR_SetSteps:
-  LD (RoomAttrStep),DE
+  LD (RoomAttrStep),DE    ; store the new heading
   LD (RoomCellStep),HL
   RET
 ; ArmCornerTopRight — corner glyph 131 joins a west-going edge to a south-going
@@ -3895,25 +3902,29 @@ ArmCornerTopRight:
   LD HL,(RoomAttrStep)    ; L = low byte of current heading
   LD A,L
   LD DE,$0020             ; default: turn south
-  LD HL,$0014
+  LD HL,$0014             ; (attr step 32, grid step 20)
   CP $01                  ; heading east?
   JR Z,ArmCornerTR_SetSteps
   LD DE,$FFFF             ; no: turn west
   LD HL,$FFFF
 ArmCornerTR_SetSteps:
-  LD (RoomAttrStep),DE
+  LD (RoomAttrStep),DE    ; store the new heading
   LD (RoomCellStep),HL
   RET
 ; ArmEndNode — walk handler for the duct grille (125) and junction nodes
 ; (142/143): pops DrawDoorArm's looping return address, paints the node cell
 ; cyan and ends the walk.
 ArmEndNode:
-  POP AF
-  LD HL,(RoomAttrCursor)
+  POP AF                  ; drop the looping return address
+  LD HL,(RoomAttrCursor)  ; paint the node cell cyan
   LD (HL),$05
   RET
 
 ; ClearRoomAttrs
+;
+; Blacks out the 20×19 room-view attribute window, then renders the grid
+; buffer's wall glyphs into the (now invisible) pixel area — the duct view's
+; arm walk selectively re-colours cells cyan to reveal them.
 ClearRoomAttrs:
   LD DE,$000C             ; black out the 20x19 room-view
   LD HL,AttrFileOrigin    ; attribute window
@@ -3924,7 +3935,7 @@ ClearRoomAttrs_CellLoop:
   LD (HL),$00
   INC HL
   DJNZ ClearRoomAttrs_CellLoop
-  ADD HL,DE
+  ADD HL,DE               ; +12: next attribute row
   DEC C
   JR NZ,ClearRoomAttrs_RowLoop
   LD HL,RoomGridBuffer    ; then render the grid buffer
@@ -3944,11 +3955,11 @@ BuildDuctExitList:
   LD L,A
   LD H,$00
   PUSH HL
-  ADD HL,HL
+  ADD HL,HL               ; room*5 = room*4 + room
   ADD HL,HL
   POP DE
   ADD HL,DE
-  LD DE,RoomAdjDucts
+  LD DE,RoomAdjDucts      ; RoomAdjDucts
   ADD HL,DE
   LD DE,$73C0             ; DE -> strip cell 2
   LD B,$04                ; four duct directions:
@@ -3984,14 +3995,14 @@ DuctExits_NextArrow:
 ;
 ; Used by the routines at InitGameView, RedrawRoomScene and PauseMenu.
 ClearTextWindow:
-  LD HL,Screen_R19C0
+  LD HL,Screen_R19C0      ; row 19, col 0: the info/message panel
   LD (DrawScreenPtr),HL
-  LD B,$80
+  LD B,$80                ; 128 cells = 4 char rows
 ClearText_Loop:
   PUSH BC
   XOR A
-  CALL DrawTileA
-  LD HL,DrawScreenPtr
+  CALL DrawTileA          ; DrawTileA(0): blank the cell
+  LD HL,DrawScreenPtr     ; advance one cell right
   INC (HL)
   POP BC
   DJNZ ClearText_Loop
@@ -8265,30 +8276,31 @@ ClockDrawLoop:
 
 ; InitJonesAnim
 ;
-; Resets Jones animation and blits the first frame. Sets Y position to 8,
-; clears the Y phase freeze flag, then calls BlitJonesFrame with B=1 to draw
-; frame 0. This entry point is used by the routines at DrawRoomSpecials and
-; UpdateJones.
+; Resets the Jones run animation and blits the first frame. Sets the X position
+; to pixel 8 (column 1), clears the freeze flag, then calls BlitJonesFrame with
+; B=1 to draw frame 0. This entry point is used by the routines at
+; DrawRoomSpecials and UpdateJones.
 InitJonesAnim:
   XOR A                   ; A = 0: clear freeze flag
   LD (JonesPhase),A       ; JonesPhase = 0
   LD A,$08
-  LD (JonesPos),A         ; JonesPos = 8 (initial Y pixel offset)
+  LD (JonesPos),A         ; JonesPos = 8 (initial X pixel offset)
   LD B,$01                ; B = 1 iteration
-  CALL BlitJonesFrame     ; draw first tail frame
+  CALL BlitJonesFrame     ; draw the cat's first frame
   RET
 
 ; TriggerJonesAnim
 ;
-; Advances the Jones animation by one frame if not frozen. Sets the freeze flag
-; (bit 7 of JonesPhase) after blitting so the animation runs exactly once. This
-; entry point is used by the routines at SetActionTimer and UpdateJones.
+; Stops the Jones run animation: if not already frozen, XOR-blits the current
+; frame once (removing the cat from the screen, since it was already drawn) and
+; sets the freeze flag (bit 7 of JonesPhase). This entry point is used by the
+; routines at SetActionTimer and UpdateJones.
 TriggerJonesAnim:
   LD B,$01                ; B = 1 iteration
   LD A,(JonesPhase)       ; A = JonesPhase
   AND $80                 ; test freeze flag (bit 7)
   RET NZ                  ; already frozen: do nothing
-  CALL BlitJonesFrame     ; blit one tail frame
+  CALL BlitJonesFrame     ; XOR the current cat frame (erases it)
   LD A,$80
   LD (JonesPhase),A       ; freeze: JonesPhase |= 128
   RET
@@ -8325,12 +8337,12 @@ TriggerAlienXAnim:
 
 ; UpdateAlienAnim
 ;
-; Per-frame alien encounter update: refreshes the map view, then advances both
-; animation layers. Y layer (tail sweep) if not frozen, X layer (body) if not
-; frozen.
+; Per-frame alien-encounter update: steps the two map-marker animation
+; channels, then advances both encounter layers if not frozen — the cat running
+; across the screen (Jones layer) and the big alien body (X layer).
 UpdateAlienAnim:
-  CALL AnimateCrewA       ; redraw room background
-  CALL AnimateCrewB       ; redraw room actors
+  CALL AnimateCrewA       ; AnimateCrewA: step the walking-figure marker
+  CALL AnimateCrewB       ; AnimateCrewB: step the blinking-box marker
   LD A,(JonesPhase)       ; A = JonesPhase
   AND $80                 ; test freeze flag
   CALL Z,AnimJones        ; not frozen: advance Y animation
@@ -8350,11 +8362,11 @@ AlienXPhase:
   DEFW AlienFrame2        ; AlienFrame2 (AlienFrame2 sprite ptr)
   DEFW AlienFrame3        ; AlienFrame3 (AlienFrame3 sprite ptr)
 JonesPos:
-  DEFB $00                ; pixel Y offset 0-135
+  DEFB $00                ; the cat's pixel X offset 0-135 (run position)
 AlienScreenPtr:
   DEFW $4800              ; current screen draw ptr (runtime, initially $4800)
 JonesPhase:
-  DEFB $00                ; tail phase 0-4 (bit 7 = freeze flag)
+  DEFB $00                ; run-cycle frame 0-4 (bit 7 = freeze flag)
   DEFW JonesFrame0        ; JonesFrame0 (JonesFrame0 sprite ptr)
   DEFW JonesFrame1        ; JonesFrame1 (JonesFrame1 sprite ptr)
   DEFW JonesFrame2        ; JonesFrame2 (JonesFrame2 sprite ptr)
@@ -8386,31 +8398,32 @@ BlitAlienFrame:
   LD B,$3F                ; 63 pixel rows per frame
   LD C,$00
 BlitAlienFrameRow:
-  PUSH BC
-  LD B,C
+  PUSH BC                 ; save row counter
+  LD B,C                  ; BC = 6: one 6-byte sprite row
   LD C,$06
-  LDIR
-  EX DE,HL
-  LD A,H
+  LDIR                    ; copy it to the screen
+  EX DE,HL                ; HL = screen dst, DE = sprite src
+  LD A,H                  ; finished pixel row 7 of this char row?
   AND $07
   CP $07
-  JR Z,BlitAlienFrameBankCheck
-  INC H
+  JR Z,BlitAlienFrameBankCheck ; yes: char-row / third stepping below
+  INC H                   ; no: next pixel row is one display bank up
   JR BlitAlienFrameNextRow
-; ZX Spectrum display-file scan-line bank wrap: H&7 = 7 means we finished a
-; character row. If L < $E0 (224) add -1760 to jump to the next screen third;
-; otherwise add 32 to advance to the next character row within the same third.
-; Then subtract 6 from HL to step back past the LDIR'd bytes.
+; ZX Spectrum display-file scan-line stepping: H&7 = 7 means we finished a
+; character row. If L < $E0 (224) add -1760 (= -7*256+32) to drop to pixel-row
+; 0 of the next character row in the same third; otherwise (last char row of
+; the third) add 32, whose carry into H lands on row 0 of the next third. Then
+; subtract 6 from HL to step back past the LDIR'd bytes.
 BlitAlienFrameBankCheck:
   LD A,L
   CP $E0                  ; L >= $E0: last char-row of this screen third?
   JR NC,BlitAlienFrameNextThird ; yes: next third
-  LD BC,$F920             ; BC = -1760: wrap to next column in next third
-  ADD HL,BC
+  LD BC,$F920             ; no: -1760 (= -7*256+32) drops to pixel-row 0
+  ADD HL,BC               ; of the next char row in the same third
   JR BlitAlienFrameNextRow
 BlitAlienFrameNextThird:
-  LD BC,$0020             ; BC = 32: advance to next character row
-  ADD HL,BC
+  LD BC,$0020             ; yes: +32 carries into H, landing on
+  ADD HL,BC               ; row 0 of the next screen third
 BlitAlienFrameNextRow:
   LD BC,$FFFA             ; BC = -6: rewind HL past the 6 LDIR'd bytes
   ADD HL,BC
@@ -8421,22 +8434,26 @@ BlitAlienFrameNextRow:
 
 ; AnimJones
 ;
-; Entry point called from UpdateAlienAnim with B=2 to advance the Y position
-; counter before blitting. Calls BlitJonesFrame with B=2, which will call
-; AdvanceJonesPos.
+; Entry point called from UpdateAlienAnim with B=2: the first BlitJonesFrame
+; pass XOR-erases the cat at its old position, then (via the DJNZ at its end)
+; AdvanceJonesPos moves it 4 pixels right and a second pass redraws it — the
+; classic XOR erase / advance / redraw cycle.
 AnimJones:
   LD B,$02                ; B=2: advance position then blit
 
 ; BlitJonesFrame
 ;
-; Blits the alien tail (Y channel) XOR sprite for the current phase and
-; position. First XORs ink colour bits of a 4x2 attribute block to produce a
-; flash effect. Then loads the current Y-phase sprite pointer (3 bytes/row, 21
-; rows) and chooses between an unshifted XOR blit (JonesPos&7 < 4) or a shifted
-; one (>= 4). The shift amount is encoded directly into the self-modifying JR
-; at BlitJonesShiftCode (the JR offset byte is patched to select how many
-; SRL/RR passes execute). DJNZ at the end re-uses B to call AdvanceJonesPos
-; when B=2.
+; XOR-blits the Jones cat sprite (24 px wide × 21 rows, run-cycle frame 0-4
+; from the pointer table after JonesPhase) at pixel-X JonesPos on its fixed
+; track (char rows 9-11). First XORs the ink bits of the 4×2 attribute block
+; under the cat (mask = inverted top-left-of-screen ink, so the flash contrasts
+; with the background). Each sprite row's 3 bytes are sub-shifted by k =
+; JonesPos&7 into 4 output bytes: for k < 4 the SRL/RR chain here right-shifts
+; by k (the self-modifying JR at BlitJonesShiftCode is patched to skip 3-k
+; groups); for k >= 4 BlitJonesShifted left-shifts by 8-k instead — same
+; result, at most 4 shift passes either way. The DJNZ at the end re-uses B:
+; entered with B=2 (AnimJones) it falls into AdvanceJonesPos for the redraw
+; pass.
 BlitJonesFrame:
   PUSH BC                 ; save B (iteration count)
   LD A,(AttrFileOrigin)   ; A = attribute at top-left of screen
@@ -8447,21 +8464,23 @@ BlitJonesFrame:
   LD A,(JonesPos)         ; A = JonesPos (pixel Y offset 0-135)
   RRA
   RRA
-  RRA                     ; A = JonesPos >> 3 (character row 0-16)
+  RRA                     ; A = JonesPos >> 3: character COLUMN 0-16
   AND $1F
   LD E,A
-  LD D,$00                ; DE = char row index
-  LD HL,Screen_R9C0L4     ; HL = $4C00+1 (display col 1, char-row 0)
-  ADD HL,DE               ; HL = screen row address for JonesPos
-  LD (AlienScreenPtr),HL  ; AlienScreenPtr = screen row ptr
+  LD D,$00                ; DE = the cat's character column
+  LD HL,Screen_R9C0L4     ; HL = $4C20 (col 0, char row 9, pixel row 4): the
+                          ; run track
+  ADD HL,DE               ; + column = the cat sprite's top-left screen address
+  LD (AlienScreenPtr),HL  ; stash it in AlienScreenPtr
   LD HL,AttrRow10         ; HL = AttrRow10 (attribute row 10, col 0)
-  ADD HL,DE               ; HL = attr address for JonesPos char row
-  LD DE,$001D             ; DE = attr row stride - 4 (skip to next pair)
+  ADD HL,DE               ; + column = attr address of the cat's cells
+  LD DE,$001D             ; row stride 29, not 28: the 2nd flash row lands one
+                          ; cell right (harmless original quirk)
   LD C,$02                ; 2 attribute rows
 BlitJonesAttrRow:
   LD B,$04                ; 4 attribute columns per row
 BlitJonesAttrInner:
-  LD A,(HL)
+  LD A,(HL)               ; flash one attribute cell:
   XOR $07                 ; toggle ink colour (self-modifying: operand byte
                           ; patched)
   LD (HL),A               ; write flashed attribute
@@ -8471,41 +8490,42 @@ BlitJonesAttrInner:
   DEC C
   JR NZ,BlitJonesAttrRow  ; next row
   LD HL,JonesPhase        ; HL -> JonesPhase
-  LD E,(HL)               ; E = current Y phase (0-4)
+  LD E,(HL)               ; E = current run-cycle frame (0-4)
   LD D,$00
-  INC HL                  ; HL -> Y frame pointer table
+  INC HL                  ; HL -> the frame-pointer table that follows
   ADD HL,DE
   ADD HL,DE               ; HL -> table[phase] (2 bytes/entry)
-  LD E,(HL)
+  LD E,(HL)               ; DE = this frame's sprite data
   INC HL
-  LD D,(HL)               ; DE = tail sprite data ptr for this phase
+  LD D,(HL)               ; (3 bytes x 21 rows per frame)
   LD A,(JonesPos)         ; A = JonesPos
-  AND $07                 ; A = sub-character Y pixel offset (0-7)
+  AND $07                 ; A = sub-cell X offset k (0-7)
   CP $04
-  JP NC,BlitJonesShifted  ; >= 4: shifted blit (BlitJonesShifted)
-  CPL
-  AND $03                 ; shift count = 3-(JonesPos&7) in [0,3]
-  LD L,A
-  RLCA
+  JP NC,BlitJonesShifted  ; k >= 4: shift the other way (BlitJonesShifted)
+  CPL                     ; A = 3-k: shift groups to SKIP
+  AND $03                 ; (so k of the 3 SRL/RR groups run = right shift by
+                          ; k)
+  LD L,A                  ; patch offset = (3-k) * 7 bytes
+  RLCA                    ; (each skipped shift group is 7 bytes long)
   RLCA
   RLCA                    ; A = shift_count * 8
   SUB L                   ; A = shift_count * 7 (bytes to skip in shift chain)
   LD ($9BFC),A            ; patch JR offset: BlitJonesShiftCode entry skips N
                           ; SRL/RR pairs
-  LD B,$15                ; 21 pixel rows per tail frame
+  LD B,$15                ; 21 pixel rows per cat frame
 BlitJonesFrameRow:
-  PUSH BC
-  EX DE,HL
-  LD B,(HL)
-  INC HL
+  PUSH BC                 ; save row counter
+  EX DE,HL                ; HL = sprite data ptr
+  LD B,(HL)               ; load the row's 3 sprite bytes
+  INC HL                  ; into B, C, E
   LD C,(HL)
   INC HL
   LD E,(HL)
   INC HL
+  PUSH HL                 ; save advanced sprite ptr
+  LD HL,(AlienScreenPtr)  ; HL = this row's screen address
   PUSH HL
-  LD HL,(AlienScreenPtr)
-  PUSH HL
-  XOR A
+  XOR A                   ; A = 0: spill byte for bits shifted out
 ; Self-modifying right-shift chain. The JR operand byte is patched before entry
 ; to skip 0-3 SRL/RR groups, giving a right-shift of 0-3 bits across the 3+1
 ; sprite bytes in {B,C,E,A}. After shifting, the result is XOR-blitted to
@@ -8526,7 +8546,7 @@ BlitJonesShiftCode:
   RR E
   RRA
   EX AF,AF'               ; swap: A' = carry spill byte
-  LD A,B
+  LD A,B                  ; XOR-blit the 4 result bytes:
   XOR (HL)
   LD (HL),A               ; XOR-blit byte 0 to screen
   INC HL
@@ -8538,45 +8558,46 @@ BlitJonesShiftCode:
   XOR (HL)
   LD (HL),A               ; XOR-blit byte 2
   INC HL
-  EX AF,AF'
+  EX AF,AF'               ; recover the spill byte
   XOR (HL)
   LD (HL),A               ; XOR-blit carry spill byte
-  POP HL
-  LD A,H
+  POP HL                  ; back to the row-start screen address
+  LD A,H                  ; finished pixel row 7 of this char row?
   AND $07
   CP $07
-  JR Z,BlitJonesFrameBankCheck
-  INC H
+  JR Z,BlitJonesFrameBankCheck ; yes: char-row / third stepping
+  INC H                   ; no: next pixel row is one display bank up
   JR BlitJonesFrameNextRow
 BlitJonesFrameBankCheck:
-  LD A,L
+  LD A,L                  ; last char row of this screen third?
   CP $E0
-  JR NC,BlitJonesFrameNextThird
-  LD BC,$F920
+  JR NC,BlitJonesFrameNextThird ; yes: hop to the next third
+  LD BC,$F920             ; no: -1760 = pixel-row 0 of the next char row
   ADD HL,BC
   JR BlitJonesFrameNextRow
 BlitJonesFrameNextThird:
-  LD BC,$0020
+  LD BC,$0020             ; +32 carries into H: row 0 of the next third
   ADD HL,BC
 BlitJonesFrameNextRow:
-  LD (AlienScreenPtr),HL
-  POP DE
+  LD (AlienScreenPtr),HL  ; store the next row's screen address
+  POP DE                  ; DE = sprite ptr
   POP BC
-  DJNZ BlitJonesFrameRow
-  POP BC
-  DJNZ AdvanceJonesPos
-  RET
+  DJNZ BlitJonesFrameRow  ; next of the 21 rows
+  POP BC                  ; B = caller's iteration count
+  DJNZ AdvanceJonesPos    ; B was 2 (AnimJones): advance pos and redraw
+  RET                     ; B was 1: single XOR pass only
 
 ; AdvanceJonesPos
 ;
-; Increments JonesPos by 4. If the new value >= 136 the tail sweep is complete:
-; freeze the Y animation (JonesPhase |= 128) and return. Otherwise store the
-; new position, cycle the phase counter (0->1->2->3->4->0) and jump back to
-; BlitJonesFrame.
+; Moves the cat 4 pixels right. If the new JonesPos >= 136 it has run off the
+; right edge of its 17-column track: freeze the animation (JonesPhase |= 128)
+; and return — the erase pass has already removed it from the screen. Otherwise
+; store the new position, cycle the run-cycle frame (0->1->2->3->4->0) and jump
+; back to BlitJonesFrame to redraw.
 AdvanceJonesPos:
   LD A,(JonesPos)         ; A = JonesPos
   ADD A,$04               ; advance by 4 pixels
-  CP $88                  ; reached bottom of sweep area?
+  CP $88                  ; run off the right edge (past column 16)?
   JR C,AdvanceJonesPosUpdate ; no: update position
   LD A,$80                ; yes: A = freeze flag
   LD (JonesPhase),A       ; JonesPhase = 128 (frozen)
@@ -8590,19 +8611,20 @@ AdvanceJonesPosUpdate:
   XOR A                   ; yes: wrap to 0
 AdvanceJonesPosSetPhase:
   LD (JonesPhase),A       ; JonesPhase = new phase
-  JP BlitJonesFrame       ; blit next tail frame
+  JP BlitJonesFrame       ; draw the cat at its new position
 
 ; BlitJonesShifted
 ;
-; Handles the alien tail XOR blit when JonesPos&7 >= 4 (sprite straddles the
-; next character row). Uses SLA/RL chains for a left-shift instead of SRL/RR,
-; mirroring the logic of BlitJonesFrame's right-shift section. The shift amount
-; (pixels left past the half-character boundary) is patched into the
-; self-modifying JR at the JR at BlitJonesShiftCode2, then 21 rows of 4 bytes
-; are XOR-blitted.
+; The cat XOR blit for sub-cell offsets k = JonesPos&7 >= 4. Rather than
+; right-shifting each sprite row by k (up to 7 passes), it left-shifts by 8-k
+; (at most 4 passes) with SLA/RL chains and writes the spill byte FIRST —
+; placing the sprite k pixels into the 4-byte output field, the same result as
+; BlitJonesFrame's right-shift path. The number of chain groups to skip is
+; patched into the self-modifying JR at BlitJonesShiftCode2, then 21 rows of 4
+; bytes are XOR-blitted.
 BlitJonesShifted:
-  SUB $04                 ; A = (JonesPos&7) - 4, left-shift amount in [0,3]
-  LD L,A
+  SUB $04                 ; A = k-4: shift groups to SKIP (8-k of 4 run)
+  LD L,A                  ; patch offset = (k-4) * 7 bytes
   RLCA
   RLCA
   RLCA                    ; A = shift_count * 8
@@ -8610,21 +8632,26 @@ BlitJonesShifted:
   LD ($9C83),A            ; patch BlitJonesShiftCode2 JR offset
   LD B,$15                ; 21 pixel rows
 BlitJonesShiftedRow:
-  PUSH BC
-  EX DE,HL
-  LD B,(HL)
-  INC HL
+  PUSH BC                 ; save row counter
+  EX DE,HL                ; HL = sprite data ptr
+  LD B,(HL)               ; load the row's 3 sprite bytes
+  INC HL                  ; into B, C, E
   LD C,(HL)
   INC HL
   LD E,(HL)
   INC HL
+  PUSH HL                 ; save advanced sprite ptr
+  LD HL,(AlienScreenPtr)  ; HL = this row's screen address
   PUSH HL
-  LD HL,(AlienScreenPtr)
-  PUSH HL
-  XOR A
+  XOR A                   ; A = 0: collects bits shifted out of B's top
 BlitJonesShiftCode2:
-  JR BlitJonesShiftCode2
-  SLA E
+  JR BlitJonesShiftCode2  ; self-modifying: JR offset patched to skip N SLA/RL
+                          ; groups
+  SLA E                   ; left-shift the 24-bit row across A:B:C:E;
+  RL C                    ; shifting left by 8-k places the sprite k
+  RL B                    ; pixels from byte A's left edge — the same
+  RLA                     ; result as a right shift by k, but never
+  SLA E                   ; more than 4 shift-group passes
   RL C
   RL B
   RLA
@@ -8636,11 +8663,7 @@ BlitJonesShiftCode2:
   RL C
   RL B
   RLA
-  SLA E
-  RL C
-  RL B
-  RLA
-  XOR (HL)
+  XOR (HL)                ; XOR-blit the 4 result bytes, spill byte first
   LD (HL),A
   INC HL
   LD A,B
@@ -8654,74 +8677,74 @@ BlitJonesShiftCode2:
   LD A,E
   XOR (HL)
   LD (HL),A
-  POP HL
-  LD A,H
+  POP HL                  ; back to the row-start screen address
+  LD A,H                  ; finished pixel row 7 of this char row?
   AND $07
   CP $07
-  JR Z,BlitJonesShiftedBankCheck
-  INC H
+  JR Z,BlitJonesShiftedBankCheck ; yes: char-row / third stepping
+  INC H                   ; no: next pixel row is one display bank up
   JR BlitJonesShiftedNextRow
 BlitJonesShiftedBankCheck:
-  LD A,L
+  LD A,L                  ; last char row of this screen third?
   CP $E0
-  JR NC,BlitJonesShiftedNextThird
-  LD BC,$F920
+  JR NC,BlitJonesShiftedNextThird ; yes: hop to the next third
+  LD BC,$F920             ; no: -1760 = pixel-row 0 of the next char row
   ADD HL,BC
   JR BlitJonesShiftedNextRow
 BlitJonesShiftedNextThird:
-  LD BC,$0020
+  LD BC,$0020             ; +32 carries into H: row 0 of the next third
   ADD HL,BC
 BlitJonesShiftedNextRow:
-  LD (AlienScreenPtr),HL
-  POP DE
+  LD (AlienScreenPtr),HL  ; store the next row's screen address
+  POP DE                  ; DE = sprite ptr
   POP BC
-  DJNZ BlitJonesShiftedRow
-  POP BC
-  DEC B
-  JP NZ,AdvanceJonesPos
-  RET
+  DJNZ BlitJonesShiftedRow ; next of the 21 rows
+  POP BC                  ; B = caller's iteration count
+  DEC B                   ; (mirror of BlitJonesFrame's ending)
+  JP NZ,AdvanceJonesPos   ; B was 2: advance pos and redraw
+  RET                     ; B was 1: single XOR pass only
 
 ; ClearAlienArea
 ;
-; Clears the 19x20-character area of the ZX Spectrum display file and attribute
-; RAM used by the alien body animation. Iterates 19 rows of 20 columns from
-; DisplayFile, calling DrawTileA to zero each cell, then repeats for the
-; attribute area at AttrFileOrigin.
+; Clears the 19×20-character area of the display used by the alien encounter
+; picture: stamps the blank tile into each cell via DrawTileA (DrawTileA with
+; A=0), then paints the same area's attributes green-ink- on-black (4).
 ClearAlienArea:
   LD HL,DisplayFile       ; HL = DisplayFile: start of display file
   LD (DrawScreenPtr),HL   ; store current screen cell address
   LD C,$13                ; 19 character rows
 ClearAlienAreaCol:
-  LD B,$14
+  LD B,$14                ; 20 columns per row
 ClearAlienAreaRow:
   PUSH BC
-  XOR A
-  CALL DrawTileA
-  LD HL,DrawScreenPtr
-  INC (HL)
+  XOR A                   ; A = 0: the blank tile
+  CALL DrawTileA          ; DrawTileA(0): stamp 8 blank pixel rows into the
+                          ; cell
+  LD HL,DrawScreenPtr     ; bump the draw pointer
+  INC (HL)                ; one cell to the right
   POP BC
   DJNZ ClearAlienAreaRow
-  LD DE,$000C
+  LD DE,$000C             ; row advance: 20 cells + 12 = 32, next char row
   LD HL,(DrawScreenPtr)
-  LD A,L
-  CP $E0
+  LD A,L                  ; unless we just finished the last char row
+  CP $E0                  ; of a screen third...
   JR C,ClearAlienAreaNextRow
-  LD DE,$070C
+  LD DE,$070C             ; ...then +1804 ($070C) hops into the next third
 ClearAlienAreaNextRow:
   ADD HL,DE
   LD (DrawScreenPtr),HL
   DEC C
-  JR NZ,ClearAlienAreaCol
-  LD DE,$000C
-  LD HL,AttrFileOrigin
+  JR NZ,ClearAlienAreaCol ; next of the 19 rows
+  LD DE,$000C             ; attr sweep: same 19 rows x 20 cols
+  LD HL,AttrFileOrigin    ; from the top of the attribute file
   LD C,$13
 ClearAlien_RowLoop:
   LD B,$14
 ClearAlien_CellLoop:
-  LD (HL),$04
+  LD (HL),$04             ; attr 4: green ink on black paper
   INC HL
   DJNZ ClearAlien_CellLoop
-  ADD HL,DE
+  ADD HL,DE               ; +12: next attribute row
   DEC C
   JR NZ,ClearAlien_RowLoop
   RET
@@ -8932,31 +8955,31 @@ PlayNoteByIndex:
 ; Used by the routine at DrawIntroScreen (DrawIntroScreen).
 PlayMusicPhrase:
   LD HL,PhrasePairs       ; HL = PhrasePairs base
-  LD (PhraseStateScratch),HL
-  LD B,$08
+  LD (PhraseStateScratch),HL ; phrase cursor = start of the table
+  LD B,$08                ; 8 two-note phrases
 Music_NextNotePair:
   PUSH BC
   LD HL,(PhraseStateScratch)
-  LD E,(HL)
+  LD E,(HL)               ; E = 1st note index,
   INC HL
-  LD D,(HL)
+  LD D,(HL)               ; D = 2nd note index
   INC HL
-  LD (PhraseStateScratch),HL
-  LD ($9DDE),DE
-  LD B,$08
+  LD (PhraseStateScratch),HL ; advance the phrase cursor
+  LD ($9DDE),DE           ; stash the pair where the player below reads it
+  LD B,$08                ; trill the pair 8 times
 Music_PlayPair:
   PUSH BC
-  LD A,($9DDE)
+  LD A,($9DDE)            ; 1st note
+  CALL PlayNoteByIndex    ; PlayNoteByIndex
+  LD A,($9DDF)            ; 2nd note
   CALL PlayNoteByIndex
-  LD A,($9DDF)
-  CALL PlayNoteByIndex
-  LD BC,$FEFE
+  LD BC,$FEFE             ; sweep the whole keyboard between notes
 Music_KeyPoll:
   IN A,(C)
-  AND $1F
-  XOR $1F
-  JR NZ,Music_Abort
-  RLC B
+  AND $1F                 ; keep the 5 key bits
+  XOR $1F                 ; pressed keys read 0
+  JR NZ,Music_Abort       ; any key: abort playback
+  RLC B                   ; next half-row
   JR C,Music_KeyPoll
   POP BC
   DJNZ Music_PlayPair
@@ -8964,7 +8987,7 @@ Music_KeyPoll:
   DJNZ Music_NextNotePair
   RET
 Music_Abort:
-  POP BC
+  POP BC                  ; drop the two saved loop counters
   POP BC
   RET
 KeyboardModeFlag:
@@ -9740,15 +9763,18 @@ PressAnyKeyText:
 ; normal alien position). 4. Pull one script nibble, look it up in
 ; LongGameHostSlotTable (LongGameHostSlotTable) to get the host slot index
 ; A_host (one of {1, 2, 5}), then stamp the HostMarker on that record by
-; overwriting bytes +1 and +7 with $FF. 5. Loop pulling more script nibbles,
-; looking them up in LongGameTargetTable (LongGameTargetTable), until the
-; looked-up value A_target differs from A_host — the Android can't be the same
-; slot the alien just hatched out of. 6. Store A_target in AlienTargetID
-; (AlienTargetID) — this slot is the per-run **Android**: a dormant traitor
-; crew member that UpdateAlien (UpdateAlien) flips hostile on first encounter
-; with the loose alien. 7. Enqueue message #33 ("Alien has hatched from
-; {actor}") via EnqueueMessage, with the host slot index as the actor parameter
-; — this is the long game's opening narrative beat. 8. Store &slot[A_target] in
+; overwriting bytes +1 and +7 with $FF. The host's vacated room is first copied
+; into Brett's room byte (slot 7 +1, $73B7): Brett, whom LongGameCrewInit
+; leaves in room 0, takes the host's seat so both dinner-scene groups stay at
+; three crew. 5. Loop pulling more script nibbles, looking them up in
+; LongGameTargetTable (LongGameTargetTable), until the looked-up value A_target
+; differs from A_host — the Android can't be the same slot the alien just
+; hatched out of. 6. Store A_target in AlienTargetID (AlienTargetID) — this
+; slot is the per-run **Android**: a dormant traitor crew member that
+; UpdateAlien (UpdateAlien) flips hostile on first encounter with the loose
+; alien. 7. Enqueue message #33 ("Alien has hatched from {actor}") via
+; EnqueueMessage, with the host slot index as the actor parameter — this is the
+; long game's opening narrative beat. 8. Store &slot[A_target] in
 ; AlienTargetPtr (AlienTargetPtr) so UpdateAlien and CrewHitsAndroid can access
 ; the Android's crew record directly. 9. Fall through into the common init at
 ; CommonGameInit (CommonGameInit).
@@ -9772,7 +9798,7 @@ LongGame_CopyRecords:
   LD E,A
   LD D,$00
   LD HL,LongGameHostSlotTable ; HL = LongGameHostSlotTable ($A19E)
-  ADD HL,DE
+  ADD HL,DE               ; index the host-slot table by the nibble
 LongGame_PickHost:
   LD A,(HL)               ; A_host = chestburster-host slot index for this run
   PUSH AF                 ; stash A_host
@@ -9780,14 +9806,14 @@ LongGame_PickHost:
   ADD A,A
   ADD A,A                 ; A_host × 8 (record stride)
   LD E,A
-  LD HL,ActorRecords
+  LD HL,ActorRecords      ; base of ActorRecords
   ADD HL,DE               ; HL = &slot[A_host]
   INC HL                  ; HL = &slot[A_host] + 1 (crew ID byte)
-  LD A,(HL)
-  LD ($73B7),A            ; save original ID at $73E7 (never read; effectively
-                          ; scratch)
+  LD A,(HL)               ; A = the host's starting room (byte +1)
+  LD ($73B7),A            ; Brett (slot 7, init room 0) inherits the host's
+                          ; seat, keeping both dinner groups at three
   LD (HL),$FF             ; stamp HostMarker: slot[A_host].byte+1 = $FF
-  LD DE,$0006
+  LD DE,$0006             ; step from +1 to +7
   ADD HL,DE               ; HL = &slot[A_host] + 7 (alive flag)
 LongGame_PickTarget:
   LD (HL),$FF             ; stamp HostMarker: slot[A_host].byte+7 = $FF
@@ -9799,10 +9825,10 @@ PickAlienTargetLoop:
   ADD HL,DE
   LD C,(HL)               ; C = candidate alien-target index
   POP AF                  ; A = A_host
-  CP C
+  CP C                    ; same slot as the host?
 LongGame_TargetOk:
   JR NZ,StoreAlienTarget  ; if C != A_host → accept
-  PUSH AF
+  PUSH AF                 ; re-stash A_host and retry
 LongGame_Retry:
   JR PickAlienTargetLoop  ; else: pull another nibble (avoid colliding with
                           ; host)
@@ -9810,7 +9836,7 @@ StoreAlienTarget:
   LD HL,AlienTargetID     ; HL = &AlienTargetID
 LongGame_SetTarget:
   LD (HL),C               ; AlienTargetID = C (randomised)
-  PUSH BC
+  PUSH BC                 ; save C = the Android's slot
   LD L,A                  ; L = A_host (actor param for message)
   LD A,$21                ; A = 33 → message "Alien has hatched from {actor}"
 LongGame_HatchMsg:
@@ -9823,7 +9849,7 @@ LongGame_StoreTargetPtr:
   ADD A,A                 ; A × 8
   LD E,A
   LD D,$00
-  LD HL,ActorRecords
+  LD HL,ActorRecords      ; base of ActorRecords
   ADD HL,DE               ; HL = &slot[AlienTargetID]
   LD (AlienTargetPtr),HL  ; store alien-target record pointer at AlienTargetPtr
 ; This entry point is used by the routine at ShortGameInit. CommonGameInit:
@@ -9834,16 +9860,16 @@ LongGame_StoreTargetPtr:
 ; timer from the script, and switches the room mode to 1 (corridor view) so the
 ; player drops straight into gameplay.
 CommonGameInit:
-  XOR A
+  XOR A                   ; AlienActiveFlag = 0: the Android starts dormant
   LD (AlienActiveFlag),A
   LD HL,DrawMenuStrip     ; HL = $8080: two "frozen" bytes for both channels
-  LD (CrewAnimFlags),HL
-  LD A,L
-  LD (AlienXPhase),A
-  LD (JonesPhase),A
+  LD (CrewAnimFlags),HL   ; freeze both map-marker animation channels
+  LD A,L                  ; A = $80
+  LD (AlienXPhase),A      ; freeze the alien-body encounter layer...
+  LD (JonesPhase),A       ; ...and the Jones run layer
 CommonInit_ItemsGrilles:
   LD HL,InitialItemRooms  ; HL = InitialItemRooms ($A1BE)
-  LD DE,ItemLocations     ; DE = ItemLocations ($74B4)
+  LD DE,ItemLocations     ; DE = ItemLocations ($74F4)
   LD BC,$0016
   LDIR                    ; place the 22 items in their start rooms
   LD B,$21                ; RoomGrilleState: put all grilles in place
@@ -9858,12 +9884,12 @@ CommonInit_GrilleLoop:
   LD HL,RoomGrilleState
   ADD HL,DE
   LD (HL),D
-  LD HL,ShipSystemFlags
-  LD (HL),D
+  LD HL,ShipSystemFlags   ; ShipSystemFlags = 0: destruct off, airlocks
+  LD (HL),D               ; sealed, no fires
   CALL AdvanceScriptPtr   ; Jones starts in a random
   LD (JonesRoom),A        ; room 0-15 (script nibble)
   CALL AdvanceScriptPtr   ; the alien's lair is drawn from
-  LD E,A
+  LD E,A                  ; a 16-entry room table...
   LD D,$00
   LD HL,AlienInitTable    ; HL = AlienInitTable ($A18E)
   ADD HL,DE
@@ -9873,21 +9899,22 @@ CommonInit_AlienRoom:
   LD ($737F),A            ; set the alien's starting room (slot 0 byte +1)
 CommonInit_Charges:
   LD HL,ItemChargesInit   ; HL = ItemChargesInit ($A1D4)
-  LD DE,ItemCharges
+  LD DE,ItemCharges       ; per-item charge counters for items 0-15
   LD BC,$0010
+  LDIR                    ; load the initial charges
+  LD HL,RoomDamageDigits  ; RoomDamageDigits: set every room's 2-digit
+  LD (HL),$30             ; meter to ASCII '00' — prime the first '0'
+  LD DE,$7537             ; and LDIR it across
+  LD BC,$0043             ; the other 67 bytes (34 rooms x 2 digits)
   LDIR
-  LD HL,RoomDamageDigits
-  LD (HL),$30
-  LD DE,$7537
-  LD BC,$0043
-  LDIR
-  LD HL,$3030
+  LD HL,$3030             ; HL = $3030 = '00': the oxygen meter's low digit
+                          ; pair
   LD (OxygenLo),HL
-  LD HL,$3537
+  LD HL,$3537             ; high pair = '7','5': oxygen starts at 7500
   LD (OxygenHi),HL
-  LD A,$20
+  LD A,$20                ; leading character = space
   LD ($95E5),A
-  LD A,$01
+  LD A,$01                ; RoomTypeByte = 1: open on the deck-1 view
   LD (RoomTypeByte),A
   RET
 
@@ -9950,14 +9977,17 @@ StrCopyright:
 
 ; DrawIntroScreen
 ;
-; Draws and animates the Alien title screen. Clears the display, sets border to
-; black, fills attributes (0 = black on black = hidden). Renders a 15×11 tile
-; grid: each byte of the tile map at IntroTileMap is a tile index; multiplied
-; by 8 gives an offset into the 8-byte-per-tile bitmap array at TileBitmaps
-; (actually at TileBitmaps = TileBitmaps decimal, in the extra-data area loaded
-; at AlienFrame0). Tile rows are blitted column by column down into the display
-; file. After drawing, loops animating colours until any key on row $F7FE is
-; pressed.
+; Draws and animates the Alien title screen. Clears the display, sets the
+; border black and fills attributes with 0 (black-on-black) so the picture is
+; built invisibly. Renders the title picture — 15 rows × 11 tiles from row 4,
+; col 10: each byte of the tile map at IntroTileMap indexes the 8-byte-per-tile
+; bitmap array at TileBitmaps, blitted cell by cell, left to right, top to
+; bottom. FillAttributes(7) then reveals it white-on-black, and an 8×11
+; attribute patch from IntroAttributes colours the picture's lower half. The
+; five "ALIEN" title letters appear one at a time (3-column spacing) with a
+; phrase of theme music between letters, the credits are printed, and the
+; routine keeps playing music phrases while sweeping the whole keyboard,
+; returning on any keypress.
 ;
 ; Used by the routine at GameEntry.
 DrawIntroScreen:
@@ -9970,122 +10000,124 @@ DrawIntroScreen:
   LD (DrawScreenPtr),HL   ; store as current draw pointer (DrawScreenPtr)
   LD B,$0F                ; 15 tile columns
 Intro_ColLoop:
-  PUSH BC
-  LD B,$0B
+  PUSH BC                 ; outer loop: 15 picture rows
+  LD B,$0B                ; inner loop: 11 tiles across each row
 Intro_TileLoop:
   PUSH BC
-  PUSH DE
-  LD A,(DE)
-  LD L,A
+  PUSH DE                 ; save map pointer
+  LD A,(DE)               ; A = next tile index from the map
+  LD L,A                  ; HL = index * 8
   LD H,$00
   ADD HL,HL
   ADD HL,HL
   ADD HL,HL
-  LD DE,TileBitmaps
-  ADD HL,DE
-  LD DE,(DrawScreenPtr)
-  LD B,$08
+  LD DE,TileBitmaps       ; + base of the 8-byte-per-tile bitmap array
+  ADD HL,DE               ; HL -> the tile's 8 bitmap bytes
+  LD DE,(DrawScreenPtr)   ; DE = current screen cell (from the draw pointer)
+  LD B,$08                ; blit 8 pixel rows:
 Intro_PixLoop:
-  LD A,(HL)
+  LD A,(HL)               ; copy one bitmap byte
   LD (DE),A
-  INC D
-  INC HL
+  INC D                   ; next pixel row down (same cell)
+  INC HL                  ; next bitmap byte
 ; This entry point is used by the routine at FillAttributes.
   DJNZ Intro_PixLoop
-  LD HL,DrawScreenPtr
-  INC (HL)
+  LD HL,DrawScreenPtr     ; bump the draw pointer's low byte:
+  INC (HL)                ; one cell to the right
 ; This entry point is used by the routine at FillAttributes.
-  POP DE
-  INC DE
+  POP DE                  ; restore map pointer,
+  INC DE                  ; advance to the next map byte
   POP BC
-  DJNZ Intro_TileLoop
-  LD BC,$0015
+  DJNZ Intro_TileLoop     ; next tile in this row
+  LD BC,$0015             ; row advance: 11 cells drawn + 21 = 32, i.e. next
+                          ; char row
   LD HL,(DrawScreenPtr)
-  LD A,L
-  CP $E0
+  LD A,L                  ; low byte >= 224 means we just drew on the last
+  CP $E0                  ; char row of a screen third...
   JR C,Intro_Advance
-  LD BC,$0715
+  LD BC,$0715             ; ...so add $0715 instead: +$0700 hops D into the
+                          ; next third
 Intro_Advance:
-  ADD HL,BC
+  ADD HL,BC               ; move the draw pointer to the next picture row
   LD (DrawScreenPtr),HL
   POP BC
-  DJNZ Intro_ColLoop
-  LD A,$07
-  CALL FillAttributes
-  LD HL,$596A
-  LD DE,IntroAttributes
-  LD B,$08
+  DJNZ Intro_ColLoop      ; next of the 15 rows
+  LD A,$07                ; FillAttributes(7): reveal the finished picture
+  CALL FillAttributes     ; in white-on-black
+  LD HL,$596A             ; attribute address of row 11, col 10
+  LD DE,IntroAttributes   ; per-cell colour map for the picture's lower half
+  LD B,$08                ; 8 attribute rows...
 Intro_AttrRowLoop:
   PUSH BC
-  LD B,$0B
+  LD B,$0B                ; ...of 11 cells each
 Intro_AttrCellLoop:
-  LD A,(DE)
+  LD A,(DE)               ; copy one attribute byte
   LD (HL),A
   INC DE
   INC HL
   DJNZ Intro_AttrCellLoop
-  LD BC,$0015
+  LD BC,$0015             ; 11 cells written + 21 = 32: next attribute row
   ADD HL,BC
   POP BC
   DJNZ Intro_AttrRowLoop
-  LD HL,$4029
+  LD HL,$4029             ; draw the big "ALIEN" title from row 1, col 9
   LD (DrawScreenPtr),HL
   LD DE,StrAlien
-  LD B,$05
+  LD B,$05                ; 5 letters
 Intro_TitleLoop:
   PUSH BC
   PUSH DE
-  CALL DrawSpriteRow
-  LD HL,DrawScreenPtr
+  CALL DrawSpriteRow      ; DrawSpriteRow: draw one letter glyph
+  LD HL,DrawScreenPtr     ; advance the draw pointer 3 columns
+  INC (HL)                ; (one glyph + 2 blank columns)
   INC (HL)
   INC (HL)
-  INC (HL)
-  CALL PlayMusicPhrase
+  CALL PlayMusicPhrase    ; PlayMusicPhrase: a burst of theme music per letter
   POP DE
-  INC DE
+  INC DE                  ; next letter
   POP BC
   DJNZ Intro_TitleLoop
-  LD HL,$5084
+  LD HL,$5084             ; "John" at row 20, col 4
   LD (DrawScreenPtr),HL
   LD B,$04
   LD DE,StrJohn
-  CALL PrintStr
-  LD HL,$50A4
+  CALL PrintStr           ; PrintStr
+  LD HL,$50A4             ; "Heap" at row 21, col 4
   LD (DrawScreenPtr),HL
   LD B,$04
   LD DE,StrHeap
-  CALL PrintStr
-  LD HL,$5096
+  CALL PrintStr           ; PrintStr
+  LD HL,$5096             ; "Argus" at row 20, col 22
   LD (DrawScreenPtr),HL
   LD B,$05
   LD DE,StrArgus
-  CALL PrintStr
-  LD HL,$50B6
+  CALL PrintStr           ; PrintStr
+  LD HL,$50B6             ; "Press" at row 21, col 22
   LD (DrawScreenPtr),HL
   LD B,$05
   LD DE,StrPress
-  CALL PrintStr
-  LD HL,$50D6
+  CALL PrintStr           ; PrintStr
+  LD HL,$50D6             ; "Software" at row 22, col 22
   LD (DrawScreenPtr),HL
   LD B,$08
   LD DE,StrSoftware
-  CALL PrintStr
-  LD HL,Screen_R23C8
+  CALL PrintStr           ; PrintStr
+  LD HL,Screen_R23C8      ; "Copyright 1984" at row 23, col 8
   LD (DrawScreenPtr),HL
   LD B,$0E
   LD DE,StrCopyright
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
 Intro_WaitLoop:
-  CALL PlayMusicPhrase
-  LD BC,$FEFE
+  CALL PlayMusicPhrase    ; keep playing theme-music phrases while polling
+  LD BC,$FEFE             ; B = $FE: first keyboard half-row (port $FEFE)
 Intro_KeyPoll:
-  IN A,(C)
-  AND $1F
-  XOR $1F
-  RET NZ
-  RLC B
-  JR C,Intro_KeyPoll
-  JR Intro_WaitLoop
+  IN A,(C)                ; read this half-row
+  AND $1F                 ; keep the 5 key bits
+  XOR $1F                 ; pressed keys read 0, so any press leaves a 1
+  RET NZ                  ; any key anywhere: leave the title screen
+  RLC B                   ; next half-row ($FE, $FD, $FB, ...)
+  JR C,Intro_KeyPoll      ; carry set until all 8 half-rows scanned
+  JR Intro_WaitLoop       ; swept the whole keyboard: play another phrase
 
 ; GameModeScreen — crew roster + game-mode menu
 ;
@@ -10145,7 +10177,7 @@ ShipMap_Portraits2:
   LD HL,$40C3             ; the names under the portraits:
   LD A,$01                ; Dallas,
   LD (DrawScreenPtr),HL
-  CALL PrintName
+  CALL PrintName          ; PrintName
   LD HL,$40CB             ; Kane,
   LD (DrawScreenPtr),HL
   LD A,$02
@@ -10174,30 +10206,30 @@ ShipMap_Portraits2:
   LD HL,$48E9             ; "1: Short Game" (row 15)
   LD (DrawScreenPtr),HL
   PUSH DE
-  XOR A
-  CALL PrintNameDE
+  XOR A                   ; list entry 0
+  CALL PrintNameDE        ; PrintName's list-walk entry
   LD HL,$5029             ; "2: Long Game" (row 17)
   LD (DrawScreenPtr),HL
   POP DE
   PUSH DE
-  LD A,$01
+  LD A,$01                ; list entry 1
   CALL PrintNameDE
   LD HL,$5069             ; "3: Introduction" (row 19)
   LD (DrawScreenPtr),HL
   POP DE
   PUSH DE
-  LD A,$02
+  LD A,$02                ; list entry 2
   CALL PrintNameDE
   LD HL,$50A9             ; "4: Select" (row 21)
   LD (DrawScreenPtr),HL
   POP DE
   PUSH DE
-  LD A,$03
+  LD A,$03                ; list entry 3
   CALL PrintNameDE
   LD HL,$50E6             ; "Press Appropriate Key" (row 22)
   LD (DrawScreenPtr),HL
   POP DE
-  LD A,$04
+  LD A,$04                ; list entry 4
   CALL PrintNameDE
   XOR A                   ; selection = 0 (Short Game),
   LD (CorridorCursor),A
@@ -10336,22 +10368,22 @@ GameModeText:
 ; (selection × 64), then XORs 15 consecutive attribute bytes with 36 (flipping
 ; ink/paper to show highlight).
 HighlightGameMode:
-  LD HL,$59E9
+  LD HL,$59E9             ; attribute address of the mode-0 row (row 15, col 9)
 ; This entry point is used by the routine at OptionsScreen.
 HighlightModeAt:
-  LD DE,$0040
-  LD A,(CorridorCursor)
+  LD DE,$0040             ; 64 = two attribute rows per menu line
+  LD A,(CorridorCursor)   ; A = selected mode (0-2)
   AND A
   JR Z,HighlightMode_Row
   LD B,A
 HighlightMode_Seek:
-  ADD HL,DE
+  ADD HL,DE               ; step down to the selected line
   DJNZ HighlightMode_Seek
 HighlightMode_Row:
-  LD B,$0F
+  LD B,$0F                ; 15 cells wide
 HighlightMode_CellLoop:
-  LD A,(HL)
-  XOR $24
+  LD A,(HL)               ; XOR 36 swaps green-paper/black-ink to
+  XOR $24                 ; black-paper/green-ink: inverse video
   LD (HL),A
   INC HL
   DJNZ HighlightMode_CellLoop
@@ -10360,125 +10392,137 @@ HighlightMode_CellLoop:
 ; IntroductionMode
 ;
 ; Game-mode handler for "3: Introduction" (dispatched from
-; GameModeDispatchTable). Clears display, sets border/attrs white, then replays
-; the animated intro screen and returns to the main loop.
+; GameModeDispatchTable): the "MAPPING SYMBOLS" legend page. On a black screen
+; it prints the map-symbol legend (connecting door, ladder, hatchway, grille),
+; stamps the two animated map markers next to their captions (channel A's
+; walking crew figure = "Subject Indicator", channel B's blinking box = "Room
+; Indicator"), then demos three sound effects with captions ("This is the sound
+; of a" Door being opened / Grille being removed / Positive Tracker Reading),
+; animating the markers throughout. Waits for any key (via the ROM's LAST-K)
+; and jumps back to GameModeScreen (GameModeScreen) — it never returns to its
+; caller.
 IntroductionMode:
-  CALL ClearDisplay
-  XOR A
+  CALL ClearDisplay       ; ClearDisplay
+  XOR A                   ; black border
   OUT ($FE),A
-  LD A,$07
-  CALL FillAttributes
-  LD HL,Screen_R1C8
-  LD (DrawScreenPtr),HL
+  LD A,$07                ; white ink on black paper
+  CALL FillAttributes     ; FillAttributes(7)
+  LD HL,Screen_R1C8       ; "MAPPING SYMBOLS" centred on row 1
+  LD (DrawScreenPtr),HL   ; (DrawScreenPtr = the PrintStr draw pointer)
   LD DE,UITextBlock
   LD B,$0F
-  CALL PrintStr
-  LD HL,$40A4
+  CALL PrintStr           ; PrintStr: 15 chars from UITextBlock
+  LD HL,$40A4             ; door glyphs + " : Connecting Door" on row 5
   LD (DrawScreenPtr),HL
   LD DE,StrConnectingDoor
   LD B,$15
-  CALL PrintStr
-  LD HL,$40E5
+  CALL PrintStr           ; PrintStr: 21 chars from StrConnectingDoor
+  LD HL,$40E5             ; ladder glyph + "  : Ladder to Deck Above" on row 7
   LD (DrawScreenPtr),HL
   LD DE,StrLadderUp
   LD B,$19
-  CALL PrintStr
-  LD HL,$4825
+  CALL PrintStr           ; PrintStr: 25 chars from StrLadderUp
+  LD HL,$4825             ; hatch glyph + "  : Hatchway to Deck Below" on row 9
   LD (DrawScreenPtr),HL
   LD DE,StrHatchDown
   LD B,$1B
-  CALL PrintStr
-  LD HL,Screen_R12C8
-  LD (DrawScreenPtr),HL
+  CALL PrintStr           ; PrintStr: 27 chars from StrHatchDown
+  LD HL,Screen_R12C8      ; ": Subject Indicator" on row 12 (the marker sprite
+  LD (DrawScreenPtr),HL   ; itself is stamped to its left below)
   LD DE,StrSubjectInd
   LD B,$13
-  CALL PrintStr
-  LD HL,Screen_R15C8
+  CALL PrintStr           ; PrintStr: 19 chars from StrSubjectInd
+  LD HL,Screen_R15C8      ; ": Room Indicator" on row 15
   LD (DrawScreenPtr),HL
   LD DE,StrRoomInd
   LD B,$10
-  CALL PrintStr
-  LD HL,$5025
+  CALL PrintStr           ; PrintStr: 16 chars from StrRoomInd
+  LD HL,$5025             ; grille glyph + "  : Grille to Ducting" on row 17
   LD (DrawScreenPtr),HL
   LD DE,StrGrilleDuct
   LD B,$16
-  CALL PrintStr
-  LD HL,$0000
-  LD (CrewAnimFlags),HL
-  LD HL,$4864
-  LD (SprDestA),HL
-  LD HL,$48C4
-  LD (SpriteDestAddr),HL
-  XOR A
+  CALL PrintStr           ; PrintStr: 22 chars from StrGrilleDuct
+  LD HL,$0000             ; unfreeze both marker-animation channels: word 0
+                          ; into
+  LD (CrewAnimFlags),HL   ; CrewAnimFlags/AnimFramePhase clears bit 7 and
+                          ; resets the phase
+  LD HL,$4864             ; channel A (the walking crew figure) draws at row 11
+  LD (SprDestA),HL        ; col 4, just left of the ": Subject Indicator"
+                          ; caption
+  LD HL,$48C4             ; channel B (the blinking box) draws at row 14 col 4,
+  LD (SpriteDestAddr),HL  ; left of the ": Room Indicator" caption
+  XOR A                   ; stamp frame 0 of the blinking-box marker...
+  LD B,$01                ; ...one sprite row tall
+  CALL BlitMarkerB        ; BlitMarkerB (XOR-blit, so it stays visible)
+  XOR A                   ; and frame 0 of the crew-figure marker
   LD B,$01
-  CALL BlitMarkerB
-  XOR A
-  LD B,$01
-  CALL BlitMarkerA
-  LD HL,$5085
+  CALL BlitMarkerA        ; BlitMarkerA
+  LD HL,$5085             ; "This is the sound of a" on row 20
   LD (DrawScreenPtr),HL
   LD DE,StrSoundOfA
   LD B,$16
-  CALL PrintStr
-  LD HL,$50C5
+  CALL PrintStr           ; PrintStr: 22 chars from StrSoundOfA
+  LD HL,$50C5             ; "Door being opened" on row 22
   LD (DrawScreenPtr),HL
   LD DE,StrDoorOpened
   LD B,$11
-  CALL PrintStr
-  LD B,$05
+  CALL PrintStr           ; PrintStr: 17 chars from StrDoorOpened
+  LD B,$05                ; demo the door sound 5 times
 IntroMode_SoundLoop1:
   PUSH BC
-  LD A,$01
-  LD (SoundRequest),A
-  CALL FrameTiming
-  CALL IntroMode_Animate
+  LD A,$01                ; queue beeper effect 1 (the door sound)
+  LD (SoundRequest),A     ; in the sound-request flag
+  CALL FrameTiming        ; FrameTiming plays the queued effect
+  CALL IntroMode_Animate  ; IntroMode_Animate: run the markers ~20 frames
   POP BC
   DJNZ IntroMode_SoundLoop1
-  LD HL,$50C5
+  LD HL,$50C5             ; replace row 22's caption with "Grille being
+                          ; removed"
   LD (DrawScreenPtr),HL
   LD DE,StrGrilleRemoved
   LD B,$14
-  CALL PrintStr
-  LD B,$05
+  CALL PrintStr           ; PrintStr: 20 chars from StrGrilleRemoved
+  LD B,$05                ; demo the grille sound 5 times
 IntroMode_SoundLoop2:
   PUSH BC
-  LD A,$01
-  LD (SoundPending),A
-  CALL PlayMusic
-  CALL IntroMode_Animate
+  LD A,$01                ; queue the pending-sound effect
+  LD (SoundPending),A     ; in the sound-pending flag
+  CALL PlayMusic          ; PlayMusic plays it (the grille-removal scrape)
+  CALL IntroMode_Animate  ; animate the markers between plays
   POP BC
   DJNZ IntroMode_SoundLoop2
-  LD HL,$50C5
+  LD HL,$50C5             ; replace row 22's caption with "Positive Tracker
+                          ; Reading"
   LD (DrawScreenPtr),HL
   LD DE,StrTrackerReading
   LD B,$18
-  CALL PrintStr
-  LD B,$0F
+  CALL PrintStr           ; PrintStr: 24 chars from StrTrackerReading
+  LD B,$0F                ; demo the tracker beep 15 times
 IntroMode_DemoLoop:
   PUSH BC
-  CALL RomBeep
-  CALL IntroMode_Animate
+  CALL RomBeep            ; RomBeep (~755 Hz tracker blip)
+  CALL IntroMode_Animate  ; animate the markers between beeps
   POP BC
   DJNZ IntroMode_DemoLoop
-  XOR A
-  LD (SysLastKey),A
+  XOR A                   ; clear the ROM's LAST-K system variable so that
+  LD (SysLastKey),A       ; only a fresh keypress ends the page
 IntroMode_WaitKey:
-  CALL BusyWait
-  CALL AnimateCrewB
-  CALL AnimateCrewA
-  LD A,(SysLastKey)
+  CALL BusyWait           ; BusyWait one frame
+  CALL AnimateCrewB       ; keep both markers animating while waiting:
+  CALL AnimateCrewA       ; blinking box (B), then walking figure (A)
+  LD A,(SysLastKey)       ; has the ROM interrupt handler recorded a keypress?
   AND A
-  JR Z,IntroMode_WaitKey
-  JP GameModeScreen
+  JR Z,IntroMode_WaitKey  ; no: keep waiting
+  JP GameModeScreen       ; yes: back to the crew-roster / game-mode menu
 IntroMode_Animate:
-  LD B,$14
+  LD B,$14                ; run ~20 frames of marker animation
 IntroMode_AnimLoop:
   PUSH BC
-  CALL AnimateCrewB
-  CALL AnimateCrewA
-  CALL BusyWait
-  CALL AnimateCrewB
-  CALL AnimateCrewA
+  CALL AnimateCrewB       ; step the blinking box...
+  CALL AnimateCrewA       ; ...and the walking figure
+  CALL BusyWait           ; one-frame timing wait
+  CALL AnimateCrewB       ; step both again (the channels are counter-gated,
+  CALL AnimateCrewA       ; so double-stepping doubles the animation rate)
   POP BC
   DJNZ IntroMode_AnimLoop
   RET
@@ -10514,13 +10558,13 @@ OptionsScreen:
   LD (DrawScreenPtr),HL   ; on screen row 2
   LD DE,StrSelectDevice
   LD B,$1B
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   LD HL,$40EB             ; "1 : KEMPSTON" (row 5)
   LD (DrawScreenPtr),HL
 ; This entry point is used by the routine at GameModeScreen.
   LD DE,StrKempston
   LD B,$0C
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
 ; This entry point is used by the routine at GameModeScreen.
   LD HL,$482B             ; "2 : AGF-PROTEK" (row 9)
   LD (DrawScreenPtr),HL
@@ -10529,34 +10573,34 @@ OptionsScreen:
 ; This entry point is used by the routine at GameModeScreen.
   LD B,$0E
 ; This entry point is used by the routine at GameModeScreen.
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   LD HL,$486B             ; "3 : SINCLAIR" (row 11)
   LD (DrawScreenPtr),HL
   LD DE,StrSinclair
   LD B,$0C
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   LD HL,$48AB             ; "4 : KEYBOARD" (row 13)
   LD (DrawScreenPtr),HL
 ; This entry point is used by the routine at GameModeScreen.
   LD DE,StrKeyboard
   LD B,$0C
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   LD HL,$48EB             ; "5 : SELECT" (row 15)
   LD (DrawScreenPtr),HL
 ; This entry point is used by the routine at GameModeScreen.
   LD DE,StrSelect
   LD B,$0A
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   LD HL,$5066             ; "PRESS APPROPRIATE KEY" (row 19)
   LD (DrawScreenPtr),HL
   LD DE,StrPressKey
   LD B,$15
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   LD HL,$50C2             ; "During Game Press 1 to Pause"
   LD (DrawScreenPtr),HL   ; (row 22)
   LD DE,StrPressPause
   LD B,$1C
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   XOR A                   ; picked device = 0 (Kempston)
   LD (CorridorCursor),A
 Options_Redraw:
@@ -10615,19 +10659,19 @@ Options_Select:
   INC HL
   LD H,(HL)
   LD L,A
-  LD ($874D),HL
+  LD ($874D),HL           ; patch the scanner CALL's operand word
   LD A,(CorridorCursor)   ; a joystick (device < 3)?
   CP $03
   RET NZ                  ; yes: done — into the game
   CALL ClearDisplay       ; keyboard: fresh green screen
   LD A,$20
-  CALL FillAttributes
-  CALL WaitKeyRelease
+  CALL FillAttributes     ; FillAttributes(32)
+  CALL WaitKeyRelease     ; wait for the keys to clear
   LD HL,$4041             ; "The keyboard is user definable"
   LD (DrawScreenPtr),HL
   LD DE,StrUserDefinable
   LD B,$1E
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   LD A,(KeyboardModeFlag) ; first time on this screen the
   AND A                   ; redefinition is compulsory;
   JR Z,Options_Redefine   ; afterwards it is offered:
@@ -10635,19 +10679,19 @@ Options_Select:
   LD (DrawScreenPtr),HL
   LD DE,StrRedefineKeys
   LD B,$18
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   LD HL,$40A4             ; "Any other key to continue"
   LD (DrawScreenPtr),HL
   LD DE,StrAnyOtherKey
   LD B,$19
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   CALL WaitKeyPress       ; wait for a key
   LD BC,$DFFE             ; BC = port 57342 ($DFFE): keyboard half-row
                           ; P,O,I,U,Y
   IN A,(C)                ; read keyboard row
   AND $10                 ; bit 4 = the Y key (active low)
   RET NZ                  ; return if Y not pressed (keep the current keys)
-  CALL WaitKeyRelease
+  CALL WaitKeyRelease     ; wait for the keys to clear
 ; Key redefinition: each prompt waits for a press (WaitKeyPress returns BC =
 ; the port and A = the bit mask of the key found) and patches that (port, mask)
 ; pair straight into KeyboardScanner's self-modifying operands
@@ -10657,12 +10701,12 @@ Options_Redefine:
   LD (DrawScreenPtr),HL
   LD DE,StrWhichKey
   LD B,$18
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   LD HL,$4844             ; "use for: UP"
   LD (DrawScreenPtr),HL
   LD DE,StrUseForUp
   LD B,$0B
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   CALL WaitKeyPress       ; the pressed key becomes
   LD ($AC0F),BC           ; UP (advance): patch the
   LD ($AC14),A            ; scanner's port + mask
@@ -10671,7 +10715,7 @@ Options_Redefine:
   LD (DrawScreenPtr),HL
   LD DE,StrDown
   LD B,$04
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   CALL WaitKeyPress       ; the pressed key becomes
   LD ($AC1B),BC           ; DOWN (retreat)
   LD ($AC20),A
@@ -10680,7 +10724,7 @@ Options_Redefine:
   LD (DrawScreenPtr),HL
   LD DE,StrFire
   LD B,$04
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   CALL WaitKeyPress       ; the pressed key becomes
   LD ($AC27),BC           ; FIRE (action)
   LD ($AC2C),A
@@ -10689,7 +10733,7 @@ Options_Redefine:
   LD (DrawScreenPtr),HL
   LD DE,StrReturnTo
   LD B,$0E
-  CALL PrintStr
+  CALL PrintStr           ; PrintStr
   CALL WaitKeyPress       ; the pressed key becomes
   LD ($AC33),BC           ; the row-move key
   LD ($AC38),A
@@ -11980,14 +12024,14 @@ DuctSearchInit:
 ;
 ; Used by the routine at DrawRoomMates.
 PrintNameThenPanel:
-  CALL PrintName
+  CALL PrintName          ; PrintName
 ; This entry point is used by the routine at DrawCrewCondition.
 PanelColCheck:
-  LD HL,DrawScreenPtr
+  LD HL,DrawScreenPtr     ; at column 0 already?
   LD A,(HL)
   AND $1F
   RET Z
-  JP BlankRestOfRow
+  JP BlankRestOfRow       ; no: BlankRestOfRow
 
 ; RoomRejectCheck
 ;
