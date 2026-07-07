@@ -11020,159 +11020,166 @@ c43216 LD HL,23017   ;
 
 ; IntroductionMode
 ;
-; Game-mode handler for "3: Introduction" (dispatched from
-; #R43135). Clears display, sets border/attrs white, then replays
-; the animated intro screen and returns to the main loop.
+; Game-mode handler for "3: Introduction" (dispatched from #R43135):
+; the "MAPPING SYMBOLS" legend page. On a black screen it prints the
+; map-symbol legend (connecting door, ladder, hatchway, grille), stamps
+; the two animated map markers next to their captions (channel A's
+; walking crew figure = "Subject Indicator", channel B's blinking box
+; = "Room Indicator"), then demos three sound effects with captions
+; ("This is the sound of a" Door being opened / Grille being removed /
+; Positive Tracker Reading), animating the markers throughout. Waits
+; for any key (via the ROM's LAST-K) and jumps back to #R42821
+; (GameModeScreen) — it never returns to its caller.
 @label=IntroductionMode
-c43242 CALL 42501    ;
- 43245 XOR A         ;
- 43246 OUT (254),A   ;
- 43248 LD A,7        ;
- 43250 CALL 42515    ;
- 43253 LD HL,16424   ;
- 43256 LD (31257),HL ;
+c43242 CALL 42501    ; ClearDisplay
+ 43245 XOR A         ; black border
+ 43246 OUT (254),A   ; 
+ 43248 LD A,7        ; white ink on black paper
+ 43250 CALL 42515    ; FillAttributes(7)
+ 43253 LD HL,16424   ; "MAPPING SYMBOLS" centred on row 1
+ 43256 LD (31257),HL ; (#R31257 = the PrintStr draw pointer)
 @nowarn=41572
 @ssub=LD DE,UITextBlock
- 43259 LD DE,41572   ;
- 43262 LD B,15       ;
- 43264 CALL 44509    ;
- 43267 LD HL,16548   ;
- 43270 LD (31257),HL ;
+ 43259 LD DE,41572   ; 
+ 43262 LD B,15       ; 
+ 43264 CALL 44509    ; PrintStr: 15 chars from #R41572
+ 43267 LD HL,16548   ; door glyphs + " : Connecting Door" on row 5
+ 43270 LD (31257),HL ; 
 @nowarn=41587
 @ssub=LD DE,StrConnectingDoor
- 43273 LD DE,41587   ;
- 43276 LD B,21       ;
- 43278 CALL 44509    ;
- 43281 LD HL,16613   ;
- 43284 LD (31257),HL ;
+ 43273 LD DE,41587   ; 
+ 43276 LD B,21       ; 
+ 43278 CALL 44509    ; PrintStr: 21 chars from #R41587
+ 43281 LD HL,16613   ; ladder glyph + "  : Ladder to Deck Above" on row 7
+ 43284 LD (31257),HL ; 
 @nowarn=41608
 @ssub=LD DE,StrLadderUp
- 43287 LD DE,41608   ;
- 43290 LD B,25       ;
- 43292 CALL 44509    ;
- 43295 LD HL,18469   ;
- 43298 LD (31257),HL ;
+ 43287 LD DE,41608   ; 
+ 43290 LD B,25       ; 
+ 43292 CALL 44509    ; PrintStr: 25 chars from #R41608
+ 43295 LD HL,18469   ; hatch glyph + "  : Hatchway to Deck Below" on row 9
+ 43298 LD (31257),HL ; 
 @nowarn=41633
 @ssub=LD DE,StrHatchDown
- 43301 LD DE,41633   ;
- 43304 LD B,27       ;
- 43306 CALL 44509    ;
- 43309 LD HL,18568   ;
- 43312 LD (31257),HL ;
+ 43301 LD DE,41633   ; 
+ 43304 LD B,27       ; 
+ 43306 CALL 44509    ; PrintStr: 27 chars from #R41633
+ 43309 LD HL,18568   ; ": Subject Indicator" on row 12 (the marker sprite
+ 43312 LD (31257),HL ; itself is stamped to its left below)
 @nowarn=41660
 @ssub=LD DE,StrSubjectInd
- 43315 LD DE,41660   ;
- 43318 LD B,19       ;
- 43320 CALL 44509    ;
- 43323 LD HL,18664   ;
- 43326 LD (31257),HL ;
+ 43315 LD DE,41660   ; 
+ 43318 LD B,19       ; 
+ 43320 CALL 44509    ; PrintStr: 19 chars from #R41660
+ 43323 LD HL,18664   ; ": Room Indicator" on row 15
+ 43326 LD (31257),HL ; 
 @nowarn=41679
 @ssub=LD DE,StrRoomInd
- 43329 LD DE,41679   ;
- 43332 LD B,16       ;
- 43334 CALL 44509    ;
- 43337 LD HL,20517   ;
- 43340 LD (31257),HL ;
+ 43329 LD DE,41679   ; 
+ 43332 LD B,16       ; 
+ 43334 CALL 44509    ; PrintStr: 16 chars from #R41679
+ 43337 LD HL,20517   ; grille glyph + "  : Grille to Ducting" on row 17
+ 43340 LD (31257),HL ; 
 @nowarn=41695
 @ssub=LD DE,StrGrilleDuct
- 43343 LD DE,41695   ;
- 43346 LD B,22       ;
- 43348 CALL 44509    ;
- 43351 LD HL,0       ;
- 43354 LD (31263),HL ;
- 43357 LD HL,18532   ;
+ 43343 LD DE,41695   ; 
+ 43346 LD B,22       ; 
+ 43348 CALL 44509    ; PrintStr: 22 chars from #R41695
+ 43351 LD HL,0       ; unfreeze both marker-animation channels: word 0 into
+ 43354 LD (31263),HL ; #R31263/#R31264 clears bit 7 and resets the phase
+ 43357 LD HL,18532   ; channel A (the walking crew figure) draws at row 11
 @nowarn=33686
 @ssub=LD (SprDestA),HL
- 43360 LD (33686),HL ;
- 43363 LD HL,18628   ;
+ 43360 LD (33686),HL ; col 4, just left of the ": Subject Indicator" caption
+ 43363 LD HL,18628   ; channel B (the blinking box) draws at row 14 col 4,
 @nowarn=33688
 @ssub=LD (SpriteDestAddr),HL
- 43366 LD (33688),HL ;
- 43369 XOR A         ;
- 43370 LD B,1        ;
- 43372 CALL 35031    ;
- 43375 XOR A         ;
- 43376 LD B,1        ;
- 43378 CALL 34982    ;
- 43381 LD HL,20613   ;
- 43384 LD (31257),HL ;
+ 43366 LD (33688),HL ; left of the ": Room Indicator" caption
+ 43369 XOR A         ; stamp frame 0 of the blinking-box marker...
+ 43370 LD B,1        ; ...one sprite row tall
+ 43372 CALL 35031    ; BlitMarkerB (XOR-blit, so it stays visible)
+ 43375 XOR A         ; and frame 0 of the crew-figure marker
+ 43376 LD B,1        ; 
+ 43378 CALL 34982    ; BlitMarkerA
+ 43381 LD HL,20613   ; "This is the sound of a" on row 20
+ 43384 LD (31257),HL ; 
 @nowarn=43527
 @ssub=LD DE,StrSoundOfA
- 43387 LD DE,43527   ;
- 43390 LD B,22       ;
- 43392 CALL 44509    ;
- 43395 LD HL,20677   ;
- 43398 LD (31257),HL ;
+ 43387 LD DE,43527   ; 
+ 43390 LD B,22       ; 
+ 43392 CALL 44509    ; PrintStr: 22 chars from #R43527
+ 43395 LD HL,20677   ; "Door being opened" on row 22
+ 43398 LD (31257),HL ; 
 @nowarn=43549
 @ssub=LD DE,StrDoorOpened
- 43401 LD DE,43549   ;
- 43404 LD B,17       ;
- 43406 CALL 44509    ;
- 43409 LD B,5        ;
+ 43401 LD DE,43549   ; 
+ 43404 LD B,17       ; 
+ 43406 CALL 44509    ; PrintStr: 17 chars from #R43549
+ 43409 LD B,5        ; demo the door sound 5 times
 @label=IntroMode_SoundLoop1
-*43411 PUSH BC       ;
- 43412 LD A,1        ;
+*43411 PUSH BC       ; 
+ 43412 LD A,1        ; queue beeper effect 1 (the door sound)
 @nowarn=33699
 @ssub=LD (SoundRequest),A
- 43414 LD (33699),A  ;
- 43417 CALL 40319    ;
- 43420 CALL 43505    ;
- 43423 POP BC        ;
- 43424 DJNZ 43411    ;
- 43426 LD HL,20677   ;
- 43429 LD (31257),HL ;
+ 43414 LD (33699),A  ; in the sound-request flag
+ 43417 CALL 40319    ; FrameTiming plays the queued effect
+ 43420 CALL 43505    ; IntroMode_Animate: run the markers ~20 frames
+ 43423 POP BC        ; 
+ 43424 DJNZ 43411    ; 
+ 43426 LD HL,20677   ; replace row 22's caption with "Grille being removed"
+ 43429 LD (31257),HL ; 
 @nowarn=43566
 @ssub=LD DE,StrGrilleRemoved
- 43432 LD DE,43566   ;
- 43435 LD B,20       ;
- 43437 CALL 44509    ;
- 43440 LD B,5        ;
+ 43432 LD DE,43566   ; 
+ 43435 LD B,20       ; 
+ 43437 CALL 44509    ; PrintStr: 20 chars from #R43566
+ 43440 LD B,5        ; demo the grille sound 5 times
 @label=IntroMode_SoundLoop2
-*43442 PUSH BC       ;
- 43443 LD A,1        ;
+*43442 PUSH BC       ; 
+ 43443 LD A,1        ; queue the pending-sound effect
 @nowarn=33705
 @ssub=LD (SoundPending),A
- 43445 LD (33705),A  ;
- 43448 CALL 44880    ;
- 43451 CALL 43505    ;
- 43454 POP BC        ;
- 43455 DJNZ 43442    ;
- 43457 LD HL,20677   ;
- 43460 LD (31257),HL ;
+ 43445 LD (33705),A  ; in the sound-pending flag
+ 43448 CALL 44880    ; PlayMusic plays it (the grille-removal scrape)
+ 43451 CALL 43505    ; animate the markers between plays
+ 43454 POP BC        ; 
+ 43455 DJNZ 43442    ; 
+ 43457 LD HL,20677   ; replace row 22's caption with "Positive Tracker Reading"
+ 43460 LD (31257),HL ; 
 @nowarn=43586
 @ssub=LD DE,StrTrackerReading
- 43463 LD DE,43586   ;
- 43466 LD B,24       ;
- 43468 CALL 44509    ;
- 43471 LD B,15       ;
+ 43463 LD DE,43586   ; 
+ 43466 LD B,24       ; 
+ 43468 CALL 44509    ; PrintStr: 24 chars from #R43586
+ 43471 LD B,15       ; demo the tracker beep 15 times
 @label=IntroMode_DemoLoop
-*43473 PUSH BC       ;
- 43474 CALL 39242    ;
- 43477 CALL 43505    ;
- 43480 POP BC        ;
- 43481 DJNZ 43473    ;
- 43483 XOR A         ;
- 43484 LD (23560),A  ;
+*43473 PUSH BC       ; 
+ 43474 CALL 39242    ; RomBeep (~755 Hz tracker blip)
+ 43477 CALL 43505    ; animate the markers between beeps
+ 43480 POP BC        ; 
+ 43481 DJNZ 43473    ; 
+ 43483 XOR A         ; clear the ROM's LAST-K system variable so that
+ 43484 LD (23560),A  ; only a fresh keypress ends the page
 @label=IntroMode_WaitKey
-*43487 CALL 36448    ;
- 43490 CALL 35016    ;
- 43493 CALL 34967    ;
- 43496 LD A,(23560)  ;
- 43499 AND A         ;
- 43500 JR Z,43487    ;
- 43502 JP 42821      ;
+*43487 CALL 36448    ; BusyWait one frame
+ 43490 CALL 35016    ; keep both markers animating while waiting:
+ 43493 CALL 34967    ; blinking box (B), then walking figure (A)
+ 43496 LD A,(23560)  ; has the ROM interrupt handler recorded a keypress?
+ 43499 AND A         ; 
+ 43500 JR Z,43487    ; no: keep waiting
+ 43502 JP 42821      ; yes: back to the crew-roster / game-mode menu
 @label=IntroMode_Animate
-*43505 LD B,20       ;
+*43505 LD B,20       ; run ~20 frames of marker animation
 @label=IntroMode_AnimLoop
-*43507 PUSH BC       ;
- 43508 CALL 35016    ;
- 43511 CALL 34967    ;
- 43514 CALL 36448    ;
- 43517 CALL 35016    ;
- 43520 CALL 34967    ;
- 43523 POP BC        ;
- 43524 DJNZ 43507    ;
- 43526 RET           ;
+*43507 PUSH BC       ; 
+ 43508 CALL 35016    ; step the blinking box...
+ 43511 CALL 34967    ; ...and the walking figure
+ 43514 CALL 36448    ; one-frame timing wait
+ 43517 CALL 35016    ; step both again (the channels are counter-gated,
+ 43520 CALL 34967    ; so double-stepping doubles the animation rate)
+ 43523 POP BC        ; 
+ 43524 DJNZ 43507    ; 
+ 43526 RET           ; 
 
 ; Introduction-mode sound-demo captions
 ;
