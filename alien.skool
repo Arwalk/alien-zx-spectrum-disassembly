@@ -3643,100 +3643,104 @@ c32816 LD HL,16406   ; blank the name row
 
 ; RedrawRoomView
 ;
-; Rebuilds the room-interior view for the current room: picks the
-; layout template by room type, decompresses it into the grid buffer,
-; draws walls/furniture, then walks the exit list drawing one door arm
-; per neighbour (and grille arms for duct openings). Room type 4 (the
-; alien's lair view) resets the encounter animation instead.
+; Called from RedrawRoomScene only when the viewed position has bit 6
+; set (inside the ducts). Expands the deck's wall-glyph template into
+; the grid buffer, redraws it with all attributes black (so the deck
+; outline is present but invisible), builds the anonymous N/E/S/W
+; "move to:" rows, then marks the room's anchor cell bright white and
+; walks a cyan arm along the hidden walls toward each present duct
+; exit — the player sees only the anchor and the crawlway arms. View
+; type 4 (the encounter screen) resets the alien-body animation and
+; just rebuilds the duct move-to rows instead.
 @label=RedrawRoomView
 c32967 LD A,(31243)  ; A = room type
  32970 CP 4          ; alien-lair view?
  32972 JR NZ,32981   ;
  32974 CALL 39687    ; yes: reset alien body animation
- 32977 CALL 33421    ;
+ 32977 CALL 33421    ; and rebuild the duct move-to rows
  32980 RET           ;
 
 ; PickRoomLayout
 @label=PickRoomLayout
 c32981 LD HL,25716   ; room type 0: layout template 0
- 32984 AND A         ;
- 32985 JR Z,32997    ;
- 32987 LD HL,25835   ;
- 32990 CP 1          ;
- 32992 JR Z,32997    ;
- 32994 LD HL,25996   ;
+ 32984 AND A         ; type 0?
+ 32985 JR Z,32997    ; 
+ 32987 LD HL,25835   ; room type 1: layout template 1
+ 32990 CP 1          ; 
+ 32992 JR Z,32997    ; 
+ 32994 LD HL,25996   ; room type 2: layout template 2
 @label=PickLayout_Expand
-*32997 CALL 33153    ;
- 33000 CALL 33421    ;
- 33003 CALL 33395    ;
- 33006 CALL 33178    ;
+*32997 CALL 33153    ; RoomLayoutExpand: wall-glyph template -> grid buffer
+ 33000 CALL 33421    ; BuildDuctExitList: N/E/S/W move-to rows
+ 33003 CALL 33395    ; ClearRoomAttrs: hide the view, redraw the glyphs
+ 33006 CALL 33178    ; SetRoomOrigin: cursors -> the room's anchor
  33009 LD HL,(31255) ; mark the room's anchor cell (attr 71:
  33012 LD (HL),71    ; bright white) — the arms start here
- 33014 PUSH HL       ;
- 33015 LD HL,(31259) ;
- 33018 PUSH HL       ;
+ 33014 PUSH HL       ; save the anchor attr address...
+ 33015 LD HL,(31259) ; 
+ 33018 PUSH HL       ; ...and the anchor grid address
  33019 LD A,(29632)  ; 1st exit (menu strip cell 2)?
  33022 CP 255        ;
- 33024 JR Z,33054    ;
+ 33024 JR Z,33054    ; 
  33026 LD DE,65516   ; yes: walk the NORTH arm — heading -20
  33029 LD (31246),DE ; (grid) / -32 (attr), starting one cell
  33033 ADD HL,DE     ; above the anchor
- 33034 LD (31259),HL ;
- 33037 LD HL,(31255) ;
+ 33034 LD (31259),HL ; 
+ 33037 LD HL,(31255) ; 
 @nowarn=65504
  33040 LD DE,65504   ; DE = -32 (screen stride: one cell up within a third)
  33043 LD (31244),DE ;
- 33047 ADD HL,DE     ;
- 33048 LD (31255),HL ;
- 33051 CALL 33223    ;
+ 33047 ADD HL,DE     ; 
+ 33048 LD (31255),HL ; 
+ 33051 CALL 33223    ; DrawDoorArm
 @label=PickLayout_Exit2
 *33054 LD A,(29633)  ; 2nd exit (menu strip cell 3)?
- 33057 CP 255        ;
- 33059 JR Z,33088    ;
+ 33057 CP 255        ; 
+ 33059 JR Z,33088    ; 
  33061 POP HL        ; yes: walk the EAST arm — heading +1/+1,
  33062 POP DE        ; starting one cell right of the anchor
- 33063 PUSH DE       ;
- 33064 PUSH HL       ;
- 33065 LD BC,1       ;
- 33068 INC HL        ;
- 33069 LD (31259),HL ;
- 33072 INC DE        ;
- 33073 LD (31255),DE ;
- 33077 LD (31244),BC ;
- 33081 LD (31246),BC ;
- 33085 CALL 33223    ;
+ 33063 PUSH DE       ; 
+ 33064 PUSH HL       ; 
+ 33065 LD BC,1       ; 
+ 33068 INC HL        ; 
+ 33069 LD (31259),HL ; 
+ 33072 INC DE        ; 
+ 33073 LD (31255),DE ; 
+ 33077 LD (31244),BC ; 
+ 33081 LD (31246),BC ; 
+ 33085 CALL 33223    ; DrawDoorArm
 @label=PickLayout_Exit3
 *33088 LD A,(29634)  ; 3rd exit (menu strip cell 4)?
- 33091 CP 255        ;
- 33093 JR Z,33123    ;
+ 33091 CP 255        ; 
+ 33093 JR Z,33123    ; 
  33095 POP HL        ; yes: walk the SOUTH arm — heading +20/+32,
  33096 POP DE        ; starting one cell below the anchor
- 33097 PUSH DE       ;
- 33098 PUSH HL       ;
- 33099 LD BC,20      ;
- 33102 LD (31246),BC ;
- 33106 ADD HL,BC     ;
- 33107 LD (31259),HL ;
- 33110 LD HL,32      ;
- 33113 LD (31244),HL ;
- 33116 ADD HL,DE     ;
- 33117 LD (31255),HL ;
- 33120 CALL 33223    ;
+ 33097 PUSH DE       ; 
+ 33098 PUSH HL       ; 
+ 33099 LD BC,20      ; 
+ 33102 LD (31246),BC ; 
+ 33106 ADD HL,BC     ; 
+ 33107 LD (31259),HL ; 
+ 33110 LD HL,32      ; 
+ 33113 LD (31244),HL ; 
+ 33116 ADD HL,DE     ; 
+ 33117 LD (31255),HL ; 
+ 33120 CALL 33223    ; DrawDoorArm
 @label=PickLayout_Exit4
-*33123 POP HL        ;
- 33124 POP DE        ;
+*33123 POP HL        ; restore the anchor grid/attr addresses
+ 33124 POP DE        ; 
  33125 LD A,(29635)  ; 4th exit (menu strip cell 5)?
  33128 CP 255        ;
- 33130 RET Z         ;
+ 33130 RET Z         ; no more exits
  33131 DEC DE        ; yes: walk the WEST arm — heading -1/-1,
  33132 DEC HL        ; starting one cell left of the anchor
- 33133 LD (31259),HL ;
- 33136 LD (31255),DE ;
- 33140 LD HL,65535   ;
- 33143 LD (31244),HL ;
- 33146 LD (31246),HL ;
- 33149 CALL 33223    ;
- 33152 RET           ;
+ 33133 LD (31259),HL ; 
+ 33136 LD (31255),DE ; 
+ 33140 LD HL,65535   ; 
+ 33143 LD (31244),HL ; 
+ 33146 LD (31246),HL ; 
+ 33149 CALL 33223    ; DrawDoorArm
+ 33152 RET           ; 
 
 ; RoomLayoutExpand
 ;
@@ -3748,24 +3752,24 @@ c32981 LD HL,25716   ; room type 0: layout template 0
 @label=RoomLayoutExpand
 c33153 LD DE,26121   ; DE = grid buffer; HL = RLE source
 @label=RleExpand_Loop
-*33156 LD A,(HL)     ;
- 33157 CP 30         ;
- 33159 JR C,33169    ;
- 33161 CP 255        ;
- 33163 RET Z         ;
- 33164 LD (DE),A     ;
- 33165 INC HL        ;
- 33166 INC DE        ;
- 33167 JR 33156      ;
+*33156 LD A,(HL)     ; next RLE byte
+ 33157 CP 30         ; < 30: a run of that many zero cells
+ 33159 JR C,33169    ; 
+ 33161 CP 255        ; 255: end of template
+ 33163 RET Z         ; 
+ 33164 LD (DE),A     ; 30-254: literal cell code
+ 33165 INC HL        ; 
+ 33166 INC DE        ; 
+ 33167 JR 33156      ; 
 @label=RleExpand_Zeros
-*33169 LD B,A        ;
- 33170 XOR A         ;
+*33169 LD B,A        ; B = run length
+ 33170 XOR A         ; 
 @label=RleExpand_ZeroLoop
-*33171 LD (DE),A     ;
- 33172 INC DE        ;
- 33173 DJNZ 33171    ;
- 33175 INC HL        ;
- 33176 JR 33156      ;
+*33171 LD (DE),A     ; 
+ 33172 INC DE        ; 
+ 33173 DJNZ 33171    ; 
+ 33175 INC HL        ; 
+ 33176 JR 33156      ; 
 
 ; SetRoomOrigin
 ;
@@ -3774,31 +3778,31 @@ c33153 LD DE,26121   ; DE = grid buffer; HL = RLE source
 ; (attribute file + 32*row + col) for the door drawing pass.
 @label=SetRoomOrigin
 c33178 LD A,(31242)  ; A = current room
- 33181 AND 63        ;
- 33183 ADD A,A       ;
- 33184 LD D,0        ;
- 33186 LD E,A        ;
- 33187 LD HL,26501   ;
- 33190 ADD HL,DE     ;
- 33191 LD B,(HL)     ;
- 33192 INC HL        ;
- 33193 LD C,(HL)     ;
- 33194 PUSH BC       ;
- 33195 LD DE,20      ;
- 33198 LD HL,26121   ;
+ 33181 AND 63        ; index RoomOriginTable (2 bytes/room)
+ 33183 ADD A,A       ; 
+ 33184 LD D,0        ; 
+ 33186 LD E,A        ; 
+ 33187 LD HL,26501   ; RoomOriginTable
+ 33190 ADD HL,DE     ; 
+ 33191 LD B,(HL)     ; B = row, C = column
+ 33192 INC HL        ; 
+ 33193 LD C,(HL)     ; 
+ 33194 PUSH BC       ; 
+ 33195 LD DE,20      ; grid buffer + 20*row + col
+ 33198 LD HL,26121   ; 
 @label=RoomOrigin_GridLoop
-*33201 ADD HL,DE     ;
- 33202 DJNZ 33201    ;
- 33204 ADD HL,BC     ;
- 33205 LD (31259),HL ;
- 33208 POP BC        ;
- 33209 LD HL,22528   ;
- 33212 LD DE,32      ;
+*33201 ADD HL,DE     ; 
+ 33202 DJNZ 33201    ; 
+ 33204 ADD HL,BC     ; 
+ 33205 LD (31259),HL ; -> RoomCellCursor
+ 33208 POP BC        ; 
+ 33209 LD HL,22528   ; attribute file + 32*row + col
+ 33212 LD DE,32      ; 
 @label=RoomOrigin_AttrLoop
-*33215 ADD HL,DE     ;
- 33216 DJNZ 33215    ;
- 33218 ADD HL,BC     ;
- 33219 LD (31255),HL ;
+*33215 ADD HL,DE     ; 
+ 33216 DJNZ 33215    ; 
+ 33218 ADD HL,BC     ; 
+ 33219 LD (31255),HL ; -> RoomAttrCursor
  33222 RET           ;
 
 ; DrawDoorArm
@@ -3816,23 +3820,23 @@ c33178 LD A,(31242)  ; A = current room
 ; +20/-20/+1/-1 in lockstep, the grid being 20 cells wide).
 @label=DrawDoorArm
 c33223 LD HL,(31259) ; read grid cell under the cursor
- 33226 LD A,(HL)     ;
+ 33226 LD A,(HL)     ; A = the wall glyph there
 @nowarn=32934
 @ssub=LD HL,CellDrawTable
  33227 LD HL,32934   ; find its 3-byte record in CellDrawTable
 @label=DoorArm_FindCell
-*33230 CP (HL)       ;
- 33231 JR Z,33238    ;
- 33233 INC HL        ;
- 33234 INC HL        ;
- 33235 INC HL        ;
- 33236 JR 33230      ;
+*33230 CP (HL)       ; 
+ 33231 JR Z,33238    ; 
+ 33233 INC HL        ; 
+ 33234 INC HL        ; 
+ 33235 INC HL        ; 
+ 33236 JR 33230      ; 
 @label=DoorArm_GotCell
 *33238 INC HL        ; fetch the handler word
- 33239 LD A,(HL)     ;
- 33240 INC HL        ;
- 33241 LD H,(HL)     ;
- 33242 LD L,A        ;
+ 33239 LD A,(HL)     ; 
+ 33240 INC HL        ; 
+ 33241 LD H,(HL)     ; 
+ 33242 LD L,A        ; 
  33243 LD (33247),HL ; patch it into the CALL below
  33246 CALL 33275    ; steer/stop for this glyph
  33249 LD HL,(31255) ; paint the attribute cell cyan
@@ -3857,87 +3861,91 @@ c33275 RET           ;
 ; east; any other heading exits south.
 @label=ArmCornerTopLeft
  33276 LD HL,(31244) ; L = low byte of current heading
- 33279 LD A,L        ;
+ 33279 LD A,L        ; 
  33280 LD DE,32      ; default: turn south
- 33283 LD HL,20      ;
+ 33283 LD HL,20      ; (attr step 32, grid step 20)
  33286 CP 224        ; heading north (-32, low byte 224)?
- 33288 JR NZ,33296   ;
+ 33288 JR NZ,33296   ; 
  33290 LD DE,1       ; yes: turn east
- 33293 LD HL,1       ;
+ 33293 LD HL,1       ; (attr step 1, grid step 1)
 @label=ArmCornerTL_SetSteps
-*33296 LD (31244),DE ;
- 33300 LD (31246),HL ;
- 33303 RET           ;
+*33296 LD (31244),DE ; store the new heading
+ 33300 LD (31246),HL ; 
+ 33303 RET           ; 
 ; ArmCornerBottomLeft — corner glyph 129 joins a north-going edge to
 ; an east-going one: heading south exits east; otherwise exits north.
 @label=ArmCornerBottomLeft
  33304 LD HL,(31244) ; L = low byte of current heading
- 33307 LD A,L        ;
+ 33307 LD A,L        ; 
  33308 LD DE,1       ; default: turn east
- 33311 LD HL,1       ;
+ 33311 LD HL,1       ; (attr step 1, grid step 1)
  33314 CP 32         ; heading south?
- 33316 JR Z,33324    ;
+ 33316 JR Z,33324    ; 
 @nowarn=65504
  33318 LD DE,65504   ; no: turn north (DE = -32, HL = -20)
- 33321 LD HL,65516   ;
+ 33321 LD HL,65516   ; 
 @label=ArmCornerBL_SetSteps
-*33324 LD (31244),DE ;
- 33328 LD (31246),HL ;
- 33331 RET           ;
+*33324 LD (31244),DE ; store the new heading
+ 33328 LD (31246),HL ; 
+ 33331 RET           ; 
 ; ArmCornerBottomRight — corner glyph 130 joins a west-going edge to
 ; a north-going one: heading east exits north; otherwise exits west.
 @label=ArmCornerBottomRight
  33332 LD HL,(31244) ; L = low byte of current heading
- 33335 LD A,L        ;
+ 33335 LD A,L        ; 
 @nowarn=65504
  33336 LD DE,65504   ; default: turn north (DE = -32, HL = -20)
- 33339 LD HL,65516   ;
+ 33339 LD HL,65516   ; 
  33342 CP 1          ; heading east?
- 33344 JR Z,33352    ;
+ 33344 JR Z,33352    ; 
  33346 LD DE,65535   ; no: turn west
- 33349 LD HL,65535   ;
+ 33349 LD HL,65535   ; 
 @label=ArmCornerBR_SetSteps
-*33352 LD (31244),DE ;
- 33356 LD (31246),HL ;
- 33359 RET           ;
+*33352 LD (31244),DE ; store the new heading
+ 33356 LD (31246),HL ; 
+ 33359 RET           ; 
 ; ArmCornerTopRight — corner glyph 131 joins a west-going edge to a
 ; south-going one: heading east exits south; otherwise exits west.
 @label=ArmCornerTopRight
  33360 LD HL,(31244) ; L = low byte of current heading
- 33363 LD A,L        ;
+ 33363 LD A,L        ; 
  33364 LD DE,32      ; default: turn south
- 33367 LD HL,20      ;
+ 33367 LD HL,20      ; (attr step 32, grid step 20)
  33370 CP 1          ; heading east?
- 33372 JR Z,33380    ;
+ 33372 JR Z,33380    ; 
  33374 LD DE,65535   ; no: turn west
- 33377 LD HL,65535   ;
+ 33377 LD HL,65535   ; 
 @label=ArmCornerTR_SetSteps
-*33380 LD (31244),DE ;
- 33384 LD (31246),HL ;
- 33387 RET           ;
+*33380 LD (31244),DE ; store the new heading
+ 33384 LD (31246),HL ; 
+ 33387 RET           ; 
 ; ArmEndNode — walk handler for the duct grille (125) and junction
 ; nodes (142/143): pops DrawDoorArm's looping return address, paints
 ; the node cell cyan and ends the walk.
 @label=ArmEndNode
- 33388 POP AF        ;
- 33389 LD HL,(31255) ;
- 33392 LD (HL),5     ;
- 33394 RET           ;
+ 33388 POP AF        ; drop the looping return address
+ 33389 LD HL,(31255) ; paint the node cell cyan
+ 33392 LD (HL),5     ; 
+ 33394 RET           ; 
 
 ; ClearRoomAttrs
+;
+; Blacks out the 20×19 room-view attribute window, then renders the
+; grid buffer's wall glyphs into the (now invisible) pixel area — the
+; duct view's arm walk selectively re-colours cells cyan to reveal them.
 @label=ClearRoomAttrs
 c33395 LD DE,12      ; black out the 20x19 room-view
  33398 LD HL,22528   ; attribute window
- 33401 LD C,19       ;
+ 33401 LD C,19       ; 
 @label=ClearRoomAttrs_RowLoop
-*33403 LD B,20       ;
+*33403 LD B,20       ; 
 @label=ClearRoomAttrs_CellLoop
-*33405 LD (HL),0     ;
- 33407 INC HL        ;
- 33408 DJNZ 33405    ;
- 33410 ADD HL,DE     ;
- 33411 DEC C         ;
- 33412 JR NZ,33403   ;
+*33405 LD (HL),0     ; 
+ 33407 INC HL        ; 
+ 33408 DJNZ 33405    ; 
+ 33410 ADD HL,DE     ; +12: next attribute row
+ 33411 DEC C         ; 
+ 33412 JR NZ,33403   ; 
  33414 LD HL,26121   ; then render the grid buffer
  33417 CALL 31312    ; (DrawRoomBackground_0)
  33420 RET           ;
@@ -3951,16 +3959,16 @@ c33395 LD DE,12      ; black out the 20x19 room-view
 ; the crawlway leads but not what it leads to.
 @label=BuildDuctExitList
 c33421 LD A,(31242)  ; HL = RoomAdjDucts + room * 5
- 33424 AND 63        ;
- 33426 LD L,A        ;
- 33427 LD H,0        ;
- 33429 PUSH HL       ;
- 33430 ADD HL,HL     ;
- 33431 ADD HL,HL     ;
- 33432 POP DE        ;
- 33433 ADD HL,DE     ;
- 33434 LD DE,29346   ;
- 33437 ADD HL,DE     ;
+ 33424 AND 63        ; 
+ 33426 LD L,A        ; 
+ 33427 LD H,0        ; 
+ 33429 PUSH HL       ; 
+ 33430 ADD HL,HL     ; room*5 = room*4 + room
+ 33431 ADD HL,HL     ; 
+ 33432 POP DE        ; 
+ 33433 ADD HL,DE     ; 
+ 33434 LD DE,29346   ; RoomAdjDucts
+ 33437 ADD HL,DE     ; 
  33438 LD DE,29632   ; DE -> strip cell 2
  33441 LD B,4        ; four duct directions:
 @label=DuctExits_SlotLoop
@@ -3995,17 +4003,17 @@ c33421 LD A,(31242)  ; HL = RoomAdjDucts + room * 5
 ;
 ; Used by the routines at #R31417, #R32719 and #R44815.
 @label=ClearTextWindow
-c33479 LD HL,20576   ;
- 33482 LD (31257),HL ;
- 33485 LD B,128      ;
+c33479 LD HL,20576   ; row 19, col 0: the info/message panel
+ 33482 LD (31257),HL ; 
+ 33485 LD B,128      ; 128 cells = 4 char rows
 @label=ClearText_Loop
-*33487 PUSH BC       ;
- 33488 XOR A         ;
- 33489 CALL 31370    ;
- 33492 LD HL,31257   ;
- 33495 INC (HL)      ;
- 33496 POP BC        ;
- 33497 DJNZ 33487    ;
+*33487 PUSH BC       ; 
+ 33488 XOR A         ; 
+ 33489 CALL 31370    ; DrawTileA(0): blank the cell
+ 33492 LD HL,31257   ; advance one cell right
+ 33495 INC (HL)      ; 
+ 33496 POP BC        ; 
+ 33497 DJNZ 33487    ; 
  33499 RET           ;
 
 ; DrawCrewPortrait
