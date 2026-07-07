@@ -216,7 +216,7 @@ room's 5 direction slots (slot value = destination; own ID = no exit).
 
 ### ROM Script System (AI/randomness)
 
-The alien and crew AI consumes a "script" of commands by walking ZX Spectrum ROM bytes. The low nibble of each byte is used as a command (0–15). The script pointer lives at `$7A21` and is seeded from ZX system variable `SEED` (`$5C78`) via `ResetScriptPtr` `$8370`. This provides deterministic but varied behaviour without any RNG code.
+The alien and crew AI consumes a "script" of commands by walking ZX Spectrum ROM bytes. The low nibble of each byte is used as a command (0–15). The script pointer lives at `$7A21` and is seeded from the ZX system variable `FRAMES` (`$5C78`, the ROM's 50 Hz frame counter — not `SEED`, which is at `$5C76`) via `ResetScriptPtr` `$8370`. This provides time-dependent but RNG-free varied behaviour.
 
 ### Actor record (8 bytes, base `$737E` + slot×8, accessed via IX)
 
@@ -238,7 +238,7 @@ Same records as `ActorRecords` above (`$7386` = slot 1); in the room view the pe
 | Label | Address | Description |
 |-------|---------|-------------|
 | `GameEntry` | `$8E69` | Entry: init stack, run screens, enter main loop |
-| `ResetScriptPtr` | `$8370` | Seed ROM-traversal pointer from `SEED` |
+| `ResetScriptPtr` | `$8370` | Seed ROM-traversal pointer from `FRAMES` |
 | `AdvanceScriptPtr` | `$8365` | Step pointer, return low nibble (0–15) |
 | `DrawSpriteRow` | `$7A71` | Blit one 8px-tall tile column onto display |
 | `DrawSprite` | `$7BA2` | Blit full 10-column × 8-row sprite |

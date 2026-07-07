@@ -974,9 +974,11 @@ b23296 DEFB 0,0,0,0,0,0,0,0
 ; tape's headerless blocks — IX=$4000/DE=$1A80 (loading screen),
 ; IX=$6000/DE=$53FC (main game), IX=$EA60/DE=$0BB8 (extra data) — then
 ; LD BC,GameEntry / RET, handing the game's entry address back to BASIC
-; as the USR result. It is followed by the matching SA-BYTES ($04C2)
-; save stubs, a mastering-time leftover. Nothing in this block is
-; referenced once the game is running.
+; as the USR result.
+; .
+; It is followed by the matching SA-BYTES ($04C2) save stubs, a
+; mastering-time leftover. Nothing in this block is referenced once the
+; game is running.
 @label=LoadedCode
 b23756 DEFB 0,108,0,234,221,33,0,64
  23764 DEFB 17,128,26,55,62,255,205,86
@@ -1086,9 +1088,9 @@ b23756 DEFB 0,108,0,234,221,33,0,64
 ;
 ; 3 decks x 19 rows x 20 columns of tile codes (the same 20-wide grid
 ; format the room views use), drawn one deck at a time (380 bytes,
-; selected by RoomTypeByte) by DrawRoomBackground (#R31267) as the
+; selected by RoomTypeByte) by #R31267(DrawRoomBackground) as the
 ; map pane / room-view background; the Upper/Middle/Lower rows of the
-; orders menu switch decks via SelectDeckMap (#R35210). Row texts
+; orders menu switch decks via #R35210(SelectDeckMap). Row texts
 ; like "UPPER DECK" are plain ASCII tile codes; other values are map
 ; glyphs (room outlines, corridors, and the legend symbols: 123 '{'
 ; ladder up, 124 '|' hatchway down, 125 '}' duct grille).
@@ -1153,10 +1155,9 @@ b24576 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  ; UPPER deck row 0
 
 ; Room-interior layout template 0 (RLE-compressed)
 ;
-; Selected by room type (#R31243) at PickRoomLayout (#R32981) and
-; decompressed into the grid buffer at #R26121 by RoomLayoutExpand
-; (#R33153): byte < 30 = that many zero cells, 30-254 = literal tile
-; code, 255 = end.
+; Selected by room type (#R31243) at #R32981(PickRoomLayout) and decompressed
+; into the grid buffer at #R26121 by #R33153(RoomLayoutExpand): byte < 30 =
+; that many zero cells, 30-254 = literal tile code, 255 = end.
 @label=RoomLayout0
 b25716 DEFB 20,20,20,6,125,126,126,125,126,126,126,126,125,5,6,127
  25732 DEFB 2,127,4,133,5,6,127,2,127,4,133,5,6,127,2,127
@@ -1169,10 +1170,9 @@ b25716 DEFB 20,20,20,6,125,126,126,125,126,126,126,126,125,5,6,127
 
 ; Room-interior layout template 1 (RLE-compressed)
 ;
-; Selected by room type (#R31243) at PickRoomLayout (#R32981) and
-; decompressed into the grid buffer at #R26121 by RoomLayoutExpand
-; (#R33153): byte < 30 = that many zero cells, 30-254 = literal tile
-; code, 255 = end.
+; Selected by room type (#R31243) at #R32981(PickRoomLayout) and decompressed
+; into the grid buffer at #R26121 by #R33153(RoomLayoutExpand): byte < 30 =
+; that many zero cells, 30-254 = literal tile code, 255 = end.
 @label=RoomLayout1
 b25835 DEFB 20,20,9,128,126,126,125,126,126,131,125,126,131,1,9,125
  25851 DEFB 126,131,3,133,2,133,1,11,133,3,133,2,133,1,11,133
@@ -1188,10 +1188,9 @@ b25835 DEFB 20,20,9,128,126,126,125,126,126,131,125,126,131,1,9,125
 
 ; Room-interior layout template 2 (RLE-compressed)
 ;
-; Selected by room type (#R31243) at PickRoomLayout (#R32981) and
-; decompressed into the grid buffer at #R26121 by RoomLayoutExpand
-; (#R33153): byte < 30 = that many zero cells, 30-254 = literal tile
-; code, 255 = end.
+; Selected by room type (#R31243) at #R32981(PickRoomLayout) and decompressed
+; into the grid buffer at #R26121 by #R33153(RoomLayoutExpand): byte < 30 =
+; that many zero cells, 30-254 = literal tile code, 255 = end.
 @label=RoomLayout2
 b25996 DEFB 20,20,1,128,126,126,126,125,126,126,126,131,10,1,127,7
  26012 DEFB 133,10,1,127,7,125,126,126,126,126,131,5,1,127,12,133
@@ -1206,8 +1205,8 @@ b25996 DEFB 20,20,1,128,126,126,126,125,126,126,126,131,10,1,127,7
 ;
 ; Working buffer holding the decompressed cell grid of the current
 ; room view (or corridor view, decompressed from #R30720). Blitted to
-; the screen by DrawRoomBackground (#R31267); the door drawer walks it
-; via RoomCellCursor (#R31259). The bytes below are load-image
+; the screen by #R31267(DrawRoomBackground); the door drawer walks it
+; via #R31259(RoomCellCursor). The bytes below are load-image
 ; leftovers.
 @label=RoomGridBuffer
 b26121 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -1232,7 +1231,7 @@ b26121 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 ; Per-room view origin table — 34 rooms x (row, column)
 ;
-; Read by SetRoomOrigin (#R33178): for the current room, byte 0 =
+; Read by #R33178(SetRoomOrigin): for the current room, byte 0 =
 ; grid row and byte 1 = column where exit/door drawing starts;
 ; converted to RoomCellCursor (#R26121 + 20*row + col) and
 ; RoomAttrCursor (attr file + 32*row + col). Narcissus has no entry.
@@ -1276,12 +1275,16 @@ b26501 DEFB 3,9          ;  0 Airlock #1
 ;
 ; One word per room (0-33): the display-file address where the room's
 ; animated marker (24x12 pixels) is XOR-blitted on that room's deck
-; map. Read by GetRoomMarkerAddr (#R35088), which feeds both marker
-; channels: A — the walking crew figure (CrewWalkA1/A2) on the room
-; being viewed, placed by PlaceRoomMarkerA (#R35101) — and B — the
-; blinking box cursor (RoomCursor0-3) on a candidate room: an exit row
-; under the cursor in the room view, or a room picked from the
-; Indicate Location list, placed by PlaceRoomMarkerB (#R35128).
+; map.
+; .
+; Read by #R35088(GetRoomMarkerAddr), which feeds both marker channels:
+; #LIST
+; { A — the walking crew figure (CrewWalkA1/A2) on the room being
+;   viewed, placed by #R35101(PlaceRoomMarkerA) }
+; { B — the blinking box cursor (RoomCursor0-3) on a candidate room: an
+;   exit row under the cursor in the room view, or a room picked from
+;   the Indicate Location list, placed by #R35128(PlaceRoomMarkerB) }
+; LIST#
 ; Rooms on different decks may share an address (Cargopod#2/Mess);
 ; the Narcissus (34) has no entry.
 @label=RoomMarkerAddrTable
@@ -1322,7 +1325,7 @@ w26569 DEFW 16522          ;  0 Airlock #1
 
 ; RoomCursor0
 ;
-; Room indicator cursor, phase 0 (used by AnimateCrewB #R35016, phase 0).
+; Room indicator cursor, phase 0 (used by #R35016(AnimateCrewB), phase 0).
 ; XOR-blit sprite: 24px wide x 12px tall (3 bytes per row).
 ; Largest box — wide outer border with a small inner rectangle. This
 ; cursor blinks over the current room on the corridor map.
@@ -1404,7 +1407,7 @@ b26745 DEFB 0,0,0               ; row  0: blank
 
 ; CrewWalkA1
 ;
-; Crew member walking sprite, phase 1 (AnimateCrewA #R34967, phases 0-1).
+; Crew member walking sprite, phase 1 (#R34967(AnimateCrewA), phases 0-1).
 ; XOR-blit sprite: 24px wide x 12px tall (3 bytes per row).
 ; Upright standing/walking pose — arms close to body, feet together.
 ; Left and right bytes are zero (figure fits in the 8-pixel centre column).
@@ -1426,7 +1429,7 @@ b26781 DEFB 0,0,0               ; row  0: blank
 
 ; CrewWalkA2
 ;
-; Crew member walking sprite, phase 2 (AnimateCrewA #R34967, phases 2-3).
+; Crew member walking sprite, phase 2 (#R34967(AnimateCrewA), phases 2-3).
 ; Mid-stride pose — arms pumping outward, legs spread in step.
 ; Row 5 has a stray pixel in the right byte (arm extension).
 ; .
@@ -1450,7 +1453,7 @@ b26817 DEFB 0,8,0               ; row  0: head
 ; 4 × 16-bit pointers to crew animation frame-A sprite bitmaps.
 ; Indexed by frame phase (0-3); phases 0-1 share one bitmap, 2-3 share
 ; another, producing a two-frame walk cycle at rate 10 (10 frames/step).
-; Used by AnimateCrewA (#R34967) to XOR-blit crew sprites onto the screen.
+; Used by #R34967(AnimateCrewA) to XOR-blit crew sprites onto the screen.
 ;
 @label=CrewWalkAnimA
 w26853 DEFW 26781,26781,26817,26817
@@ -1458,7 +1461,7 @@ w26853 DEFW 26781,26781,26817,26817
 ; AnimCrewBFrames
 ;
 ; 4 × 16-bit pointers to room indicator cursor bitmaps (faster channel,
-; rate 5). Used by AnimateCrewB (#R35016) to XOR-blit the animated room
+; rate 5). Used by #R35016(AnimateCrewB) to XOR-blit the animated room
 ; cursor that highlights the current room on the corridor map.
 ;
 @label=CrewWalkAnimB
@@ -1466,10 +1469,10 @@ w26861 DEFW 26637,26673,26709,26745
 
 ; CharTileBitmaps
 ;
-; Master 8×8 pixel tileset used by DrawSpriteRow (#R31369) for all corridor
+; Master 8×8 pixel tileset used by #R31369(DrawSpriteRow) for all corridor
 ; and room graphics. 169 tiles × 8 bytes each (one byte per pixel row). The
 ; first 128 tiles are arranged so that tile N is the glyph for ASCII code N,
-; which lets DrawSprite (#R31634) render the 10-character text labels stored
+; which lets #R31634(DrawSprite) render the 10-character text labels stored
 ; in #R28221 (RoomNameTable / UIStringTable) by treating each ASCII byte as
 ; a tile index. Tiles 128+ are non-text graphics (sprites, arrows, etc.).
 ; Tile N starts at #R26869 + N×8.
@@ -1650,9 +1653,9 @@ b26869 DEFB 0,0,0,0,0,0,0,0
 
 ; RoomNameTable / UIStringTable
 ;
-; 95-entry × 10-byte text table. DrawSprite (#R31634) reads 10 bytes starting
+; 95-entry × 10-byte text table. #R31634(DrawSprite) reads 10 bytes starting
 ; at (#R28221 + N×10) and renders them as a 10-character label by blitting the
-; CharBitmaps (#R26869) glyph for each byte — i.e. the ASCII text *is* the
+; #R26869(CharBitmaps) glyph for each byte — i.e. the ASCII text *is* the
 ; "sprite data". Indices 0–46 are #R28221 (room / item / deck names); indices
 ; 47–94 are #R28691 (UI / menu / action labels).
 ; .
@@ -1765,7 +1768,7 @@ t28221 DEFM "Airlock #1"     ;  0
 ; means "no exit that way". The graph is fully symmetric (every door works
 ; both ways).
 ; .
-; A direction slot is chosen by ScriptNibbleToDirection (#R36763) from the
+; A direction slot is chosen by #R36763(ScriptNibbleToDirection) from the
 ; ROM script stream, so AI wandering is a deterministic weighted random
 ; walk. Read by the destination picker at #R36717 (which writes an actor's
 ; record byte +2), by the alien's own per-move room step inside #R36859,
@@ -1810,7 +1813,7 @@ b29171 DEFB 13,13,0,0,0     ;  0 Airlock #1 -> 13 Corridor#6
 
 ; Room adjacency map — air-duct network
 ;
-; Companion table to #R29171 (RoomAdjCorridors): same 5-slot-per-room
+; Companion table to #R29171(RoomAdjCorridors): same 5-slot-per-room
 ; format, but describing the air-duct/crawlway network that connects the
 ; same rooms along different edges (e.g. Mess connects directly to both
 ; Airlocks, Computer to Engine #2). Only 34 entries — the Narcissus
@@ -1877,33 +1880,37 @@ b29516 DEFB 65,76,73,69,78,255,68,97
 ; Actor record array — slot 0: the alien
 ;
 ; Eight 8-byte actor records (64 bytes in all). Slot k's name
-; is entry k of #R29516 (CrewNameTable): slot 0 = ALIEN, slots 1-7 =
+; is entry k of #R29516(CrewNameTable): slot 0 = ALIEN, slots 1-7 =
 ; Dallas, Kane, Ripley, Ash, Lambert, Parker, Brett. Most per-frame loops
 ; start from this base (LD IX,29566) and step 8 bytes per slot; the
 ; message renderer at #R37221 passes the slot number straight to the
 ; name printer.
 ; .
 ; Per-record field layout (IX-relative):
-;   +0 = sprite index for the actor's current pose (20 = idle; 92 =
-;        blank; 255 = none) — also stepped as an action/frame counter
-;   +1 = current room: bits 0-5 = room ID 0-34 (indexes #R28221 names
-;        and the #R29171 adjacency map), bit 6 set = travelling in the
-;        air-duct network (#R29346). $FF = HostMarker: slot excluded
-;        from normal crew processing
-;   +2 = destination room, written by the picker at #R36717 (bit 6
-;        carries the duct flag along)
-;   +3 = action state (1=idle, 2=move, 3=wait, 5=investigate, 7=attack)
-;   +4 = strength / hit points (initial values 2-6; combat decrements)
-;   +5 = sprite X tile
-;   +6 = sprite Y tile
-;   +7 = status: 0 = alive/normal; 1 = killed (stamped by #R37584's
-;        kill path); 2 = android defeated; $FF = removed from play
-;        (hypersleep, or HostMarker partner of +1=$FF)
+; #TABLE(default,,:w)
+; { =h Byte | =h Meaning }
+; { +0 | sprite index for the actor's current pose (20 = idle; 92 = blank;
+;   255 = none) — also stepped as an action/frame counter }
+; { +1 | current room: bits 0-5 = room ID 0-34 (indexes #R28221 names and
+;   the #R29171 adjacency map), bit 6 set = travelling in the air-duct
+;   network (#R29346). $FF = HostMarker: slot excluded from normal crew
+;   processing }
+; { +2 | destination room, written by the picker at #R36717 (bit 6 carries
+;   the duct flag along) }
+; { +3 | action state (1=idle, 2=move, 3=wait, 5=investigate, 7=attack) }
+; { +4 | strength / hit points (initial values 2-6; combat decrements) }
+; { +5 | sprite X tile }
+; { +6 | sprite Y tile }
+; { +7 | status: 0 = alive/normal; 1 = killed (stamped by #R37584's kill
+;   path); 2 = android defeated; $FF = removed from play (hypersleep, or
+;   HostMarker partner of +1=$FF) }
+; TABLE#
 ; .
 ; Slot 0 is the alien: its +1 byte (29566+1) holds the alien's current
-; room at runtime (initialised inside CommonGameInit #R42397, rewritten
-; by the airlock eject in BlowLock #R38645; read by the combat dispatch
-; CrewAction4_Handler #R37520 and by Jones's avoidance check in
+; room at runtime (initialised inside CommonGameInit at
+; #R42397(CommonInit_ItemsGrilles), rewritten
+; by the airlock eject in #R38645(BlowLock); read by the combat dispatch
+; #R37520(CrewAction4_Handler) and by Jones's avoidance check in
 ; #R36859). Its +7 byte (#R29573) anchors the status-column scans
 ; (+7 column, step 8).
 ; .
@@ -1924,7 +1931,7 @@ b29573 DEFB 0
 ;
 ; See #R29566 for the field layout. Slot 1's row is split after +6 so
 ; that the status byte (#R29581, base of the crew-extinction scan in
-; CheckCrewAlive #R44313) keeps its own address and label.
+; #R44313(CheckCrewAlive)) keeps its own address and label.
 @label=CrewRecords
 b29574 DEFB 64,12,0,0,2,2,2    ; slot 1 Dallas  +0..+6 — in Corridor#5
 @label=CrewStatusColumn
@@ -1939,22 +1946,28 @@ b29574 DEFB 64,12,0,0,2,2,2    ; slot 1 Dallas  +0..+6 — in Corridor#5
 ; CorridorPosTable — the 19-cell strip / action-menu rows
 ;
 @ignoreua
-; 19 bytes indexed by CorridorCursor (#R33683, range 0..18); the cell
-; value under the cursor is mirrored to CursorCellValue ($8395) and
-; is what the action key dispatches on. Cell r is drawn on screen row
-; r+1, columns 22-31 (row 0 holds the view title); a cell value >= 70
-; is the first row of a two-row label, so the cursor highlight covers
-; two rows (see HighlightMenuRow #R34882). The cells' meaning depends
-; on the view: on the orders screen (mode 0) they hold the
-; OrdersMenuTemplate (#R30197) bytes; in the room view (mode 1) each
-; cell holds a string index for the menu row drawn at that position
-; (ResetActionMenu (#R32684) loads the skeleton from
-; ActionMenuTemplate (#R30178); the load image holds a hypersleep-
-; room variant: 73 " Destruct ", 74 "  Enter   ", 75 "Hypersleep");
-; in the Indicate Location list (modes 2/3, IndicateLocation
-; (#R35222)) cells 1-17 hold room ids 0-16 or 17-33, framed by cell 0
-; = 62 "Other List" (page toggle) and cell 18 = 61 "   QUIT   ".
-; Read by the cursor-movement helpers around HandleInput at #R34684.
+; 19 bytes indexed by #R33683(CorridorCursor) (range 0..18); the cell value
+; under the cursor is mirrored to CursorCellValue ($8395) and is what the
+; action key dispatches on.
+; .
+; Cell r is drawn on screen row r+1, columns 22-31 (row 0 holds the view
+; title); a cell value >= 70 is the first row of a two-row label, so the
+; cursor highlight covers two rows (see #R34882(HighlightMenuRow)).
+; .
+; The cells' meaning depends on the view:
+; #LIST
+; { on the orders screen (mode 0) they hold the
+;   #R30197(OrdersMenuTemplate) bytes }
+; { in the room view (mode 1) each cell holds a string index for the menu
+;   row drawn at that position (#R32684(ResetActionMenu) loads the
+;   skeleton from #R30178(ActionMenuTemplate); the load image holds a
+;   hypersleep-room variant: 73 " Destruct ", 74 "  Enter   ",
+;   75 "Hypersleep") }
+; { in the Indicate Location list (modes 2/3, #R35222(IndicateLocation))
+;   cells 1-17 hold room ids 0-16 or 17-33, framed by cell 0 = 62
+;   "Other List" (page toggle) and cell 18 = 61 "   QUIT   " }
+; LIST#
+; Read by the cursor-movement helpers around #R34684(HandleInput).
 @ignoreua
 @label=CorridorPosTable
 b29630 DEFB 73,255,255,255,255,255,255,74
@@ -2001,10 +2014,10 @@ b29630 DEFB 73,255,255,255,255,255,255,74
 ; Per-room type table
 ;
 ; One byte per room (0-34): the map-view layout type fed to
-; RoomTypeByte (#R31243) — 0/1/2 pick the layout templates at
+; #R31243(RoomTypeByte) — 0/1/2 pick the layout templates at
 ; #R25716, #R25835 and #R25996; 3 = the Narcissus. Read by
-; LocationListAction (#R35338) when a room is picked from the
-; Indicate Location list, and by UpdateRoomMarkerB (#R34933) to
+; #R35338(LocationListAction) when a room is picked from the
+; Indicate Location list, and by #R34933(UpdateRoomMarkerB) to
 ; check an exit room against the displayed deck.
 @label=RoomTypeTable
 b29905 DEFB 0,0,1,2,2,2,1 ; rooms 0-6
@@ -2016,14 +2029,13 @@ b29905 DEFB 0,0,1,2,2,2,1 ; rooms 0-6
 ; Item location table
 ;
 @ignoreua
-; One byte per portable item (ids 0-21, names via ItemIdToString
-; (#R31857)): the room where the item lies (bit 6 = inside the duct
-; network), or a carry marker — 160+slot = held in that actor slot's
-; front hand, 128+slot = back hand; 255 = does not exist (the two
-; "Cat in ..." items are created when Jones is caught). Re-seeded
-; from InitialItemRooms (#R41406) at game init. The Get Item picker
-; handler ($8B22), LeaveItemHandler ($8BBA) and SwapHeldItems
-; (#R35451) transfer items by rewriting these bytes.
+; One byte per portable item (ids 0-21, names via #R31857(ItemIdToString)):
+; the room where the item lies (bit 6 = inside the duct network), or a carry
+; marker — 160+slot = held in that actor slot's front hand, 128+slot = back
+; hand; 255 = does not exist (the two "Cat in ..." items are created when
+; Jones is caught). Re-seeded from #R41406(InitialItemRooms) at game init. The
+; Get Item picker handler ($8B22), LeaveItemHandler ($8BBA) and
+; #R35451(SwapHeldItems) transfer items by rewriting these bytes.
 @label=ItemLocations
 b29940 DEFB 24,21,20 ; 0-2: Elctrc Prd in Lab Stores/Infirmary/Eng Stores
  29943 DEFB 6,6,16 ; 3-5: Incineratr in CommdCentr x2, Engineerng
@@ -2040,11 +2052,11 @@ b29940 DEFB 24,21,20 ; 0-2: Elctrc Prd in Lab Stores/Infirmary/Eng Stores
 
 ; Viewed room's item list
 ;
-; Item ids present in the viewed room (built by BuildRoomItemList
-; (#R31796) scanning ItemLocations top-down, so ids appear in
-; descending order); 255-filled by ResetActionMenu (#R32684). The
+; Item ids present in the viewed room (built by
+; #R31796(BuildRoomItemList) scanning ItemLocations top-down, so ids appear in
+; descending order); 255-filled by #R32684(ResetActionMenu). The
 ; "Get Item" handler (#R35638) turns it into a selection strip and
-; GetItemPick (#R35578) moves the chosen item into the actor's hand.
+; #R35578(GetItemPick) moves the chosen item into the actor's hand.
 @label=RoomItemList
 b29962 DEFB 0,0,0,0,0,0,0,0,0,0,0
  29973 DEFB 0,0,0,0,0,0,0,0,0,0,0
@@ -2052,11 +2064,11 @@ b29962 DEFB 0,0,0,0,0,0,0,0,0,0,0
 ; Per-item courage bonus
 ;
 @ignoreua
-; Added to the carrier's courage (record byte +5) and morale (+6)
-; while the item is held in the front hand (applied on Get at $8B26,
-; removed on Leave at $8BAB and adjusted on Swap by SwapHeldItems
-; (#R35451)). Weapons embolden the crew: prods/extinguishers/spanners
-; +1, incinerators/harpoon/lasers +2, trackers and cat gear 0.
+; Added to the carrier's courage (record byte +5) and morale (+6) while the
+; item is held in the front hand (applied on Get at $8B26, removed on Leave at
+; $8BAB and adjusted on Swap by #R35451(SwapHeldItems)). Weapons embolden the
+; crew: prods/extinguishers/spanners +1, incinerators/harpoon/lasers +2,
+; trackers and cat gear 0.
 @label=ItemCourageBonus
 b29984 DEFB 1,1,1 ; Elctrc Prd
  29987 DEFB 2,2,2 ; Incineratr
@@ -2071,7 +2083,7 @@ b29984 DEFB 1,1,1 ; Elctrc Prd
 ; Per-room damage meters
 ;
 ; 2-digit ASCII pairs ("00"), one per room (base + room*2, rooms 0-34,
-; 70 bytes). Incremented by AddRoomDamage (#R38186); the tens digit is
+; 70 bytes). Incremented by #R38186(AddRoomDamage); the tens digit is
 ; the severity the engine scan compares against; crossing "30" raises
 ; alarms #22-#25.
 @label=RoomDamageDigits
@@ -2086,19 +2098,21 @@ b30006 DEFB 48,48,48,48,48,48,48,48,48,48 ; rooms 0-4
 ; Per-room duct-grille state
 ;
 @ignoreua
-; One byte per room (rooms 0-33; the Narcissus, room 34, has no
-; grille): 255 = grille in place, 0 = removed. Game init ($A5A8,
-; within #R42397) re-arms only the first 33 entries with 255 and then
-; clears entry 13, so Corridor#6 (13) starts with its grille removed,
-; and room 33's byte at $759D keeps its load-image value 0
-; (Shttlstore's grille is always open). Removed by crew action 3
-; (#R36150, a 50-frame job queued by the AI at $90EE or by picking
-; "RmveGrille" from the action menu). While in place the room view
-; offers string 49 "RmveGrille" in the menu's Special slot
-; (CorridorPosTable cell 13); once removed the room shows "Grille
-; removed" and string 50 "Grille" becomes a move-to target (cell 1)
-; leading into the duct network. Read at $7E58 (DrawItemsAndGrille),
-; $90E5, $B073 and #R45240.
+; One byte per room (rooms 0-33; the Narcissus, room 34, has no grille):
+; 255 = grille in place, 0 = removed.
+; .
+; Game init ($A5A8, within #R42397(CommonInit_ItemsGrilles)) re-arms only
+; the first 33 entries with 255 and then clears entry 13, so Corridor#6
+; (13) starts with its grille removed, and room 33's byte at $759D keeps
+; its load-image value 0 (Shttlstore's grille is always open).
+; .
+; Removed by crew action 3 (#R36150, a 50-frame job queued by the AI at
+; $90EE or by picking "RmveGrille" from the action menu).
+; While in place the room view offers string 49 "RmveGrille" in the menu's
+; Special slot (CorridorPosTable cell 13); once removed the room shows "Grille
+; removed" and string 50 "Grille" becomes a move-to target (cell 1) leading
+; into the duct network. Read at $7E58 (DrawItemsAndGrille), $90E5, $B073 and
+; #R45240.
 @label=RoomGrilleState
 b30076 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
  30093 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -2106,7 +2120,7 @@ b30076 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 ; Crew-condition strings
 ;
 ; 255-terminated descriptions printed after "NAME is " by the
-; room-info panel (DrawCrewCondition, #R32385): four injury states
+; room-info panel (#R32385(DrawCrewCondition)): four injury states
 ; selected by actor strength (record byte +4), then five morale states
 ; selected by record byte +6.
 @label=CrewInjuryText
@@ -2127,8 +2141,8 @@ t30110 DEFM "Dead ",255
 ; at #R29630 by #R32684 whenever the room view is rebuilt. Cell values
 ; are string indexes into #R28221; 255 = empty slot. Layout: cell 0 =
 ; header 86 "move to:" (destinations fill cells 1-6: exits from
-; BuildExitList (#R31759) at 2-6, the open duct "Grille" at 1); cell 7
-; = header 87 " use:" (items from BuildItemMenu (#R31915) fill 8-11);
+; #R31759(BuildExitList) at 2-6, the open duct "Grille" at 1); cell 7
+; = header 87 " use:" (items from #R31915(BuildItemMenu) fill 8-11);
 ; cell 12 = header 88 "Special" (room actions fill 13-16, e.g.
 ; "RmveGrille"/"  ATTACK  " at 13); cell 17 = 61 "   QUIT   ".
 @label=ActionMenuTemplate
@@ -2139,24 +2153,25 @@ b30178 DEFB 86,255,255,255,255,255,255 ; "move to:" + 6 destination slots
 
 ; Orders-menu template (the mode-0 menu strip)
 ;
-; 19-byte template copied verbatim to CorridorPosTable (#R29630) by
-; InitGameView (#R31417) — the cell layout of the orders screen
+; 19-byte template copied verbatim to #R29630(CorridorPosTable) by
+; #R31417(InitGameView) — the cell layout of the orders screen
 ; (room mode 0), drawn on screen rows 1-19 under the " CONTROL  "
 ; title:
-;   cell 0     83  "Order:    "  header
-;   cells 1-7  52  crew rows — InitGameView draws the seven crew
-;                  NAMES here (via PrintName #R31690), so the 52s are
-;                  never rendered; they only give the rows a nonzero
-;                  dispatch value
-;   cells 8-9  79,80  " Indicate "/" Location " (2-row label; the
-;                  action key on row 8 opens the room-location list,
-;                  IndicateLocation #R35222)
-;   cells 10-11 84,85 " Display  "/"  Level   " header (2-row label)
-;   cells 12-14 44,45,46 "Upper Deck"/"MiddleDeck"/"Lower Deck"
-;                  (SelectDeckMap #R35210 redraws the map pane)
-;   cells 15-18 255 blank
+; #TABLE(default,,,:w)
+; { =h Cells | =h Values | =h Meaning }
+; { 0 | 83 | "Order:    " header }
+; { 1-7 | 52 | crew rows — InitGameView draws the seven crew NAMES here
+;   (via #R31690(PrintName)), so the 52s are never rendered; they only
+;   give the rows a nonzero dispatch value }
+; { 8-9 | 79,80 | " Indicate "/" Location " (2-row label; the action key
+;   on row 8 opens the room-location list, #R35222(IndicateLocation)) }
+; { 10-11 | 84,85 | " Display  "/"  Level   " header (2-row label) }
+; { 12-14 | 44,45,46 | "Upper Deck"/"MiddleDeck"/"Lower Deck"
+;   (#R35210(SelectDeckMap) redraws the map pane) }
+; { 15-18 | 255 | blank }
+; TABLE#
 ; The lower half (from cell 8) is also drawn directly from this
-; template by the tail of OrdersMenuNextRow (#R31577), pointer set
+; template by the tail of #R31577(OrdersMenuNextRow), pointer set
 ; to #R30205. The next 504 bytes starting at #R30216 are the crew
 ; portrait bitmaps; see #R30216.
 @label=OrdersMenuTemplate
@@ -2168,9 +2183,9 @@ b30197 DEFB 83,52,52,52,52,52,52,52
 ; Crew portrait bitmaps
 ;
 ; Seven 3x3-character (24x24 pixel) raw bitmap portraits, drawn by #R33539.
-; Used by #R42821 (GameModeScreen -- all 7 at once) and by the crew-status
+; Used by #R42821(GameModeScreen) (all 7 at once) and by the crew-status
 ; display (single-portrait draw, crew index from #R31241, via #R31634).
-; Crew member names from #R29516 (CrewNameTable); portrait N is at
+; Crew member names from #R29516(CrewNameTable); portrait N is at
 ; address #R30216 + (N-1)*72. Portrait data continues into #R30492 and
 ; #R30626 due to block boundaries.
 ; .
@@ -2262,7 +2277,7 @@ b30626 DEFB 2,1,1,0,0,0,223,96
 ; The shuttle's 20x19 view background in RoomLayoutExpand's RLE
 ; format (byte < 30 = that many blank cells, 30-254 = literal tile
 ; code, 255 = end; 141 bytes). Expanded into the grid buffer and
-; rendered by NarcissusBackground (#R33644) when a room of type 3
+; rendered by #R33644(NarcissusBackground) when a room of type 3
 ; (the Narcissus) is drawn.
 @label=NarcissusLayout
 b30720 DEFB 20,2,146,147,12,148,149,2
@@ -2287,7 +2302,7 @@ b30720 DEFB 20,2,146,147,12,148,149,2
 ; Narcissus corridor-view attributes
 ;
 ; 20x19 = 380 attribute bytes copied over the attribute file by
-; NarcissusBackground (#R33644); one line per screen row. The last
+; #R33644(NarcissusBackground); one line per screen row. The last
 ; nine bytes of this map were long mislabelled "GameStateBase
 ; (crew alive flags?)" — they are simply its bottom-right corner.
 @label=NarcissusAttrs
@@ -2319,43 +2334,48 @@ b30861 DEFB 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9
 ; #R33682 — see that block for the rest of the RAM map.
 ; .
 ; Variables:
-;   #R31241 DrawSlotIndex    actor slot (0-7) currently drawn/processed
-;   #R31242 CurrentRoom      room of that actor; "the viewed room"
-;   #R31243 RoomTypeByte     view type: deck 0-2 of ShipMapData, 3 =
-;                            Narcissus, 4 = alien-encounter screen
-;   #R31244 RoomAttrStep     word: attr-cursor stride for door drawing
-;   #R31246 RoomCellStep     word: cell-grid stride for door drawing
-;   #R31248 HeldItemFront    item id in the actor's front hand (255 = none)
-;   #R31249 HeldItemBack     item id in the actor's back hand (255 = none)
-;   #R31250 RoomMateA        first other actor in the room (255 = none)
-;   #R31251 RoomMateB        second other actor in the room (255 = none)
-;   #R31252 RoomModeByte     current room mode (drives RoomDispatchTable)
-;   #R31253 ShipSystemFlags  bit 0 destruct armed; bits 1/2 airlocks
-;                            blown; bits 3-5 engine state
-;   #R31255 RoomAttrCursor   word: attribute-file cursor (room drawing)
-;   #R31257 DrawScreenPtr    word: THE display-file draw pointer (~120 refs)
-;   #R31259 RoomCellCursor   word: 20-wide room-cell-grid cursor
-;   #R31261 CorridorTilePtr  pointer into corridor tile source
-;   #R31263 CrewAnimFlags    XOR-blit toggle for crew sprite set A
-;   #R31264 AnimFramePhase   XOR-blit toggle for set B / cursor
-;   #R31265 ScriptPointer    ROM-traversal AI script pointer
+; #TABLE(default,,:w)
+; { =h Variable | =h Meaning }
+; { #R31241(DrawSlotIndex) | actor slot (0-7) currently drawn/processed }
+; { #R31242(CurrentRoom) | room of that actor; "the viewed room" }
+; { #R31243(RoomTypeByte) | view type: deck 0-2 of ShipMapData, 3 =
+;   Narcissus, 4 = alien-encounter screen }
+; { #R31244(RoomAttrStep) | word: attr-cursor stride for door drawing }
+; { #R31246(RoomCellStep) | word: cell-grid stride for door drawing }
+; { #R31248(HeldItemFront) | item id in the actor's front hand (255 = none) }
+; { #R31249(HeldItemBack) | item id in the actor's back hand (255 = none) }
+; { #R31250(RoomMateA) | first other actor in the room (255 = none) }
+; { #R31251(RoomMateB) | second other actor in the room (255 = none) }
+; { #R31252(RoomModeByte) | current room mode (drives RoomDispatchTable) }
+; { #R31253(ShipSystemFlags) | bit 0 destruct armed; bits 1/2 airlocks
+;   blown; bits 3-5 engine state }
+; { #R31255(RoomAttrCursor) | word: attribute-file cursor (room drawing) }
+; { #R31257(DrawScreenPtr) | word: THE display-file draw pointer (~120 refs) }
+; { #R31259(RoomCellCursor) | word: 20-wide room-cell-grid cursor }
+; { #R31261(CorridorTilePtr) | pointer into corridor tile source }
+; { #R31263(CrewAnimFlags) | XOR-blit toggle for crew sprite set A }
+; { #R31264(AnimFramePhase) | XOR-blit toggle for set B / cursor }
+; { #R31265(ScriptPointer) | ROM-traversal AI script pointer }
+; TABLE#
 ; .
 ; The bytes from #R31267 onwards hold executable code (the view
 ; background renderer, invoked via CALL #R31267 from #R31459 and
 ; #R32719), preserved as DEFB data only because the section was
-; originally classified as RAM. Decoded, DrawRoomBackground reads:
-; fill the 20x19 attribute window with 4 (green ink); A = RoomTypeByte;
-; if A = 3 JP #R33644 (NarcissusBackground); if A = 4 JP #R39687
-; (ResetAlienXAnim, the encounter screen); else HL = ShipMapData +
-; 380*A (that deck's 20x19 tile map) and fall into
-; DrawRoomBackground_0 (#R31312), which renders the 20x19 tile map at
-; HL onto the display via DrawSpriteRow — also called directly by
-; NarcissusBackground with the RLE-expanded grid buffer.
+; originally classified as RAM.
+; .
+; Decoded, DrawRoomBackground reads: fill the 20x19 attribute window
+; with 4 (green ink); A = RoomTypeByte; if A = 3 JP
+; #R33644(NarcissusBackground); if A = 4 JP #R39687(ResetAlienXAnim)
+; (the encounter screen); else HL = ShipMapData + 380*A (that deck's
+; 20x19 tile map) and fall into #R31312(DrawRoomBackground_0), which
+; renders the 20x19 tile map at HL onto the display via DrawSpriteRow —
+; also called directly by NarcissusBackground with the RLE-expanded
+; grid buffer.
 @label=DrawSlotIndex
 b31241 DEFB 5
 @label=CurrentRoom
  31242 DEFB 6              ; room of the actor being processed (record
-                           ; byte +1, cached by SelectSlotByDrawIdx #R31721);
+                           ; byte +1, cached by #R31721(SelectSlotByDrawIdx));
                            ; doubles as "the viewed room" in encounter checks
 @label=RoomTypeByte
  31243 DEFB 1
@@ -2577,7 +2597,7 @@ c31417 XOR A         ; A = 0
 ;
 ; Body of the loop above (never entered at #R31562 itself — the LD A,D
 ; opcode is just the operand high byte of the overlapping instruction):
-; prints crew name A via PrintName (#R31690), then steps the menu draw
+; prints crew name A via #R31690(PrintName), then steps the menu draw
 ; pointer (#R31257) one character row down: +32 within a display-file
 ; third, or +1824 (via the fall-through block below) when crossing a
 ; third boundary (L >= $E0).
@@ -2594,15 +2614,16 @@ c31562 LD A,D        ; (dead when fallen into: overlap operand)
 
 ; Orders-menu build, lower part
 ;
-; Tail of the orders-screen build started in InitGameView (#R31417).
+; Tail of the orders-screen build started in #R31417(InitGameView).
 ; First the third-boundary case of the crew-name row stride (+1824),
 ; then the shared loop tail: store the draw pointer, advance A' to the
-; next crew id and loop until all 7 names are printed. After the loop,
-; draws menu rows 9-18 straight from OrdersMenuLowerHalf (#R30205)
-; (" Indicate "/" Location ", " Display  "/"  Level   ", the three
-; deck rows, blanks), re-highlights the cursor row and mirrors its
-; cell value (#R34882), and redraws the oxygen clock on row 19
-; (#R39572).
+; next crew id and loop until all 7 names are printed.
+; .
+; After the loop, draws menu rows 9-18 straight from
+; #R30205(OrdersMenuLowerHalf) (" Indicate "/" Location ",
+; " Display  "/"  Level   ", the three deck rows, blanks),
+; re-highlights the cursor row and mirrors its cell value (#R34882),
+; and redraws the oxygen clock on row 19 (#R39572).
 @label=OrdersMenuNextRow
 c31577 LD DE,1824    ; big stride: next char row across a third boundary
 ; This entry point is used by the routine at #R31562.
@@ -2650,7 +2671,7 @@ c31612 LD DE,22      ; row stride remainder (32 - 10)
 ; DrawNextCorridorTile
 ;
 ; Reads the next tile index from the corridor position pointer at #R31261, draws
-; it by falling through into #R31634 (DrawSprite), and advances the pointer.
+; it by falling through into #R31634(DrawSprite), and advances the pointer.
 ; .
 ; Used by the routines at #R31417, #R31577, #R32816, #R35290 and #R35638.
 @label=DrawNextCorridorTile
@@ -2825,8 +2846,8 @@ c31759 LD A,(31242)  ; A = current room
 ; BuildRoomItemList
 ;
 ; List the item ids lying in the current room —
-; scan ItemLocations (#R29940) from the top down for entries equal to
-; the room number, appending each match to RoomItemList (#R29962).
+; scan #R29940(ItemLocations) from the top down for entries equal to
+; the room number, appending each match to #R29962(RoomItemList).
 @label=BuildRoomItemList
 c31796 LD A,(31242)  ; C = current room
  31799 LD C,A        ;
@@ -2856,9 +2877,9 @@ c31820 LD A,(31241)  ;
 
 ; FindHeldItems
 ;
-; Finds what actor A is carrying: scans ItemLocations (#R29940) for
-; the slot+160 marker (front hand) into HeldItemFront (#R31248) and
-; the slot+128 marker (back hand) into HeldItemBack (#R31249). The
+; Finds what actor A is carrying: scans #R29940(ItemLocations) for
+; the slot+160 marker (front hand) into #R31248(HeldItemFront) and
+; the slot+128 marker (back hand) into #R31249(HeldItemBack). The
 ; item id is the table position where the marker sits.
 ; .
 ; Used by the routines at #R37584, #R37992 and #R40941.
@@ -3192,7 +3213,7 @@ c32143 LD A,(31242)  ; room-name string = room number,
 ; Draws the "Items Present" header when the viewed room's item list
 ; ($750A) is non-empty, then (except aboard the Narcissus, room 34)
 ; prints "Grille" plus its state (" in place "/" removed ") from
-; RoomGrilleState (#R30076) and plants the matching action-menu entry:
+; #R30076(RoomGrilleState) and plants the matching action-menu entry:
 ; string 49 "RmveGrille" in the Special slot (strip cell 13) while in
 ; place, or string 50 "Grille" as a move-to target (strip cell 1) once
 ; removed.
@@ -3266,8 +3287,8 @@ c32143 LD A,(31242)  ; room-name string = room number,
 ;
 ; Prints the room-info line "NAME is <injury> and/
 ; but <morale>" for the selected crew member (slot in #R31241), using
-; CrewInjuryText (#R30110, index = strength clamped to 0-3) and
-; CrewMoraleText (#R30140, index = morale byte clamped to 0-4); "but"
+; (#R30110(CrewInjuryText), index = strength clamped to 0-3) and
+; (#R30140(CrewMoraleText), index = morale byte clamped to 0-4); "but"
 ; is picked when injury and morale disagree.
 ; .
 ; Used by the routines at #R32719, #R35451, #R39365, #R45295, #R45338,
@@ -3380,7 +3401,7 @@ c32498 LD HL,29575   ; HL -> slot 1's +1 (room) byte
 ; line. FindRoomMates fills RoomMateA/B; if every listed mate is dead
 ; (ActorRecords byte +7 != 0) the line reads "Also Bodies of", else
 ; "Also here" with the first mate's name (dead mates get the strip-94
-; overprint from DrawCrewStatusHalf, #R33610).
+; overprint from #R33610(DrawCrewStatusHalf)).
 @label=DrawRoomMates
 c32536 CALL 32498    ; FindRoomMates -> RoomMateA/B
  32539 LD HL,20672   ; draw pointer -> "Also here" row
@@ -3476,10 +3497,10 @@ c32670 XOR A         ;
 ; ResetActionMenu
 @ignoreua
 ;
-; Restore the action-menu strip at CorridorPosTable
-; (#R29630) from ActionMenuTemplate (#R30178), clear the viewed room's
-; 20-entry item list ($750A) to 255 and invalidate the cached actor
-; cell/name state ($7A10-$7A13).
+; Restore the action-menu strip at #R29630(CorridorPosTable) from
+; #R30178(ActionMenuTemplate), clear the viewed room's 20-entry item list
+; ($750A) to 255 and invalidate the cached actor cell/name state
+; ($7A10-$7A13).
 @label=ResetActionMenu
 c32684 LD DE,29630   ;
  32687 LD HL,30178   ; copy the 19-byte menu skeleton
@@ -3623,14 +3644,17 @@ c32816 LD HL,16406   ; blank the name row
  32930 CALL 39572    ; and redraw the status line
  32933 RET           ;
 ; Cell-glyph walk-handler table (was mis-disassembled as code):
-; 3-byte records (glyph, handler word) looked up by DrawDoorArm
-; (#R33223), which patches the handler into its CALL as it walks an
-; exit path over the room-map grid. Glyphs 126/127/132/133 are
-; straight wall segments -> ArmStraight (#R33275, a no-op: keep
-; heading); 128-131 are the four corner pieces -> steer handlers that
-; bend the walk by approach direction; 125 '}' (duct grille) and
-; 142/143 (junction nodes) -> ArmEndNode (#R33388): paint and end the
-; walk.
+; 3-byte records (glyph, handler word) looked up by
+; #R33223(DrawDoorArm), which patches the handler into its CALL as it
+; walks an exit path over the room-map grid.
+; #LIST
+; { Glyphs 126/127/132/133 are straight wall segments ->
+;   #R33275(ArmStraight), a no-op: keep heading }
+; { 128-131 are the four corner pieces -> steer handlers that bend the
+;   walk by approach direction }
+; { 125 '}' (duct grille) and 142/143 (junction nodes) ->
+;   #R33388(ArmEndNode): paint and end the walk }
+; LIST#
 @label=CellDrawTable
  32934 DEFB 125,108,130   ; '}' duct grille -> ArmEndNode
  32937 DEFB 126,251,129   ; horizontal wall -> ArmStraight
@@ -3647,14 +3671,17 @@ c32816 LD HL,16406   ; blank the name row
 ; RedrawRoomView
 ;
 ; Called from RedrawRoomScene only when the viewed position has bit 6
-; set (inside the ducts). Expands the deck's wall-glyph template into
-; the grid buffer, redraws it with all attributes black (so the deck
-; outline is present but invisible), builds the anonymous N/E/S/W
-; "move to:" rows, then marks the room's anchor cell bright white and
-; walks a cyan arm along the hidden walls toward each present duct
-; exit — the player sees only the anchor and the crawlway arms. View
-; type 4 (the encounter screen) resets the alien-body animation and
-; just rebuilds the duct move-to rows instead.
+; set (inside the ducts).
+; .
+; Expands the deck's wall-glyph template into the grid buffer, redraws
+; it with all attributes black (so the deck outline is present but
+; invisible), builds the anonymous N/E/S/W "move to:" rows, then marks
+; the room's anchor cell bright white and walks a cyan arm along the
+; hidden walls toward each present duct exit — the player sees only the
+; anchor and the crawlway arms.
+; .
+; View type 4 (the encounter screen) resets the alien-body animation
+; and just rebuilds the duct move-to rows instead.
 @label=RedrawRoomView
 c32967 LD A,(31243)  ; A = room type
  32970 CP 4          ; alien-lair view?
@@ -3751,7 +3778,7 @@ c32981 LD HL,25716   ; room type 0: layout template 0
 ; byte < 30 = that many zero cells, 30-254 = literal tile code,
 ; 255 = end.
 ; .
-; Used by NarcissusBackground (#R33644) and PickRoomLayout (#R32981).
+; Used by #R33644(NarcissusBackground) and #R32981(PickRoomLayout).
 @label=RoomLayoutExpand
 c33153 LD DE,26121   ; DE = grid buffer; HL = RLE source
 @label=RleExpand_Loop
@@ -3813,14 +3840,17 @@ c33178 LD A,(31242)  ; A = current room
 ; Highlights one exit path of the room-map view: walks the (invisibly
 ; drawn) wall glyphs from the room's anchor point, painting each
 ; visited attribute cell cyan (attr 5), until it reaches a grille or
-; junction node. Per cell it reads the grid under RoomCellCursor,
-; looks the glyph up in CellDrawTable (#R32934) and patches the
-; handler into the CALL below (self-modifying). Straight segments keep
-; the heading, corner glyphs 128-131 turn it, and node glyphs
-; (125/142/143) end the walk via ArmEndNode (which pops the return
-; address). The stride pair RoomAttrStep/RoomCellStep encodes the
-; heading: attr +32/-32/+1/-1 = south/north/east/west (grid steps
-; +20/-20/+1/-1 in lockstep, the grid being 20 cells wide).
+; junction node.
+; .
+; Per cell it reads the grid under RoomCellCursor, looks the glyph up
+; in #R32934(CellDrawTable) and patches the handler into the CALL below
+; (self-modifying). Straight segments keep the heading, corner glyphs
+; 128-131 turn it, and node glyphs (125/142/143) end the walk via
+; ArmEndNode (which pops the return address).
+; .
+; The stride pair RoomAttrStep/RoomCellStep encodes the heading:
+; attr +32/-32/+1/-1 = south/north/east/west (grid steps +20/-20/+1/-1
+; in lockstep, the grid being 20 cells wide).
 @label=DrawDoorArm
 c33223 LD HL,(31259) ; read grid cell under the cursor
  33226 LD A,(HL)     ; A = the wall glyph there
@@ -4090,8 +4120,10 @@ c33500 LD HL,23009   ; paint the 3x3 attribute square
 ;
 ; Steps the ROM-traversal script pointer forward by one byte and returns the
 ; low nibble (0-15) of the new byte in A. The pointer lives at #R31265 and
-; walks through ZX Spectrum ROM bytes starting at $1041 (SEED $9041 with H
-; masked to $10). Each nibble encodes one game command for the AI scheduler.
+; walks through ZX Spectrum ROM bytes starting at the address seeded from
+; the FRAMES counter (e.g. $9041 with H masked into ROM range = $1041 —
+; see #R33600(ResetScriptPtr)). Each nibble encodes one game command for
+; the AI scheduler.
 ; .
 ; Output: A = next script command (0-15)
 ; .
@@ -4109,14 +4141,16 @@ c33589 LD HL,(31265) ; HL = current script pointer (#R31265)
 ; ResetScriptPtr
 @ignoreua
 ;
-; Resets the ROM-traversal script pointer to its starting address. Reads the
-; SEED value from #R23672 (ZX Spectrum system variable SEED, updated by RAND),
-; calls the address-masking helper at #R45290 to compute $1041 (ROM address
-; $9041 with H masked to $10), and stores the result at #R31265.
+; Resets the ROM-traversal script pointer to its starting address. Reads
+; the low word of the ZX system variable FRAMES from #R23672 ($5C78, the
+; 50 Hz frame counter stepped by the ROM's interrupt handler — this is
+; what makes each run's script time-dependent), calls the address-masking
+; helper at #R45290 to fold it into ROM range (e.g. $9041 → $1041), and
+; stores the result at #R31265.
 ; .
 ; Used by the routines at #R36457 and #R45222.
 @label=ResetScriptPtr
-c33600 LD HL,(23672) ; HL = SEED (#R23672): ZX ROM random seed value
+c33600 LD HL,(23672) ; HL = FRAMES (#R23672): the ZX ROM's 50 Hz frame counter
  33603 CALL 45290    ; mask H to $10: HL → ROM address in range $1000-$1FFF
 @ignoreua
  33606 LD (31265),HL ; store as script pointer at #R31265
@@ -4124,7 +4158,7 @@ c33600 LD HL,(23672) ; HL = SEED (#R23672): ZX ROM random seed value
 
 ; Prefix a dead room-mate's name with "Body of "
 ;
-; Called by DrawRoomMates (#R32536) with A = actor slot before each
+; Called by #R32536(DrawRoomMates) with A = actor slot before each
 ; mate's name is printed. If the actor's status byte (ActorRecords +7)
 ; is non-zero (dead/removed), draw strip 94 ("Body of   ") at the
 ; current draw position and advance DrawScreenPtr 8 cells so the name
@@ -4155,14 +4189,13 @@ c33610 PUSH AF       ; save the actor slot
 ; NarcissusBackground — the shuttle's view background
 @ignoreua
 ;
-; Reached only from DrawRoomBackground's hidden dispatch: the JP Z at
-; $7A41 (inside the code preserved as DEFBs at #R31267) lands here
-; when RoomTypeByte is 3, i.e. the Narcissus. Expands NarcissusLayout
-; (#R30720) into the grid buffer, copies NarcissusAttrs (#R30861) over
-; the attribute file, then renders the grid via DrawRoomBackground_0
-; (#R31312). No skoolkit-visible caller — the JP hides in DEFB data —
-; and absent from the execution traces only because they never
-; boarded the shuttle.
+; Reached only from DrawRoomBackground's hidden dispatch: the JP Z at $7A41
+; (inside the code preserved as DEFBs at #R31267) lands here when RoomTypeByte
+; is 3, i.e. the Narcissus. Expands #R30720(NarcissusLayout) into the grid
+; buffer, copies #R30861(NarcissusAttrs) over the attribute file, then renders
+; the grid via #R31312(DrawRoomBackground_0). No skoolkit-visible caller — the
+; JP hides in DEFB data — and absent from the execution traces only because
+; they never boarded the shuttle.
 @label=NarcissusBackground
 c33644 LD HL,30720   ; NarcissusLayout: RLE source
  33647 CALL 33153    ; RoomLayoutExpand -> grid buffer
@@ -4196,25 +4229,28 @@ c33644 LD HL,30720   ; NarcissusLayout: RLE source
 ; code segment, none of these bytes are executed.
 ; .
 ; Key variables:
-;   #R33682 AlienFlags        bit-packed input (R,L,D,U,Fire)
-;   #R33683 CorridorCursor    current corridor index (0..18)
-;   #R33688 SpriteDestAddr    sprite blitter screen pointer
-;   #R33690 FrameCounterB     free-running 50Hz counter
-;   #R33699 SoundRequest      one-shot sound trigger
-;   #R33700 CrewIndex         current crew member (0..6)
-;   #R33701 AlienTargetPtr         pointer to current crew record
-;   #R33703 AlienTargetID     crew ID being targeted (255=none)
-;   #R33704 AlienActiveFlag   alien is loose flag
-;   #R33706 JonesRoom         Jones the cat's current room (255 = off-map)
-;   #R33731 SoundReqFlag      pending sound parameters
-;   #R33734 SprScreenAddrA    crew sprite A destination
-;   #R33736 SprScreenAddrB    crew sprite B destination
-;   #R33737 MusicActiveFlag   music phrase is playing
-;   #R33739 AnimFrameCnt      crew animation tick
+; #TABLE(default,,:w)
+; { =h Variable | =h Meaning }
+; { #R33682(AlienFlags) | bit-packed input (R,L,D,U,Fire) }
+; { #R33683(CorridorCursor) | current corridor index (0..18) }
+; { #R33688(SpriteDestAddr) | sprite blitter screen pointer }
+; { #R33690(FrameCounterB) | free-running 50Hz counter }
+; { #R33699(SoundRequest) | one-shot sound trigger }
+; { #R33700(CrewIndex) | current crew member (0..6) }
+; { #R33701(AlienTargetPtr) | pointer to current crew record }
+; { #R33703(AlienTargetID) | crew ID being targeted (255=none) }
+; { #R33704(AlienActiveFlag) | alien is loose flag }
+; { #R33706(JonesRoom) | Jones the cat's current room (255 = off-map) }
+; { #R33731(SoundReqFlag) | pending sound parameters }
+; { #R33734(SprScreenAddrA) | crew sprite A destination }
+; { #R33736(SprScreenAddrB) | crew sprite B destination }
+; { #R33737(MusicActiveFlag) | music phrase is playing }
+; { #R33739(AnimFrameCnt) | crew animation tick }
+; TABLE#
 ; .
 ; All cells in this block now carry meaningful labels; the
 ; message-queue cluster (MsgDrawnCol through MsgLastEnqueued) is
-; documented at TickMessageQueue (#R37363).
+; documented at #R37363(TickMessageQueue).
 @label=AlienFlags
 b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D, 3=U, 4=Fire)
 @label=CorridorCursor
@@ -4260,13 +4296,13 @@ b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D
 @label=AlienTargetPtr
  33701 DEFB 134,115          ; pointer to the alien-target / Android ActorRecords slot
 @label=AlienTargetID
- 33703 DEFB 9                ; In the Long Game this is the **Android** slot index (1..7): the dormant traitor crew member that UpdateAlien (#R40826) activates on first encounter with the alien (the first frame AlienActiveFlag is set and the slot still has its template +0=+7=0). Once activated, the Android enters action state 7 and wounds nearby crew via CrewAction7_Handler (#R40757). Values >= 8 (e.g. ShortGameInit's hard-wired 9) disable the mechanic — TriggerAlienEvent (#R41264) treats them as "no valid target".
+ 33703 DEFB 9                ; In the Long Game this is the ANDROID slot index (1..7): the dormant traitor crew member that #R40826(UpdateAlien) activates on first encounter with the alien (the first frame AlienActiveFlag is set and the slot still has its template +0=+7=0). Once activated, the Android enters action state 7 and wounds nearby crew via #R40757(CrewAction7_Handler). Values >= 8 (e.g. ShortGameInit's hard-wired 9) disable the mechanic — #R41264(TriggerAlienEvent) treats them as "no valid target".
 @label=AlienActiveFlag
  33704 DEFB 0                ; 255 once the alien has taken 6+ wounds while the
                              ; Android is still dormant (TriggerAlienEvent
                              ; #R41264); gates all Android hostility
 @label=SoundPending
- 33705 DEFB 0                ; SoundPending: nonzero = a sound effect is queued; PlayMusic (#R44880) plays and clears it
+ 33705 DEFB 0                ; SoundPending: nonzero = a sound effect is queued; #R44880(PlayMusic) plays and clears it
 @label=JonesRoom
  33706 DEFB 6                ; Jones the cat's current room (255 = off-map)
 @label=JonesMoveTimer
@@ -4349,48 +4385,53 @@ b33792 DEFB 10,5
 ;
 ; Word table with a clever triple use. The action key (HandleInput at
 ; $881B) dispatches table[room_mode] with room_mode from #R31252:
-;    0-1  RoomModeDispatch   (#R35314)
-;    2-3  LocationListAction (#R35338) — Indicate Location list,
-;         pages 1 (rooms 0-16) and 2 (rooms 17-33)
-;    4    GetItemPick        (#R35578) — item picked from the Get strip
+; #TABLE(default,,:w)
+; { =h Mode | =h Handler }
+; { 0-1 | #R35314(RoomModeDispatch) }
+; { 2-3 | #R35338(LocationListAction) — Indicate Location list, pages 1
+;   (rooms 0-16) and 2 (rooms 17-33) }
+; { 4 | #R35578(GetItemPick) — item picked from the Get strip }
+; TABLE#
 ; For modes 0 and 1 RoomModeDispatch then re-dispatches on the cursor
 ; ROW through overlapping halves of this same table (entry 5 onward =
 ; base $840C, entry 23 onward = base $8430):
 ; .
 ; Mode-0 rows (orders screen), base $840C:
-;    0     "Order:" header       -> RoomHandlerNop (#R35448)
-;    1-7   crew slots 1-7        -> OpenCrewRoomView (#R35163)
-;    8     " Indicate "          -> IndicateLocation (#R35222): opens
-;                                   the room-location list (mode 2)
-;    9     " Location "          -> nop (2nd row of the 2-row label)
-;    10-11 " Display  "/"  Level"-> nop (header for the deck rows)
-;    12-14 Upper/Middle/Lower    -> SelectDeckMap (#R35210): deck map
-;    15-18 blank                 -> nop
+; #TABLE(default,,,:w)
+; { =h Row | =h Cell | =h Handler }
+; { 0 | "Order:" header | #R35448(RoomHandlerNop) }
+; { 1-7 | crew slots 1-7 | #R35163(OpenCrewRoomView) }
+; { 8 | " Indicate " | #R35222(IndicateLocation): opens the
+;   room-location list (mode 2) }
+; { 9 | " Location " | nop (2nd row of the 2-row label) }
+; { 10-11 | " Display  "/"  Level   " | nop (header for the deck rows) }
+; { 12-14 | Upper/Middle/Lower | #R35210(SelectDeckMap): deck map }
+; { 15-18 | blank | nop }
+; TABLE#
 ; .
 ; Mode-1 rows (room view / action menu), base $8430:
-;    0     "move to:" header     -> nop
-;    1     "Grille" (open duct)  -> MoveThroughGrille (#R35560)
-;    2-6   exit rooms            -> MoveToRoom (#R35382)
-;    7     " use:" header        -> nop
-;    8     front-hand item       -> RoomHandlerNop2 (#R35449); but the
-;                                   pre-dispatch hook ($B2C0) zeroes the
-;                                   actor's action countdown — pressing
-;                                   the held-item row cancels a pending
-;                                   timed job
-;    9     back-hand item        -> SwapHeldItems (#R35451)
-;    10    "Get Item"            -> GetItemMenu (#R35638)
-;    11    "Leave Item"          -> LeaveItemHandler (#R35725)
-;    12    "Special" header      -> nop
-;    13    special action        -> $8BCB -> SpecialRowAction ($B306):
-;                                   52 ATTACK / 49 RmveGrille / 238 =
-;                                   RmveGrille swapped to ATTACK under
-;                                   the cursor (hostile in the room —
-;                                   see PreDispatchHook $B2B9)
-;    14    "Get Jones"           -> GetJonesHandler (#R35845):
-;                                   needs the Net or the Cat Box
-;    15-16 fixture actions       -> FixtureAction (#R38398)
-;    17    "   QUIT   "          -> QuitRoomView (#R35440)
-;    18    blank                 -> nop (reuses CrewActionDispatch+0)
+; #TABLE(default,,,:w)
+; { =h Row | =h Cell | =h Handler }
+; { 0 | "move to:" header | nop }
+; { 1 | "Grille" (open duct) | #R35560(MoveThroughGrille) }
+; { 2-6 | exit rooms | #R35382(MoveToRoom) }
+; { 7 | " use:" header | nop }
+; { 8 | front-hand item | #R35449(RoomHandlerNop2); but the pre-dispatch
+;   hook ($B2C0) zeroes the actor's action countdown — pressing the
+;   held-item row cancels a pending timed job }
+; { 9 | back-hand item | #R35451(SwapHeldItems) }
+; { 10 | "Get Item" | #R35638(GetItemMenu) }
+; { 11 | "Leave Item" | #R35725(LeaveItemHandler) }
+; { 12 | "Special" header | nop }
+; { 13 | special action | $8BCB -> SpecialRowAction ($B306): 52 ATTACK /
+;   49 RmveGrille / 238 = RmveGrille swapped to ATTACK under the cursor
+;   (hostile in the room — see PreDispatchHook $B2B9) }
+; { 14 | "Get Jones" | #R35845(GetJonesHandler): needs the Net or the
+;   Cat Box }
+; { 15-16 | fixture actions | #R38398(FixtureAction) }
+; { 17 | "   QUIT   " | #R35440(QuitRoomView) }
+; { 18 | blank | nop (reuses CrewActionDispatch+0) }
+; TABLE#
 ; .
 ; The mode-1 row words for rows 11-17 are the "RoomDispatchTailExtra"
 ; bytes at #R33862; row 18 overlaps CrewActionDispatch's first entry.
@@ -4411,46 +4452,50 @@ w33794 DEFW 35314,35314,35338,35338
 ; Three back-to-back data tables (once misclassified as a code routine,
 ; "GetCorridorTableEntry"):
 ; .
-;   #R33862 (14 bytes, 7 × 16-bit pointers) — RoomDispatchTailExtra, the
-;       tail of the RoomDispatchTable at #R33794: the mode-1 row words for
-;       rows 11-17 (see that table's header), sharing the same small
-;       handler pool.
-;   #R33876 (16 bytes, 8 × 16-bit pointers) — CrewActionDispatch,
-;       indexed by crew/alien action state in (IX+3). Action 0 returns
-;       early; actions 1-7 jump to the matching handler. Used by the
-;       routine at #R36014.
-;   #R33892 (744 bytes) — MessageTextTable, 34 strings terminated
-;       by byte 255. Substitution codes inside the strings: 254 = actor
-;       name, 253 = target name, 252 = room name, 145 = apostrophe glyph.
-;       Walked and rendered by the routine at #R37221.
+; #LIST
+; { #R33862 (14 bytes, 7 × 16-bit pointers) — RoomDispatchTailExtra, the
+;   tail of the #R33794(RoomDispatchTable): the mode-1 row words for
+;   rows 11-17 (see that table's header), sharing the same small
+;   handler pool. }
+; { #R33876 (16 bytes, 8 × 16-bit pointers) — CrewActionDispatch,
+;   indexed by crew/alien action state in (IX+3). Action 0 returns
+;   early; actions 1-7 jump to the matching handler. Used by the
+;   routine at #R36014. }
+; { #R33892 (744 bytes) — MessageTextTable, 34 strings terminated
+;   by byte 255. Substitution codes inside the strings: 254 = actor
+;   name, 253 = target name, 252 = room name, 145 = apostrophe glyph.
+;   Walked and rendered by the routine at #R37221. }
+; LIST#
 ; .
-;       Triggers (message # -> firing condition):
-;         0  Jones enters a living crew member's room (#R36859)
-;         1  alien attack tick, victim strength still >= 4
-;         2  Get Jones action succeeds (JonesRoom := 255 = carried)
-;         3/4  crew nets / hits the alien (CrewHitsAlien outcomes)
-;         5/6/7  weapon spent: Tracker / extinguisher (also fire handler
-;                with no charges) / Laser
-;         8  room damage event, cell value 55
-;         9  fire breaks out in a room
-;         10 alien attack tick, victim strength 2-3
-;         11/12 hypersleep pod entered (#R38529) / completed (#R38784)
-;         13/14 destruct lever armed / aborted (DestructArm/DestructAbort)
-;         15 engine-room fire fully extinguished
-;         16/17 airlock blown (BlowLock) / resealed (SealLock)
-;         18 alien re-enters via ShuttleBay after surviving an airlock
-;            blow
-;         19 actor stands beside Jones's strip cells 20/21
-;         20 actor shares a room with a dead crew member
-;         21 victim strength exhausted - collapse
-;         22/23/24/25 accumulated room damage crosses the '3x' threshold
-;            in CommdCentr / Computer / Life Suppt / Narcissus (AddRoomDamage
-;            #R38186, damage digits at #R30006)
-;         26 oxygen clock reaches "05:00"
-;         27/28 launch check: Jones missing / crew not all aboard
-;            (LaunchGate #R40212)
-;         29/30/31/32 Android combat set (UpdateAlien / CrewHitsAndroid)
-;         33 Long Game opening: chestburster host named (LongGameInit)
+; Triggers (message # -> firing condition):
+; #TABLE(default,,:w)
+; { =h Msg | =h Firing condition }
+; { 0 | Jones enters a living crew member's room (#R36859) }
+; { 1 | alien attack tick, victim strength still >= 4 }
+; { 2 | Get Jones action succeeds (JonesRoom := 255 = carried) }
+; { 3/4 | crew nets / hits the alien (CrewHitsAlien outcomes) }
+; { 5/6/7 | weapon spent: Tracker / extinguisher (also fire handler with
+;   no charges) / Laser }
+; { 8 | room damage event, cell value 55 }
+; { 9 | fire breaks out in a room }
+; { 10 | alien attack tick, victim strength 2-3 }
+; { 11/12 | hypersleep pod entered (#R38529) / completed (#R38784) }
+; { 13/14 | destruct lever armed / aborted (DestructArm/DestructAbort) }
+; { 15 | engine-room fire fully extinguished }
+; { 16/17 | airlock blown (BlowLock) / resealed (SealLock) }
+; { 18 | alien re-enters via ShuttleBay after surviving an airlock blow }
+; { 19 | actor stands beside Jones's strip cells 20/21 }
+; { 20 | actor shares a room with a dead crew member }
+; { 21 | victim strength exhausted - collapse }
+; { 22/23/24/25 | accumulated room damage crosses the '3x' threshold in
+;   CommdCentr / Computer / Life Suppt / Narcissus
+;   (#R38186(AddRoomDamage), damage digits at #R30006) }
+; { 26 | oxygen clock reaches "05:00" }
+; { 27/28 | launch check: Jones missing / crew not all aboard
+;   (#R40212(LaunchGate)) }
+; { 29/30/31/32 | Android combat set (UpdateAlien / CrewHitsAndroid) }
+; { 33 | Long Game opening: chestburster host named (LongGameInit) }
+; TABLE#
 @ignoreua
 @label=RoomDispatchTailExtra
 b33862 DEFW 35725,35448  ; rows 11-12
@@ -4587,10 +4632,10 @@ b33862 DEFW 35725,35448  ; rows 11-12
  34590 DEFB 253
  34591 DEFB 255
 ; #32: "{actor} hits the Android"
-; Enqueued by CrewHitsAndroid (#R40941). The "Android" is the long-game
+; Enqueued by #R40941(CrewHitsAndroid). The "Android" is the long-game
 ; AlienTargetID slot (#R33703) — the dormant traitor crew member that
-; UpdateAlien (#R40826) activates on first encounter with the alien.
-; The actor placeholder is filled from CrewIndex (#R33700) = the slot
+; #R40826(UpdateAlien) activates on first encounter with the alien.
+; The actor placeholder is filled from #R33700(CrewIndex) = the slot
 ; currently being dispatched in combat state 4 — whichever crew
 ; member stands in the Android's room when the ATTACK order fires
 ; (CrewAction4_Handler matches on the room byte).
@@ -4610,7 +4655,7 @@ b33862 DEFW 35725,35448  ; rows 11-12
 ; at $A405) to pack the active directional / fire controls into
 ; #R33682. Bit 4 = fire/action, bit 3 = right (key 8), bit 2 = left
 ; (key 5), bit 1 = up (key 6), bit 0 = down (key 7).
-; Used by the routine at #R34684 (HandleInput).
+; Used by the routine at #R34684(HandleInput).
 ;
 @ignoreua
 @label=ScanInput
@@ -4657,10 +4702,13 @@ c34640 LD HL,33682   ; HL points to AlienFlags
 ; Reads the keyboard and moves the corridor cursor. Calls the key-scanner
 ; at #R34636, which packs five keys into #R33682 (set bit = pressed):
 ; bit 0 = key 8, bit 1 = key 5, bit 2 = key 7, bit 3 = key 6, bit 4 =
-; key 0 (action). While the action key is held the border flashes
-; yellow/black; on RELEASE control jumps to #R34840, which dispatches
-; through RoomDispatchTable (#R33794) on the current room mode
-; (#R31252) — this is how a room's action handler / menu is opened.
+; key 0 (action).
+; .
+; While the action key is held the border flashes yellow/black; on
+; RELEASE control jumps to #R34840, which dispatches through
+; #R33794(RoomDispatchTable) on the current room mode (#R31252) — this
+; is how a room's action handler / menu is opened.
+; .
 ; Otherwise: key 6 -> #R34743 (advance the cursor along the corridor),
 ; key 7 -> #R34788 (retreat), and keys 8/5 move between rows when the
 ; room view has more than one row (mode != 0).
@@ -4900,15 +4948,18 @@ c34933 CALL 35146    ; erase/freeze marker channel B
 
 ; AnimateCrewA
 ;
-; Animates marker channel A — the walking crew figure that marks the
-; viewed room on the deck map (placed by PlaceRoomMarkerA #R35101).
-; Skips if bit 7 of the animation-freeze flag at #R31263 is set.
-; Decrements the frame counter at #R33739; when it reaches zero,
-; resets the counter to 10 and XOR-blits two consecutive 3×12-byte sprite
-; frames from the animation table at #R26853 (indexed by the frame phase in
-; #R31263 bits 0-1) onto the display at the address stored in SprDestA
-; (#R33686). Calling this routine twice per frame (once to erase, once to
-; draw the next frame) produces flicker-free sprite animation via
+; Animates marker channel A — the walking crew figure that marks the viewed
+; room on the deck map (placed by #R35101(PlaceRoomMarkerA)). Skips if bit 7
+; of the animation-freeze flag at #R31263 is set.
+; .
+; Decrements the frame counter at #R33739; when it reaches zero, resets
+; the counter to 10 and XOR-blits two consecutive 3×12-byte sprite
+; frames from the animation table at #R26853 (indexed by the frame
+; phase in #R31263 bits 0-1) onto the display at the address stored in
+; #R33686(SprDestA).
+; .
+; Calling this routine twice per frame (once to erase, once to draw the
+; next frame) produces flicker-free sprite animation via
 ; double-buffered XOR.
 ; .
 ; Used by the routines at #R36457, #R39718 and #R43242.
@@ -4956,10 +5007,10 @@ c34967 LD A,(31263)  ; A = animation-freeze / frame-phase byte (#R31263)
 ; AnimateCrewB
 ;
 ; Animates marker channel B — the blinking box cursor on a candidate
-; room (placed by PlaceRoomMarkerB #R35128). Identical logic to
-; #R34967 (AnimateCrewA) but uses a faster frame rate (counter resets to 5
+; room (placed by #R35128(PlaceRoomMarkerB)). Identical logic to
+; #R34967(AnimateCrewA) but uses a faster frame rate (counter resets to 5
 ; rather than 10), the B-set animation table at #R26861, and the
-; B-channel screen address at SpriteDestAddr (#R33688). Cycles through four
+; B-channel screen address at #R33688(SpriteDestAddr). Cycles through four
 ; cursor shapes (RoomCursor0-3) at twice the speed of the crew walk
 ; animation.
 ; .
@@ -5031,7 +5082,7 @@ c35065 LD C,12       ;
 ;
 ; A = room id (0-33) -> HL = display-file address
 ; of the room's indicator box on its deck map, from
-; RoomMarkerAddrTable (#R26569).
+; #R26569(RoomMarkerAddrTable).
 @label=GetRoomMarkerAddr
 c35088 ADD A,A       ;
  35089 LD D,0        ;
@@ -5051,7 +5102,7 @@ c35088 ADD A,A       ;
 ; Aim marker channel A (the walking crew figure that
 ; marks the viewed room on the deck map) at the current room (#R31242)
 ; and draw its first frame; no marker on the Narcissus (deck type 3).
-; Channel A then keeps animating via AnimateCrewA (#R34967).
+; Channel A then keeps animating via #R34967(AnimateCrewA).
 @label=PlaceRoomMarkerA
 c35101 LD A,(31243)  ; on the Narcissus (type 3)?
  35104 CP 3          ;
@@ -5074,10 +5125,10 @@ c35101 LD A,(31243)  ; on the Narcissus (type 3)?
 ; .
 ; Aim marker channel B (the "candidate room"
 ; blinker) at room A and draw its first frame. Used for the exit row
-; under the cursor in the room view (UpdateRoomMarkerB #R34933) and
+; under the cursor in the room view (#R34933(UpdateRoomMarkerB)) and
 ; for a room picked from the Indicate Location list
-; (LocationListAction #R35338). Channel B then keeps blinking via
-; AnimateCrewB (#R35016).
+; (#R35338(LocationListAction)). Channel B then keeps blinking via
+; #R35016(AnimateCrewB).
 @label=PlaceRoomMarkerB
 c35128 CALL 35088    ; HL = marker address of room A
 @nowarn=33688
@@ -5116,13 +5167,15 @@ c35146 LD HL,31264   ;
 ; selected slot (#R31241) for everything that follows (menu dispatch,
 ; action timers, the alien-presence check at #R45760). The menu
 ; cursor is parked on the action menu's QUIT row (17, value 61).
-; SelectSlotByDrawIdx (#R31721) then points IX at the slot's
+; .
+; #R31721(SelectSlotByDrawIdx) then points IX at the slot's
 ; ActorRecords entry and caches its current room (#R31242) and deck
-; type (#R31243). Bails back to the orders screen (InitGameView) if
-; the slot has been removed (IX+7 nonzero) or if the alien is loose
-; and currently targeting this crew member (the encounter sequence
-; owns the screen); otherwise builds the room view via
-; RedrawRoomScene (#R32719).
+; type (#R31243).
+; .
+; Bails back to the orders screen (InitGameView) if the slot has been
+; removed (IX+7 nonzero) or if the alien is loose and currently
+; targeting this crew member (the encounter sequence owns the screen);
+; otherwise builds the room view via #R32719(RedrawRoomScene).
 ;
 @nowarn=33683
 @label=OpenCrewRoomView
@@ -5173,17 +5226,20 @@ c35210 LD A,(33683)  ; A = cursor row (12-14)
 
 ; IndicateLocation — orders-screen row 8 (" Indicate "/" Location ")
 ;
-; Opens the room-location list: replaces the menu strip with a pageable
-; list of room names. Page 1 (room mode 2, entered here) lists rooms
-; 0-16; page 2 (room mode 3, entered at #R35228) lists rooms 17-33 —
-; the Narcissus (34) is never listed. The 19 CorridorPosTable cells
-; become: cell 0 = 62 "Other List" (switches to the other page),
-; cells 1-17 = the seventeen room ids, cell 18 = 61 "   QUIT   "
-; (returns to the orders screen). The cursor starts on QUIT. While the
-; list is up, the action key dispatches straight to LocationListAction
-; (#R35338) via RoomDispatchTable entries 2/3: picking a room draws its
-; deck map in the map pane with the room's indicator box blinking on it
-; (marker channel B).
+; Opens the room-location list: replaces the menu strip with a pageable list
+; of room names. Page 1 (room mode 2, entered here) lists rooms 0-16; page 2
+; (room mode 3, entered at #R35228) lists rooms 17-33 — the Narcissus (34) is
+; never listed.
+; .
+; The 19 CorridorPosTable cells become: cell 0 = 62 "Other List"
+; (switches to the other page), cells 1-17 = the seventeen room ids,
+; cell 18 = 61 "   QUIT   " (returns to the orders screen). The cursor
+; starts on QUIT.
+; .
+; While the list is up, the action key dispatches straight to
+; #R35338(LocationListAction) via RoomDispatchTable entries 2/3: picking a
+; room draws its deck map in the map pane with the room's indicator box
+; blinking on it (marker channel B).
 ; .
 ; Used by the routines at #R33794 and #R35338.
 @label=IndicateLocation
@@ -5233,7 +5289,7 @@ c35228 LD A,3        ; room mode 3: page 2,
 ; Renders the room-location list built above: the " Location " title on
 ; screen row 0, then the 19 CorridorPosTable cells (room names and the
 ; two control rows) on rows 1-19, and finally the cursor highlight via
-; HighlightMenuRow (#R34882).
+; #R34882(HighlightMenuRow).
 @label=DrawLocationList
 c35290 LD A,80       ; draw title 80 " Location " on row 0
  35292 CALL 31634    ;
@@ -5280,15 +5336,20 @@ c35314 CALL 45753    ; A = room mode (0 or 1 here)
 ; LocationListAction — action key in the room-location list (modes 2/3)
 ;
 ; Dispatched directly from RoomDispatchTable entries 2 and 3, on the
-; cell value under the cursor: 61 "   QUIT   " leaves the list and
-; rebuilds the orders screen (InitGameView #R31417); 62 "Other List"
-; switches to the other page (mode 2 -> page 2, mode 3 -> page 1);
-; any other value is a room id — show where that room is: look up its
-; deck in RoomTypeTable (#R29905), make it the displayed deck
-; (RoomTypeByte), redraw the map pane and set the room's indicator box
-; blinking on it (marker channel B via PlaceRoomMarkerB #R35128). The
-; list stays up, so several rooms can be looked up in a row; note the
-; displayed deck keeps its last value after QUIT.
+; cell value under the cursor:
+; #LIST
+; { 61 "   QUIT   " leaves the list and rebuilds the orders screen
+;   (#R31417(InitGameView)) }
+; { 62 "Other List" switches to the other page (mode 2 -> page 2,
+;   mode 3 -> page 1) }
+; { any other value is a room id — show where that room is: look up its
+;   deck in #R29905(RoomTypeTable), make it the displayed deck
+;   (RoomTypeByte), redraw the map pane and set the room's indicator
+;   box blinking on it (marker channel B via
+;   #R35128(PlaceRoomMarkerB)) }
+; LIST#
+; The list stays up, so several rooms can be looked up in a row; note
+; the displayed deck keeps its last value after QUIT.
 @label=LocationListAction
 c35338 LD A,(33685)  ; A = cell value under the cursor
  35341 CP 61         ; "   QUIT   "?
@@ -5378,7 +5439,7 @@ c35449 RET           ;
 ;
 ; Action on the back-item row (9): swap the actor's front and back
 ; hands — exchange HeldItemFront/HeldItemBack, flip the two markers
-; in ItemLocations (#R29940) by +/-32, adjust the sprite position by
+; in #R29940(ItemLocations) by +/-32, adjust the sprite position by
 ; the difference of the two courage bonuses, and redraw the front item's
 ; name.
 @label=SwapHeldItems
@@ -5459,13 +5520,12 @@ c35560 LD A,64       ; base time 64
 
 ; GetItemPick
 ;
-; Room mode 4: the "Get Item" picker strip is up (see GetItemMenu,
-; #R35638) and the action key fires on a row. QUIT rebuilds the room
-; scene; otherwise the picked row's entry in RoomItemList (#R29962)
-; is the item id to take: it goes into the front hand (marker
-; 160+slot in ItemLocations (#R29940), courage/morale raised by
-; ItemCourageBonus) if that hand is free, else into the back hand
-; (128+slot).
+; Room mode 4: the "Get Item" picker strip is up (see #R35638(GetItemMenu))
+; and the action key fires on a row. QUIT rebuilds the room scene; otherwise
+; the picked row's entry in #R29962(RoomItemList) is the item id to take: it
+; goes into the front hand (marker 160+slot in #R29940(ItemLocations),
+; courage/morale raised by ItemCourageBonus) if that hand is free, else into
+; the back hand (128+slot).
 @label=GetItemPick
 c35578 LD A,(33685)  ; row value under the cursor
  35581 CP 61         ; QUIT?
@@ -5502,9 +5562,9 @@ c35578 LD A,(33685)  ; row value under the cursor
 ; GetItemMenu
 ;
 ; Action on the "Get Item" row (10): rebuild the strip
-; as an item picker listing the room's items — copy RoomItemList
-; (#R29962) into CorridorPosTable, converting each id to its name
-; string via ItemIdToString (#R31857) — put the cursor on the QUIT
+; as an item picker listing the room's items — copy
+; #R29962(RoomItemList) into CorridorPosTable, converting each id to its name
+; string via #R31857(ItemIdToString) — put the cursor on the QUIT
 ; row and switch to room mode 4 (GetItemPick above handles the
 ; selection).
 @ignoreua
@@ -5613,7 +5673,7 @@ c35790 CP 52         ; "  ATTACK  " selected?
  35792 JP Z,37493    ; yes: attack handler
 ; This entry point is used by the routine at #R45830.
 ; StartGrilleRemoval: queue the timed RmveGrille job — action state 3
-; fires CrewAction3_RemoveGrille (#R36150) when the countdown expires.
+; fires #R36150(CrewAction3_RemoveGrille) when the countdown expires.
 @label=StartGrilleRemoval
 *35795 LD A,(31241)  ; base time = GrilleTimeBySlot[slot]
  35798 LD E,A        ; (100-180 frames, crew-dependent)
@@ -5658,9 +5718,9 @@ c35814 PUSH AF       ; A = base time from the caller
  35841 LD (IX+0),A   ; arm the countdown
  35844 RET           ;
 ; GetJonesHandler — the "Get Jones" menu row (mode-1 row 14), reached
-; through RoomDispatchTailExtra (#R33862). Needs the Net (item 16) or
+; through #R33862(RoomDispatchTailExtra). Needs the Net (item 16) or
 ; the Cat Box (17) in the front hand; rolls a script nibble against
-; JonesCatchBySlot (#R33762) — the Net gets -4 on the threshold, so it
+; #R33762(JonesCatchBySlot) — the Net gets -4 on the threshold, so it
 ; is the easier tool. Failure spooks Jones into moving at once;
 ; success destroys the tool, puts "Cat in Net"/"Cat in Box" (tool+4)
 ; in the catcher's hand and takes Jones off the map.
@@ -5731,10 +5791,10 @@ c35814 PUSH AF       ; A = base time from the caller
 
 ; ResetCrewTimers — per-frame crew action-countdown walk
 ;
-; Called from GameEntry (#R36457) each frame: walk all 8 actor records,
+; Called from #R36457(GameEntry) each frame: walk all 8 actor records,
 ; decrement every non-parked action countdown (IX+0), and fire the
-; queued action on the 1->0 transition — DispatchCrewAction (#R36014)
-; then jumps through CrewActionDispatch (#R33876) into the per-state
+; queued action on the 1->0 transition — #R36014(DispatchCrewAction)
+; then jumps through #R33876(CrewActionDispatch) into the per-state
 ; handlers (#R36034 move/idle, #R36101 duct transit, #R36150 remove
 ; grille, ...).
 @label=ResetCrewTimers
@@ -5767,10 +5827,10 @@ c35973 PUSH IX       ;
 
 ; DispatchCrewAction
 ;
-; Dispatches one crew/alien actor through #R33876 (CrewActionDispatch) based on
+; Dispatches one crew/alien actor through #R33876(CrewActionDispatch) based on
 ; (IX+3). Action 0 returns early. Otherwise jumps to the per-action handler
 ; via JP (HL). Called on an actor's action-countdown 1->0 transition:
-; the crew-timer walk (ResetCrewTimers #R35973) goes through the CALL Z
+; the crew-timer walk (#R35973(ResetCrewTimers)) goes through the CALL Z
 ; trampoline at the tail of the #R44880 block.
 @label=DispatchCrewAction
 c36014 CALL 36579    ; preliminary actor update
@@ -5842,8 +5902,9 @@ c36034 LD A,(IX+2)   ; A = destination room
 ; CrewAction2_DuctTransit — climb through a grille (action state 2)
 ;
 ; Dispatched via CrewActionDispatch entry 2: the actor crosses between
-; a room and the duct run above it (queued by MoveThroughGrille
-; #R35560 or the AI's duct hop at #R37132). The cramped ducts cost a
+; a room and the duct run above it (queued by
+; #R35560(MoveThroughGrille) or the AI's duct hop at #R37132). The
+; cramped ducts cost a
 ; point of courage to enter; climbing back out earns it back.
 @label=CrewAction2_DuctTransit
 c36101 LD E,(IX+1)   ; E = current room (bit 6 = in ducts)
@@ -5882,7 +5943,7 @@ c36101 LD E,(IX+1)   ; E = current room (bit 6 = in ducts)
 ; Dispatched via CrewActionDispatch entry 3.
 ; Fires when a crew member's timed "RmveGrille" job completes (queued
 ; by the AI at $90EE or by the action-menu Special handler at $8BD3):
-; clears the actor's room's byte in RoomGrilleState (#R30076), queues
+; clears the actor's room's byte in #R30076(RoomGrilleState), queues
 ; a sound effect, and rebuilds the room view if that room is on
 ; screen.
 @label=CrewAction3_RemoveGrille
@@ -5910,11 +5971,11 @@ c36150 LD A,1        ; queue a sound effect for PlayMusic
 ;
 ; After an actor moves: scan the 7 crew rooms for other actors on the
 ; same spot (same room, same side of the ducts), record up to two in
-; RoomMateA/B, then run MoraleFromCompanion (#R36283) three times,
+; RoomMateA/B, then run #R36283(MoraleFromCompanion) three times,
 ; rotating the (self, mateA, mateB) triple through NearestCrewC so
 ; each of the three has his morale recomputed with the other two as
 ; companions. A third room-mate's slot would spill past RoomMateB
-; into RoomModeByte (#R31252) — PreActionCheck's 3-crew room cap is
+; into #R31252(RoomModeByte) — PreActionCheck's 3-crew room cap is
 ; what keeps that from happening.
 @label=RecalcMorale
 c36187 LD HL,65535   ; RoomMateA/B = 255/255 (none)
@@ -5992,15 +6053,14 @@ c36187 LD HL,65535   ; RoomMateA/B = 255/255 (none)
 
 ; MoraleFromCompanion — morale = courage + companion effects
 ;
-; Recompute the morale (+6) of the crew member whose slot is in
-; NearestCrewC from his courage (+5) plus a term per companion slot
-; in NearestCrewA/B: a live companion adds his own courage - 2 (a
-; brave friend reassures, a coward unnerves); a dead one costs 1 —
-; and a freshly dead body (status 1) is "found": everyone's courage
-; decays, msg #20 fires and the body's status moves to 2 so it is
-; only found once. Standing in one of the rooms in NearRoomList
-; (#R33692, the tracker-holder scan at #R38903) is worth +1. The sum
-; is clamped to 0 on underflow.
+; Recompute the morale (+6) of the crew member whose slot is in NearestCrewC
+; from his courage (+5) plus a term per companion slot in NearestCrewA/B: a
+; live companion adds his own courage - 2 (a brave friend reassures, a coward
+; unnerves); a dead one costs 1 — and a freshly dead body (status 1) is
+; "found": everyone's courage decays, msg #20 fires and the body's status
+; moves to 2 so it is only found once. Standing in one of the rooms in
+; (#R33692(NearRoomList), the tracker-holder scan at #R38903) is worth +1. The
+; sum is clamped to 0 on underflow.
 @label=MoraleFromCompanion
 c36283 XOR A         ; companion-effect accumulator = 0
 @nowarn=33698
@@ -6111,7 +6171,7 @@ c36283 XOR A         ; companion-effect accumulator = 0
 ; Grim events shake the whole crew: -1 courage and -1 morale for all
 ; 7 crew members (each clamped at 0). Triggered by finding a body
 ; (#R36283) and by witnessing a kill (#R45585). The loop body is
-; split: DecayMoraleStep (#R45539) handles the morale byte and the
+; split: #R45539(DecayMoraleStep) handles the morale byte and the
 ; loop stepping, then refreshes the viewed condition line.
 @label=DecayCrewCourage
 c36428 LD HL,29579   ; HL -> slot 1's courage byte (+5)
@@ -6186,7 +6246,7 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
  36542 CP 0          ; nibble 0 = no-op
  36544 CALL Z,33589  ; skip a second nibble
  36547 CP 0          ;
- 36549 CALL Z,33600  ; two consecutive 0s → ResetScriptPtr (reseed from SEED)
+ 36549 CALL Z,33600  ; two consecutive 0s → ResetScriptPtr (reseed from FRAMES)
  36552 JR 36481      ; tail-loop back to the start of the per-frame body
 ; PreActionCheck's Android branch (see #R36579): the Android quietly
 ; disobeys an ATTACK order.
@@ -6208,16 +6268,21 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
 ;
 ; Called by DispatchCrewAction just before an actor's queued action
 ; fires; returns A = 0 to cancel the dispatch, nonzero to let it
-; proceed. The alien (slot 0) is always allowed. The Android quietly
-; refuses an ATTACK order — it is re-assigned a wander instead
-; (#R36554). A crew member whose morale hits 0 (Broken) panics: in
-; the ducts he opens the grille and climbs out; in a room he drops
-; everything he carries and flees to a random adjacent room. And a
-; pending move (state 1/2) is held back (retried in ~32+ frames) when
-; the destination duct cell is already occupied — the ducts are
-; single-file — or the destination room already holds 3 crew (the
-; room-occupancy cap). Heading into the ducts also takes morale >= 2
-; (at least "Uneasy"); a more shaken crew member panics instead.
+; proceed.
+; #LIST
+; { The alien (slot 0) is always allowed. }
+; { The Android quietly refuses an ATTACK order — it is re-assigned a
+;   wander instead (#R36554). }
+; { A crew member whose morale hits 0 (Broken) panics: in the ducts he
+;   opens the grille and climbs out; in a room he drops everything he
+;   carries and flees to a random adjacent room. }
+; { A pending move (state 1/2) is held back (retried in ~32+ frames)
+;   when the destination duct cell is already occupied — the ducts are
+;   single-file — or the destination room already holds 3 crew (the
+;   room-occupancy cap). }
+; { Heading into the ducts also takes morale >= 2 (at least "Uneasy");
+;   a more shaken crew member panics instead. }
+; LIST#
 ; .
 ; Used by the routine at #R36014.
 @nowarn=33700
@@ -6351,7 +6416,7 @@ c36717 LD A,(IX+1)   ; A = actor's current room (bit 6 = duct network)
 
 ; ScriptNibbleToDirection
 ;
-; Maps a 4-bit ROM-script command (in A, from #R33589 AdvanceScriptPtr) to
+; Maps a 4-bit ROM-script command (in A, from #R33589(AdvanceScriptPtr)) to
 ; one of 5 direction-class codes: 0-2 → 0 (no direction), 3-5 → 1, 6-8 → 2,
 ; 9-11 → 3, 12-15 → 4. Used to translate the deterministic ROM-byte stream
 ; into AI movement decisions.
@@ -6430,21 +6495,23 @@ c36793 LD HL,65535   ; forget the cached room-mates and
 
 ; UpdateJones
 ;
-; Walks Jones the cat around the ship. #R33706 (JonesRoom) is the cat's
-; current room (255 = off-map / disabled); #R33707 (JonesMoveTimer) is a
+; Walks Jones the cat around the ship. #R33706(JonesRoom) is the cat's
+; current room (255 = off-map / disabled); #R33707(JonesMoveTimer) is a
 ; frame countdown — when it hits zero (every 255 frames, ~5s) Jones takes
 ; one step along the corridor adjacency map (#R29171), steered by the ROM
 ; script via ScriptNibbleToDirection like every other wanderer.
 ; .
 ; House-keeping around each step:
-;   - if Jones LEFT the room currently shown in the room view (mode 1),
-;     cell 14 of the corridor strip (#R29630 + 14) is cleared;
-;   - if a living crew member (record +7 = 0) occupies Jones's new room,
-;     message #0 "{actor} sees Jones the cat" is enqueued via #R37176;
-;   - if Jones stepped into the ALIEN's room (slot 0 byte +1), the move
-;     is re-rolled — the cat refuses to share a room with the alien;
-;   - if Jones ENTERED the viewed room, sprite strip 51 (the cat) is
-;     drawn into corridor cell 14.
+; #LIST
+; { if Jones LEFT the room currently shown in the room view (mode 1),
+;   cell 14 of the corridor strip (#R29630 + 14) is cleared }
+; { if a living crew member (record +7 = 0) occupies Jones's new room,
+;   message #0 "{actor} sees Jones the cat" is enqueued via #R37176 }
+; { if Jones stepped into the ALIEN's room (slot 0 byte +1), the move
+;   is re-rolled — the cat refuses to share a room with the alien }
+; { if Jones ENTERED the viewed room, sprite strip 51 (the cat) is
+;   drawn into corridor cell 14 }
+; LIST#
 @label=UpdateJones
 @ssub=LD A,(JonesRoom)
 c36859 LD A,(33706)  ; A = Jones's room —
@@ -6554,16 +6621,18 @@ c36859 LD A,(33706)  ; A = Jones's room —
 ; -> slot 0; crew get their actions from the player). When the
 ; alien's countdown is parked (0), pick its next move from the ROM
 ; script:
-;   - crew share its room -> action state 5 (attack tick, timer 60)
-;   - alone with the grille still in place -> 3-in-16 chance to rip
-;     the grille out itself (state 3, timer 50)
-;   - alone, grille open -> 6-in-16 chance to slip through it into /
-;     out of the ducts (state 2, timer 50)
-;   - otherwise wander to an adjacent room (state 1, timer 80); when
-;     the roll leaves it where it stands, it damages the room instead
-;     (+1 damage point — the alien trashes whatever it is lurking in)
+; #LIST
+; { crew share its room -> action state 5 (attack tick, timer 60) }
+; { alone with the grille still in place -> 3-in-16 chance to rip
+;   the grille out itself (state 3, timer 50) }
+; { alone, grille open -> 6-in-16 chance to slip through it into /
+;   out of the ducts (state 2, timer 50) }
+; { otherwise wander to an adjacent room (state 1, timer 80); when
+;   the roll leaves it where it stands, it damages the room instead
+;   (+1 damage point — the alien trashes whatever it is lurking in) }
+; LIST#
 ; .
-; The entry goes through AIActionSelect (#R45721), which first
+; The entry goes through #R45721(AIActionSelect), which first
 ; rescues the alien from spot 98 (ducts "over" the Narcissus, an
 ; escape artifact — see that routine).
 ; .
@@ -6964,7 +7033,7 @@ c37363 LD A,(33709)  ; message currently holding?
 ; TickMessageQueue's trailing "DEFB 50" (LD (nn),A) — falling through
 ; from $9271 stores A into MsgDrawnCol and lands on the RET at $9274
 ; (see the overlap note above). The combat/damage engine follows from
-; StartAttack (#R37493) onward.
+; #R37493(StartAttack) onward.
 @label=XorHAddE
 @ignoreua
 c37490 XOR H         ; $AC,$83: the operand address ($83AC = MsgDrawnCol)
@@ -7001,30 +7070,33 @@ c37493 LD A,40       ; base countdown 40
 ; fires. The actor attacks whatever hostile shares his room — the
 ; actor's room byte (+1) is compared with each hostile's:
 ; .
-;   1. The actor stands in the alien's room ($737F) → CALL #R37584
-;      (CrewHitsAlien) — message #3 "nets the ALIEN" or #4 "hits the
-;      ALIEN".
-; .
-;   2. Else, if the alien is loose (AlienActiveFlag) and the actor
-;      stands in the **Android's** room (record via AlienTargetPtr
-;      #R33701) → CALL #R40941 (CrewHitsAndroid) — message #31
-;      "nets {target}" or #32 "hits the Android".
-; .
-;   3. Neither hostile is here (it moved away before the countdown
-;      expired): the attack fizzles silently.
+; #LIST
+; { 1. The actor stands in the alien's room ($737F) → CALL
+;   #R37584(CrewHitsAlien) — message #3 "nets the ALIEN" or #4 "hits
+;   the ALIEN". }
+; { 2. Else, if the alien is loose (AlienActiveFlag) and the actor
+;   stands in the ANDROID's room (record via #R33701(AlienTargetPtr))
+;   → CALL #R40941(CrewHitsAndroid) — message #31 "nets {target}" or
+;   #32 "hits the Android". }
+; { 3. Neither hostile is here (it moved away before the countdown
+;   expired): the attack fizzles silently. }
+; LIST#
 ; .
 ; The Android role: LongGameInit randomly picks one of crew slots
 ; {1, 2, 4, 6} (Dallas / Kane / Ash / Parker) and stores it in
-; AlienTargetID (#R33703). That crew member is dormant at first — they
-; appear and behave like a normal crew member. UpdateAlien (#R40826)
-; turns them hostile the first frame the alien is loose and the slot
-; is still in its template state (the "first encounter"), stamping
-; them into action state 7 and giving them targets via NearestCrewA/B
-; (see #R37876). After activation the Android wounds nearby crew
-; through CrewAction7_Handler (#R40757); CrewHitsAndroid here is the
-; **player-response branch**, dispatched when other crew engage the
-; Android in combat state 4. (The Short Game hard-wires AlienTargetID
-; = 9 and never re-points AlienTargetPtr, so branch 2 is inert there.)
+; #R33703(AlienTargetID). That crew member is dormant at first — they
+; appear and behave like a normal crew member.
+; .
+; #R40826(UpdateAlien) turns them hostile the first frame the alien is
+; loose and the slot is still in its template state (the "first
+; encounter"), stamping them into action state 7 and giving them
+; targets via NearestCrewA/B (see #R37876).
+; .
+; After activation the Android wounds nearby crew through
+; #R40757(CrewAction7_Handler); CrewHitsAndroid here is the
+; PLAYER-RESPONSE branch, dispatched when other crew engage the Android
+; in combat state 4. (The Short Game hard-wires AlienTargetID = 9 and
+; never re-points AlienTargetPtr, so branch 2 is inert there.)
 ; .
 ; After dispatch, CALL #R44924 parks IX+3 (action state) and returns.
 @ignoreua
@@ -7072,12 +7144,12 @@ c37520 LD A,(29567)  ; A = the alien's current room (slot 0 byte +1)
 @ignoreua
 ;
 ; Alien-side combat handler. Called from
-; CrewAction4_Handler (#R37547) when the state-4 actor stands in the
-; alien's room ($737F).
+; #R37520(CrewAction4_Handler) (its #R37547(DispatchHitsAlien) branch)
+; when the state-4 actor stands in the alien's room ($737F).
 ; .
-; The outcome depends on the WEAPON: FindHeldItems (#R31823) loads the
-; attacking crew member's front-hand item id into HeldItemFront
-; (#R31248) and the effect dispatches on it. It also houses the
+; The outcome depends on the WEAPON: #R31823(FindHeldItems) loads the
+; attacking crew member's front-hand item id into
+; #R31248(HeldItemFront) and the effect dispatches on it. It also houses the
 ; Harpoon Gun's kill primitive at #R37733.
 ; .
 ; Guards: re-asserts that the attacker still shares the alien's room,
@@ -7085,36 +7157,35 @@ c37520 LD A,(29567)  ; A = the alien's current room (slot 0 byte +1)
 ; member who is Collapsed or Broken/Shaken cannot fight. Then the
 ; front-hand weapon decides:
 ; .
-;   17 (Cat Box)       → silent no-op
-;   >= 20 (Cat in Net/Box, or 255 = bare hands) → silent no-op
-;   16 (Net)           → "net" outcome: stamp 255 into the alien's
-;                        countdown byte ($737E, slot 0 byte +0) —
-;                        netted, out of action — destroy the Net
-;                        (single-use), then enqueue message #3
-;                        "{actor} nets the ALIEN"
-;   else               → "hit" outcome at #R37646: enqueue message #4
-;                        "{actor} hits the ALIEN", then dispatch on
-;                        the weapon id:
-;                          - 0-5 Elctrc Prd/Incineratr, 18-19 Spanner:
-;                            INC alien's wound counter at $7382 (byte
-;                            +4 of slot 0). If it reaches the
-;                            AlienKillThreshold (15), JP 44125 (alien-
-;                            defeated path).
-;                          - 6-7 Tracker: the tracker shatters on the
-;                            alien (destroyed, msg #5 "Tracker is
-;                            broken") but still wounds it (+1)
-;                          - 8-11 Fire Extng: no wound — spend a
-;                            charge (ItemCharges) and try to scare
-;                            the alien off (AlienScareCheck); with no
-;                            charge left, msg #6 "extinguisher empty".
-;                          - 12 Harpn Gun: the kill primitive at
-;                            #R37733 — see AlienKillPrimitive below.
-;                          - 13-15 Laser Pist: spend a charge, wound
-;                            the alien (+2) and damage the room (+6);
-;                            with no charge left, msg #7 "Laser is
-;                            exhausted".
+; #TABLE(default,,:w)
+; { =h Weapon | =h Outcome }
+; { 17 (Cat Box) | silent no-op }
+; { >= 20 (Cat in Net/Box, or 255 = bare hands) | silent no-op }
+; { 16 (Net) | "net" outcome: stamp 255 into the alien's countdown byte
+;   ($737E, slot 0 byte +0) — netted, out of action — destroy the Net
+;   (single-use), then enqueue message #3 "{actor} nets the ALIEN" }
+; { else | "hit" outcome at #R37646: enqueue message #4 "{actor} hits
+;   the ALIEN", then dispatch on the weapon id (table below) }
+; TABLE#
 ; .
-; This routine parallels #R40941 (CrewHitsAndroid) in structure but
+; The "hit" outcome's weapon-id dispatch:
+; #TABLE(default,,:w)
+; { =h Weapon id | =h Effect }
+; { 0-5 Elctrc Prd/Incineratr, 18-19 Spanner | INC alien's wound counter
+;   at $7382 (byte +4 of slot 0). If it reaches the AlienKillThreshold
+;   (15), JP 44125 (alien-defeated path). }
+; { 6-7 Tracker | the tracker shatters on the alien (destroyed, msg #5
+;   "Tracker is broken") but still wounds it (+1) }
+; { 8-11 Fire Extng | no wound — spend a charge (ItemCharges) and try to
+;   scare the alien off (AlienScareCheck); with no charge left, msg #6
+;   "extinguisher empty" }
+; { 12 Harpn Gun | the kill primitive at #R37733 — see AlienKillPrimitive
+;   below }
+; { 13-15 Laser Pist | spend a charge, wound the alien (+2) and damage
+;   the room (+6); with no charge left, msg #7 "Laser is exhausted" }
+; TABLE#
+; .
+; This routine parallels #R40941(CrewHitsAndroid) in structure but
 ; refers to the alien (slot 0 at $737E) and emits messages #3 / #4
 ; instead of #31 / #32.
 @label=CrewHitsAlien
@@ -7210,18 +7281,21 @@ c37584 LD A,(29567)  ; A = the alien's current room (slot 0 byte +1)
  37727 JP 37555      ;
 @ignoreua
 ; AlienKillPrimitive — the Harpoon Gun outcome, reached from
-; CrewHitsAlien (#R37584) when the attacker's front-hand item
-; (#R31248) is 12, the Harpn Gun. A harpoon strike is devastating for
-; both sides: #R37876 gathers the attacker and up to two other crew
-; in the alien's room (NearestCrewC + NearestCrewA/B); for each,
-; every ItemLocations (#R29940) entry that the slot carries or that
-; lies in the alien's room is destroyed (set to 255), and if the slot
-; is still alive (+7 = 0) it is killed (+7 = 1, strength +4 cleared)
-; — firing the harpoon kills the firer and every bystander. The room
-; takes 15 damage points, the alien's own wound counter is bumped by
-; 5 (harpoon hits push it quickly over the kill threshold → dies via
-; JP 44125), the corridor view is rebuilt (CALL 31417) and the chain
-; continues at AlienScareCheck (#R37992).
+; #R37584(CrewHitsAlien) when the attacker's front-hand item
+; (#R31248) is 12, the Harpn Gun.
+; .
+; A harpoon strike is devastating for both sides: #R37876 gathers the
+; attacker and up to two other crew in the alien's room (NearestCrewC +
+; NearestCrewA/B); for each, every #R29940(ItemLocations) entry that
+; the slot carries or that lies in the alien's room is destroyed (set
+; to 255), and if the slot is still alive (+7 = 0) it is killed
+; (+7 = 1, strength +4 cleared) — firing the harpoon kills the firer
+; and every bystander.
+; .
+; The room takes 15 damage points, the alien's own wound counter is
+; bumped by 5 (harpoon hits push it quickly over the kill threshold →
+; dies via JP 44125), the corridor view is rebuilt (CALL 31417) and the
+; chain continues at #R37992(AlienScareCheck).
 @ignoreua
 @label=HarpoonGate
 *37730 JP NZ,37831   ; weapon != 12 → 13-15, the laser branch
@@ -7378,11 +7452,10 @@ c37876 LD HL,65535   ; NearestCrewA/B = 255/255 (none)
 
 ; DestroyFrontItem
 ;
-; The current actor's front-hand item is used up (Net) or broken
-; (Tracker): point HL at its ItemLocations entry, aim the draw
-; pointer at the front-hand menu row, and fall to DestroyHeldItem
-; (#R44938), which wipes the item and promotes the back-hand item to
-; the front hand.
+; The current actor's front-hand item is used up (Net) or broken (Tracker):
+; point HL at its ItemLocations entry, aim the draw pointer at the front-hand
+; menu row, and fall to #R44938(DestroyHeldItem), which wipes the item and
+; promotes the back-hand item to the front hand.
 ; .
 ; Used by the routines at #R37584 and #R40941.
 @label=DestroyFrontItem
@@ -7397,7 +7470,7 @@ c37924 LD HL,18486   ; draw pointer -> the front-hand row
 
 ; UpdateHandRows
 ;
-; Tail of DestroyHeldItem (#R44938) for the on-screen case, entered
+; Tail of #R44938(DestroyHeldItem) for the on-screen case, entered
 ; with A = 255 and B = the back-hand item: if both hands are now
 ; empty, blank the front row; otherwise promote the back-hand item to
 ; the front hand (redraw both rows, move its ItemLocations marker
@@ -7584,7 +7657,7 @@ c38182 LD HL,29567   ; E = the alien's current room
  38185 LD E,(HL)     ;
 ; This entry point is used by the routines at #R39159 and #R40941.
 ; AddRoomDamage: add A damage points to room E's damage meter — a
-; 2-digit ASCII pair in RoomDamageDigits (#R30006; tens digit is
+; 2-digit ASCII pair in (#R30006(RoomDamageDigits); tens digit is
 ; the severity the engine scan at #R39041 compares against). Crossing
 ; "30" raises the room-specific alarm messages #22-#25.
 @label=AddRoomDamage
@@ -7678,7 +7751,7 @@ c38182 LD HL,29567   ; E = the alien's current room
 ;
 ; A room's damage meter has passed 99 (or the destruct countdown ran
 ; out): ~7 seconds of screen flashing with a rainbow border, then the
-; ship is lost (DamageGameOver #R44524).
+; ship is lost (#R44524(DamageGameOver)).
 ; .
 ; Used by the routines at #R38182 and #R38784.
 @label=DamageOverflowFlash
@@ -7707,7 +7780,7 @@ c38317 PUSH BC       ;
 ; the "The Nostromo will explode in .. minutes .. seconds" screen.
 @label=EngineFixCounts
  38351 DEFB 0,0,0    ; per-engine-room (17/18/19) fire-fighting progress,
-                     ; +1 per squirt (FightFireSquirt #R38575)
+                     ; +1 per squirt (#R38575(FightFireSquirt))
 @label=ShipTickCounter
  38354 DEFB 50       ; ship-systems tick countdown (reloaded with 100 by
                      ; the engine-state scan at #R39041)
@@ -7743,7 +7816,7 @@ c38317 PUSH BC       ;
 ; oxygen clock, event pacing, engine states and the alien encounter
 ; animation. The fixture-action handlers the action key dispatches
 ; into (destruct lever, hypersleep pods, fires, airlocks, launch
-; console) follow as their own routines from FixtureAction (#R38398).
+; console) follow as their own routines from #R38398(FixtureAction).
 ; .
 ; Used by the routine at #R36457.
 @label=UpdateRoomActors
@@ -7760,10 +7833,15 @@ c38379 CALL 38846    ; DestructTicker: countdown + border flash
 ; The action-key (key 0) handler for corridor fixtures,
 ; dispatched via the RoomDispatchTable tail. Reads the corridor cell
 ; under the cursor and dispatches on the CELL VALUE:
-;   70 -> arm self-destruct     72 -> abort self-destruct
-;   74 -> enter hypersleep pod  76 -> fight fire (engine rooms)
-;   78 -> Narcissus launch      53/54 -> blow airlock #1/#2
-;   55/56 -> seal airlock #1/#2
+; #TABLE(default,,:w)
+; { =h Cell | =h Fixture action }
+; { 70 / 72 | arm / abort self-destruct }
+; { 74 | enter hypersleep pod }
+; { 76 | fight fire (engine rooms) }
+; { 78 | Narcissus launch }
+; { 53/54 | blow airlock #1/#2 }
+; { 55/56 | seal airlock #1/#2 }
+; TABLE#
 @label=FixtureAction
 c38398 CALL 45846    ; cancel any pending countdown;
  38401 LD HL,29630   ; A = the cursor row —
@@ -7990,7 +8068,7 @@ c38674 LD A,55       ; cell := blown-door sprite 55
 ; CrewAction6_Handler — hypersleep completed (action state 6)
 ;
 ; Dispatched via CrewActionDispatch entry 6: the 255-frame countdown
-; queued by HypersleepStart (#R38529) has expired. The sleeper leaves
+; queued by #R38529(HypersleepStart) has expired. The sleeper leaves
 ; play (+7 = 255, room = 255 — the same removed pattern as the
 ; chestburster host) and whatever he carried is stacked in the Cryo
 ; Vault (room 15).
@@ -8073,13 +8151,15 @@ c38784 LD HL,(33700) ; L = the sleeper
 ;
 ; The two Trackers (items 6/7) and the carried cat ("Cat in Net"/"Cat
 ; in Box", items 20/21) are motion detectors: for each one held in a
-; FRONT hand (marker >= 160), TrackerHolderRoom (#R38941) sweeps the
+; FRONT hand (marker >= 160), #R38941(TrackerHolderRoom) sweeps the
 ; rooms adjacent to the holder and fills the matching NearRoomList
-; entry (#R33692: tracker #1, tracker #2, the cat) with the holder's
-; room if nothing moves next door ("all clear" — worth +1 morale to
-; everyone standing there, #R36283), or 255 if something does (which
-; makes the viewed holder's tracker beep, or Jones grow uneasy —
-; ViewedTrackerCheck #R39171).
+; entry (#R33692: tracker #1, tracker #2, the cat) with:
+; #LIST
+; { the holder's room if nothing moves next door ("all clear" — worth
+;   +1 morale to everyone standing there, #R36283) }
+; { or 255 if something does (which makes the viewed holder's tracker
+;   beep, or Jones grow uneasy — #R39171(ViewedTrackerCheck)) }
+; LIST#
 ; .
 ; Used by the routine at #R38379.
 @nowarn=33692
@@ -8391,16 +8471,14 @@ c39242 PUSH IX       ; (BEEPER corrupts IX)
 
 ; CrewAction5_AlienAttack — the alien's attack tick (action state 5)
 ;
-; Dispatched via CrewActionDispatch entry 5, queued by UpdateAlienAI
-; (#R37018) when crew share the alien's spot. Re-gathers the crew on
-; the alien's spot (up to three into NearestCrewC/A/B), picks one by
-; script roll, and drains a strength point: below 2 the victim
-; collapses (VictimItemDrop #R39400, msg #21), at 2-3 msg #10 "is
-; being wounded", and a still-fit victim (4+) gets msg #1 "The ALIEN
-; is attacking {actor}". A chosen victim who is already dead may be
-; dragged off the ship (Wound_PanicRoll, in the #R39400 block), else
-; another gathered slot is tried; with nobody left the alien moves
-; on.
+; Dispatched via CrewActionDispatch entry 5, queued by #R37018(UpdateAlienAI)
+; when crew share the alien's spot. Re-gathers the crew on the alien's spot
+; (up to three into NearestCrewC/A/B), picks one by script roll, and drains a
+; strength point: below 2 the victim collapses (#R39400(VictimItemDrop), msg
+; #21), at 2-3 msg #10 "is being wounded", and a still-fit victim (4+) gets
+; msg #1 "The ALIEN is attacking {actor}". A chosen victim who is already dead
+; may be dragged off the ship (Wound_PanicRoll, in the #R39400 block), else
+; another gathered slot is tried; with nobody left the alien moves on.
 @label=CrewAction5_AlienAttack
 c39256 LD HL,65535   ; NearestCrewA/B = 255/255
 @nowarn=33696
@@ -8896,13 +8974,16 @@ c39830 LD B,2        ; B=2: advance position then blit
 ; 0-4 from the pointer table after JonesPhase) at pixel-X JonesPos on its
 ; fixed track (char rows 9-11). First XORs the ink bits of the 4×2
 ; attribute block under the cat (mask = inverted top-left-of-screen ink,
-; so the flash contrasts with the background). Each sprite row's 3 bytes
-; are sub-shifted by k = JonesPos&7 into 4 output bytes: for k < 4 the
-; SRL/RR chain here right-shifts by k (the self-modifying JR at
-; BlitJonesShiftCode is patched to skip 3-k groups); for k >= 4
-; BlitJonesShifted left-shifts by 8-k instead — same result, at most 4
-; shift passes either way. The DJNZ at the end re-uses B: entered with
-; B=2 (AnimJones) it falls into AdvanceJonesPos for the redraw pass.
+; so the flash contrasts with the background).
+; .
+; Each sprite row's 3 bytes are sub-shifted by k = JonesPos&7 into 4
+; output bytes: for k < 4 the SRL/RR chain here right-shifts by k (the
+; self-modifying JR at BlitJonesShiftCode is patched to skip 3-k
+; groups); for k >= 4 BlitJonesShifted left-shifts by 8-k instead —
+; same result, at most 4 shift passes either way.
+; .
+; The DJNZ at the end re-uses B: entered with B=2 (AnimJones) it falls
+; into AdvanceJonesPos for the redraw pass.
 @label=BlitJonesFrame
 c39832 PUSH BC       ; save B (iteration count)
  39833 LD A,(22528)  ; A = attribute at top-left of screen (AttrFileOrigin)
@@ -9166,8 +9247,9 @@ c40040 SUB 4         ; A = k-4: shift groups to SKIP (8-k of 4 run)
 ; ClearAlienArea
 ;
 ; Clears the 19×20-character area of the display used by the alien
-; encounter picture: stamps the blank tile into each cell via DrawTileA
-; (#R31370 with A=0), then paints the same area's attributes green-ink-
+; encounter picture: stamps the blank tile into each cell via
+; #R31370(DrawTileA) (with A=0), then paints the same area's attributes
+; green-ink-
 ; on-black (4).
 @label=ClearAlienArea
 c40149 LD HL,16384   ; HL = DisplayFile: start of display file
@@ -9220,6 +9302,7 @@ c40149 LD HL,16384   ; HL = DisplayFile: start of display file
 ; column after the first LIVE crew member — the "back to the next
 ; record" step adds 8 from the +1 room byte instead of returning to
 ; +7, so every later slot has its ROOM byte read as a status byte.
+; .
 ; Rooms are almost never 0, so later crew are simply skipped: the
 ; launch really only requires the first-listed living crew member
 ; (plus Jones) to be aboard, and the rest are left behind. The one
@@ -9389,7 +9472,7 @@ b40398 DEFB 0,5  ; phrase 0: notes 0,5
 @label=NotePairScratch
 b40414 DEFB 0,0
 ; PhraseStateScratch — 2 bytes of mutable state used by PlayMusicPhrase:
-;     +0..+1 = current pointer into PhrasePairs
+; the current pointer into PhrasePairs.
 @ignoreua
 @label=PhraseStateScratch
 b40416 DEFB 0,0
@@ -9397,7 +9480,7 @@ b40416 DEFB 0,0
 ; PlayNoteByIndex
 ;
 ; Plays one beeper note via the ZX Spectrum ROM BEEP routine at $03B5.
-; Input: A = note index (0..8) into NoteTable at #R40362. Each table entry
+; Input: A = note index (0..8) into #R40362(NoteTable). Each table entry
 ; is 4 bytes: 2-byte duration (passed in DE) and 2-byte period in T-states
 ; (passed in HL). Used twice per inner iteration of PlayMusicPhrase.
 ;
@@ -9424,13 +9507,14 @@ c40418 ADD A,A       ; A *= 2
 ; PlayMusicPhrase
 ;
 ; Plays the title-screen jingle: 8 successive 2-note phrases drawn from
-; the phrase table at #R40398 (PhrasePairs). Each phrase byte is a (loA,
-; hiB) pair selecting two notes from NoteTable at #R40362 (PlayNoteByIndex).
+; the phrase table at #R40398(PhrasePairs). Each phrase byte is a (loA,
+; hiB) pair selecting two notes from #R40362(NoteTable) via
+; #R40418(PlayNoteByIndex).
 ; The inner loop repeats each pair 8 times (so the phrase audibly trills
 ; on its 2-note interval), and the keyboard rows are polled between
 ; notes — any key press aborts playback via Music_Abort.
 ; .
-; Used by the routine at #R42581 (DrawIntroScreen).
+; Used by the routine at #R42581(DrawIntroScreen).
 @nowarn=40398
 @label=PlayMusicPhrase
 @ssub=LD HL,PhrasePairs
@@ -9484,16 +9568,18 @@ c40439 LD HL,40398   ; HL = PhrasePairs base
 
 ; Intro-screen tile map and attribute table
 ;
-; Two screen tables consumed by DrawIntroScreen (#R42581):
-;   IntroTileMap at #R40504 (165 bytes) — a 15 × 11 grid of tile indices.
-;       The outer loop drives 15 vertical column-strips and the inner
-;       loop draws 11 tiles down each strip via #R31369. A tile index N
-;       is converted into a bitmap address by multiplying by 8 and adding
-;       #R62000 (TileBitmaps).
-;   IntroAttributes at #R40669 (88 bytes) — an 8 × 11 grid of attribute
-;       bytes painted into the bottom rows of the attribute file. Mostly
-;       bright-white-on-black (7) with magenta (4) accents and a couple
-;       of brighter cells (56, 60).
+; Two screen tables consumed by #R42581(DrawIntroScreen):
+; #LIST
+; { #R40504(IntroTileMap) (165 bytes) — a 15 × 11 grid of tile indices.
+;   The outer loop drives 15 vertical column-strips and the inner
+;   loop draws 11 tiles down each strip via #R31369. A tile index N
+;   is converted into a bitmap address by multiplying by 8 and adding
+;   #R62000(TileBitmaps). }
+; { #R40669(IntroAttributes) (88 bytes) — an 8 × 11 grid of attribute
+;   bytes painted into the bottom rows of the attribute file. Mostly
+;   bright-white-on-black (7) with magenta (4) accents and a couple
+;   of brighter cells (56, 60). }
+; LIST#
 ;
 @ignoreua
 @label=IntroTileMap
@@ -9525,10 +9611,10 @@ b40504 DEFB 0,0,0,1,2,3,4,0,0,0,0  ; col  0
 ; CrewAction7_Handler — the Android's attack tick (action state 7)
 ;
 ; Dispatched via CrewActionDispatch entry 7 for the activated Android
-; (see UpdateAlien #R40826). Gathers the crew sharing the Android's
+; (see #R40826(UpdateAlien)). Gathers the crew sharing the Android's
 ; room (#R37876) and wounds the first live one found (NearestCrewA,
 ; then NearestCrewB): strength (+4) -1. Below 2 the victim collapses
-; (VictimItemDrop #R39400, msg #21); at 2-3, msg #29 announces the
+; (#R39400(VictimItemDrop), msg #21); at 2-3, msg #29 announces the
 ; assault; a still-fit victim (4+) suffers silently. Returns without
 ; action when no live room-mate remains.
 @label=CrewAction7_Handler
@@ -9588,42 +9674,46 @@ c40757 CALL 37876    ; gather the crew in the Android's room
 ; UpdateAlien
 @ignoreua
 ;
-; Per-frame Android activation check. Once TriggerAlienEvent
-; (#R41264) has set AlienActiveFlag — the crew has wounded the alien
-; 6+ times — this routine pulls the alien_target slot into action
-; state 7 (attack), turning the Android from a normal-looking crew
-; member into a hostile actor that wounds the crew in its room.
+; Per-frame Android activation check. Once #R41264(TriggerAlienEvent) has set
+; AlienActiveFlag — the crew has wounded the alien 6+ times — this routine
+; pulls the alien_target slot into action state 7 (attack), turning the
+; Android from a normal-looking crew member into a hostile actor that wounds
+; the crew in its room.
 ; .
 ; Returns immediately if any of:
-;   - AlienActiveFlag (#R33704) == 0 (the trigger has not fired)
-;   - alien_target's byte +0 != 0 (Android already activated; the
-;     activation stamp at #R40849 sets +0 = 80, so on every subsequent
-;     frame this guard short-circuits the routine)
-;   - alien_target's byte +7 != 0 (lockout sentinel — CrewHitsAndroid's
-;     collapse path at #R41039 writes +7 = 2, and that prevents
-;     re-activation if the Android has been defeated)
+; #LIST
+; { #R33704(AlienActiveFlag) == 0 (the trigger has not fired) }
+; { alien_target's byte +0 != 0 (Android already activated; the
+;   activation stamp at #R40849 sets +0 = 80, so on every subsequent
+;   frame this guard short-circuits the routine) }
+; { alien_target's byte +7 != 0 (lockout sentinel — CrewHitsAndroid's
+;   collapse path at #R41039 writes +7 = 2, and that prevents
+;   re-activation if the Android has been defeated) }
+; LIST#
 ; .
 ; In other words: the routine fires exactly ONCE per game for the
 ; Android, the first frame the trigger is set and the slot is still
-; in its as-issued template state (LongGameCrewInit, #R41444, gives
+; in its as-issued template state (#R41444(LongGameCrewInit), gives
 ; +0 = +7 = 0 for every slot).
 ; .
 ; When all guards pass:
-;   1. IX = alien_target record; stamp (IX+0) = 80 (activation marker
-;      and timer that also blocks future re-entry into this branch).
-;   2. Cache AlienTargetID into CrewIndex (#R33700) for downstream
-;      message enqueues.
-;   3. CALL #R37876 — gather up to two other crew standing in the
-;      Android's room into NearestCrewA/B (its victim pool).
-;   4. If at least one of them is alive: enqueue message #30
-;      "{actor} is attacking {target}" with actor = AlienTargetID
-;      (the Android's name, e.g. "Ash is attacking Lambert"), put the
-;      alien_target into action state 7 with timer 40, then return.
-;   5. If nobody is there to attack, fall through to #R36717 (wander)
-;      and reset the Android to action state 1.
+; #LIST
+; { 1. IX = alien_target record; stamp (IX+0) = 80 (activation marker
+;   and timer that also blocks future re-entry into this branch). }
+; { 2. Cache AlienTargetID into #R33700(CrewIndex) for downstream
+;   message enqueues. }
+; { 3. CALL #R37876 — gather up to two other crew standing in the
+;   Android's room into NearestCrewA/B (its victim pool). }
+; { 4. If at least one of them is alive: enqueue message #30
+;   "{actor} is attacking {target}" with actor = AlienTargetID
+;   (the Android's name, e.g. "Ash is attacking Lambert"), put the
+;   alien_target into action state 7 with timer 40, then return. }
+; { 5. If nobody is there to attack, fall through to #R36717 (wander)
+;   and reset the Android to action state 1. }
+; LIST#
 ; .
 ; Once the Android is in state 7, subsequent ResetCrewTimers frames
-; dispatch it through CrewAction7_Handler (#R40757) which wounds a
+; dispatch it through #R40757(CrewAction7_Handler) which wounds a
 ; live crew member in its room and can collapse them via #R39400
 ; (msg #21 "{actor} has collapsed").
 ; .
@@ -9719,43 +9809,40 @@ c40826 LD A,(33704)  ; A = AlienActiveFlag
 ;
 ; Android-side combat handler, called from CrewAction4_Handler
 ; (#R37542) when the state-4 actor stands in the Android's room (the
-; slot picked by LongGameInit from LongGameTargetTable #R41390,
-; id in AlienTargetID #R33703, record pointer in AlienTargetPtr
-; #R33701). The parallel of CrewHitsAlien (#R37584): same guards,
+; slot picked by LongGameInit from #R41390(LongGameTargetTable),
+; id in #R33703(AlienTargetID), record pointer in
+; #R33701(AlienTargetPtr)). The parallel of #R37584(CrewHitsAlien): same guards,
 ; same weapon dispatch on the attacker's front-hand item, but aimed
 ; at the Android and emitting messages #31 / #32 instead of #3 / #4.
 ; .
 ; Guards: strength (IX+4) >= 2 and morale (IX+6) >= 2 — a Collapsed
 ; or Broken/Shaken crew member cannot fight. Then the weapon decides:
 ; .
-;   17 (Cat Box) / >= 20 (Cat in Net/Box, bare hands) → silent no-op
-;   16 (Net)           → stamp 255 into the Android's countdown byte
-;                        (+0) — netted, out of action — destroy the
-;                        Net, msg #31 "{actor} nets {target}"
-;   0-5, 18-19         → wound: Android strength (+4) -1; below 2 it
-;                        collapses — status (+7) = 2 (the lockout
-;                        UpdateAlien's gate at #R40841 respects),
-;                        msg #21 "{Android} has collapsed", and
-;                        AlienActiveFlag is cleared
-;   6-7 (Tracker)      → tracker shatters (destroyed, msg #5) but
-;                        still wounds it
-;   8-11 (Fire Extng)  → spend a charge, no effect (msg #6 if empty)
-;   12 (Harpn Gun)     → the blast kills the attacker and every
-;                        bystander and adds 15 room damage — but
-;                        unlike the alien-side loop at #R37763, the
-;                        final compare in the item wipe at #R41142
-;                        has an INVERTED branch (JR Z where the alien
-;                        side falls through), so it destroys every
-;                        ItemLocations entry EXCEPT items lying loose
-;                        in this room: all items held by anyone or
-;                        lying anywhere else on the ship are wiped —
-;                        and the Android itself takes no wound.
-;                        Verified in the simulator: items in other
-;                        rooms / other hands -> 255, floor items
-;                        survive, attacker +7 = 1. An original-game
-;                        bug, preserved as-is.
-;   13-15 (Laser Pist) → spend a charge, +6 room damage, then the
-;                        normal wound path (msg #7 if empty)
+; #TABLE(default,,:w)
+; { =h Weapon | =h Outcome }
+; { 17 (Cat Box) / >= 20 (Cat in Net/Box, bare hands) | silent no-op }
+; { 16 (Net) | stamp 255 into the Android's countdown byte (+0) —
+;   netted, out of action — destroy the Net, msg #31 "{actor} nets
+;   {target}" }
+; { 0-5, 18-19 | wound: Android strength (+4) -1; below 2 it collapses
+;   — status (+7) = 2 (the lockout UpdateAlien's gate at #R40841
+;   respects), msg #21 "{Android} has collapsed", and AlienActiveFlag
+;   is cleared }
+; { 6-7 (Tracker) | tracker shatters (destroyed, msg #5) but still
+;   wounds it }
+; { 8-11 (Fire Extng) | spend a charge, no effect (msg #6 if empty) }
+; { 12 (Harpn Gun) | the blast kills the attacker and every bystander
+;   and adds 15 room damage — but unlike the alien-side loop at
+;   #R37763, the final compare in the item wipe at #R41142 has an
+;   INVERTED branch (JR Z where the alien side falls through), so it
+;   destroys every ItemLocations entry EXCEPT items lying loose in this
+;   room: all items held by anyone or lying anywhere else on the ship
+;   are wiped — and the Android itself takes no wound. Verified in the
+;   simulator: items in other rooms / other hands -> 255, floor items
+;   survive, attacker +7 = 1. An original-game bug, preserved as-is. }
+; { 13-15 (Laser Pist) | spend a charge, +6 room damage, then the
+;   normal wound path (msg #7 if empty) }
+; TABLE#
 @label=CrewHitsAndroid
 c40941 LD A,(IX+4)   ; attacker's strength >= 2?
  40944 CP 2          ;
@@ -9969,8 +10056,8 @@ c40941 LD A,(IX+4)   ; attacker's strength >= 2?
 ; Per-frame check: once the crew has wounded the alien 6 or more
 ; times (slot 0 byte +4), and a valid Android slot exists
 ; (AlienTargetID < 8 — Long Game only) whose record is still dormant
-; (+7 = 0), set AlienActiveFlag = 255 via AlienEventDispatch
-; (#R45732). UpdateAlien (#R40826) sees the flag and turns the
+; (+7 = 0), set AlienActiveFlag = 255 via
+; #R45732(AlienEventDispatch). #R40826(UpdateAlien) sees the flag and turns the
 ; Android hostile — the traitor reveals himself when the alien is in
 ; danger.
 ; .
@@ -10046,7 +10133,7 @@ c41264 LD HL,29570   ; HL -> the alien's wound counter (+4)
 @ignoreua
 ;
 ; 16-byte lookup table indexed by a ROM-script nibble (0-15) inside
-; CommonGameInit (#R42380). The looked-up value is ORed with $40
+; #R42380(CommonGameInit). The looked-up value is ORed with $40
 ; (direction flag, bit 6) and written to $737F (the alien slot's
 ; identity/heading byte), randomising the alien's starting attributes.
 @label=AlienInitTable
@@ -10056,13 +10143,14 @@ b41358 DEFB 3,4,5,9,10,11,13,14,18,19,20,20,22,24,25,30
 @ignoreua
 ;
 ; 16-byte lookup table indexed by a ROM-script nibble (0-15) inside
-; LongGameInit (#R42276). Selects which 8-byte record slot at #R29566
-; will be the **chestburster host** for this run — i.e. the crew
-; member whose name will be substituted into the opening status-bar
-; message #33 "Alien has hatched from {actor}" enqueued at #R42362.
+; #R42276(LongGameInit). Selects which 8-byte record slot at #R29566
+; will be the CHESTBURSTER HOST for this run — i.e. the crew member
+; whose name will be substituted into the opening status-bar message
+; #33 "Alien has hatched from {actor}" enqueued at #R42362.
+; .
 ; The chosen slot has byte +1 and byte +7 overwritten with $FF (the
 ; HostMarker pattern); that tag is what every "skip this slot during
-; normal corridor processing" check keys off (e.g. `CP 255` on byte +1
+; normal corridor processing" check keys off (e.g. "CP 255" on byte +1
 ; at #R31739 inside SelectSlotByDrawIdx). Values are restricted to
 ; {1, 2, 5}, so the host is always Dallas, Kane or Lambert.
 @label=LongGameHostSlotTable
@@ -10072,21 +10160,21 @@ b41374 DEFB 1,2,5,1,2,5,1,2,5,1,2,5,1,2,5,2
 @ignoreua
 ;
 ; 16-byte lookup table indexed by a ROM-script nibble (0-15) inside
-; LongGameInit (#R42276). Used to randomise #R33703 (AlienTargetID): the
+; #R42276(LongGameInit). Used to randomise #R33703(AlienTargetID): the
 ; selector loops until it picks a value different from the host slot
-; chosen via #R41374 (LongGameHostSlotTable), then stores the value
+; chosen via #R41374(LongGameHostSlotTable), then stores the value
 ; in AlienTargetID and uses it to compute the targeted crew's record
 ; pointer at #R33701. Values are restricted to {1, 2, 4, 6} = the four
 ; crew slots {Dallas, Kane, Ash, Parker}, always different from the
 ; chestburster host slot.
 ; .
-; This selection is the long-game **Android assignment**. The chosen
-; crew member behaves like a normal crew member at first; UpdateAlien
-; (#R40826) activates them as hostile the first time the alien is
+; This selection is the long-game ANDROID ASSIGNMENT. The chosen
+; crew member behaves like a normal crew member at first;
+; #R40826(UpdateAlien) activates them as hostile the first time the alien is
 ; loose AND their slot is still in template state (i.e. they haven't
 ; been activated or defeated yet). After activation they enter action
-; state 7 and wound their sprite-class kin via CrewAction7_Handler
-; (#R40757). Status-bar messages #30 / #32 name that slot.
+; state 7 and wound their sprite-class kin via
+; #R40757(CrewAction7_Handler). Status-bar messages #30 / #32 name that slot.
 ; .
 ; The four candidate slots correspond to the canonical hatch-victim
 ; (Kane = 2) plus three crew the alien can plausibly puppet (Dallas /
@@ -10098,8 +10186,8 @@ b41390 DEFB 1,2,4,6,1,2,4,6,1,2,4,6,1,2,4,6
 ; InitialItemRooms
 ;
 @ignoreua
-; 22 bytes copied by CommonGameInit (#R42397) to ItemLocations
-; (#R29940): the starting room of every portable item (see the
+; 22 bytes copied by CommonGameInit (at #R42397(CommonInit_ItemsGrilles)) to
+; #R29940(ItemLocations): the starting room of every portable item (see the
 ; ItemLocations header for the id -> name map). The final two entries
 ; are 255 — the "Cat in Net"/"Cat in Box" items don't exist until
 ; Jones is caught.
@@ -10110,7 +10198,8 @@ b41406 DEFB 24,21,20,6,6,16,6,16,27,17,18,19,32,2,2,2
 ; ItemChargesInit
 ;
 @ignoreua
-; 16 bytes copied by CommonGameInit (#R42454) to #R33746 ($83D2): zeros
+; 16 bytes copied by CommonGameInit (at #R42454(CommonInit_Charges)) to
+; #R33746 ($83D2): zeros
 ; the ItemCharges area then writes 3,3,3,3,1,8,8,8 into ItemChargesHi.
 @label=ItemChargesInit
 b41428 DEFB 0,0,0,0,0,0,0,0,3,3,3,3,1,8,8,8
@@ -10118,12 +10207,12 @@ b41428 DEFB 0,0,0,0,0,0,0,0,3,3,3,3,1,8,8,8
 ; LongGameCrewInit
 @ignoreua
 ;
-; 64-byte starting state (eight 8-byte records) copied by LongGameInit
-; (#R42276) into $737E-$73BD: slot 0 ($737E) is the alien, then one
+; 64-byte starting state (eight 8-byte records) copied by
+; #R42276(LongGameInit) into $737E-$73BD: slot 0 ($737E) is the alien, then one
 ; 8-byte record per crew slot ($7386 Dallas ... $73B6 Brett — the
 ; per-line comments below name them).
 ; .
-; Per-record field layout: see #R29566 (ActorRecords). In particular
+; Per-record field layout: see #R29566(ActorRecords). In particular
 ; +1 is the STARTING ROOM (6 = CommdCentr, 27 = Mess) and +4 is the
 ; crew member's strength. The Long Game opens with Dallas, Kane and
 ; Ripley on the bridge and Ash, Lambert and Parker in the Mess — the
@@ -10149,30 +10238,34 @@ b41444 DEFB 0,0,0,0,0,0,0,0      ; slot 0 ALIEN (room written by CommonGameInit)
 ; ShortGameCrewInit
 @ignoreua
 ;
-; 64-byte starting state (eight 8-byte records) copied by ShortGameInit
-; (#R44738) into $737E-$73BD. Same record layout as #R41444
-; (LongGameCrewInit) — see that block for field semantics.
+; 64-byte starting state (eight 8-byte records) copied by
+; #R44738(ShortGameInit) into $737E-$73BD. Same record layout as
+; #R41444(LongGameCrewInit) — see that block for field semantics.
 ; .
 ; Slot occupancy comparison (ShortGameCrewInit vs LongGameCrewInit):
 ; .
-;   slot 0 ALIEN   : all-zero in both
-;   slot 1 Dallas  : Short: $FF in +1/+7 — out of play
-;   slot 2 Kane    : Short: $FF in +1/+7 — out of play
-;   slot 3 Ripley  : alive — starts in CommdCentr (+1=6), strength 4
-;   slot 4 Ash     : Short: $FF in +1/+7 — out of play
-;   slot 5 Lambert : alive — starts in CommdCentr (+1=6), strength 4
-;   slot 6 Parker  : alive — starts in CommdCentr (+1=6), strength 6
-;   slot 7 Brett   : Short: $FF in +1/+7 — out of play
+; #TABLE(default,,:w)
+; { =h Slot | =h Short Game state }
+; { 0 ALIEN | all-zero in both }
+; { 1 Dallas | $FF in +1/+7 — out of play }
+; { 2 Kane | $FF in +1/+7 — out of play }
+; { 3 Ripley | alive — starts in CommdCentr (+1=6), strength 4 }
+; { 4 Ash | $FF in +1/+7 — out of play }
+; { 5 Lambert | alive — starts in CommdCentr (+1=6), strength 4 }
+; { 6 Parker | alive — starts in CommdCentr (+1=6), strength 6 }
+; { 7 Brett | $FF in +1/+7 — out of play }
+; TABLE#
 ; .
 ; The Short Game is the film's final act: Dallas, Kane, Ash and Brett
 ; are already gone (their slots carry the same $FF removed-from-play
 ; pattern the Long Game applies to its single chestburster host), and
-; Ripley, Lambert and Parker start together on the bridge. Combined
-; with the fixed #R33703 AlienTargetID=9 (which the alien-target guard
-; at #R41274 reads as "no valid target", so no crew member turns
-; Android), the Short Game is a pure evade-and-escape scenario —
-; whereas the Long Game uses script randomisation to pick a single
-; chestburster host plus the Android.
+; Ripley, Lambert and Parker start together on the bridge.
+; .
+; Combined with the fixed #R33703(AlienTargetID)=9 (which the
+; alien-target guard at #R41274 reads as "no valid target", so no crew
+; member turns Android), the Short Game is a pure evade-and-escape
+; scenario — whereas the Long Game uses script randomisation to pick a
+; single chestburster host plus the Android.
 @label=ShortGameCrewInit
 b41508 DEFB 0,0,0,0,0,0,0,0      ; slot 0 ALIEN (room written by CommonGameInit)
  41516 DEFB 0,255,0,0,0,0,0,255  ; slot 1 Dallas  — out of play
@@ -10291,13 +10384,13 @@ t41572 DEFM "MAPPING SYMBOLS"  ; "MAPPING SYMBOLS" (ship-map legend title)
 ; Game-mode handler for "2: Long Game" (dispatched from #R43135).
 ; .
 ; The Long Game is the full-length scenario. All 7 crew start alive but
-; ONE of them is selected (via the ROM-traversal script, see #R33589
-; AdvanceScriptPtr) to be the **chestburster host** — the crew member
-; the alien physically hatches out of. That slot is marked by stamping
-; the HostMarker pattern ($FF on bytes +1 and +7 of its 8-byte record)
-; so per-frame routines like #R31721 (SelectSlotByDrawIdx) can skip it
-; with a `CP 255` test on byte +1. The host's name is also baked into
-; the opening status-bar message #33 enqueued at step 7 below.
+; ONE of them is selected (via the ROM-traversal script, see
+; #R33589(AdvanceScriptPtr)) to be the CHESTBURSTER HOST — the crew
+; member the alien physically hatches out of. That slot is marked by
+; stamping the HostMarker pattern ($FF on bytes +1 and +7 of its 8-byte
+; record) so per-frame routines like #R31721(SelectSlotByDrawIdx) can
+; skip it with a "CP 255" test on byte +1. The host's name is also baked
+; into the opening status-bar message #33 enqueued at step 7 below.
 ; .
 ; The script independently chooses the alien's initial stalk target, so
 ; each Long Game has both a different host AND a different first victim.
@@ -10305,49 +10398,55 @@ t41572 DEFM "MAPPING SYMBOLS"  ; "MAPPING SYMBOLS" (ship-map legend title)
 ; The android-traitor mechanic lives on the OTHER randomised slot picked
 ; below: AlienTargetID (LongGameTargetTable values {1, 2, 4, 6} =
 ; Dallas / Kane / Ash / Parker). That slot is dormant at game start —
-; it appears as just another crew member. UpdateAlien (#R40826) flips
-; it hostile on the **first encounter** with the alien: the first
-; frame AlienActiveFlag is non-zero AND the slot still carries the
-; template's zero values in bytes +0 and +7, UpdateAlien stamps it
-; into action state 7 (attack) and arms it with sprite-class kin as
-; targets. From then on the Android wounds nearby crew via
-; CrewAction7_Handler (#R40757), named in status-bar dialogue (msg
-; #30 "{Android} is attacking {target}"). When other crew fight it in
-; combat state 4, CrewHitsAndroid (#R40941, msg #32 "{actor} hits the
-; Android") logs the response. The alien itself kills crew that share
-; its room via CrewHitsAlien (#R37584) and the kill primitive at
-; #R37733 — independent of this Android subplot.
+; it appears as just another crew member.
+; .
+; #R40826(UpdateAlien) flips it hostile on the FIRST ENCOUNTER with the
+; alien: the first frame AlienActiveFlag is non-zero AND the slot still
+; carries the template's zero values in bytes +0 and +7, UpdateAlien
+; stamps it into action state 7 (attack) and arms it with sprite-class
+; kin as targets.
+; .
+; From then on the Android wounds nearby crew via
+; #R40757(CrewAction7_Handler), named in status-bar dialogue (msg #30
+; "{Android} is attacking {target}"). When other crew fight it in combat
+; state 4, #R40941(CrewHitsAndroid) (msg #32 "{actor} hits the Android")
+; logs the response. The alien itself kills crew that share its room via
+; #R37584(CrewHitsAlien) and the kill primitive at #R37733 — independent
+; of this Android subplot.
 ; .
 ; Steps:
-;   1. Point the message queue head (MsgQueueWritePtr #R33741) at the queue base
-;      MessageQueue (#R33714) and clear the two run-state bytes #R33708/#R33709.
-;   2. CALL #R45222: reseed the script pointer from the ZX SEED system
-;      variable and reset the message-dup marker (MsgLastEnqueued #R33743)
-;      to $FFFF.
-;   3. LDIR 64 bytes from #R41444 (LongGameCrewInit) into $737E to populate
-;      the alien slot and the seven crew slots with the long-game starting
-;      state (all crew alive, normal alien position).
-;   4. Pull one script nibble, look it up in #R41374
-;      (LongGameHostSlotTable) to get the host slot index A_host
-;      (one of {1, 2, 5}), then stamp the HostMarker on that record by
-;      overwriting bytes +1 and +7 with $FF. The host's vacated room is
-;      first copied into Brett's room byte (slot 7 +1, $73B7): Brett,
-;      whom LongGameCrewInit leaves in room 0, takes the host's seat so
-;      both dinner-scene groups stay at three crew.
-;   5. Loop pulling more script nibbles, looking them up in #R41390
-;      (LongGameTargetTable), until the looked-up value A_target differs
-;      from A_host — the Android can't be the same slot the alien just
-;      hatched out of.
-;   6. Store A_target in #R33703 (AlienTargetID) — this slot is the
-;      per-run **Android**: a dormant traitor crew member that
-;      UpdateAlien (#R40826) flips hostile on first encounter with the
-;      loose alien.
-;   7. Enqueue message #33 ("Alien has hatched from {actor}") via
-;      #R37176, with the host slot index as the actor parameter — this
-;      is the long game's opening narrative beat.
-;   8. Store &slot[A_target] in #R33701 (AlienTargetPtr) so UpdateAlien and
-;      CrewHitsAndroid can access the Android's crew record directly.
-;   9. Fall through into the common init at #R42380 (CommonGameInit).
+; #LIST
+; { 1. Point the message queue head (#R33741(MsgQueueWritePtr)) at the
+;   queue base #R33714(MessageQueue) and clear the two run-state bytes
+;   #R33708/#R33709. }
+; { 2. CALL #R45222: reseed the script pointer from the ZX FRAMES
+;   system variable and reset the message-dup marker
+;   (#R33743(MsgLastEnqueued)) to $FFFF. }
+; { 3. LDIR 64 bytes from #R41444(LongGameCrewInit) into $737E to
+;   populate the alien slot and the seven crew slots with the long-game
+;   starting state (all crew alive, normal alien position). }
+; { 4. Pull one script nibble, look it up in
+;   #R41374(LongGameHostSlotTable) to get the host slot index A_host
+;   (one of {1, 2, 5}), then stamp the HostMarker on that record by
+;   overwriting bytes +1 and +7 with $FF. The host's vacated room is
+;   first copied into Brett's room byte (slot 7 +1, $73B7): Brett,
+;   whom LongGameCrewInit leaves in room 0, takes the host's seat so
+;   both dinner-scene groups stay at three crew. }
+; { 5. Loop pulling more script nibbles, looking them up in
+;   #R41390(LongGameTargetTable), until the looked-up value A_target
+;   differs from A_host — the Android can't be the same slot the alien
+;   just hatched out of. }
+; { 6. Store A_target in #R33703(AlienTargetID) — this slot is the
+;   per-run ANDROID: a dormant traitor crew member that
+;   #R40826(UpdateAlien) flips hostile on first encounter with the
+;   loose alien. }
+; { 7. Enqueue message #33 ("Alien has hatched from {actor}") via
+;   #R37176, with the host slot index as the actor parameter — this
+;   is the long game's opening narrative beat. }
+; { 8. Store &slot[A_target] in #R33701(AlienTargetPtr) so UpdateAlien
+;   and CrewHitsAndroid can access the Android's crew record directly. }
+; { 9. Fall through into the common init at #R42380(CommonGameInit). }
+; LIST#
 ; .
 ; Used by the dispatcher at #R43134 via the table at #R43135.
 @nowarn=33714
@@ -10443,8 +10542,9 @@ c42276 LD HL,33714   ; HL = MessageQueue (event queue base)
 @ignoreua
 ; This entry point is used by the routine at #R44738.
 ; CommonGameInit: shared post-init for both Short and Long modes. Called
-; (via JP) from #R44767 (ShortGameInit) and fallen into from #R42276
-; (LongGameInit). Resets the alien runtime state, seeds the crew workspace
+; (via JP) from #R44767(ShortGameInit_Done) (the tail of ShortGameInit) and
+; fallen into from #R42276(LongGameInit). Resets the alien runtime state,
+; seeds the crew workspace
 ; tables, clears the corridor cursor at $757C, picks the initial alien
 ; event timer from the script, and switches the room mode to 1 (corridor
 ; view) so the player drops straight into gameplay.
@@ -10571,8 +10671,8 @@ c42515 LD HL,22528   ; HL = #R22528 (start of attribute file)
 
 ; Ship-map screen title and credits
 ;
-; Plain ASCII (previously misclassified as code), drawn by GameModeScreen
-; (#R42821): the big "ALIEN" title (one glyph per cell, 3-column
+; Plain ASCII (previously misclassified as code), drawn by
+; #R42821(GameModeScreen): the big "ALIEN" title (one glyph per cell, 3-column
 ; spacing) and the author/publisher credit lines "John Heap" /
 ; "Argus Press Software".
 @label=StrAlien
@@ -10596,12 +10696,15 @@ t42528 DEFM "ALIEN"
 ;
 ; Draws and animates the Alien title screen. Clears the display, sets the
 ; border black and fills attributes with 0 (black-on-black) so the picture
-; is built invisibly. Renders the title picture — 15 rows × 11 tiles from
-; row 4, col 10: each byte of the tile map at #R40504 indexes the
-; 8-byte-per-tile bitmap array at #R62000, blitted cell by cell, left to
-; right, top to bottom. FillAttributes(7) then reveals it white-on-black,
-; and an 8×11 attribute patch from #R40669 colours the picture's lower
-; half. The five "ALIEN" title letters appear one at a time (3-column
+; is built invisibly.
+; .
+; Renders the title picture — 15 rows × 11 tiles from row 4, col 10:
+; each byte of the tile map at #R40504 indexes the 8-byte-per-tile
+; bitmap array at #R62000, blitted cell by cell, left to right, top to
+; bottom. FillAttributes(7) then reveals it white-on-black, and an 8×11
+; attribute patch from #R40669 colours the picture's lower half.
+; .
+; The five "ALIEN" title letters appear one at a time (3-column
 ; spacing) with a phrase of theme music between letters, the credits are
 ; printed, and the routine keeps playing music phrases while sweeping the
 ; whole keyboard, returning on any keypress.
@@ -10764,11 +10867,14 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
 ; Game / 3: Introduction / 4: Select" from the text table at #R43141.
 ; .
 ; Key input loop reads port $F7FE:
-;   Key 1 — highlight "Short Game"   (selection 0)
-;   Key 2 — highlight "Long Game"    (selection 1)
-;   Key 3 — highlight "Introduction" (selection 2)
-;   Key 4 — confirm: dispatch through the 3-word table at #R43135
-;            to the handler for the highlighted mode
+; #TABLE(default,,:w)
+; { =h Key | =h Effect }
+; { 1 | highlight "Short Game" (selection 0) }
+; { 2 | highlight "Long Game" (selection 1) }
+; { 3 | highlight "Introduction" (selection 2) }
+; { 4 | confirm: dispatch through the 3-word table at #R43135 to the
+;   handler for the highlighted mode }
+; TABLE#
 ; .
 ; "4: Select" is a confirm key, not a fourth game mode.
 ; .
@@ -10949,54 +11055,62 @@ c42821 LD A,4        ; green border,
 ; JP (HL) at #R43134 lands here; the word for the current selection
 ; is loaded into HL and jumped to.
 ; .
-;   Mode 0 — Short Game   → #R44738 (ShortGameInit)
-;   Mode 1 — Long Game    → #R42276 (LongGameInit)
-;   Mode 2 — Introduction → #R43242 (IntroductionMode)
+; #TABLE(default,,:w)
+; { =h Mode | =h Handler }
+; { 0 Short Game | #R44738(ShortGameInit) }
+; { 1 Long Game | #R42276(LongGameInit) }
+; { 2 Introduction | #R43242(IntroductionMode) }
+; TABLE#
 ; .
 ; Short vs Long Game summary (see the two init routines for full detail):
 ; .
-;   AlienTargetID (#R33703):
-;     - Short Game = 9, hard-wired at #R44751. Crucially, this is >= 8,
-;       which the alien-event guard at #R41274 (TriggerAlienEvent's "CP 8
-;       / RET NC") treats as "no valid target" — so the alien's targeted-
-;       stalk logic is effectively disabled in Short Game and the alien
-;       just roams.
-;     - Long Game  = random pick from #R41390 (LongGameTargetTable, values
-;                    in {1, 2, 4, 6}) at #R42357. Always < 8, so the alien
-;                    actively hunts the chosen crew member.
+; #R33703(AlienTargetID):
+; #TABLE(default,,:w)
+; { Short Game | 9, hard-wired at #R44751. Crucially, this is >= 8,
+;   which the alien-event guard at #R41274 (TriggerAlienEvent's "CP 8
+;   / RET NC") treats as "no valid target" — so the alien's targeted-
+;   stalk logic is effectively disabled in Short Game and the alien
+;   just roams. }
+; { Long Game | random pick from #R41390(LongGameTargetTable) (values
+;   in {1, 2, 4, 6}) at #R42357. Always < 8, so the alien actively
+;   hunts the chosen crew member. }
+; TABLE#
 ; .
-;   Chestburster host slot (HostMarker = byte+1=$FF, byte+7=$FF):
-;     - Long Game  = exactly ONE slot, picked randomly via
-;                    #R41374 (LongGameHostSlotTable, values {1,2,5}).
-;                    That crew is the chestburster host — message #33
-;                    enqueued at startup ("Alien has hatched from
-;                    {actor}") substitutes this crew's name in.
-;     - Short Game = FOUR pre-stamped slots in the template: Dallas (1),
-;                    Kane (2), Ash (4) and Brett (7) are out of play,
-;                    leaving only Ripley, Lambert and Parker — the
-;                    film's final act — and no host subplot.
+; Chestburster host slot (HostMarker = byte+1=$FF, byte+7=$FF):
+; #TABLE(default,,:w)
+; { Long Game | exactly ONE slot, picked randomly via
+;   #R41374(LongGameHostSlotTable) (values {1,2,5}). That crew is the
+;   chestburster host — message #33 enqueued at startup ("Alien has
+;   hatched from {actor}") substitutes this crew's name in. }
+; { Short Game | FOUR pre-stamped slots in the template: Dallas (1),
+;   Kane (2), Ash (4) and Brett (7) are out of play, leaving only
+;   Ripley, Lambert and Parker — the film's final act — and no host
+;   subplot. }
+; TABLE#
 ; .
 ; (The in-game "Android" of message #32 "{actor} hits the Android" is
-; the crew slot selected into AlienTargetID #R33703 — see the notes at
+; the crew slot selected into #R33703(AlienTargetID) — see the notes at
 ; #R41390 and the activation logic in #R40826.)
 ; .
-;   Starting crew/alien record state at $737E:
-;     - Short Game = #R41508 (ShortGameCrewInit) — four slots pre-stamped
-;                    with the HostMarker, yielding a smaller "active"
-;                    starting cast
-;     - Long Game  = #R41444 (LongGameCrewInit) — every slot starts with
-;                    normal (non-$FF) data; LongGameInit then picks ONE
-;                    slot via #R41374 (LongGameHostSlotTable, values
-;                    in {1, 2, 5}) and stamps the HostMarker on that
-;                    record's bytes +1 and +7
+; Starting crew/alien record state at $737E:
+; #TABLE(default,,:w)
+; { Short Game | #R41508(ShortGameCrewInit) — four slots pre-stamped
+;   with the HostMarker, yielding a smaller "active" starting cast }
+; { Long Game | #R41444(LongGameCrewInit) — every slot starts with
+;   normal (non-$FF) data; LongGameInit then picks ONE slot via
+;   #R41374(LongGameHostSlotTable) (values in {1, 2, 5}) and stamps
+;   the HostMarker on that record's bytes +1 and +7 }
+; TABLE#
 ; .
-;   Script-driven startup message:
-;     - Short Game does not enqueue any startup message
-;     - Long Game enqueues message #33 ("Alien has hatched from {actor}")
-;       carrying the host slot index via #R37176 — the long game's
-;       opening narrative beat naming the chestburster host
+; Script-driven startup message:
+; #TABLE(default,,:w)
+; { Short Game | does not enqueue any startup message }
+; { Long Game | enqueues message #33 ("Alien has hatched from {actor}")
+;   carrying the host slot index via #R37176 — the long game's opening
+;   narrative beat naming the chestburster host }
+; TABLE#
 ; .
-; Both modes then fall through to #R42380 (CommonGameInit), which
+; Both modes then fall through to #R42380(CommonGameInit), which
 ; finishes the per-session setup identically (alien position, animation
 ; tables, room mode = 1 corridor view).
 ; .
@@ -11010,7 +11124,7 @@ w43135 DEFW 44738,42276,43242
 ; GameModeText
 ;
 ; $FF-terminated text strings for the game-mode menu, rendered by
-; #R42821 (GameModeScreen) via five calls to #R31693.
+; #R42821(GameModeScreen) via five calls to #R31693.
 ; Indices 0-3 are the four menu lines; index 4 is the footer prompt.
 @label=GameModeText
 b43141 DEFB 49,58,32,83,104,111,114,116,32,71,97,109,101,255     ; "1: Short Game"
@@ -11025,7 +11139,7 @@ b43141 DEFB 49,58,32,83,104,111,114,116,32,71,97,109,101,255     ; "1: Short Gam
 @ignoreua
 ;
 ; XOR-toggles the attribute colour of the currently selected menu
-; row, used by GameModeScreen (#R42821) to highlight or erase the
+; row, used by #R42821(GameModeScreen) to highlight or erase the
 ; cursor. Loads the base attribute address $59E9 (row 15, col 9),
 ; steps 64 bytes per row (selection × 64), then XORs 15 consecutive
 ; attribute bytes with 36 (flipping ink/paper to show highlight).
@@ -11056,15 +11170,18 @@ c43216 LD HL,23017   ; attribute address of the mode-0 row (row 15, col 9)
 ; IntroductionMode
 ;
 ; Game-mode handler for "3: Introduction" (dispatched from #R43135):
-; the "MAPPING SYMBOLS" legend page. On a black screen it prints the
-; map-symbol legend (connecting door, ladder, hatchway, grille), stamps
-; the two animated map markers next to their captions (channel A's
-; walking crew figure = "Subject Indicator", channel B's blinking box
-; = "Room Indicator"), then demos three sound effects with captions
-; ("This is the sound of a" Door being opened / Grille being removed /
-; Positive Tracker Reading), animating the markers throughout. Waits
-; for any key (via the ROM's LAST-K) and jumps back to #R42821
-; (GameModeScreen) — it never returns to its caller.
+; the "MAPPING SYMBOLS" legend page.
+; .
+; On a black screen it prints the map-symbol legend (connecting door,
+; ladder, hatchway, grille), stamps the two animated map markers next
+; to their captions (channel A's walking crew figure = "Subject
+; Indicator", channel B's blinking box = "Room Indicator"), then demos
+; three sound effects with captions ("This is the sound of a" Door
+; being opened / Grille being removed / Positive Tracker Reading),
+; animating the markers throughout.
+; .
+; Waits for any key (via the ROM's LAST-K) and jumps back to
+; #R42821(GameModeScreen) — it never returns to its caller.
 @label=IntroductionMode
 c43242 CALL 42501    ; ClearDisplay
  43245 XOR A         ; black border
@@ -11235,7 +11352,7 @@ t43527 DEFM "This is the sound of a"
 ;
 ; "Select Keyboard or joystick": lists 1 KEMPSTON / 2 AGF-PROTEK /
 ; 3 SINCLAIR / 4 KEYBOARD / 5 SELECT. Keys 1-4 move the highlight
-; (the picked device index, 0-3, lives in #R33683 — CorridorCursor
+; (the picked device index, 0-3, lives in #R33683(CorridorCursor),
 ; reused); key 5 confirms: Options_Select patches the input-scanner
 ; CALL operand from InputScannerTable, and picking the keyboard
 ; (device 3) continues into the key-redefinition offer.
@@ -11564,22 +11681,24 @@ c44109 LD BC,65278   ; all 8 half-rows must
 ; RatingScore and adds the terms that outcome earns before the shared
 ; roster/rating/wait-key tail (which restarts at GameEntry):
 ; .
-;   EndgameScreen (#R44125) — the alien was killed in combat or died
-;     in space: "The Alien has been killed"; scores crew + rooms +
-;     oxygen (the only ending that counts ship condition).
-;   Endgame_Escape (#R44159) — the Narcissus got away: with the
-;     self-destruct armed, the frozen countdown digits are patched
-;     into "The Nostromo will explode in m minutes ss seconds" and
-;     crew + oxygen are scored; WITHOUT it the alien survives — "The
-;     Alien will be unleashed upon the Earth", Competence Rating 0.
-;   Endgame_CrewLost (#R44242) — no human left alive: "Humanoid life
-;     levels minimal", then the same destruct-armed split.
-;   Endgame_OxygenOut (#R44277) — the air ran out: "Life Support
-;     Systems exhausted", every crew member is marked dead, then
-;     the same destruct-armed split.
-;   Endgame_Summary (#R44138) — from DamageGameOver (the ship broke
-;     up or the countdown expired): the alien died with the ship, but
-;     only the oxygen term is scored.
+; #LIST
+; { #R44125(EndgameScreen) — the alien was killed in combat or died
+;   in space: "The Alien has been killed"; scores crew + rooms +
+;   oxygen (the only ending that counts ship condition). }
+; { #R44159(Endgame_Escape) — the Narcissus got away: with the
+;   self-destruct armed, the frozen countdown digits are patched
+;   into "The Nostromo will explode in m minutes ss seconds" and
+;   crew + oxygen are scored; WITHOUT it the alien survives — "The
+;   Alien will be unleashed upon the Earth", Competence Rating 0. }
+; { #R44242(Endgame_CrewLost) — no human left alive: "Humanoid life
+;   levels minimal", then the same destruct-armed split. }
+; { #R44277(Endgame_OxygenOut) — the air ran out: "Life Support
+;   Systems exhausted", every crew member is marked dead, then
+;   the same destruct-armed split. }
+; { #R44138(Endgame_Summary) — from DamageGameOver (the ship broke
+;   up or the countdown expired): the alien died with the ship, but
+;   only the oxygen term is scored. }
+; LIST#
 ; .
 ; Used by the routines at #R37584 and #R38674.
 @label=EndgameScreen
@@ -11691,7 +11810,7 @@ c44125 CALL 44561    ; wipe the screen
 ; slots 1-7 and return as soon as any HUMAN crew member is still alive
 ; (status 0). The Android slot (#R33703) is skipped — an Android alone
 ; does not keep the mission going. If no live human is found, fall
-; through to Endgame_CrewLost (#R44242): "Humanoid life levels
+; through to #R44242(Endgame_CrewLost): "Humanoid life levels
 ; minimal". (Short Game: AlienTargetID is 9, so no slot is skipped;
 ; the four absent crew have non-zero status from ShortGameCrewInit.)
 ; .
@@ -12063,7 +12182,7 @@ c44722 LD A,(38374)  ; the oxygen counter's first digit
 ; Game-mode handler for "1: Short Game" (dispatched from #R43135).
 ; .
 ; The Short Game is the abbreviated scenario. Several slots in the
-; starting template (#R41508 ShortGameCrewInit) are pre-stamped with the
+; starting template (#R41508(ShortGameCrewInit)) are pre-stamped with the
 ; HostMarker pattern ($FF on bytes +1 and +7) and the alien's first
 ; target is hard-wired to crew ID 9 — a value the alien-targeting guard
 ; at #R41274 treats as "no valid target", so the alien's stalk-the-host
@@ -12072,16 +12191,21 @@ c44722 LD A,(38374)  ; the oxygen counter's first digit
 ; what makes it shorter and more deterministic than the Long Game.
 ; .
 ; Steps:
-;   1. Clear the two run-state bytes at #R33708 / #R33709.
-;   2. Point the message queue head (MsgQueueWritePtr #R33741) at the queue
-;      base MessageQueue (#R33714).
-;   3. Hard-wire #R33703 (AlienTargetID) = 9 — disables alien hunt logic.
-;   4. LDIR 64 bytes from #R41508 (ShortGameCrewInit) into $737E to populate
-;      the alien slot and the seven crew slots with the short-game starting
-;      state (four slots wear the HostMarker so they're skipped by normal
-;      crew processing, leaving the alien header plus three active crew).
-;   5. JP into the shared common init at #R42380 (CommonGameInit) — skipping
-;      the Long Game's script-driven host selection and target picking.
+; #LIST
+; { 1. Clear the two run-state bytes at #R33708 / #R33709. }
+; { 2. Point the message queue head (#R33741(MsgQueueWritePtr)) at the
+;   queue base #R33714(MessageQueue). }
+; { 3. Hard-wire #R33703(AlienTargetID) = 9 — disables alien hunt
+;   logic. }
+; { 4. LDIR 64 bytes from #R41508(ShortGameCrewInit) into $737E to
+;   populate the alien slot and the seven crew slots with the
+;   short-game starting state (four slots wear the HostMarker so
+;   they're skipped by normal crew processing, leaving the alien header
+;   plus three active crew). }
+; { 5. JP into the shared common init at #R42380(CommonGameInit) —
+;   skipping the Long Game's script-driven host selection and target
+;   picking. }
+; LIST#
 ; .
 ; Used by the dispatcher at #R43134 via the table at #R43135.
 @label=ShortGameInit
@@ -12117,7 +12241,7 @@ c44738 XOR A         ; A = 0
 ; Pause-menu texts
 ;
 ; Plain ASCII (previously misclassified as code): the two lines
-; PauseMenu (#R44815) draws.
+; #R44815(PauseMenu) draws.
 @label=StrPress1NewGame
 t44770 DEFM "PRESS 1 FOR NEW GAME"
 @label=StrAnyKeyContinue
@@ -12129,7 +12253,7 @@ t44770 DEFM "PRESS 1 FOR NEW GAME"
 ; Draws two lines of text (pause message and restart prompt) over the game
 ; screen using the tile-blit helper at #R44509. Sets the border to yellow (6)
 ; and waits for the player to press key 1 again. If key 1 is pressed, jumps
-; directly to #R36457 (GameEntry) to restart the game. Any other key resumes
+; directly to #R36457(GameEntry) to restart the game. Any other key resumes
 ; play by returning normally. If the corridor view was active (mode=1), calls
 ; #R32719 to restore the room display before returning.
 ; .
@@ -12237,12 +12361,12 @@ c44924 LD (IX+3),0   ; action state = 0 (parked)
 
 ; DestroyHeldItem
 ;
-; Entered from DestroyFrontItem (#R37924) with HL -> the front-hand
+; Entered from #R37924(DestroyFrontItem) with HL -> the front-hand
 ; item's ItemLocations entry and B = the back-hand item: wipe the
 ; item out of existence and promote the back-hand item to the front
-; hand — with a full hand-row redraw (UpdateHandRows #R37944) when
+; hand — with a full hand-row redraw (#R37944(UpdateHandRows)) when
 ; the owner is the crew member on screen, marker/courage bookkeeping
-; only (GetItemLocation #R37980) when he is not.
+; only (#R37980(GetItemLocation)) when he is not.
 @label=DestroyHeldItem
 c44938 LD A,255      ; ItemLocations[front item] = 255:
  44940 LD (HL),A     ; the item ceases to exist
@@ -12276,7 +12400,7 @@ c44938 LD A,255      ; ItemLocations[front item] = 255:
 ; ClearHandCache
 ;
 ; Reset HeldItemFront/Back to 255/255 and return A = the current
-; actor's slot — the input FindHeldItems (#R31823) wants.
+; actor's slot — the input #R31823(FindHeldItems) wants.
 ; .
 ; Used by the routine at #R37584.
 @label=ClearHandCache
@@ -12289,7 +12413,7 @@ c44986 LD HL,65535   ;
 
 ; AttackRowGate
 ;
-; Special-row draw hook (DrawRoomSpecials #R31964) when the alien is
+; Special-row draw hook (#R31964(DrawRoomSpecials)) when the alien is
 ; in the viewed room: while the viewed crew member's own ATTACK is
 ; still counting down (state 4, timer running), leave the row alone;
 ; otherwise force the "  ATTACK  " cell.
@@ -12309,7 +12433,7 @@ c44996 LD A,(IX+3)   ; mid-attack (state 4, timer still
 
 ; AlienInfoCheck
 ;
-; Room-info hook (RefreshRoomInfo #R36793) when the alien shares the
+; Room-info hook (#R36793(RefreshRoomInfo)) when the alien shares the
 ; viewed room: if the viewed crew member is between attacks, offer
 ; ATTACK; while his attack countdown is still running, switch the
 ; view to the alien-encounter screen (room type 4) with both
@@ -12354,7 +12478,7 @@ c45019 PUSH IX       ;
 
 ; AndroidInfoCheck
 ;
-; Room-info hook (RefreshRoomInfo #R36793) when the Android is in the
+; Room-info hook (#R36793(RefreshRoomInfo)) when the Android is in the
 ; viewed room (caller's Z flag): offer ATTACK unless the viewed crew
 ; member's own attack countdown is still running.
 ; .
@@ -12389,7 +12513,7 @@ c45080 RET NZ        ; not the Android's room: done
 
 ; AndroidRowGate
 ;
-; Special-row draw hook (DrawRoomSpecials #R31964) when the Android
+; Special-row draw hook (#R31964(DrawRoomSpecials)) when the Android
 ; is in the viewed room — the Android twin of AttackRowGate.
 ; .
 ; Used by the routine at #R31964.
@@ -12524,8 +12648,8 @@ c45278 LD A,(33685)  ; if the live selection was "RmveGrille"
 
 ; MaskToRomAddr — mask an address into ROM range
 ;
-; Called by ResetScriptPtr (#R33600): AND H with 31 so HL becomes an
-; address in $0000-$1FFF, turning the SEED value into a ROM script
+; Called by #R33600(ResetScriptPtr): AND H with 31 so HL becomes an
+; address in $0000-$1FFF, turning the FRAMES value into a ROM script
 ; start.
 @label=MaskToRomAddr
 c45290 LD A,H        ;
@@ -12632,9 +12756,9 @@ c45373 LD A,(31252)  ; room view on screen (mode 1)?
 ; 2 as a morale adjustment — company emboldens (or, with a Broken
 ; companion, depresses) the crew. The kill/redraw and courage/morale
 ; maintenance helpers used by the simulation follow as their own
-; routines (KillActorRefresh #R45476, BumpCourageMorale #R45510,
-; KillActorMoraleHit #R45585, WitnessMoraleLoss #R45642,
-; PreDispatchHook #R45753...).
+; routines (#R45476(KillActorRefresh), #R45510(BumpCourageMorale),
+; #R45585(KillActorMoraleHit), #R45642(WitnessMoraleLoss),
+; #R45753(PreDispatchHook)...).
 @label=UpdateAllCrew
 c45401 LD IX,29574   ; IX = slot 1 record
  45405 LD C,6        ; 6 later slots to pair it with
@@ -12790,7 +12914,7 @@ c45539 INC HL        ; morale byte (+6): -1 too,
 ; is marked found (+7 = 2), msg #20 "{witness} finds {victim}'s
 ; body" fires, and the whole crew's courage decays. With no witness
 ; the body stays at status 1 for a later discovery
-; (MoraleFromCompanion #R36283).
+; (#R36283(MoraleFromCompanion)).
 @label=KillActorMoraleHit
 c45585 INC HL        ; status (+7) = 1: dead
  45586 LD (HL),1     ;
@@ -12952,19 +13076,23 @@ c45732 LD (33704),A  ; AlienActiveFlag = A
 ; .
 ; The hostile-in-room ATTACK-row swap and the 238 marker
 ; .
-; PreDispatchHook is called by RoomModeDispatch (#R35314) at the start
+; PreDispatchHook is called by #R35314(RoomModeDispatch) at the start
 ; of EVERY action-key dispatch in room modes 0/1, before the row
 ; handler runs. In the room view it forces the special-action row
 ; (cell 13) to 52 "  ATTACK  " whenever a hostile is in the viewed
-; room. The subtlety is a press that was aimed at 49 "RmveGrille":
-; the row is swapped to ATTACK by this very hook, inside the same
-; key release that dispatches the row — so the hook leaves the value
-; 238 in CursorCellValue ($8395) as a marker meaning "this press was
-; made while the row still read RmveGrille". The special-row shim at
-; $B306 then honours the player's original intent: it restores the
-; mirror to 52 (matching the now-displayed ATTACK) but still starts
-; the timed grille removal. Only the NEXT press, taken with the row
-; visibly reading ATTACK, goes down the attack path.
+; room.
+; .
+; The subtlety is a press that was aimed at 49 "RmveGrille": the row is
+; swapped to ATTACK by this very hook, inside the same key release that
+; dispatches the row — so the hook leaves the value 238 in
+; CursorCellValue ($8395) as a marker meaning "this press was made
+; while the row still read RmveGrille".
+; .
+; The special-row shim at $B306 then honours the player's original
+; intent: it restores the mirror to 52 (matching the now-displayed
+; ATTACK) but still starts the timed grille removal. Only the NEXT
+; press, taken with the row visibly reading ATTACK, goes down the
+; attack path.
 ; .
 ; (Verified in the simulator: press 1 with the alien in the room ->
 ; mirror 49->238->52, cell 13 -> 52, actor gets action state 3 with
@@ -12981,8 +13109,8 @@ c45753 CALL 45760    ; run the hostile-row check, then
 ; Room view only, and never on the QUIT row.
 ; A press on row 8 (the front-hand item) zeroes the actor's action
 ; countdown (+0), cancelling any pending timed job — the countdown
-; only fires its action when it decrements to zero in ResetCrewTimers
-; (#R35973). Then, if the alien (slot 0) is in the viewed actor's
+; only fires its action when it decrements to zero in
+; #R35973(ResetCrewTimers). Then, if the alien (slot 0) is in the viewed actor's
 ; room — or, once the alien is active (flag $FF), the alien-target /
 ; Android slot (pointer at $83A5) is — swap the special row to ATTACK.
 @label=ForceAttackRowIfHostile
@@ -13062,7 +13190,7 @@ c45846 LD A,(33683)  ;
 ; Zero-padding between game code and extra-data area
 ;
 ; 14146 bytes of zeros bridging the last byte of game code and the start
-; of AlienFrame0 (#R60000). Reserved space in the runtime image; no code
+; of #R60000(AlienFrame0). Reserved space in the runtime image; no code
 ; or data lives here. Note: a 16-bit constant inside this gap is used
 ; elsewhere as a Z80 I/O port number for the keyboard half-row
 ; B/N/M/SymShift/Space, not as a memory reference.
@@ -13502,9 +13630,9 @@ b61768 DEFB 0,0,0
 ; IntroTileData
 @ignoreua
 ;
-; 8×8 pixel tile bitmaps for the game's extra-data area (#R60000-$F5FF).
+; 8×8 pixel tile bitmaps for the game's extra-data area (#R60000($EA60)-$F5FF).
 ; The first 8 tiles ($F1B0-$F22F, addresses 61936-61999) are blank padding.
-; Tile graphics used by DrawIntroScreen (#R42581) start at #R62000 (#R62000):
+; Tile graphics used by #R42581(DrawIntroScreen) start at #R62000(TileBitmaps):
 ; tile index N maps to address #R62000 + N×8. The tile map at #R40504 indexes
 ; into this set to build the 15×11 title-screen graphic. Subsequent tiles
 ; (beyond the intro set) are used by other game screens and the ship map.
@@ -13663,12 +13791,14 @@ s63000 DEFS 2304
 ; tape loader. Includes a 64-byte data table (probably loader / BASIC
 ; interpreter state) followed by a partial 8x8-pixel font containing
 ; the upper-case letters A through U (21 glyphs from offset +84 onwards,
-; each 8 bytes). The running game sets the stack pointer just below this
-; region at GameEntry (#R36457) so this content overlaps the active
-; stack and is overwritten as soon as the game begins running. Not
-; referenced by any game routine; the only references to in-range
-; 16-bit values treat them as signed screen strides (e.g. -32 for one
-; cell up within a third of the display), not as memory pointers.
+; each 8 bytes).
+; .
+; The running game sets the stack pointer just below this region at
+; #R36457(GameEntry) so this content overlaps the active stack and is
+; overwritten as soon as the game begins running. Not referenced by any
+; game routine; the only references to in-range 16-bit values treat
+; them as signed screen strides (e.g. -32 for one cell up within a
+; third of the display), not as memory pointers.
 @label=BootResidual
 b65304 DEFB 243,13,206,11,227,80,206,11
  65312 DEFB 228,80,29,23,220,10,206,11
