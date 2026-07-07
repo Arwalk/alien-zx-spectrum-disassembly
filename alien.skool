@@ -10775,7 +10775,7 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
 ; Used by the routines at #R36457 and #R43242.
 @label=GameModeScreen
 c42821 LD A,4        ; green border,
- 42823 OUT (254),A   ;
+ 42823 OUT (254),A   ; 
  42825 LD A,32       ; green paper, black ink
  42827 CALL 42515    ; FillAttributes(32)
  42830 CALL 42501    ; ClearDisplay
@@ -10784,163 +10784,163 @@ c42821 LD A,4        ; green border,
  42839 LD HL,16452   ; top (from row 2, col 4; 72 data
  42842 LD B,4        ; bytes / 7 columns each)
 @label=ShipMap_Portraits1
-*42844 PUSH BC       ;
- 42845 PUSH HL       ;
- 42846 PUSH DE       ;
+*42844 PUSH BC       ; 
+ 42845 PUSH HL       ; 
+ 42846 PUSH DE       ; 
  42847 CALL 33539    ; BlitPortrait
- 42850 POP DE        ;
+ 42850 POP DE        ; 
  42851 LD HL,72      ; next portrait's data,
- 42854 ADD HL,DE     ;
- 42855 EX DE,HL      ;
- 42856 POP HL        ;
+ 42854 ADD HL,DE     ; 
+ 42855 EX DE,HL      ; 
+ 42856 POP HL        ; 
  42857 LD BC,7       ; 7 columns right
- 42860 ADD HL,BC     ;
- 42861 POP BC        ;
- 42862 DJNZ 42844    ;
+ 42860 ADD HL,BC     ; 
+ 42861 POP BC        ; 
+ 42862 DJNZ 42844    ; 
  42864 LD HL,18439   ; three more below
  42867 LD B,3        ; (from row 8, col 7)
 @label=ShipMap_Portraits2
-*42869 PUSH BC       ;
- 42870 PUSH HL       ;
- 42871 PUSH DE       ;
+*42869 PUSH BC       ; 
+ 42870 PUSH HL       ; 
+ 42871 PUSH DE       ; 
  42872 CALL 33539    ; BlitPortrait
- 42875 POP DE        ;
+ 42875 POP DE        ; 
  42876 LD HL,72      ;
- 42879 ADD HL,DE     ;
- 42880 EX DE,HL      ;
- 42881 POP HL        ;
+ 42879 ADD HL,DE     ; 
+ 42880 EX DE,HL      ; 
+ 42881 POP HL        ; 
  42882 LD BC,7       ;
- 42885 ADD HL,BC     ;
- 42886 POP BC        ;
- 42887 DJNZ 42869    ;
+ 42885 ADD HL,BC     ; 
+ 42886 POP BC        ; 
+ 42887 DJNZ 42869    ; 
  42889 LD HL,16579   ; the names under the portraits:
  42892 LD A,1        ; Dallas,
- 42894 LD (31257),HL ;
- 42897 CALL 31690    ;
+ 42894 LD (31257),HL ; 
+ 42897 CALL 31690    ; PrintName
  42900 LD HL,16587   ; Kane,
- 42903 LD (31257),HL ;
- 42906 LD A,2        ;
- 42908 CALL 31690    ;
+ 42903 LD (31257),HL ; 
+ 42906 LD A,2        ; 
+ 42908 CALL 31690    ; 
  42911 LD HL,16593   ; Ripley,
- 42914 LD (31257),HL ;
- 42917 LD A,3        ;
- 42919 CALL 31690    ;
+ 42914 LD (31257),HL ; 
+ 42917 LD A,3        ; 
+ 42919 CALL 31690    ; 
  42922 LD HL,16601   ; Ash,
- 42925 LD (31257),HL ;
- 42928 LD A,4        ;
- 42930 CALL 31690    ;
+ 42925 LD (31257),HL ; 
+ 42928 LD A,4        ; 
+ 42930 CALL 31690    ; 
  42933 LD HL,18565   ; Lambert,
- 42936 LD (31257),HL ;
- 42939 LD A,5        ;
- 42941 CALL 31690    ;
+ 42936 LD (31257),HL ; 
+ 42939 LD A,5        ; 
+ 42941 CALL 31690    ; 
  42944 LD HL,18573   ; Parker,
- 42947 LD (31257),HL ;
- 42950 LD A,6        ;
- 42952 CALL 31690    ;
+ 42947 LD (31257),HL ; 
+ 42950 LD A,6        ; 
+ 42952 CALL 31690    ; 
  42955 LD HL,18581   ; Brett
- 42958 LD (31257),HL ;
- 42961 LD A,7        ;
- 42963 CALL 31690    ;
+ 42958 LD (31257),HL ; 
+ 42961 LD A,7        ; 
+ 42963 CALL 31690    ; 
  42966 LD DE,43141   ; the menu lines:
  42969 LD HL,18665   ; "1: Short Game" (row 15)
- 42972 LD (31257),HL ;
- 42975 PUSH DE       ;
- 42976 XOR A         ;
- 42977 CALL 31693    ;
+ 42972 LD (31257),HL ; 
+ 42975 PUSH DE       ; 
+ 42976 XOR A         ; list entry 0
+ 42977 CALL 31693    ; PrintName's list-walk entry
  42980 LD HL,20521   ; "2: Long Game" (row 17)
- 42983 LD (31257),HL ;
- 42986 POP DE        ;
- 42987 PUSH DE       ;
- 42988 LD A,1        ;
- 42990 CALL 31693    ;
+ 42983 LD (31257),HL ; 
+ 42986 POP DE        ; 
+ 42987 PUSH DE       ; 
+ 42988 LD A,1        ; list entry 1
+ 42990 CALL 31693    ; 
  42993 LD HL,20585   ; "3: Introduction" (row 19)
- 42996 LD (31257),HL ;
- 42999 POP DE        ;
- 43000 PUSH DE       ;
- 43001 LD A,2        ;
- 43003 CALL 31693    ;
+ 42996 LD (31257),HL ; 
+ 42999 POP DE        ; 
+ 43000 PUSH DE       ; 
+ 43001 LD A,2        ; list entry 2
+ 43003 CALL 31693    ; 
  43006 LD HL,20649   ; "4: Select" (row 21)
- 43009 LD (31257),HL ;
- 43012 POP DE        ;
- 43013 PUSH DE       ;
- 43014 LD A,3        ;
- 43016 CALL 31693    ;
+ 43009 LD (31257),HL ; 
+ 43012 POP DE        ; 
+ 43013 PUSH DE       ; 
+ 43014 LD A,3        ; list entry 3
+ 43016 CALL 31693    ; 
  43019 LD HL,20710   ; "Press Appropriate Key" (row 22)
- 43022 LD (31257),HL ;
- 43025 POP DE        ;
- 43026 LD A,4        ;
- 43028 CALL 31693    ;
+ 43022 LD (31257),HL ; 
+ 43025 POP DE        ; 
+ 43026 LD A,4        ; list entry 4
+ 43028 CALL 31693    ; 
  43031 XOR A         ; selection = 0 (Short Game),
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
- 43032 LD (33683),A  ;
+ 43032 LD (33683),A  ; 
  43035 CALL 43216    ; highlighted
 @label=ShipMap_KeyLoop
 *43038 LD BC,63486   ; scan half-row 1-5:
- 43041 IN A,(C)      ;
+ 43041 IN A,(C)      ; 
  43043 BIT 0,A       ; key 1?
- 43045 JR Z,43061    ;
+ 43045 JR Z,43061    ; 
  43047 BIT 1,A       ; key 2?
- 43049 JR Z,43079    ;
+ 43049 JR Z,43079    ; 
  43051 BIT 2,A       ; key 3?
- 43053 JR Z,43099    ;
+ 43053 JR Z,43099    ; 
  43055 BIT 3,A       ; key 4 = confirm?
- 43057 JR Z,43119    ;
- 43059 JR 43038      ;
+ 43057 JR Z,43119    ; 
+ 43059 JR 43038      ; 
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
 @label=ShipMap_Pick1
 *43061 LD A,(33683)  ; already on Short Game?
- 43064 AND A         ;
- 43065 JR Z,43038    ;
+ 43064 AND A         ; 
+ 43065 JR Z,43038    ; 
  43067 CALL 43216    ; no: unhighlight the old pick,
  43070 XOR A         ; select mode 0,
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
- 43071 LD (33683),A  ;
+ 43071 LD (33683),A  ; 
  43074 CALL 43216    ; highlight it
- 43077 JR 43038      ;
+ 43077 JR 43038      ; 
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
 @label=ShipMap_Pick2
 *43079 LD A,(33683)  ; already on Long Game?
- 43082 CP 1          ;
- 43084 JR Z,43038    ;
+ 43082 CP 1          ; 
+ 43084 JR Z,43038    ; 
  43086 CALL 43216    ; no: repick mode 1
- 43089 LD A,1        ;
+ 43089 LD A,1        ; 
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
- 43091 LD (33683),A  ;
- 43094 CALL 43216    ;
- 43097 JR 43038      ;
+ 43091 LD (33683),A  ; 
+ 43094 CALL 43216    ; 
+ 43097 JR 43038      ; 
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
 @label=ShipMap_Pick3
 *43099 LD A,(33683)  ; already on Introduction?
- 43102 CP 2          ;
- 43104 JR Z,43038    ;
+ 43102 CP 2          ; 
+ 43104 JR Z,43038    ; 
  43106 CALL 43216    ; no: repick mode 2
- 43109 LD A,2        ;
+ 43109 LD A,2        ; 
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
- 43111 LD (33683),A  ;
- 43114 CALL 43216    ;
- 43117 JR 43038      ;
+ 43111 LD (33683),A  ; 
+ 43114 CALL 43216    ; 
+ 43117 JR 43038      ; 
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
 @label=ShipMap_Confirm
 *43119 LD A,(33683)  ; key 4: dispatch the picked mode
  43122 ADD A,A       ; through GameModeDispatchTable
- 43123 LD HL,43135   ;
- 43126 LD E,A        ;
- 43127 LD D,0        ;
- 43129 ADD HL,DE     ;
- 43130 LD A,(HL)     ;
- 43131 INC HL        ;
- 43132 LD H,(HL)     ;
- 43133 LD L,A        ;
+ 43123 LD HL,43135   ; 
+ 43126 LD E,A        ; 
+ 43127 LD D,0        ; 
+ 43129 ADD HL,DE     ; 
+ 43130 LD A,(HL)     ; 
+ 43131 INC HL        ; 
+ 43132 LD H,(HL)     ; 
+ 43133 LD L,A        ; 
 @label=GameModeJump
- 43134 JP (HL)       ;
+ 43134 JP (HL)       ; 
 
 ; GameModeDispatchTable
 @ignoreua
@@ -11030,28 +11030,28 @@ b43141 DEFB 49,58,32,83,104,111,114,116,32,71,97,109,101,255     ; "1: Short Gam
 ; steps 64 bytes per row (selection × 64), then XORs 15 consecutive
 ; attribute bytes with 36 (flipping ink/paper to show highlight).
 @label=HighlightGameMode
-c43216 LD HL,23017   ;
+c43216 LD HL,23017   ; attribute address of the mode-0 row (row 15, col 9)
 ; This entry point is used by the routine at #R43610.
 @label=HighlightModeAt
-*43219 LD DE,64      ;
+*43219 LD DE,64      ; 64 = two attribute rows per menu line
 @nowarn=33683
 @ssub=LD A,(CorridorCursor)
- 43222 LD A,(33683)  ;
- 43225 AND A         ;
- 43226 JR Z,43232    ;
- 43228 LD B,A        ;
+ 43222 LD A,(33683)  ; A = selected mode (0-2)
+ 43225 AND A         ; 
+ 43226 JR Z,43232    ; 
+ 43228 LD B,A        ; 
 @label=HighlightMode_Seek
-*43229 ADD HL,DE     ;
- 43230 DJNZ 43229    ;
+*43229 ADD HL,DE     ; step down to the selected line
+ 43230 DJNZ 43229    ; 
 @label=HighlightMode_Row
-*43232 LD B,15       ;
+*43232 LD B,15       ; 15 cells wide
 @label=HighlightMode_CellLoop
-*43234 LD A,(HL)     ;
- 43235 XOR 36        ;
- 43237 LD (HL),A     ;
- 43238 INC HL        ;
- 43239 DJNZ 43234    ;
- 43241 RET           ;
+*43234 LD A,(HL)     ; XOR 36 swaps green-paper/black-ink to
+ 43235 XOR 36        ; black-paper/green-ink: inverse video
+ 43237 LD (HL),A     ; 
+ 43238 INC HL        ; 
+ 43239 DJNZ 43234    ; 
+ 43241 RET           ; 
 
 ; IntroductionMode
 ;
