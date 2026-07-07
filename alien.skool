@@ -8695,8 +8695,9 @@ c39572 LD HL,(38374) ; high digits = "05"...
 
 ; InitJonesAnim
 ;
-; Resets Jones animation and blits the first frame. Sets Y position to 8,
-; clears the Y phase freeze flag, then calls #R39832 with B=1 to draw frame 0.
+; Resets the Jones run animation and blits the first frame. Sets the X
+; position to pixel 8 (column 1), clears the freeze flag, then calls
+; #R39832 with B=1 to draw frame 0.
 ; This entry point is used by the routines at #R31964 and #R36859.
 @label=InitJonesAnim
 c39655 XOR A         ; A = 0: clear freeze flag
@@ -8704,15 +8705,16 @@ c39655 XOR A         ; A = 0: clear freeze flag
 @ssub=LD (JonesPhase),A
  39656 LD (39753),A  ; JonesPhase = 0
  39659 LD A,8        ;
- 39661 LD (39750),A  ; JonesPos = 8 (initial Y pixel offset)
+ 39661 LD (39750),A  ; JonesPos = 8 (initial X pixel offset)
  39664 LD B,1        ; B = 1 iteration
- 39666 CALL 39832    ; draw first tail frame
+ 39666 CALL 39832    ; draw the cat's first frame
  39669 RET           ;
 
 ; TriggerJonesAnim
 ;
-; Advances the Jones animation by one frame if not frozen. Sets the freeze
-; flag (bit 7 of JonesPhase) after blitting so the animation runs exactly once.
+; Stops the Jones run animation: if not already frozen, XOR-blits the
+; current frame once (removing the cat from the screen, since it was
+; already drawn) and sets the freeze flag (bit 7 of JonesPhase).
 ; This entry point is used by the routines at #R35814 and #R36859.
 @label=TriggerJonesAnim
 c39670 LD B,1        ; B = 1 iteration
@@ -8721,7 +8723,7 @@ c39670 LD B,1        ; B = 1 iteration
  39672 LD A,(39753)  ; A = JonesPhase
  39675 AND 128       ; test freeze flag (bit 7)
  39677 RET NZ        ; already frozen: do nothing
- 39678 CALL 39832    ; blit one tail frame
+ 39678 CALL 39832    ; XOR the current cat frame (erases it)
  39681 LD A,128      ;
 @nowarn=39753
 @ssub=LD (JonesPhase),A
@@ -8765,11 +8767,12 @@ c39695 LD A,(39741)  ; A = AlienXPhase
 
 ; UpdateAlienAnim
 ;
-; Per-frame alien encounter update: refreshes the map view, then advances both
-; animation layers. Y layer (tail sweep) if not frozen, X layer (body) if not frozen.
+; Per-frame alien-encounter update: steps the two map-marker animation
+; channels, then advances both encounter layers if not frozen — the cat
+; running across the screen (Jones layer) and the big alien body (X layer).
 @label=UpdateAlienAnim
-c39718 CALL 34967    ; redraw room background
- 39721 CALL 35016    ; redraw room actors
+c39718 CALL 34967    ; AnimateCrewA: step the walking-figure marker
+ 39721 CALL 35016    ; AnimateCrewB: step the blinking-box marker
 @nowarn=39753
 @ssub=LD A,(JonesPhase)
  39724 LD A,(39753)  ; A = JonesPhase
@@ -8793,12 +8796,12 @@ b39741 DEFB 0          ; body frame index 0-3 (bit 7 = freeze flag)
  39746 DEFW 60756      ; #R60756 (AlienFrame2 sprite ptr)
  39748 DEFW 61134      ; #R61134 (AlienFrame3 sprite ptr)
 @label=JonesPos
- 39750 DEFB 0          ; pixel Y offset 0-135
+ 39750 DEFB 0          ; the cat's pixel X offset 0-135 (run position)
 @label=AlienScreenPtr
 @ignoreua
  39751 DEFW 18432      ; current screen draw ptr (runtime, initially $4800)
 @label=JonesPhase
- 39753 DEFB 0          ; tail phase 0-4 (bit 7 = freeze flag)
+ 39753 DEFB 0          ; run-cycle frame 0-4 (bit 7 = freeze flag)
  39754 DEFW 61512      ; #R61512 (JonesFrame0 sprite ptr)
  39756 DEFW 61576      ; #R61576 (JonesFrame1 sprite ptr)
  39758 DEFW 61640      ; #R61640 (JonesFrame2 sprite ptr)
@@ -8833,34 +8836,35 @@ c39764 LD HL,39741   ; HL -> AlienXPhase
  39785 LD B,63       ; 63 pixel rows per frame
  39787 LD C,0        ;
 @label=BlitAlienFrameRow
-*39789 PUSH BC       ;
- 39790 LD B,C        ;
- 39791 LD C,6        ;
- 39793 LDIR          ;
- 39795 EX DE,HL      ;
- 39796 LD A,H        ;
- 39797 AND 7         ;
- 39799 CP 7          ;
- 39801 JR Z,39806    ;
- 39803 INC H         ;
- 39804 JR 39821      ;
-; ZX Spectrum display-file scan-line bank wrap: H&7 = 7 means we finished a
-; character row. If L < $E0 (224) add -1760 to jump to the next
-; screen third; otherwise add 32 to advance to the next character row within
-; the same third. Then subtract 6 from HL to step back past the LDIR'd bytes.
+*39789 PUSH BC       ; save row counter
+ 39790 LD B,C        ; BC = 6: one 6-byte sprite row
+ 39791 LD C,6        ; 
+ 39793 LDIR          ; copy it to the screen
+ 39795 EX DE,HL      ; HL = screen dst, DE = sprite src
+ 39796 LD A,H        ; finished pixel row 7 of this char row?
+ 39797 AND 7         ; 
+ 39799 CP 7          ; 
+ 39801 JR Z,39806    ; yes: char-row / third stepping below
+ 39803 INC H         ; no: next pixel row is one display bank up
+ 39804 JR 39821      ; 
+; ZX Spectrum display-file scan-line stepping: H&7 = 7 means we finished a
+; character row. If L < $E0 (224) add -1760 (= -7*256+32) to drop to
+; pixel-row 0 of the next character row in the same third; otherwise (last
+; char row of the third) add 32, whose carry into H lands on row 0 of the
+; next third. Then subtract 6 from HL to step back past the LDIR'd bytes.
 @label=BlitAlienFrameBankCheck
-*39806 LD A,L        ;
+*39806 LD A,L        ; 
  39807 CP 224        ; L >= $E0: last char-row of this screen third?
  39809 JR NC,39817   ; yes: next third
- 39811 LD BC,63776   ; BC = -1760: wrap to next column in next third
- 39814 ADD HL,BC     ;
- 39815 JR 39821      ;
+ 39811 LD BC,63776   ; no: -1760 (= -7*256+32) drops to pixel-row 0
+ 39814 ADD HL,BC     ; of the next char row in the same third
+ 39815 JR 39821      ; 
 @label=BlitAlienFrameNextThird
-*39817 LD BC,32      ; BC = 32: advance to next character row
- 39820 ADD HL,BC     ;
+*39817 LD BC,32      ; yes: +32 carries into H, landing on
+ 39820 ADD HL,BC     ; row 0 of the next screen third
 @label=BlitAlienFrameNextRow
 *39821 LD BC,65530   ; BC = -6: rewind HL past the 6 LDIR'd bytes
- 39824 ADD HL,BC     ;
+ 39824 ADD HL,BC     ; 
  39825 EX DE,HL      ; DE = screen dst, HL = sprite src
  39826 POP BC        ;
  39827 DJNZ 39789    ; next row
@@ -8868,49 +8872,56 @@ c39764 LD HL,39741   ; HL -> AlienXPhase
 
 ; AnimJones
 ;
-; Entry point called from UpdateAlienAnim with B=2 to advance the Y position counter
-; before blitting. Calls BlitJonesFrame with B=2, which will call AdvanceJonesPos.
+; Entry point called from UpdateAlienAnim with B=2: the first BlitJonesFrame
+; pass XOR-erases the cat at its old position, then (via the DJNZ at its end)
+; AdvanceJonesPos moves it 4 pixels right and a second pass redraws it —
+; the classic XOR erase / advance / redraw cycle.
 @label=AnimJones
 c39830 LD B,2        ; B=2: advance position then blit
 
 ; BlitJonesFrame
 ;
-; Blits the alien tail (Y channel) XOR sprite for the current phase and position.
-; First XORs ink colour bits of a 4x2 attribute block to produce a flash effect.
-; Then loads the current Y-phase sprite pointer (3 bytes/row, 21 rows) and chooses
-; between an unshifted XOR blit (JonesPos&7 < 4) or a shifted one (>= 4). The
-; shift amount is encoded directly into the self-modifying JR at BlitJonesShiftCode
-; (the JR offset byte is patched to select how many SRL/RR passes execute). DJNZ at the end
-; re-uses B to call AdvanceJonesPos when B=2.
+; XOR-blits the Jones cat sprite (24 px wide × 21 rows, run-cycle frame
+; 0-4 from the pointer table after JonesPhase) at pixel-X JonesPos on its
+; fixed track (char rows 9-11). First XORs the ink bits of the 4×2
+; attribute block under the cat (mask = inverted top-left-of-screen ink,
+; so the flash contrasts with the background). Each sprite row's 3 bytes
+; are sub-shifted by k = JonesPos&7 into 4 output bytes: for k < 4 the
+; SRL/RR chain here right-shifts by k (the self-modifying JR at
+; BlitJonesShiftCode is patched to skip 3-k groups); for k >= 4
+; BlitJonesShifted left-shifts by 8-k instead — same result, at most 4
+; shift passes either way. The DJNZ at the end re-uses B: entered with
+; B=2 (AnimJones) it falls into AdvanceJonesPos for the redraw pass.
 @label=BlitJonesFrame
 c39832 PUSH BC       ; save B (iteration count)
  39833 LD A,(22528)  ; A = attribute at top-left of screen (AttrFileOrigin)
- 39836 CPL           ;
+ 39836 CPL           ; 
  39837 AND 7         ; invert and mask ink colour bits
  39839 LD (39873),A  ; patch XOR 7 opcode operand for attribute flash
  39842 LD A,(39750)  ; A = JonesPos (pixel Y offset 0-135)
- 39845 RRA           ;
- 39846 RRA           ;
- 39847 RRA           ; A = JonesPos >> 3 (character row 0-16)
- 39848 AND 31        ;
- 39850 LD E,A        ;
- 39851 LD D,0        ; DE = char row index
- 39853 LD HL,19488   ; HL = $4C00+1 (display col 1, char-row 0)
- 39856 ADD HL,DE     ; HL = screen row address for JonesPos
+ 39845 RRA           ; 
+ 39846 RRA           ; 
+ 39847 RRA           ; A = JonesPos >> 3: character COLUMN 0-16
+ 39848 AND 31        ; 
+ 39850 LD E,A        ; 
+ 39851 LD D,0        ; DE = the cat's character column
+@ignoreua
+ 39853 LD HL,19488   ; HL = $4C20 (col 0, char row 9, pixel row 4): the run track
+ 39856 ADD HL,DE     ; + column = the cat sprite's top-left screen address
 @nowarn=39751
 @ssub=LD (AlienScreenPtr),HL
- 39857 LD (39751),HL ; AlienScreenPtr = screen row ptr
+ 39857 LD (39751),HL ; stash it in AlienScreenPtr
  39860 LD HL,22848   ; HL = AttrRow10 (attribute row 10, col 0)
- 39863 ADD HL,DE     ; HL = attr address for JonesPos char row
- 39864 LD DE,29      ; DE = attr row stride - 4 (skip to next pair)
+ 39863 ADD HL,DE     ; + column = attr address of the cat's cells
+ 39864 LD DE,29      ; row stride 29, not 28: the 2nd flash row lands one cell right (harmless original quirk)
  39867 LD C,2        ; 2 attribute rows
 @label=BlitJonesAttrRow
 *39869 LD B,4        ; 4 attribute columns per row
 @label=BlitJonesAttrInner
-*39871 LD A,(HL)     ;
+*39871 LD A,(HL)     ; flash one attribute cell:
  39872 XOR 7         ; toggle ink colour (self-modifying: operand byte patched)
  39874 LD (HL),A     ; write flashed attribute
- 39875 INC HL        ;
+ 39875 INC HL        ; 
  39876 DJNZ 39871    ; next column
  39878 ADD HL,DE     ; skip to next attribute row
  39879 DEC C         ;
@@ -8918,112 +8929,114 @@ c39832 PUSH BC       ; save B (iteration count)
 @nowarn=39753
 @ssub=LD HL,JonesPhase
  39882 LD HL,39753   ; HL -> JonesPhase
- 39885 LD E,(HL)     ; E = current Y phase (0-4)
- 39886 LD D,0        ;
- 39888 INC HL        ; HL -> Y frame pointer table
- 39889 ADD HL,DE     ;
+ 39885 LD E,(HL)     ; E = current run-cycle frame (0-4)
+ 39886 LD D,0        ; 
+ 39888 INC HL        ; HL -> the frame-pointer table that follows
+ 39889 ADD HL,DE     ; 
  39890 ADD HL,DE     ; HL -> table[phase] (2 bytes/entry)
- 39891 LD E,(HL)     ;
- 39892 INC HL        ;
- 39893 LD D,(HL)     ; DE = tail sprite data ptr for this phase
+ 39891 LD E,(HL)     ; DE = this frame's sprite data
+ 39892 INC HL        ; 
+ 39893 LD D,(HL)     ; (3 bytes x 21 rows per frame)
  39894 LD A,(39750)  ; A = JonesPos
- 39897 AND 7         ; A = sub-character Y pixel offset (0-7)
+ 39897 AND 7         ; A = sub-cell X offset k (0-7)
  39899 CP 4          ;
- 39901 JP NC,40040   ; >= 4: shifted blit (BlitJonesShifted)
- 39904 CPL           ;
- 39905 AND 3         ; shift count = 3-(JonesPos&7) in [0,3]
- 39907 LD L,A        ;
- 39908 RLCA          ;
- 39909 RLCA          ;
+ 39901 JP NC,40040   ; k >= 4: shift the other way (BlitJonesShifted)
+ 39904 CPL           ; A = 3-k: shift groups to SKIP
+ 39905 AND 3         ; (so k of the 3 SRL/RR groups run = right shift by k)
+ 39907 LD L,A        ; patch offset = (3-k) * 7 bytes
+ 39908 RLCA          ; (each skipped shift group is 7 bytes long)
+ 39909 RLCA          ; 
  39910 RLCA          ; A = shift_count * 8
  39911 SUB L         ; A = shift_count * 7 (bytes to skip in shift chain)
  39912 LD (39932),A  ; patch JR offset: BlitJonesShiftCode entry skips N SRL/RR pairs
- 39915 LD B,21       ; 21 pixel rows per tail frame
+ 39915 LD B,21       ; 21 pixel rows per cat frame
 @label=BlitJonesFrameRow
-*39917 PUSH BC       ;
- 39918 EX DE,HL      ;
- 39919 LD B,(HL)     ;
- 39920 INC HL        ;
- 39921 LD C,(HL)     ;
- 39922 INC HL        ;
- 39923 LD E,(HL)     ;
- 39924 INC HL        ;
- 39925 PUSH HL       ;
+*39917 PUSH BC       ; save row counter
+ 39918 EX DE,HL      ; HL = sprite data ptr
+ 39919 LD B,(HL)     ; load the row's 3 sprite bytes
+ 39920 INC HL        ; into B, C, E
+ 39921 LD C,(HL)     ; 
+ 39922 INC HL        ; 
+ 39923 LD E,(HL)     ; 
+ 39924 INC HL        ; 
+ 39925 PUSH HL       ; save advanced sprite ptr
 @nowarn=39751
 @ssub=LD HL,(AlienScreenPtr)
- 39926 LD HL,(39751) ;
- 39929 PUSH HL       ;
- 39930 XOR A         ;
+ 39926 LD HL,(39751) ; HL = this row's screen address
+ 39929 PUSH HL       ; 
+ 39930 XOR A         ; A = 0: spill byte for bits shifted out
 ; Self-modifying right-shift chain. The JR operand byte is patched before
 ; entry to skip 0-3 SRL/RR groups, giving a right-shift of 0-3 bits across the 3+1
 ; sprite bytes in {B,C,E,A}. After shifting, the result is XOR-blitted to screen.
 @label=BlitJonesShiftCode
 *39931 JR 39931      ; self-modifying: JR offset patched to skip N SRL/RR groups
  39933 SRL B         ; shift group 3 (shift 3 bits right)
- 39935 RR C          ;
- 39937 RR E          ;
- 39939 RRA           ;
+ 39935 RR C          ; 
+ 39937 RR E          ; 
+ 39939 RRA           ; 
  39940 SRL B         ; shift group 2
- 39942 RR C          ;
- 39944 RR E          ;
- 39946 RRA           ;
+ 39942 RR C          ; 
+ 39944 RR E          ; 
+ 39946 RRA           ; 
  39947 SRL B         ; shift group 1 (shift 1 bit right)
- 39949 RR C          ;
- 39951 RR E          ;
- 39953 RRA           ;
+ 39949 RR C          ; 
+ 39951 RR E          ; 
+ 39953 RRA           ; 
  39954 EX AF,AF'     ; swap: A' = carry spill byte
- 39955 LD A,B        ;
- 39956 XOR (HL)      ;
+ 39955 LD A,B        ; XOR-blit the 4 result bytes:
+ 39956 XOR (HL)      ; 
  39957 LD (HL),A     ; XOR-blit byte 0 to screen
- 39958 INC HL        ;
- 39959 LD A,C        ;
- 39960 XOR (HL)      ;
+ 39958 INC HL        ; 
+ 39959 LD A,C        ; 
+ 39960 XOR (HL)      ; 
  39961 LD (HL),A     ; XOR-blit byte 1
- 39962 INC HL        ;
- 39963 LD A,E        ;
- 39964 XOR (HL)      ;
+ 39962 INC HL        ; 
+ 39963 LD A,E        ; 
+ 39964 XOR (HL)      ; 
  39965 LD (HL),A     ; XOR-blit byte 2
- 39966 INC HL        ;
- 39967 EX AF,AF'     ;
- 39968 XOR (HL)      ;
+ 39966 INC HL        ; 
+ 39967 EX AF,AF'     ; recover the spill byte
+ 39968 XOR (HL)      ; 
  39969 LD (HL),A     ; XOR-blit carry spill byte
- 39970 POP HL        ;
- 39971 LD A,H        ;
- 39972 AND 7         ;
- 39974 CP 7          ;
- 39976 JR Z,39981    ;
- 39978 INC H         ;
- 39979 JR 39996      ;
+ 39970 POP HL        ; back to the row-start screen address
+ 39971 LD A,H        ; finished pixel row 7 of this char row?
+ 39972 AND 7         ; 
+ 39974 CP 7          ; 
+ 39976 JR Z,39981    ; yes: char-row / third stepping
+ 39978 INC H         ; no: next pixel row is one display bank up
+ 39979 JR 39996      ; 
 @label=BlitJonesFrameBankCheck
-*39981 LD A,L        ;
- 39982 CP 224        ;
- 39984 JR NC,39992   ;
- 39986 LD BC,63776   ;
- 39989 ADD HL,BC     ;
- 39990 JR 39996      ;
+*39981 LD A,L        ; last char row of this screen third?
+ 39982 CP 224        ; 
+ 39984 JR NC,39992   ; yes: hop to the next third
+ 39986 LD BC,63776   ; no: -1760 = pixel-row 0 of the next char row
+ 39989 ADD HL,BC     ; 
+ 39990 JR 39996      ; 
 @label=BlitJonesFrameNextThird
-*39992 LD BC,32      ;
- 39995 ADD HL,BC     ;
+*39992 LD BC,32      ; +32 carries into H: row 0 of the next third
+ 39995 ADD HL,BC     ; 
 @nowarn=39751
 @label=BlitJonesFrameNextRow
 @ssub=LD (AlienScreenPtr),HL
-*39996 LD (39751),HL ;
- 39999 POP DE        ;
- 40000 POP BC        ;
- 40001 DJNZ 39917    ;
- 40003 POP BC        ;
- 40004 DJNZ 40007    ;
- 40006 RET           ;
+*39996 LD (39751),HL ; store the next row's screen address
+ 39999 POP DE        ; DE = sprite ptr
+ 40000 POP BC        ; 
+ 40001 DJNZ 39917    ; next of the 21 rows
+ 40003 POP BC        ; B = caller's iteration count
+ 40004 DJNZ 40007    ; B was 2 (AnimJones): advance pos and redraw
+ 40006 RET           ; B was 1: single XOR pass only
 
 ; AdvanceJonesPos
 ;
-; Increments JonesPos by 4. If the new value >= 136 the tail sweep is complete:
-; freeze the Y animation (JonesPhase |= 128) and return. Otherwise store the new
-; position, cycle the phase counter (0->1->2->3->4->0) and jump back to BlitJonesFrame.
+; Moves the cat 4 pixels right. If the new JonesPos >= 136 it has run off
+; the right edge of its 17-column track: freeze the animation
+; (JonesPhase |= 128) and return — the erase pass has already removed it
+; from the screen. Otherwise store the new position, cycle the run-cycle
+; frame (0->1->2->3->4->0) and jump back to BlitJonesFrame to redraw.
 @label=AdvanceJonesPos
 c40007 LD A,(39750)  ; A = JonesPos
  40010 ADD A,4       ; advance by 4 pixels
- 40012 CP 136        ; reached bottom of sweep area?
+ 40012 CP 136        ; run off the right edge (past column 16)?
  40014 JR C,40022    ; no: update position
  40016 LD A,128      ; yes: A = freeze flag
 @nowarn=39753
@@ -9035,7 +9048,7 @@ c40007 LD A,(39750)  ; A = JonesPos
 @nowarn=39753
 @ssub=LD A,(JonesPhase)
  40025 LD A,(39753)  ; A = current phase (0-4)
- 40028 INC A         ;
+ 40028 INC A         ; 
  40029 CP 5          ; wrapped past phase 4?
  40031 JR C,40034    ; no: keep incremented value
  40033 XOR A         ; yes: wrap to 0
@@ -9043,143 +9056,146 @@ c40007 LD A,(39750)  ; A = JonesPos
 @label=AdvanceJonesPosSetPhase
 @ssub=LD (JonesPhase),A
 *40034 LD (39753),A  ; JonesPhase = new phase
- 40037 JP 39832      ; blit next tail frame
+ 40037 JP 39832      ; draw the cat at its new position
 
 ; BlitJonesShifted
 ;
-; Handles the alien tail XOR blit when JonesPos&7 >= 4 (sprite straddles the next
-; character row). Uses SLA/RL chains for a left-shift instead of SRL/RR, mirroring
-; the logic of BlitJonesFrame's right-shift section. The shift amount (pixels left
-; past the half-character boundary) is patched into the self-modifying JR at
-; the JR at BlitJonesShiftCode2, then 21 rows of 4 bytes are XOR-blitted.
+; The cat XOR blit for sub-cell offsets k = JonesPos&7 >= 4. Rather than
+; right-shifting each sprite row by k (up to 7 passes), it left-shifts by
+; 8-k (at most 4 passes) with SLA/RL chains and writes the spill byte
+; FIRST — placing the sprite k pixels into the 4-byte output field, the
+; same result as BlitJonesFrame's right-shift path. The number of chain
+; groups to skip is patched into the self-modifying JR at
+; BlitJonesShiftCode2, then 21 rows of 4 bytes are XOR-blitted.
 @label=BlitJonesShifted
-c40040 SUB 4         ; A = (JonesPos&7) - 4, left-shift amount in [0,3]
- 40042 LD L,A        ;
- 40043 RLCA          ;
- 40044 RLCA          ;
+c40040 SUB 4         ; A = k-4: shift groups to SKIP (8-k of 4 run)
+ 40042 LD L,A        ; patch offset = (k-4) * 7 bytes
+ 40043 RLCA          ; 
+ 40044 RLCA          ; 
  40045 RLCA          ; A = shift_count * 8
  40046 SUB L         ; A = shift_count * 7 (JR offset into SLA/RL chain)
  40047 LD (40067),A  ; patch BlitJonesShiftCode2 JR offset
  40050 LD B,21       ; 21 pixel rows
 @label=BlitJonesShiftedRow
-*40052 PUSH BC       ;
- 40053 EX DE,HL      ;
- 40054 LD B,(HL)     ;
- 40055 INC HL        ;
- 40056 LD C,(HL)     ;
- 40057 INC HL        ;
- 40058 LD E,(HL)     ;
- 40059 INC HL        ;
- 40060 PUSH HL       ;
+*40052 PUSH BC       ; save row counter
+ 40053 EX DE,HL      ; HL = sprite data ptr
+ 40054 LD B,(HL)     ; load the row's 3 sprite bytes
+ 40055 INC HL        ; into B, C, E
+ 40056 LD C,(HL)     ; 
+ 40057 INC HL        ; 
+ 40058 LD E,(HL)     ; 
+ 40059 INC HL        ; 
+ 40060 PUSH HL       ; save advanced sprite ptr
 @nowarn=39751
 @ssub=LD HL,(AlienScreenPtr)
- 40061 LD HL,(39751) ;
- 40064 PUSH HL       ;
- 40065 XOR A         ;
+ 40061 LD HL,(39751) ; HL = this row's screen address
+ 40064 PUSH HL       ; 
+ 40065 XOR A         ; A = 0: collects bits shifted out of B's top
 @label=BlitJonesShiftCode2
-*40066 JR 40066      ;
- 40068 SLA E         ;
- 40070 RL C          ;
- 40072 RL B          ;
- 40074 RLA           ;
- 40075 SLA E         ;
- 40077 RL C          ;
- 40079 RL B          ;
- 40081 RLA           ;
- 40082 SLA E         ;
- 40084 RL C          ;
- 40086 RL B          ;
- 40088 RLA           ;
- 40089 SLA E         ;
- 40091 RL C          ;
- 40093 RL B          ;
- 40095 RLA           ;
- 40096 XOR (HL)      ;
- 40097 LD (HL),A     ;
- 40098 INC HL        ;
- 40099 LD A,B        ;
- 40100 XOR (HL)      ;
- 40101 LD (HL),A     ;
- 40102 INC HL        ;
- 40103 LD A,C        ;
- 40104 XOR (HL)      ;
- 40105 LD (HL),A     ;
- 40106 INC HL        ;
- 40107 LD A,E        ;
- 40108 XOR (HL)      ;
- 40109 LD (HL),A     ;
- 40110 POP HL        ;
- 40111 LD A,H        ;
- 40112 AND 7         ;
- 40114 CP 7          ;
- 40116 JR Z,40121    ;
- 40118 INC H         ;
- 40119 JR 40136      ;
+*40066 JR 40066      ; self-modifying: JR offset patched to skip N SLA/RL groups
+ 40068 SLA E         ; left-shift the 24-bit row across A:B:C:E;
+ 40070 RL C          ; shifting left by 8-k places the sprite k
+ 40072 RL B          ; pixels from byte A's left edge — the same
+ 40074 RLA           ; result as a right shift by k, but never
+ 40075 SLA E         ; more than 4 shift-group passes
+ 40077 RL C          ; 
+ 40079 RL B          ; 
+ 40081 RLA           ; 
+ 40082 SLA E         ; 
+ 40084 RL C          ; 
+ 40086 RL B          ; 
+ 40088 RLA           ; 
+ 40089 SLA E         ; 
+ 40091 RL C          ; 
+ 40093 RL B          ; 
+ 40095 RLA           ; 
+ 40096 XOR (HL)      ; XOR-blit the 4 result bytes, spill byte first
+ 40097 LD (HL),A     ; 
+ 40098 INC HL        ; 
+ 40099 LD A,B        ; 
+ 40100 XOR (HL)      ; 
+ 40101 LD (HL),A     ; 
+ 40102 INC HL        ; 
+ 40103 LD A,C        ; 
+ 40104 XOR (HL)      ; 
+ 40105 LD (HL),A     ; 
+ 40106 INC HL        ; 
+ 40107 LD A,E        ; 
+ 40108 XOR (HL)      ; 
+ 40109 LD (HL),A     ; 
+ 40110 POP HL        ; back to the row-start screen address
+ 40111 LD A,H        ; finished pixel row 7 of this char row?
+ 40112 AND 7         ; 
+ 40114 CP 7          ; 
+ 40116 JR Z,40121    ; yes: char-row / third stepping
+ 40118 INC H         ; no: next pixel row is one display bank up
+ 40119 JR 40136      ; 
 @label=BlitJonesShiftedBankCheck
-*40121 LD A,L        ;
- 40122 CP 224        ;
- 40124 JR NC,40132   ;
- 40126 LD BC,63776   ;
- 40129 ADD HL,BC     ;
- 40130 JR 40136      ;
+*40121 LD A,L        ; last char row of this screen third?
+ 40122 CP 224        ; 
+ 40124 JR NC,40132   ; yes: hop to the next third
+ 40126 LD BC,63776   ; no: -1760 = pixel-row 0 of the next char row
+ 40129 ADD HL,BC     ; 
+ 40130 JR 40136      ; 
 @label=BlitJonesShiftedNextThird
-*40132 LD BC,32      ;
- 40135 ADD HL,BC     ;
+*40132 LD BC,32      ; +32 carries into H: row 0 of the next third
+ 40135 ADD HL,BC     ; 
 @nowarn=39751
 @label=BlitJonesShiftedNextRow
 @ssub=LD (AlienScreenPtr),HL
-*40136 LD (39751),HL ;
- 40139 POP DE        ;
- 40140 POP BC        ;
- 40141 DJNZ 40052    ;
- 40143 POP BC        ;
- 40144 DEC B         ;
- 40145 JP NZ,40007   ;
- 40148 RET           ;
+*40136 LD (39751),HL ; store the next row's screen address
+ 40139 POP DE        ; DE = sprite ptr
+ 40140 POP BC        ; 
+ 40141 DJNZ 40052    ; next of the 21 rows
+ 40143 POP BC        ; B = caller's iteration count
+ 40144 DEC B         ; (mirror of BlitJonesFrame's ending)
+ 40145 JP NZ,40007   ; B was 2: advance pos and redraw
+ 40148 RET           ; B was 1: single XOR pass only
 
 ; ClearAlienArea
 ;
-; Clears the 19x20-character area of the ZX Spectrum display file and attribute RAM
-; used by the alien body animation. Iterates 19 rows of 20 columns from DisplayFile,
-; calling #R31370 to zero each cell, then repeats for the attribute area at AttrFileOrigin.
+; Clears the 19×20-character area of the display used by the alien
+; encounter picture: stamps the blank tile into each cell via DrawTileA
+; (#R31370 with A=0), then paints the same area's attributes green-ink-
+; on-black (4).
 @label=ClearAlienArea
 c40149 LD HL,16384   ; HL = DisplayFile: start of display file
  40152 LD (31257),HL ; store current screen cell address
  40155 LD C,19       ; 19 character rows
 @label=ClearAlienAreaCol
-*40157 LD B,20       ;
+*40157 LD B,20       ; 20 columns per row
 @label=ClearAlienAreaRow
-*40159 PUSH BC       ;
- 40160 XOR A         ;
- 40161 CALL 31370    ;
- 40164 LD HL,31257   ;
- 40167 INC (HL)      ;
- 40168 POP BC        ;
- 40169 DJNZ 40159    ;
- 40171 LD DE,12      ;
- 40174 LD HL,(31257) ;
- 40177 LD A,L        ;
- 40178 CP 224        ;
- 40180 JR C,40185    ;
- 40182 LD DE,1804    ;
+*40159 PUSH BC       ; 
+ 40160 XOR A         ; A = 0: the blank tile
+ 40161 CALL 31370    ; DrawTileA(0): stamp 8 blank pixel rows into the cell
+ 40164 LD HL,31257   ; bump the draw pointer
+ 40167 INC (HL)      ; one cell to the right
+ 40168 POP BC        ; 
+ 40169 DJNZ 40159    ; 
+ 40171 LD DE,12      ; row advance: 20 cells + 12 = 32, next char row
+ 40174 LD HL,(31257) ; 
+ 40177 LD A,L        ; unless we just finished the last char row
+ 40178 CP 224        ; of a screen third...
+ 40180 JR C,40185    ; 
+ 40182 LD DE,1804    ; ...then +1804 ($070C) hops into the next third
 @label=ClearAlienAreaNextRow
-*40185 ADD HL,DE     ;
- 40186 LD (31257),HL ;
- 40189 DEC C         ;
- 40190 JR NZ,40157   ;
- 40192 LD DE,12      ;
- 40195 LD HL,22528   ;
- 40198 LD C,19       ;
+*40185 ADD HL,DE     ; 
+ 40186 LD (31257),HL ; 
+ 40189 DEC C         ; 
+ 40190 JR NZ,40157   ; next of the 19 rows
+ 40192 LD DE,12      ; attr sweep: same 19 rows x 20 cols
+ 40195 LD HL,22528   ; from the top of the attribute file
+ 40198 LD C,19       ; 
 @label=ClearAlien_RowLoop
-*40200 LD B,20       ;
+*40200 LD B,20       ; 
 @label=ClearAlien_CellLoop
-*40202 LD (HL),4     ;
- 40204 INC HL        ;
- 40205 DJNZ 40202    ;
- 40207 ADD HL,DE     ;
- 40208 DEC C         ;
- 40209 JR NZ,40200   ;
- 40211 RET           ;
+*40202 LD (HL),4     ; attr 4: green ink on black paper
+ 40204 INC HL        ; 
+ 40205 DJNZ 40202    ; 
+ 40207 ADD HL,DE     ; +12: next attribute row
+ 40208 DEC C         ; 
+ 40209 JR NZ,40200   ; 
+ 40211 RET           ; 
 
 ; LaunchGate
 ;
@@ -10714,6 +10730,7 @@ c42581 CALL 42501    ; ClearDisplay: blank all pixel data
  42799 CALL 44509    ; PrintStr
 @label=Intro_WaitLoop
 *42802 CALL 40439    ; keep playing theme-music phrases while polling
+@ignoreua
  42805 LD BC,65278   ; B = $FE: first keyboard half-row (port $FEFE)
 @label=Intro_KeyPoll
 *42808 IN A,(C)      ; read this half-row
