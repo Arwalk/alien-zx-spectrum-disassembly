@@ -10319,7 +10319,10 @@ t41572 DEFM "MAPPING SYMBOLS"  ; "MAPPING SYMBOLS" (ship-map legend title)
 ;   4. Pull one script nibble, look it up in #R41374
 ;      (LongGameHostSlotTable) to get the host slot index A_host
 ;      (one of {1, 2, 5}), then stamp the HostMarker on that record by
-;      overwriting bytes +1 and +7 with $FF.
+;      overwriting bytes +1 and +7 with $FF. The host's vacated room is
+;      first copied into Brett's room byte (slot 7 +1, $73B7): Brett,
+;      whom LongGameCrewInit leaves in room 0, takes the host's seat so
+;      both dinner-scene groups stay at three crew.
 ;   5. Loop pulling more script nibbles, looking them up in #R41390
 ;      (LongGameTargetTable), until the looked-up value A_target differs
 ;      from A_host — the Android can't be the same slot the alien just
@@ -10362,28 +10365,28 @@ c42276 LD HL,33714   ; HL = MessageQueue (event queue base)
 @label=LongGame_CopyRecords
 *42301 LDIR          ; copy long-game starting crew/alien state
  42303 CALL 33589    ; A = script nibble (0-15)
- 42306 LD E,A        ;
- 42307 LD D,0        ;
+ 42306 LD E,A        ; 
+ 42307 LD D,0        ; 
 @nowarn=41374
 @ssub=LD HL,LongGameHostSlotTable
 @ignoreua
  42309 LD HL,41374   ; HL = LongGameHostSlotTable ($A19E)
- 42312 ADD HL,DE     ;
+ 42312 ADD HL,DE     ; index the host-slot table by the nibble
 @label=LongGame_PickHost
  42313 LD A,(HL)     ; A_host = chestburster-host slot index for this run
  42314 PUSH AF       ; stash A_host
- 42315 ADD A,A       ;
- 42316 ADD A,A       ;
+ 42315 ADD A,A       ; 
+ 42316 ADD A,A       ; 
  42317 ADD A,A       ; A_host × 8 (record stride)
- 42318 LD E,A        ;
- 42319 LD HL,29566   ;
+ 42318 LD E,A        ; 
+ 42319 LD HL,29566   ; base of ActorRecords
  42322 ADD HL,DE     ; HL = &slot[A_host]
  42323 INC HL        ; HL = &slot[A_host] + 1 (crew ID byte)
- 42324 LD A,(HL)     ;
+ 42324 LD A,(HL)     ; A = the host's starting room (byte +1)
 @ignoreua
- 42325 LD (29623),A  ; save original ID at $73E7 (never read; effectively scratch)
+ 42325 LD (29623),A  ; Brett (slot 7, init room 0) inherits the host's seat, keeping both dinner groups at three
  42328 LD (HL),255   ; stamp HostMarker: slot[A_host].byte+1 = $FF
- 42330 LD DE,6       ;
+ 42330 LD DE,6       ; step from +1 to +7
  42333 ADD HL,DE     ; HL = &slot[A_host] + 7 (alive flag)
 @label=LongGame_PickTarget
  42334 LD (HL),255   ; stamp HostMarker: slot[A_host].byte+7 = $FF
@@ -10393,15 +10396,15 @@ c42276 LD HL,33714   ; HL = MessageQueue (event queue base)
 @ssub=LD HL,LongGameTargetTable
 @ignoreua
  42339 LD HL,41390   ; HL = LongGameTargetTable ($A1AE)
- 42342 LD E,A        ;
- 42343 LD D,0        ;
- 42345 ADD HL,DE     ;
+ 42342 LD E,A        ; 
+ 42343 LD D,0        ; 
+ 42345 ADD HL,DE     ; 
  42346 LD C,(HL)     ; C = candidate alien-target index
  42347 POP AF        ; A = A_host
- 42348 CP C          ;
+ 42348 CP C          ; same slot as the host?
 @label=LongGame_TargetOk
 *42349 JR NZ,42354   ; if C != A_host → accept
- 42351 PUSH AF       ;
+ 42351 PUSH AF       ; re-stash A_host and retry
 @label=LongGame_Retry
 *42352 JR 42336      ; else: pull another nibble (avoid colliding with host)
 @nowarn=33703
@@ -10410,20 +10413,20 @@ c42276 LD HL,33714   ; HL = MessageQueue (event queue base)
 *42354 LD HL,33703   ; HL = &AlienTargetID
 @label=LongGame_SetTarget
 *42357 LD (HL),C     ; AlienTargetID = C (randomised)
- 42358 PUSH BC       ;
+ 42358 PUSH BC       ; save C = the Android's slot
  42359 LD L,A        ; L = A_host (actor param for message)
  42360 LD A,33       ; A = 33 → message "Alien has hatched from {actor}"
 @label=LongGame_HatchMsg
  42362 CALL 37176    ; enqueue opening narrative naming the host
 @label=LongGame_StoreTargetPtr
-*42365 POP BC        ;
+*42365 POP BC        ; 
  42366 LD A,C        ; A = AlienTargetID
- 42367 ADD A,A       ;
- 42368 ADD A,A       ;
+ 42367 ADD A,A       ; 
+ 42368 ADD A,A       ; 
  42369 ADD A,A       ; A × 8
- 42370 LD E,A        ;
- 42371 LD D,0        ;
- 42373 LD HL,29566   ;
+ 42370 LD E,A        ; 
+ 42371 LD D,0        ; 
+ 42373 LD HL,29566   ; base of ActorRecords
  42376 ADD HL,DE     ; HL = &slot[AlienTargetID]
  42377 LD (33701),HL ; store alien-target record pointer at AlienTargetPtr
 @ignoreua
@@ -10435,56 +10438,56 @@ c42276 LD HL,33714   ; HL = MessageQueue (event queue base)
 ; event timer from the script, and switches the room mode to 1 (corridor
 ; view) so the player drops straight into gameplay.
 @label=CommonGameInit
-*42380 XOR A         ;
+*42380 XOR A         ; AlienActiveFlag = 0: the Android starts dormant
 @nowarn=33704
 @ssub=LD (AlienActiveFlag),A
- 42381 LD (33704),A  ;
+ 42381 LD (33704),A  ; 
 @nowarn=32896
 @ignoreua
  42384 LD HL,32896   ; HL = $8080: two "frozen" bytes for both channels
- 42387 LD (31263),HL ;
- 42390 LD A,L        ;
+ 42387 LD (31263),HL ; freeze both map-marker animation channels
+ 42390 LD A,L        ; A = $80
 @nowarn=39741
 @ssub=LD (AlienXPhase),A
- 42391 LD (39741),A  ;
+ 42391 LD (39741),A  ; freeze the alien-body encounter layer...
 @nowarn=39753
 @ssub=LD (JonesPhase),A
- 42394 LD (39753),A  ;
+ 42394 LD (39753),A  ; ...and the Jones run layer
 @nowarn=41406
 @label=CommonInit_ItemsGrilles
 @ssub=LD HL,InitialItemRooms
 @ignoreua
  42397 LD HL,41406   ; HL = InitialItemRooms ($A1BE)
 @ignoreua
- 42400 LD DE,29940   ; DE = ItemLocations ($74B4)
- 42403 LD BC,22      ;
+ 42400 LD DE,29940   ; DE = ItemLocations ($74F4)
+ 42403 LD BC,22      ; 
  42406 LDIR          ; place the 22 items in their start rooms
  42408 LD B,33       ; RoomGrilleState: put all grilles in place
  42410 LD HL,30076   ; (33 bytes; room 33's byte stays 0 = open)
- 42413 LD A,255      ;
+ 42413 LD A,255      ; 
 @label=CommonInit_GrilleLoop
-*42415 LD (HL),A     ;
- 42416 INC HL        ;
- 42417 DJNZ 42415    ;
+*42415 LD (HL),A     ; 
+ 42416 INC HL        ; 
+ 42417 DJNZ 42415    ; 
  42419 LD E,13       ; ...except Corridor#6 (room 13):
  42421 LD D,0        ; its grille starts removed
- 42423 LD HL,30076   ;
- 42426 ADD HL,DE     ;
- 42427 LD (HL),D     ;
- 42428 LD HL,31253   ;
- 42431 LD (HL),D     ;
+ 42423 LD HL,30076   ; 
+ 42426 ADD HL,DE     ; 
+ 42427 LD (HL),D     ; 
+ 42428 LD HL,31253   ; ShipSystemFlags = 0: destruct off, airlocks
+ 42431 LD (HL),D     ; sealed, no fires
  42432 CALL 33589    ; Jones starts in a random
 @nowarn=33706
 @ssub=LD (JonesRoom),A
  42435 LD (33706),A  ; room 0-15 (script nibble)
  42438 CALL 33589    ; the alien's lair is drawn from
- 42441 LD E,A        ;
- 42442 LD D,0        ;
+ 42441 LD E,A        ; a 16-entry room table...
+ 42442 LD D,0        ; 
 @nowarn=41358
 @ssub=LD HL,AlienInitTable
 @ignoreua
  42444 LD HL,41358   ; HL = AlienInitTable ($A18E)
- 42447 ADD HL,DE     ;
+ 42447 ADD HL,DE     ; 
  42448 LD A,(HL)     ; A = AlienInitTable[script_byte]
  42449 OR 64         ; ...hidden in the ducts above it (bit 6)
 @label=CommonInit_AlienRoom
@@ -10497,26 +10500,26 @@ c42276 LD HL,33714   ; HL = MessageQueue (event queue base)
  42454 LD HL,41428   ; HL = ItemChargesInit ($A1D4)
 @nowarn=33746
 @ssub=LD DE,ItemCharges
- 42457 LD DE,33746   ;
- 42460 LD BC,16      ;
- 42463 LDIR          ;
- 42465 LD HL,30006   ;
- 42468 LD (HL),48    ;
- 42470 LD DE,30007   ;
- 42473 LD BC,67      ;
- 42476 LDIR          ;
- 42478 LD HL,12336   ;
+ 42457 LD DE,33746   ; per-item charge counters for items 0-15
+ 42460 LD BC,16      ; 
+ 42463 LDIR          ; load the initial charges
+ 42465 LD HL,30006   ; RoomDamageDigits: set every room's 2-digit
+ 42468 LD (HL),48    ; meter to ASCII '00' — prime the first '0'
+ 42470 LD DE,30007   ; and LDIR it across
+ 42473 LD BC,67      ; the other 67 bytes (34 rooms x 2 digits)
+ 42476 LDIR          ; 
+ 42478 LD HL,12336   ; HL = $3030 = '00': the oxygen meter's low digit pair
 @nowarn=38376
 @ssub=LD (OxygenLo),HL
- 42481 LD (38376),HL ;
- 42484 LD HL,13623   ;
+ 42481 LD (38376),HL ; 
+ 42484 LD HL,13623   ; high pair = '7','5': oxygen starts at 7500
 @nowarn=38374
- 42487 LD (38374),HL ;
- 42490 LD A,32       ;
- 42492 LD (38373),A  ;
- 42495 LD A,1        ;
- 42497 LD (31243),A  ;
- 42500 RET           ;
+ 42487 LD (38374),HL ; 
+ 42490 LD A,32       ; leading character = space
+ 42492 LD (38373),A  ; 
+ 42495 LD A,1        ; RoomTypeByte = 1: open on the deck-1 view
+ 42497 LD (31243),A  ; 
+ 42500 RET           ; 
 
 ; ClearDisplay
 @ignoreua
