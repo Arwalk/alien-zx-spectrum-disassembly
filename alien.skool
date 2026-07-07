@@ -2479,11 +2479,14 @@ c31393 LD A,H        ;
 
 ; InitGameView
 ;
-; Initialises the corridor view for the current room. Clears the room mode
-; byte, freezes both crew animation channels (sets bit 7 of #R31263/#R31264),
-; resets the corridor cursor to segment 8, copies the 19-byte corridor
-; position template from #R30197 to #R29630, then draws the room's attribute
-; colours and initial crew sprites.
+; Initialises the room view. Clears the room-mode byte, freezes both
+; map-marker channels (bit 7 of #R31263/#R31264) and the two encounter
+; layers, resets the corridor cursor to segment 8, clears the game
+; window, draws the room background (resetting view type 4 — the
+; encounter screen — to a normal deck view first), seeds the corridor
+; strip from the 19-byte template at #R30197, then paints the menu
+; column's colour bands and prints its header row and the seven
+; crew-name rows.
 ; .
 ; Used by the routines at #R35163, #R35338, #R35440, #R36457, #R37584,
 ; #R39400, #R40941, #R45676 and #R45732.
@@ -2494,15 +2497,15 @@ c31417 XOR A         ; A = 0
 @ignoreua
  31421 LD HL,31263   ; HL = #R31263 (crew animation flags)
  31424 SET 7,(HL)    ; freeze animation channel A (bit 7 = freeze)
- 31426 INC HL        ;
+ 31426 INC HL        ; 
  31427 SET 7,(HL)    ; freeze animation channel B
  31429 LD A,128      ; $80
 @nowarn=39741
 @ssub=LD (AlienXPhase),A
- 31431 LD (39741),A  ; set alien pixel X sentinel (#R39741)
+ 31431 LD (39741),A  ; freeze the alien-body encounter layer
 @nowarn=39753
 @ssub=LD (JonesPhase),A
- 31434 LD (39753),A  ; set alien pixel Y sentinel (#R39753)
+ 31434 LD (39753),A  ; freeze the Jones run layer
  31437 LD A,8        ; segment 8 = centre of 19-segment corridor
 @nowarn=33683
 @ssub=LD (CorridorCursor),A
@@ -2512,9 +2515,9 @@ c31417 XOR A         ; A = 0
  31444 CALL 33479    ; draw blank room border / clear game window
 @ignoreua
  31447 LD A,(31243)  ; read room-type byte (#R31243)
- 31450 CP 4          ; room type 4 = special (engine room)
- 31452 JR NZ,31459   ;
- 31454 LD A,1        ; remap type 4 → type 1
+ 31450 CP 4          ; type 4 = the encounter screen:
+ 31452 JR NZ,31459   ; 
+ 31454 LD A,1        ; reset it to a normal deck view (type 1)
  31456 LD (31243),A  ;
 @label=InitView_DrawBg
 *31459 CALL 31267    ; draw room background (walls, doors, floor tiles)
@@ -2525,42 +2528,42 @@ c31417 XOR A         ; A = 0
 @ignoreua
  31473 LD HL,22550   ; HL = $5816 (attribute row for top of game window)
  31476 LD A,7        ; white ink on black paper
- 31478 LD C,1        ; 1 column wide
+ 31478 LD C,1        ; 1 row of the 10-cell menu column
  31480 CALL 31612    ; paint attribute column
- 31483 LD A,40       ;
- 31485 LD C,8        ;
- 31487 CALL 31612    ;
- 31490 LD A,32       ;
- 31492 LD C,2        ;
- 31494 CALL 31612    ;
- 31497 LD A,23       ;
- 31499 LD C,5        ;
- 31501 CALL 31612    ;
- 31504 XOR A         ;
- 31505 LD C,3        ;
- 31507 CALL 31612    ;
- 31510 LD C,1        ;
- 31512 LD A,7        ;
- 31514 CALL 31612    ;
- 31517 LD HL,16406   ;
- 31520 LD (31257),HL ;
- 31523 LD A,82       ;
- 31525 CALL 31634    ;
- 31528 LD HL,30197   ;
- 31531 LD (31261),HL ;
- 31534 CALL 31626    ;
- 31537 LD B,7        ;
+ 31483 LD A,40       ; 8 rows of black-on-cyan (40)
+ 31485 LD C,8        ; 
+ 31487 CALL 31612    ; 
+ 31490 LD A,32       ; 2 rows of black-on-green (32)
+ 31492 LD C,2        ; 
+ 31494 CALL 31612    ; 
+ 31497 LD A,23       ; 5 rows of white-on-red (23)
+ 31499 LD C,5        ; 
+ 31501 CALL 31612    ; 
+ 31504 XOR A         ; 3 rows of black (0)
+ 31505 LD C,3        ; 
+ 31507 CALL 31612    ; 
+ 31510 LD C,1        ; and 1 more row of white-on-black (7)
+ 31512 LD A,7        ; 
+ 31514 CALL 31612    ; 
+ 31517 LD HL,16406   ; menu-column header (row 0, col 22)
+ 31520 LD (31257),HL ; 
+ 31523 LD A,82       ; string 82
+ 31525 CALL 31634    ; DrawSprite
+ 31528 LD HL,30197   ; tile source = the corridor strip template
+ 31531 LD (31261),HL ; 
+ 31534 CALL 31626    ; DrawNextCorridorTile: draw its first entry
+ 31537 LD B,7        ; then 7 blank rows (string 92)
 @label=InitView_BlankLoop
-*31539 PUSH BC       ;
- 31540 LD A,92       ;
- 31542 CALL 31634    ;
- 31545 POP BC        ;
- 31546 DJNZ 31539    ;
- 31548 LD HL,16470   ;
- 31551 LD (31257),HL ;
- 31554 LD A,1        ;
- 31556 EX AF,AF'     ;
- 31557 LD A,7        ;
+*31539 PUSH BC       ; 
+ 31540 LD A,92       ; 
+ 31542 CALL 31634    ; DrawSprite
+ 31545 POP BC        ; 
+ 31546 DJNZ 31539    ; 
+ 31548 LD HL,16470   ; crew names from row 2, col 22
+ 31551 LD (31257),HL ; 
+ 31554 LD A,1        ; A' = crew id 1 (Dallas)
+ 31556 EX AF,AF'     ; 
+ 31557 LD A,7        ; 7 name rows
 ; This entry point is used by the routine at #R31577.
 ; Orders-screen crew-name loop head: A' holds the next crew id,
 ; A the remaining row count (7 names on menu rows 2-8).
@@ -3381,50 +3384,50 @@ c32498 LD HL,29575   ; HL -> slot 1's +1 (room) byte
 @label=DrawRoomMates
 c32536 CALL 32498    ; FindRoomMates -> RoomMateA/B
  32539 LD HL,20672   ; draw pointer -> "Also here" row
- 32542 LD (31257),HL ;
+ 32542 LD (31257),HL ; (row 22, col 0)
  32545 LD BC,512     ; B = 2 mates to check, C = 0
  32548 LD DE,31250   ; DE -> RoomMateA
 @label=DrawMates_DeadScan
-*32551 PUSH BC       ;
- 32552 PUSH DE       ;
+*32551 PUSH BC       ; 
+ 32552 PUSH DE       ; 
  32553 LD A,(DE)     ; no (more) mates: alive path
- 32554 CP 255        ;
- 32556 JR Z,32607    ;
+ 32554 CP 255        ; 
+ 32556 JR Z,32607    ; 
  32558 ADD A,A       ; HL -> that slot's +7 status byte
- 32559 ADD A,A       ;
- 32560 ADD A,A       ;
- 32561 LD E,A        ;
- 32562 XOR A         ;
- 32563 LD D,A        ;
- 32564 LD HL,29573   ;
- 32567 ADD HL,DE     ;
+ 32559 ADD A,A       ; 
+ 32560 ADD A,A       ; 
+ 32561 LD E,A        ; 
+ 32562 XOR A         ; 
+ 32563 LD D,A        ; 
+ 32564 LD HL,29573   ; 
+ 32567 ADD HL,DE     ; 
  32568 CP (HL)       ; still alive? -> alive path
- 32569 JR Z,32607    ;
+ 32569 JR Z,32607    ; 
  32571 POP DE        ; this one is dead; check the next
- 32572 INC DE        ;
- 32573 POP BC        ;
- 32574 DJNZ 32551    ;
+ 32572 INC DE        ; 
+ 32573 POP BC        ; 
+ 32574 DJNZ 32551    ; 
 @nowarn=32262
 @ssub=LD DE,AlsoText
  32576 LD DE,32262   ; "Also Bodies of " (15 contiguous chars)
  32579 LD B,15       ; all mates dead:
  32581 CALL 44509    ; draw "Also Bodies of "
  32584 LD A,(31250)  ; first body's name
- 32587 CALL 31690    ;
+ 32587 CALL 31690    ; PrintName
 @nowarn=32277
 @ssub=LD DE,GrilleIconText
  32590 LD DE,32277   ; " ",136," " grille-icon spacer
- 32593 LD B,3        ;
- 32595 CALL 44509    ;
+ 32593 LD B,3        ; 
+ 32595 CALL 44509    ; 
  32598 LD A,(31251)  ; second body's name
- 32601 CALL 31690    ;
+ 32601 CALL 31690    ; PrintName
  32604 JP 32670      ; blank-pad the rest of the row
 @label=DrawMates_Alive
-*32607 POP BC        ;
- 32608 POP DE        ;
+*32607 POP BC        ; 
+ 32608 POP DE        ; 
  32609 LD HL,31250   ; anyone here at all?
- 32612 LD A,(HL)     ;
- 32613 CP 255        ;
+ 32612 LD A,(HL)     ; 
+ 32613 CP 255        ; 
  32615 JR Z,32670    ; no: just blank the row
 @nowarn=32244
 @ssub=LD DE,AlsoHereText
@@ -3433,26 +3436,26 @@ c32536 CALL 32498    ; FindRoomMates -> RoomMateA/B
 @label=DrawMates_HereLoop
 *32622 PUSH BC       ;
  32623 PUSH DE       ;
- 32624 CALL 31369    ;
- 32627 POP DE        ;
- 32628 INC DE        ;
- 32629 LD HL,31257   ;
- 32632 INC (HL)      ;
- 32633 POP BC        ;
- 32634 DJNZ 32622    ;
+ 32624 CALL 31369    ; DrawSpriteRow: one glyph
+ 32627 POP DE        ; 
+ 32628 INC DE        ; 
+ 32629 LD HL,31257   ; advance one cell
+ 32632 INC (HL)      ; 
+ 32633 POP BC        ; 
+ 32634 DJNZ 32622    ; 
  32636 LD A,(31250)  ; mate A: dead-overprint check + name
- 32639 CALL 33610    ;
- 32642 CALL 31690    ;
+ 32639 CALL 33610    ; DrawCrewStatusHalf
+ 32642 CALL 31690    ; PrintName
  32645 LD A,(31251)  ; a second mate too?
- 32648 CP 255        ;
- 32650 JR Z,32670    ;
+ 32648 CP 255        ; 
+ 32650 JR Z,32670    ; 
  32652 LD A,144      ; separator glyph
- 32654 CALL 31370    ;
- 32657 LD HL,31257   ;
- 32660 INC (HL)      ;
+ 32654 CALL 31370    ; DrawTileA
+ 32657 LD HL,31257   ; advance one cell
+ 32660 INC (HL)      ; 
  32661 LD A,(31251)  ; mate B: dead-overprint check + name
- 32664 CALL 33610    ;
- 32667 JP 45692      ;
+ 32664 CALL 33610    ; DrawCrewStatusHalf
+ 32667 JP 45692      ; PrintNameThenPanel: name B, then blank-pad
 
 ; BlankRestOfRow
 ;
@@ -3461,14 +3464,14 @@ c32536 CALL 32498    ; FindRoomMates -> RoomMateA/B
 ; Draw blank tiles until the draw pointer reaches
 ; column 0 of the next row.
 @label=BlankRestOfRow
-c32670 XOR A         ;
- 32671 CALL 31370    ;
- 32674 LD HL,31257   ;
- 32677 INC (HL)      ;
- 32678 LD A,(HL)     ;
- 32679 AND 31        ;
- 32681 RET Z         ;
- 32682 JR 32670      ;
+c32670 XOR A         ; 
+ 32671 CALL 31370    ; DrawTileA(0): one blank cell
+ 32674 LD HL,31257   ; advance one cell
+ 32677 INC (HL)      ; 
+ 32678 LD A,(HL)     ; 
+ 32679 AND 31        ; reached column 0 of the next row?
+ 32681 RET Z         ; 
+ 32682 JR 32670      ; 
 
 ; ResetActionMenu
 @ignoreua
@@ -3480,17 +3483,17 @@ c32670 XOR A         ;
 @label=ResetActionMenu
 c32684 LD DE,29630   ;
  32687 LD HL,30178   ; copy the 19-byte menu skeleton
- 32690 LD BC,19      ;
- 32693 LDIR          ;
+ 32690 LD BC,19      ; 
+ 32693 LDIR          ; 
  32695 LD HL,29962   ; item list: 20 x 255 = empty
- 32698 LD A,255      ;
- 32700 LD B,20       ;
+ 32698 LD A,255      ; 
+ 32700 LD B,20       ; 
 @label=ResetMenu_FillLoop
-*32702 LD (HL),A     ;
- 32703 INC HL        ;
- 32704 DJNZ 32702    ;
+*32702 LD (HL),A     ; 
+ 32703 INC HL        ; 
+ 32704 DJNZ 32702    ; 
  32706 LD (31249),A  ; no actor back/front cell
- 32709 LD (31248),A  ;
+ 32709 LD (31248),A  ; 
  32712 LD (31250),A  ; no crew names cached
  32715 LD (31251),A  ;
  32718 RET           ;
