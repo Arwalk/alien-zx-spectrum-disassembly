@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ALIEN — Nostromo (web port)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Title / start -->
+    <div id="startScreen">
+      <div class="startInner">
+        <canvas id="splashCanvas" class="splash"></canvas>
+        <h1>A L I E N</h1>
+        <p class="tag">Command the crew of the <em>Nostromo</em>. A xenomorph is loose.
+           Kill it, or escape in the Narcissus — before the air runs out.</p>
+        <button id="startBtn" class="bigBtn">▶ Start the Long Game</button>
+        <p class="fine">A faithful web port of the ZX Spectrum game (BUGFIX 1.7), Long Game.
+           Definitive rules. Original graphics. Mouse + keyboard.</p>
+      </div>
+    </div>
+
+    <!-- HUD -->
+    <header id="hud">
+      <div class="hudBlock"><span class="hudLabel">OXYGEN</span> <span id="oxy">7500</span></div>
+      <div class="hudBlock" id="destruct" hidden></div>
+      <div class="hudBlock grow"><span id="alerts"></span></div>
+      <div class="hudBlock"><span id="frame">T+0s</span></div>
+      <div class="hudControls">
+        <button id="btnPause">⏸ Pause</button>
+        <button id="btnSpeed" title="Game speed">⏱ Normal</button>
+        <button id="btnSound">🔊 Sound</button>
+        <button id="btnRestart">⟲ Restart</button>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main id="main">
+      <section id="mapPane">
+        <div id="deckTabs"></div>
+        <div class="mapWrap">
+          <canvas id="mapCanvas"></canvas>
+          <div id="encounter" hidden>
+            <div class="encHead"><span id="encTitle">ALIEN ENCOUNTER</span><button id="encClose">✕</button></div>
+            <canvas id="encCanvas" width="360" height="300"></canvas>
+            <p class="encHint">Order this crew member to ATTACK, or move them away.</p>
+          </div>
+        </div>
+        <p class="maplegend">◍ your crew &nbsp; ⌁ dashed = in the ducts &nbsp; ▲ fire &nbsp; the alien is hidden — track it with a Tracker.</p>
+      </section>
+
+      <aside id="sidebar">
+        <div id="roster"></div>
+        <div id="actionPanel"></div>
+      </aside>
+    </main>
+
+    <!-- Log -->
+    <footer id="logPane">
+      <div class="logHead">SHIP LOG</div>
+      <div id="log"></div>
+    </footer>
+
+    <!-- Endgame -->
+    <div id="endgame" hidden>
+      <div class="endBox">
+        <div id="endgameBody"></div>
+        <button id="endgameRestart" class="bigBtn">⟲ Play again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- generated assets, then logic (data->engine), then render/ui -->
+  <script src="assets/graphics.js"></script>
+  <script src="src/data.js"></script>
+  <script src="src/palette.js"></script>
+  <script src="src/rng.js"></script>
+  <script src="src/messages.js"></script>
+  <script src="src/state.js"></script>
+  <script src="src/init.js"></script>
+  <script src="src/movement.js"></script>
+  <script src="src/morale.js"></script>
+  <script src="src/jones.js"></script>
+  <script src="src/alienai.js"></script>
+  <script src="src/android.js"></script>
+  <script src="src/combat.js"></script>
+  <script src="src/ship.js"></script>
+  <script src="src/commands.js"></script>
+  <script src="src/engine.js"></script>
+  <script src="src/assets.js"></script>
+  <script src="src/render.js"></script>
+  <script src="src/ui.js"></script>
+</body>
+</html>

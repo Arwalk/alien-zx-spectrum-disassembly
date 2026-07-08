@@ -8,6 +8,16 @@ Annotated disassembly of **Alien (BUGFIX 1.7)**, a ZX Spectrum 48K strategy game
 
 The original tape image (`ALIEN (BUGFIX 1.7).tap`) is read-only. All annotation work happens in `alien.skool`.
 
+### Web port (`web/`)
+
+A standalone, backend-free **web port of the Long Game** lives in `web/` (built from
+`PORT_REFERENCE_LongGame.md`). Vanilla JS + Canvas, direct-manipulation mouse/keyboard
+UI, **original graphics** extracted from `alien_raw.bin` by `tools/extract_assets.py`
+→ `web/assets/graphics.js`. Definitive rules (the §17 bugs are fixed). Run by opening
+`web/index.html` or `cd web && python3 -m http.server`. Logic lives in `web/src/*.js`
+(one subsystem per file); `node web/test/parity.js` runs the dependency-free engine
+parity suite. See `web/README.md`.
+
 ## Toolchain
 
 Uses [skoolkit 10.0](https://github.com/skoolkid/skoolkit) in a local Python venv (`.venv/`).
