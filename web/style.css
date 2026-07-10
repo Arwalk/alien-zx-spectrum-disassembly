@@ -151,6 +151,27 @@ button.handSlot:disabled { color: var(--dim); cursor: default; }
 .bigBtn:hover { background: #14442c; box-shadow: 0 0 18px rgba(56, 217, 119, .3); }
 .endBox { text-align: center; background: var(--panel); border: 1px solid var(--line);
   border-radius: 10px; padding: 30px 40px; max-width: 520px; }
+
+/* Tutorial (first launch + ❓ Help) */
+#tutorial { position: fixed; inset: 0; background: rgba(4, 7, 10, .97);
+  display: flex; align-items: center; justify-content: center; z-index: 30; }
+.tutBox { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 22px 26px; max-width: 780px; max-height: 92vh; overflow-y: auto;
+  margin: 12px; text-align: center; }
+.tutTitle { color: var(--green); letter-spacing: .18em; font-size: 17px; margin: 0 0 10px;
+  text-shadow: 0 0 14px rgba(56, 217, 119, .35); }
+.tutIntro { color: var(--ink); line-height: 1.55; font-size: 13px; margin: 0 0 14px; }
+.tutIntro strong { color: var(--amber); }
+.tutGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; }
+.tutCard { background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; }
+.tutHead { color: var(--cyan); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; }
+.tutCard p { margin: 0; color: var(--ink); font-size: 12px; line-height: 1.5; }
+.tutCard em { color: var(--amber); font-style: normal; }
+.tutCard strong { color: var(--green); font-weight: bold; }
+.tutTips { color: var(--dim); font-size: 11.5px; line-height: 1.5; margin: 12px 0 0; }
+kbd { background: #14202a; border: 1px solid var(--line); border-bottom-width: 2px;
+  border-radius: 4px; padding: 0 5px; font-family: var(--mono); font-size: 11px; color: var(--cyan); }
+@media (max-width: 700px) { .tutGrid { grid-template-columns: 1fr; } }
 .endTitle { color: var(--amber); letter-spacing: .06em; margin: 0 0 14px; }
 .endLine { color: var(--ink); padding: 3px 0; }
 .endLine:last-of-type { color: var(--green); font-size: 18px; margin-top: 12px; font-weight: bold; }

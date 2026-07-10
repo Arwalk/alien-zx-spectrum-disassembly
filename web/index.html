@@ -31,6 +31,7 @@
         <button id="btnPause">⏸ Pause</button>
         <button id="btnSpeed" title="Game speed">⏱ Normal</button>
         <button id="btnSound">🔊 Sound</button>
+        <button id="btnHelp" title="How to play">❓ Help</button>
         <button id="btnRestart">⟲ Restart</button>
       </div>
     </header>
@@ -63,6 +64,65 @@
       </aside>
     </main>
 
+    <!-- Tutorial (opens on the first launch; ❓ Help reopens it) -->
+    <div id="tutorial" hidden>
+      <div class="tutBox">
+        <h2 class="tutTitle">NOSTROMO — CREW MANUAL</h2>
+        <p class="tutIntro">A xenomorph is loose aboard. Give your crew one order at a time
+          while the ship — and the alien — keep moving underneath.
+          <strong>Kill it (15 wounds) or escape in the Narcissus shuttle</strong>,
+          before the oxygen runs out.</p>
+        <div class="tutGrid">
+          <div class="tutCard">
+            <div class="tutHead">🚶 Select &amp; move</div>
+            <p>Click a crew card (or press <kbd>1</kbd>–<kbd>7</kbd>), then click a
+              <em>highlighted room</em> on the map or a "Move to" chip. Each order takes a
+              few seconds — the countdown shows next to it, and ✖ cancels.</p>
+          </div>
+          <div class="tutCard">
+            <div class="tutHead">🧰 Items &amp; hands</div>
+            <p>Everyone has two hands: ✋ <em>front</em> (active) and ⇄ <em>back</em> (stowed).
+              <strong>Get</strong> picks an item off the floor, <strong>Leave item</strong>
+              drops one, and clicking the back-hand slot swaps hands.
+              <em>Only the front-hand item does anything.</em></p>
+          </div>
+          <div class="tutCard">
+            <div class="tutHead">⚔ Fighting</div>
+            <p>When the alien shares a room, <strong>ATTACK</strong> uses the front-hand
+              weapon — but hurt or terrified crew won't obey. Incinerators and lasers wound
+              it; extinguishers only scare it; the Net jams it once; the Harpoon Gun kills
+              it… <em>along with everyone in the room</em>.</p>
+          </div>
+          <div class="tutCard">
+            <div class="tutHead">📡 Tracking</div>
+            <p>The alien is <em>hidden</em> on the map. A Tracker in the front hand beeps at
+              motion in the rooms next door — and a quiet sweep steadies the crew's nerves.
+              Jones the cat senses it too, once caught (corner him holding the
+              <strong>Net</strong> or <strong>Cat Box</strong>).</p>
+          </div>
+          <div class="tutCard">
+            <div class="tutHead">⛆ Air ducts</div>
+            <p><strong>Remove grille</strong> opens a room's duct hatch;
+              <strong>Enter the air duct</strong> crawls in (one crawler per duct).
+              Ducts shortcut between decks — but an open grille is a door for the
+              alien too.</p>
+          </div>
+          <div class="tutCard">
+            <div class="tutHead">🚀 The ship</div>
+            <p>Stand in the right room to work its fixture: <strong>blow an airlock</strong>
+              from Corridor #6 (may eject the alien — kills everyone in the airlock),
+              <strong>self-destruct</strong> in Commd Centr (5:00), fight engine fires,
+              hypersleep in the Cryo Vault. To escape: get <em>every living crew member and
+              Jones</em> aboard the Narcissus, then <strong>LAUNCH</strong>.</p>
+          </div>
+        </div>
+        <p class="tutTips">💡 Armed crew are braver; watching a crewmate die breaks morale.
+          Oxygen drains faster as the crew shrinks. <kbd>Space</kbd> pauses.
+          And… not everyone aboard is what they seem.</p>
+        <button id="tutClose" class="bigBtn">▶ Begin</button>
+      </div>
+    </div>
+
     <!-- Endgame -->
     <div id="endgame" hidden>
       <div class="endBox">
@@ -90,6 +150,7 @@
   <script src="src/commands.js"></script>
   <script src="src/engine.js"></script>
   <script src="src/assets.js"></script>
+  <script src="src/footprints.js"></script>
   <script src="src/render.js"></script>
   <script src="src/ui.js"></script>
 </body>

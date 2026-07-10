@@ -35,6 +35,12 @@ No backend, no build step. Either:
 
 ## How to play
 
+The first time you press **Start the Long Game** a one-page tutorial ("NOSTROMO —
+CREW MANUAL") opens, covering the base mechanics: selecting & moving crew, the
+two-hand item system, fighting, tracking, air ducts, and the ship fixtures. It's
+shown once per page load (reload to see it again); the HUD's **❓ Help** button
+reopens it any time, pausing the game while it's up.
+
 1. **Start the Long Game.** The chestburster host, the android, the alien's lair
    and Jones's start room are randomised (seeded from the clock), exactly as the
    original does from the ROM script stream.
@@ -87,6 +93,8 @@ web/
     commands.js   player order layer (move/use/special/fixture) + UI helpers
     engine.js     turn engine (dispatch + PreActionCheck), main loop, endgame + rating
     assets.js     decode the 1bpp ZX bitmaps -> canvases (browser only)
+    footprints.js derive each room's map footprint (cells + outline) from the
+                  deck tile grid, so highlights hug the drawn compartments
     render.js     draw the deck map + overlays + encounter (browser only)
     ui.js         DOM shell, fixed-step loop, direct-manipulation interaction (browser only)
 ```

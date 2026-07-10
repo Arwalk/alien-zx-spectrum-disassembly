@@ -7,17 +7,22 @@
   var SCALE = 3;
   var MAPW = 20 * 8 * SCALE, MAPH = 19 * 8 * SCALE;
 
-  // room -> map cell (tile col/row) & pixel centre, from RoomMarkerAddrTable.
-  var cells = null;
+  // room -> map cell (tile col/row from RoomMarkerAddrTable), pixel centre and
+  // room-shaped footprint (see footprints.js); cellRoom[deck] maps tile cells
+  // back to the room occupying them, for shape-accurate hit-testing.
+  var cells = null, cellRoom = null;
   function buildCells() {
-    cells = {};
+    cells = {}; cellRoom = [{}, {}, {}];
     var m = AS.roomMarkers();
+    var fps = A.footprints ? A.footprints.build(AS.raw()) : [];
     for (var i = 0; i < m.length; i++) {
-      var e = m[i];
+      var e = m[i], f = fps[e.room] || null;
       cells[e.room] = {
-        deck: e.deck, col: e.col, row: e.row,
-        cx: (e.col + 1.5) * 8 * SCALE, cy: (e.row + 1) * 8 * SCALE
+        deck: e.deck, col: e.col, row: e.row, fp: f,
+        cx: (f ? f.cx : e.col + 1.5) * 8 * SCALE,
+        cy: (f ? f.cy : e.row + 1) * 8 * SCALE
       };
+      if (f) f.cells.forEach(function (p) { cellRoom[e.deck][p[1] * 20 + p[0]] = e.room; });
     }
   }
   function cell(room) { if (!cells) buildCells(); return cells[room]; }
@@ -27,6 +32,27 @@
     ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r);
     ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r);
     ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+
+  // Trace the room's compartment outline into ctx (expanded so the stroke
+  // sits on the surrounding wall); false = no footprint, use the old box.
+  var FP_MARGIN = 0.45 * 8 * SCALE;
+  function roomPath(ctx, room) {
+    var c = cell(room);
+    if (!c || !c.fp) return false;
+    ctx.beginPath();
+    c.fp.outline.forEach(function (loop) {
+      for (var i = 0; i < loop.length; i++) {
+        var x = loop[i].x * 8 * SCALE + loop[i].nx * FP_MARGIN;
+        var y = loop[i].y * 8 * SCALE + loop[i].ny * FP_MARGIN;
+        if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+      }
+      ctx.closePath();
+    });
+    return true;
+  }
+  function highlightPath(ctx, room, x, y, bw, bh) {
+    if (!roomPath(ctx, room)) roundRect(ctx, x, y, bw, bh, 4);
   }
 
   function drawMap(ctx, s, sel, reachable, hoverRoom) {
@@ -46,17 +72,17 @@
 
       // reachable move target
       if (reachable && reachable[room]) {
-        ctx.fillStyle = "rgba(0,220,220,0.16)"; roundRect(ctx, x, y, bw, bh, 4); ctx.fill();
+        ctx.fillStyle = "rgba(0,220,220,0.16)"; highlightPath(ctx, room, x, y, bw, bh); ctx.fill();
         ctx.strokeStyle = "rgba(0,220,220,0.8)"; ctx.lineWidth = 2; ctx.stroke();
       }
       // hover
       if (hoverRoom === room) {
         ctx.strokeStyle = "rgba(255,255,255,0.6)"; ctx.lineWidth = 1.5;
-        roundRect(ctx, x, y, bw, bh, 4); ctx.stroke();
+        highlightPath(ctx, room, x, y, bw, bh); ctx.stroke();
       }
       // selected crew's room
       if (sel >= 1 && (s.actors[sel].room & 63) === room) {
-        ctx.strokeStyle = "#ffb020"; ctx.lineWidth = 2.5; roundRect(ctx, x, y, bw, bh, 4); ctx.stroke();
+        ctx.strokeStyle = "#ffb020"; ctx.lineWidth = 2.5; highlightPath(ctx, room, x, y, bw, bh); ctx.stroke();
       }
       // selected crew's queued destination — dashed amber pulse (drawMap runs
       // every frame, so the Date.now() phase animates for free)
@@ -67,16 +93,18 @@
           ctx.setLineDash([6, 4]);
           ctx.strokeStyle = "#ffb020"; ctx.lineWidth = 2;
           ctx.globalAlpha = 0.45 + 0.35 * Math.sin(Date.now() / 300);
-          roundRect(ctx, x, y, bw, bh, 4); ctx.stroke();
+          highlightPath(ctx, room, x, y, bw, bh); ctx.stroke();
           ctx.restore();
         }
       }
-      // damage / fire badges
+      // damage / fire badges — pinned to the room shape's top-right corner
+      var bx = x + bw - 10, by = y + 8;
+      if (c.fp) { bx = c.fp.bbox.c1 * 8 * SCALE - 10; by = c.fp.bbox.r0 * 8 * SCALE + 8; }
       var dmg = s.roomDamage[room];
       var onFire = room >= 17 && room <= 19 && (s.shipFlags & fireBits[room - 17]);
-      if (onFire) { badge(ctx, x + bw - 10, y + 8, "#ff5030", "▲"); }
-      else if (dmg >= 30) { badge(ctx, x + bw - 10, y + 8, "#ff8030", ""); }
-      else if (dmg > 0) { badge(ctx, x + bw - 10, y + 8, "rgba(255,190,60,0.7)", ""); }
+      if (onFire) { badge(ctx, bx, by, "#ff5030", "▲"); }
+      else if (dmg >= 30) { badge(ctx, bx, by, "#ff8030", ""); }
+      else if (dmg > 0) { badge(ctx, bx, by, "rgba(255,190,60,0.7)", ""); }
     }
 
     // crew markers (live human crew + active android show as a crew dot)
@@ -111,9 +139,16 @@
     ctx.restore();
   }
 
-  // Nearest-room hit test for a canvas click (only rooms on the shown deck).
+  // Room hit test for a canvas click (only rooms on the shown deck): the
+  // room whose footprint covers the pointed-at tile cell, else the nearest
+  // room centre within reach.
   function roomAtPoint(s, px, py) {
     if (!cells) buildCells();
+    var tc = (px / (8 * SCALE)) | 0, tr = (py / (8 * SCALE)) | 0;
+    if (tc >= 0 && tc < 20 && tr >= 0 && tr < 19) {
+      var hit = cellRoom[s.deck][tr * 20 + tc];
+      if (hit !== undefined && D.roomTypeTable[hit] === s.deck) return hit;
+    }
     var best = -1, bestD = 40 * 40; // px^2 threshold
     for (var room = 0; room < 34; room++) {
       if (D.roomTypeTable[room] !== s.deck) continue;

@@ -70,10 +70,19 @@
     var splash = $("splashCanvas");
     if (splash) { var ls = AS.loadingScreen(); splash.width = 256; splash.height = 192; splash.getContext("2d").drawImage(ls, 0, 0); }
 
-    $("startBtn").addEventListener("click", newGame);
+    $("startBtn").addEventListener("click", function () {
+      if (tutorialSeen()) newGame();
+      else openTutorial(function () { markTutorialSeen(); newGame(); });
+    });
     $("btnPause").addEventListener("click", togglePause);
     $("btnSpeed").addEventListener("click", cycleSpeed);
     $("btnSound").addEventListener("click", function () { audio.on = !audio.on; $("btnSound").textContent = audio.on ? "🔊 Sound" : "🔇 Muted"; });
+    $("btnHelp").addEventListener("click", function () {
+      var wasRunning = running && game && !game.state.gameOver;
+      if (wasRunning) togglePause();
+      openTutorial(function () { if (wasRunning && !running) togglePause(); });
+    });
+    $("tutClose").addEventListener("click", closeTutorial);
     $("btnRestart").addEventListener("click", newGame);
     $("endgameRestart").addEventListener("click", newGame);
     buildDeckTabs();
@@ -123,6 +132,24 @@
     speedIdx = (speedIdx + 1) % SPEEDS.length;
     speed = SPEEDS[speedIdx].v;
     $("btnSpeed").textContent = "⏱ " + SPEEDS[speedIdx].n;
+  }
+
+  // ---- tutorial ----------------------------------------------------------
+  // Opens automatically on the first launch of each page load (the flag is a
+  // plain variable, so a reload resets it); the HUD's ❓ Help reopens it,
+  // pausing the game while it's up.
+  var tutOnClose = null, tutSeen = false;
+  function tutorialSeen() { return tutSeen; }
+  function markTutorialSeen() { tutSeen = true; }
+  function openTutorial(onClose) {
+    tutOnClose = onClose || null;
+    $("tutClose").textContent = game ? "✓ Back to the ship" : "▶ Begin the Long Game";
+    $("tutorial").hidden = false;
+  }
+  function closeTutorial() {
+    $("tutorial").hidden = true;
+    var cb = tutOnClose; tutOnClose = null;
+    if (cb) cb();
   }
 
   // ---- the fixed-step loop (one engine step per 20 ms of scaled time) ----
@@ -575,6 +602,10 @@
     }
   }
   function onKey(ev) {
+    if (!$("tutorial").hidden) {
+      if (ev.key === "Escape" || ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); closeTutorial(); }
+      return;
+    }
     if (!game) return;
     if (ev.key === " ") { ev.preventDefault(); togglePause(); }
     else if (ev.key >= "1" && ev.key <= "7") { var k = +ev.key; if (game.state.actors[k].status === 0) selectCrew(k); }

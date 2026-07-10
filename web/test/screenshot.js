@@ -17,7 +17,7 @@ const files = [
   "assets/graphics.js", "src/data.js", "src/palette.js", "src/rng.js", "src/messages.js",
   "src/state.js", "src/init.js", "src/movement.js", "src/morale.js", "src/jones.js",
   "src/alienai.js", "src/android.js", "src/combat.js", "src/ship.js", "src/commands.js",
-  "src/engine.js", "src/assets.js", "src/render.js",
+  "src/engine.js", "src/assets.js", "src/footprints.js", "src/render.js",
 ];
 for (const f of files) vm.runInContext(fs.readFileSync(path.join(WEB, f), "utf8"), sandbox, { filename: f });
 const A = sandbox.window.ALIEN;

@@ -39,7 +39,7 @@ const files = [
   "assets/graphics.js", "src/data.js", "src/palette.js", "src/rng.js", "src/messages.js",
   "src/state.js", "src/init.js", "src/movement.js", "src/morale.js", "src/jones.js",
   "src/alienai.js", "src/android.js", "src/combat.js", "src/ship.js", "src/commands.js",
-  "src/engine.js", "src/assets.js", "src/render.js", "src/ui.js",
+  "src/engine.js", "src/assets.js", "src/footprints.js", "src/render.js", "src/ui.js",
 ];
 let failed = false;
 try {
@@ -52,9 +52,18 @@ try {
   const doc = win.document;
   console.log("  readyState:", doc.readyState, "ALIEN:", !!win.ALIEN);
   win.document.dispatchEvent(new win.Event("DOMContentLoaded")); // ensure boot() ran
-  doc.getElementById("startBtn").click();           // start the game
+  doc.getElementById("startBtn").click();           // first launch -> tutorial
+  if (doc.getElementById("tutorial").hidden) throw new Error("first-launch tutorial did not open");
+  doc.getElementById("tutClose").click();           // dismiss it -> starts the game
+  if (!doc.getElementById("tutorial").hidden) throw new Error("tutorial did not close");
   const ALIEN = win.ALIEN;
   if (!ALIEN.__game && !doc.getElementById("startScreen").hidden) throw new Error("start did not hide title");
+  // ❓ Help must reopen it mid-game, pause, and resume on close
+  doc.getElementById("btnHelp").click();
+  if (doc.getElementById("tutorial").hidden) throw new Error("Help did not reopen tutorial");
+  if (doc.getElementById("btnPause").textContent.indexOf("Resume") < 0) throw new Error("Help did not pause the game");
+  doc.getElementById("tutClose").click();
+  if (doc.getElementById("btnPause").textContent.indexOf("Pause") < 0) throw new Error("closing Help did not resume");
   pump(30);                                          // run the loop a bunch of frames
 
   // select each crew card and click every action button we can find
