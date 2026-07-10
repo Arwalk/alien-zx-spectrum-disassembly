@@ -58,11 +58,13 @@
   var alienInitTable = [3,4,5,9,10,11,13,14,18,19,20,20,22,24,25,30];
 
   // --- items -------------------------------------------------------------
+  // The tape's own 10-char strings (ItemIdToString $7C71 -> entries 35-43,
+  // 68/69), trailing padding trimmed.
   var itemNames = [
-    "Electric Prod", "Electric Prod", "Electric Prod", "Incinerator",
-    "Incinerator", "Incinerator", "Tracker", "Tracker", "Fire Extng",
-    "Fire Extng", "Fire Extng", "Fire Extng", "Harpoon Gun", "Laser Pistol",
-    "Laser Pistol", "Laser Pistol", "Net", "Cat Box", "Spanner", "Spanner",
+    "Elctrc Prd", "Elctrc Prd", "Elctrc Prd", "Incineratr",
+    "Incineratr", "Incineratr", "Tracker", "Tracker", "Fire Extng",
+    "Fire Extng", "Fire Extng", "Fire Extng", "Harpn Gun", "Laser Pist",
+    "Laser Pist", "Laser Pist", "Net", "Cat Box", "Spanner", "Spanner",
     "Cat in Net", "Cat in Box"
   ];
   var initialItemRooms = [24,21,20,6,6,16,6,16,27,17,18,19,32,2,2,2,24,23,31,20,255,255];
@@ -96,7 +98,9 @@
   };
 
   // Injury/morale display bands.
-  var injuryText = ["Dead", "Collapsed", "Wounded", "OK"];       // by strength (>=3 = OK)
+  // DrawCrewCondition $7E81: strength 0/1/2 index as-is, 3 ALSO shows
+  // "Wounded" — only 4+ reads "OK".
+  var injuryText = ["Dead", "Collapsed", "Wounded", "OK"];
   var moraleText = ["Broken", "Shaken", "Uneasy", "Stable", "Confident"]; // by morale 0..4
 
   // Room ids referenced by rules.

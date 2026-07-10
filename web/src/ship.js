@@ -79,8 +79,11 @@
     if (s.actors[0].room === 255) {
       if (s.actors[0].strength >= 3) { A.engine.endgame(s, "alienKilled"); return; }
       if (rng.nibble() >= 2) { A.engine.endgame(s, "alienKilled"); return; } // 14/16
-      // survived: crawls back in via the ShuttleBay
-      s.actors[0].room = ROOM.SHUTTLEBAY; s.actors[0].status = 0; s.actors[0].t = 0;
+      // survived: crawls back in via the ShuttleBay. Its status byte STAYS 1
+      // (the vent sweep marked it dead and $976F never resets it): the
+      // returned alien is invisible to trackers and no longer counts in the
+      // oxygen live-count. Authentic quirk, reproduced.
+      s.actors[0].room = ROOM.SHUTTLEBAY; s.actors[0].t = 0;
       A.messages.enqueue(s, 18, { room: ROOM.SHUTTLEBAY });
     }
   }
@@ -143,7 +146,11 @@
     var quiet = true;
     for (var dir = 0; dir < 5 && quiet; dir++) {
       var adj = map[base + dir];
-      if (adj === undefined || adj === (holderRoom & 63)) continue; // no exit
+      // The "own room = no exit" skip compares the UNMASKED holder byte
+      // (TrackerHolderRoom $981D), so it never matches for a holder in the ducts — his own room
+      // gets scanned, he detects himself, and a duct-held tracker always
+      // reports motion. Authentic quirk, reproduced.
+      if (adj === undefined || adj === holderRoom) continue;
       if (s.jonesRoom === adj) { quiet = false; break; }
       for (var k = 0; k < 8; k++) {
         if ((s.actors[k].room & 63) === adj && s.actors[k].status === 0) { quiet = false; break; }
@@ -151,8 +158,10 @@
     }
     s.nearRoomList[listIdx] = quiet ? holderRoom : 255;
   }
+  // NB: entries are only ever WRITTEN while their tracker is front-held — a
+  // dropped tracker's last "all clear" room persists in the list (and keeps
+  // granting its +1 morale) exactly as on the tape ($97F7 never clears).
   function findTrackerHolders(s) {
-    s.nearRoomList = [255, 255, 255];
     scanTracker(s, 6, 0);
     scanTracker(s, 7, 1);
     scanTracker(s, 20, 2);

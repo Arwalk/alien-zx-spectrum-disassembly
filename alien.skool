@@ -2440,7 +2440,7 @@ b31241 DEFB 5
 ;
 ; Draws one 8-pixel-tall column of a sprite tile onto the screen. Reads a
 ; tile index byte from (DE), multiplies by 8 to get an offset into the
-; 8-byte-per-row character bitmap table at $6935 (#R26869 + index×8), then
+; 8-byte-per-row character bitmap table at $68F5 (#R26869 + index×8), then
 ; writes all 8 bytes vertically downward from the current draw pointer at
 ; #R31257 (INC H steps through ZX Spectrum display rows within the same
 ; character cell column).
@@ -2461,7 +2461,7 @@ c31369 LD A,(DE)     ; read tile index from source pointer
  31374 ADD HL,HL     ; HL = index × 4
  31375 ADD HL,HL     ; HL = index × 8
 @ignoreua
- 31376 LD BC,26869   ; BC = $6935 (character bitmap base)
+ 31376 LD BC,26869   ; BC = $68F5 (character bitmap base)
  31379 ADD HL,BC     ; HL = address of first row of tile bitmap
  31380 EX DE,HL      ; DE = bitmap source; HL = old DE (tile index ptr)
 @ignoreua
@@ -4350,7 +4350,8 @@ b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D
 @label=ItemCharges
 @ignoreua
  33746 DEFB 0,0,0,0,0,0,0,0  ; per-item charge counters, items 0-7 (prods, incinerators,
-                             ; trackers): consumed at $9344
+                             ; trackers — chargeless, never spent; the charged ids 8-15
+                             ; are consumed via the indexed lookup at $9344)
 @label=ItemChargesHi
  33754 DEFB 3,3,3,3,1,8,8,8  ; ...items 8-15: extinguishers 3 charges, Harpoon Gun 1,
                              ; laser pistols 8
@@ -5022,7 +5023,7 @@ c35016 LD A,(31264)  ; A = animation-freeze / frame-phase byte (#R31264)
 @nowarn=33690
 @ssub=LD HL,FrameCounterB
 @ignoreua
- 35022 LD HL,33690   ; HL = frame counter B ($83CA)
+ 35022 LD HL,33690   ; HL = frame counter B ($839A)
  35025 DEC (HL)      ; tick down counter
  35026 RET NZ        ; not expired
  35027 LD (HL),5     ; reset to 5 frames per phase (2× speed of set A)
@@ -5204,7 +5205,7 @@ c35163 LD A,(33683)  ; A = cursor row = the actor slot picked (1-7)
 @nowarn=33703
 @ssub=LD HL,AlienTargetID
 @ignoreua
- 35196 LD HL,33703   ; HL = alien's target slot ($83C7)
+ 35196 LD HL,33703   ; HL = alien's target slot ($83A7)
  35199 LD A,(31241)  ; targeting the crew member just picked?
  35202 CP (HL)       ;
  35203 JP Z,31417    ; yes: bounce back to the orders screen
@@ -9691,23 +9692,24 @@ c40757 CALL 37876    ; gather the crew in the Android's room
 ; Returns immediately if any of:
 ; #LIST
 ; { #R33704(AlienActiveFlag) == 0 (the trigger has not fired) }
-; { alien_target's byte +0 != 0 (Android already activated; the
-;   activation stamp at #R40849 sets +0 = 80, so on every subsequent
-;   frame this guard short-circuits the routine) }
+; { alien_target's byte +0 != 0 (mid-cycle; the activation stamp at
+;   #R40849 arms +0, so the routine stays out until that countdown
+;   has run back down to 0) }
 ; { alien_target's byte +7 != 0 (lockout sentinel — CrewHitsAndroid's
 ;   collapse path at #R41039 writes +7 = 2, and that prevents
 ;   re-activation if the Android has been defeated) }
 ; LIST#
 ; .
-; In other words: the routine fires exactly ONCE per game for the
-; Android, the first frame the trigger is set and the slot is still
-; in its as-issued template state (#R41444(LongGameCrewInit), gives
-; +0 = +7 = 0 for every slot).
+; In other words: the routine re-fires every time the Android's
+; countdown parks at 0 while AlienActiveFlag is set — once per
+; attack/wander cycle, not once per game — until the collapse
+; lockout lands. (#R41444(LongGameCrewInit) issues every slot with
+; +0 = +7 = 0, so the first firing is the frame the trigger is set.)
 ; .
 ; When all guards pass:
 ; #LIST
 ; { 1. IX = alien_target record; stamp (IX+0) = 80 (activation marker
-;   and timer that also blocks future re-entry into this branch). }
+;   and timer that also holds this branch shut while it counts down). }
 ; { 2. Cache AlienTargetID into #R33700(CrewIndex) for downstream
 ;   message enqueues. }
 ; { 3. CALL #R37876 — gather up to two other crew standing in the
@@ -10446,8 +10448,8 @@ t41572 DEFM "MAPPING SYMBOLS"  ; "MAPPING SYMBOLS" (ship-map legend title)
 ;   just hatched out of. }
 ; { 6. Store A_target in #R33703(AlienTargetID) — this slot is the
 ;   per-run ANDROID: a dormant traitor crew member that
-;   #R40826(UpdateAlien) flips hostile on first encounter with the
-;   loose alien. }
+;   #R40826(UpdateAlien) flips hostile once the crew has wounded the
+;   alien 6+ times (#R41264(TriggerAlienEvent)). }
 ; { 7. Enqueue message #33 ("Alien has hatched from {actor}") via
 ;   #R37176, with the host slot index as the actor parameter — this
 ;   is the long game's opening narrative beat. }
@@ -10553,9 +10555,10 @@ c42276 LD HL,33714   ; HL = MessageQueue (event queue base)
 ; (via JP) from #R44767(ShortGameInit_Done) (the tail of ShortGameInit) and
 ; fallen into from #R42276(LongGameInit). Resets the alien runtime state,
 ; seeds the crew workspace
-; tables, clears the corridor cursor at $757C, picks the initial alien
-; event timer from the script, and switches the room mode to 1 (corridor
-; view) so the player drops straight into gameplay.
+; tables, re-arms the duct grilles at $757C (RoomGrilleState), rolls
+; Jones's start room and the alien's lair from the script, and switches
+; the room mode to 1 (corridor view) so the player drops straight into
+; gameplay.
 @label=CommonGameInit
 *42380 XOR A         ; AlienActiveFlag = 0: the Android starts dormant
 @nowarn=33704

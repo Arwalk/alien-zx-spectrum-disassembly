@@ -10,7 +10,7 @@
   function panic(s, slot, rng) {
     var a = s.actors[slot];
     if (a.room & 64) {                    // panicking in the ducts
-      if (a.state !== 1) return false;
+      if (a.state !== 1) return true;     // only a pending MOVE is replaced ($8F38)
       var room = a.room & 63;
       if (room < 34) s.roomGrille[room] = 0;
       MV.moveThroughGrille(s, slot);
@@ -54,9 +54,9 @@
     var a = s.actors[slot];
     if (a.dest === a.room) return;        // idle
     a.room = a.dest;
+    MO.recalcMorale(s, slot);             // at the arrival room, BEFORE any bounce
     if (a.room === 0 && (s.shipFlags & 2)) a.room = 13;      // vented Airlock #1
     else if (a.room === 1 && (s.shipFlags & 4)) a.room = 13; // vented Airlock #2
-    MO.recalcMorale(s, slot);
   }
   function ductTransit(s, slot) {
     var a = s.actors[slot];
@@ -124,29 +124,45 @@
   function endgame(s, kind) {
     if (s.gameOver) return;
     var armed = s.destructArmed;
-    var splitScore = armed ? (crewTerm(s) + oxyTerm(s)) : 0;
+    // the destruct-armed second line shared by escape/crewLost/oxygenOut,
+    // with the crew + oxygen score; unarmed = the alien reaches Earth, score 0.
+    function destructSplit(text) {
+      if (armed) {
+        text.push("The Nostromo will explode in " + mmss(s.destructSeconds));
+        return crewTerm(s) + oxyTerm(s);
+      }
+      text.push("The Alien will be unleashed upon the Earth");
+      return 0;
+    }
     var rating = 0, text = [];
     if (kind === "alienKilled") {
       rating = crewTerm(s) + roomTerm(s) + oxyTerm(s);
       text.push("The Alien has been killed");
     } else if (kind === "escape") {
       text.push("The Narcissus is launched");
-      if (armed) text.push("The Nostromo will explode in " + mmss(s.destructSeconds));
-      else text.push("The Alien is unleashed upon the Earth");
-      rating = splitScore;
+      rating = destructSplit(text);
     } else if (kind === "crewLost") {
       text.push("Humanoid life levels minimal");
-      rating = splitScore;
+      rating = destructSplit(text);
     } else if (kind === "oxygenOut") {
-      for (var k = 1; k < 8; k++) if (s.actors[k].status === 0) s.actors[k].status = 1;
       text.push("Life Support Systems exhausted");
-      rating = armed ? (crewTerm(s) + oxyTerm(s)) : 0;
+      // Endgame_OxygenOut stamps ALL 7 crew status bytes to 2 — even removed
+      // sleepers and the host — before the destruct split.
+      for (var k = 1; k < 8; k++) s.actors[k].status = 2;
+      rating = destructSplit(text);
     } else if (kind === "shipDestroyed") {
-      text.push("The Nostromo has exploded");
+      // Endgame_Summary: the alien died with the ship — the original reuses
+      // "The Alien has been killed" here, but scores the oxygen term only.
+      text.push("The Alien has been killed");
       rating = oxyTerm(s);
     }
-    // dead roster + android reveal
-    for (var j = 1; j < 8; j++) if (s.actors[j].status === 1) text.push(D.crewNames[j] + " is dead");
+    // dead roster (status neither alive nor removed; the android excluded —
+    // its reveal line follows separately) + android reveal
+    for (var j = 1; j < 8; j++) {
+      if (j === s.alienTargetID) continue;
+      var st = s.actors[j].status;
+      if (st !== 0 && st !== 255) text.push(D.crewNames[j] + " is dead");
+    }
     if (s.alienTargetID < 8) text.push(D.crewNames[s.alienTargetID] + " was the Android");
     if (rating > 100) rating = 100;
     text.push("Competence Rating: " + rating);

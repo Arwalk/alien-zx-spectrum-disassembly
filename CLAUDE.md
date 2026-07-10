@@ -13,7 +13,8 @@ The original tape image (`ALIEN (BUGFIX 1.7).tap`) is read-only. All annotation 
 A standalone, backend-free **web port of the Long Game** lives in `web/` (built from
 `PORT_REFERENCE_LongGame.md`). Vanilla JS + Canvas, direct-manipulation mouse/keyboard
 UI, **original graphics** extracted from `alien_raw.bin` by `tools/extract_assets.py`
-→ `web/assets/graphics.js`. Definitive rules (the §17 bugs are fixed). Run by opening
+→ `web/assets/graphics.js`. Definitive rules (the three fixable §17 bugs are
+corrected; the other tape quirks are reproduced). Run by opening
 `web/index.html` or `cd web && python3 -m http.server`. Logic lives in `web/src/*.js`
 (one subsystem per file); `node web/test/parity.js` runs the dependency-free engine
 parity suite. See `web/README.md`.
@@ -91,12 +92,12 @@ Addresses in `alien.skool` are **decimal** (`36457`, not `$8E69`); hex appears o
 | `$4000–$57FF` | ZX Spectrum display file (pixel data) |
 | `$5800–$5AFF` | Attribute file (ink/paper colours) |
 | `$6000–$734B` | Sprite pixel data and tile bitmaps |
-| `$6935` | Character/tile bitmap table (8 bytes/tile, indexed by char code) |
+| `$68F5` | `CharBitmaps` — character/tile bitmap table (8 bytes/tile, indexed by char code) |
 | `$6E3D` | String/sprite-strip table (10 chars per entry): entries 0–34 = room names, 35+ = item names, actions, UI words; also used as 10-tile sprite strips (51 = Jones) |
 | `$71F3` | `RoomAdjCorridors` — 35 rooms × 5 direction slots, the ship's door/corridor connectivity map |
 | `$72A2` | `RoomAdjDucts` — air-duct network over the same rooms (34 entries, no Narcissus) |
 | `$734C` | `CrewNameTable`: ALIEN, Dallas, Kane, Ripley, Ash, Lambert, Parker, Brett ($FF-separated) |
-| `$737E` | `ActorRecords` — 8 slots × 8 bytes; slot 0 = alien (its +1 byte $737F = alien's current room), slots 1–7 = crew (slot k ↔ name k). +1 = current room (bit 6 = in ducts), +2 = destination room, +4 = strength (injury 0–3+: Dead/Collapsed/Wounded/OK), +6 = morale (0–4: Broken…Confident), +7 = status (0 alive, $FF removed) |
+| `$737E` | `ActorRecords` — 8 slots × 8 bytes; slot 0 = alien (its +1 byte $737F = alien's current room), slots 1–7 = crew (slot k ↔ name k). +1 = current room (bit 6 = in ducts), +2 = destination room, +4 = strength (0 Dead, 1 Collapsed, 2–3 Wounded, 4+ OK on the condition line), +6 = morale (display band 0–4: Broken…Confident; the byte itself can exceed 4), +7 = status (0 alive, 1 dead, 2 dead-and-found, $FF removed) |
 | `$73BE` | `CorridorPosTable` — the 19-cell strip that is both the corridor row and the action-menu rows; cell value under the cursor is mirrored to `CursorCellValue` `$8395` and is what the action key dispatches on. In the Indicate Location list (modes 2/3) it holds room ids 0–16/17–33 framed by 62 "Other List" and 61 "QUIT" |
 | `$74D1` | `RoomTypeTable` — per-room view type: 0–2 = the room's deck (`DrawRoomBackground` `$7A23` draws that deck of `ShipMapData` as the view background, and the room template comes from `$6474`/`$64EB`/`$658C`), 3 = Narcissus (`NarcissusBackground` `$836C` expands the RLE layout at `$7800` with attrs at `$788D`), 4 = alien-encounter screen (runtime-only) |
 | `$74F4` | `ItemLocations` — one byte per portable item (ids 0–21): room where it lies (bit 6 = in ducts), or 160+slot / 128+slot = held in that actor's front/back hand, 255 = nonexistent. THE item-system state |
@@ -104,10 +105,10 @@ Addresses in `alien.skool` are **decimal** (`36457`, not `$8E69`); hex appears o
 | `$7520` | `ItemCourageBonus` — per-item courage/morale bonus applied while carried in the front hand (weapons embolden the crew: prods/extinguishers/spanners +1, incinerators/harpoon/lasers +2) |
 | `$7536` | `RoomDamageDigits` — per-room 2-digit ASCII damage meters |
 | `$757C` | `RoomGrilleState` — per-room duct-grille byte (255 = in place, 0 = removed; room 13 starts removed, room 33's byte is always 0) |
-| `$759E` | `CrewInjuryText`/`CrewMoraleText` — "NAME is Dead and Broken" strings |
+| `$759E` | `CrewInjuryText` (with `CrewMoraleText` following at `$75BC`) — the "NAME is Dead and Broken" condition-line strings |
 | `$75E2` | `ActionMenuTemplate` — 19-byte menu skeleton (cell 0 "move to:", 7 " use:", 12 "Special", 17 "QUIT") copied to `CorridorPosTable` by `ResetActionMenu` `$7FAC` |
-| `$7A09–$7AFF` | Game state RAM variables (`$7A00–$7A08` is the tail of the Narcissus attribute map at `$788D`) |
-| `$7A89–$B1FF` | Z80 machine code routines |
+| `$7A09–$7A88` | Game state RAM variables (`$7A00–$7A08` is the tail of the Narcissus attribute map at `$788D`) |
+| `$7A89–$B1FF` | Z80 machine code routines (`DrawSpriteRow` `$7A89` is the first) |
 | `$8E69` | **Game entry point** (`GameEntry`) |
 | `$9E38` | Intro screen tile map (15 × 11 entries) |
 | `$EA60–$F5FF` | Extra data area (tiles, tables) |
@@ -125,17 +126,18 @@ loop passes.
 
 1. `HandleInput` `$877C` — key 6 = advance cursor, 7 = retreat, 5/8 = row moves, **0 = action** (on release, dispatches `RoomDispatchTable[$8402]` by room mode `$7A14`; modes 0/1 re-dispatch on the cursor ROW through overlapping halves of the same table — full row map at the `RoomDispatchTable` header). Before the row dispatch, `PreDispatchHook` `$B2B9` forces the special row to "ATTACK" (52) when the alien/Android is in the viewed room; 238 in `CursorCellValue` marks a press that landed on "RmveGrille" during that same swap, so the grille job still starts (see the `$B2B9` header). The chosen input device patches the scanner CALL operand at `$874D` from the vector table at `$A405` (Kempston/AGF/Sinclair/Keyboard)
 2. `FrameTiming` `$9D7F` — ~36 ms busy-wait or queued-sound playback
-3. `UpdateAlien` `$9F5A` — Android activation only: once `TriggerAlienEvent` `$A130` has set `AlienActiveFlag` (the alien has taken 6+ wounds while the Android is dormant), the Android turns hostile (state 7, wounds room-mates via `CrewAction7_Handler`). The alien's own attack is `CrewAction5_AlienAttack` `$9958` (drains a strength point per tick; may drag a corpse off-ship into its +5 byte); the crew's counter-attack is `CrewHitsAlien` `$92D0` (weapon dispatch on the attacker's front-hand item: Net = single-use disable, Harpoon Gun fires the kill primitive `$9365` killing attacker+bystanders with +15 room damage, prods/spanners/incinerators wound +1, trackers shatter but still wound, extinguishers only scare (`AlienScareCheck` `$9468`), lasers wound +2 and scorch the room +6). Attacks require attacker strength ≥ 2 AND morale ≥ 2, and land on whatever hostile shares the attacker's room
-4. `UpdateCrewState` — advance per-crew action timers
-5. `UpdateAlienAI` `$90D2` — the ALIEN's brain (crew act only on player orders): when its countdown is parked, attack room-mates (state 5), rip out the room's grille, slip through an open grille, or wander — damaging the room +1 when it stays put
-6. `ProcessAnimQueue` — step corridor animations (×2 passes)
-7. `UpdateJones` `$8FFB` — walk Jones the cat one room per ~5s (room in `$83AA`); draws the cat into corridor cell 14, enqueues msg #0 when seen, avoids the alien's room
-8. `UpdateCorridors` — advance crew along corridor (×2 passes)
-9. `AnimateCrewA` `$88A7` / `AnimateCrewB` `$88D8` — animate the two map markers: channel A = walking crew figure on the viewed room, channel B = blinking box on a candidate room (XOR-blit)
-10. `PlayMusic` `$AF60` — beeper tone phrase, or the second ~36 ms busy-wait when nothing is queued
-11. `CheckCrewAlive` `$AD19` — end the game (Endgame_CrewLost) if no human crew member is left alive; the Android's slot doesn't count
+3. `UpdateAlien` `$9F7A` — Android activation: once `TriggerAlienEvent` has set `AlienActiveFlag`, it puts the Android into state 7 (wounds room-mates via `CrewAction7_Handler`) or a wander, re-firing each time the Android's countdown parks. The alien's own attack is `CrewAction5_AlienAttack` `$9958` (drains a strength point per tick; may drag a corpse off-ship into its +5 byte); the crew's counter-attack is `CrewHitsAlien` `$92D0` (weapon dispatch on the attacker's front-hand item: Net = single-use disable, Harpoon Gun fires the kill primitive `$9365` killing attacker+bystanders with +15 room damage, prods/spanners/incinerators wound +1, trackers shatter but still wound, extinguishers only scare (`AlienScareCheck` `$9468`), lasers wound +2 and scorch the room +6). Attacks require attacker strength ≥ 2 AND morale ≥ 2, and land on whatever hostile shares the attacker's room
+4. `TriggerAlienEvent` `$A130` — polled every frame: arms the Android (`AlienActiveFlag` = 255) once the alien has taken 6+ wounds while a valid, undefeated Android slot exists
+5. `UpdateAlienAI` `$909A` — the ALIEN's brain (crew act only on player orders): when its countdown is parked, attack room-mates (state 5, timer 60), rip out the room's grille (3/16, timer 50), slip through an open grille (6/16, timer 50), or wander (timer 80) — damaging the room +1 when it stays put
+6. `TickMessageQueue` `$91F3` — step the status-message line (runs a second pass as step 10)
+7. `UpdateJones` `$8FFB` — walk Jones the cat one room per ~255 frames (~19 s; room in `$83AA`); draws the cat into corridor cell 14, enqueues msg #0 when seen, avoids the alien's floor room
+8. `ResetCrewTimers` `$8C85` — advance all 8 per-actor action countdowns, firing `DispatchCrewAction` on each 1→0 transition (`PreActionCheck` gates it: 3-crew room cap, single-file ducts, morale-0 panic, the Android's silent ATTACK refusal)
+9. `AnimateCrewA` `$8897` / `AnimateCrewB` `$88C8` — animate the two map markers: channel A = walking crew figure on the viewed room, channel B = blinking box on a candidate room (XOR-blit; both run again after `PlayMusic` to erase)
+10. `PlayMusic` `$AF50` — beeper tone phrase, or the second ~36 ms busy-wait when nothing is queued (then the second `AnimateCrewA`/`B` + `TickMessageQueue` pass)
+11. `UpdateRoomActors` `$95EB` — the ship simulation: destruct ticker, tracker sweep, oxygen clock, tracker beep / uneasy cat, engine fires, encounter animation
+12. `CheckCrewAlive` `$AD19` — end the game (Endgame_CrewLost) if no human crew member is left alive; the Android's slot doesn't count
 
-Key 1 opens `PauseMenu` `$AF0F`; pressing 1 again restarts.
+Tail of the loop: key 1 opens `PauseMenu` `$AF0F` (pressing 1 again restarts), then one script nibble is consumed per frame — a 0 pulls a second, and two consecutive 0s reseed the pointer via `ResetScriptPtr` `$8340`.
 
 ### Screen flow
 
@@ -173,14 +175,20 @@ front-hand extinguisher; 1–3 squirts by damage severity), 78 = Narcissus
 launch console (`LaunchGate` `$9D14`: intended rule = all living crew +
 Jones aboard — see the verified-bugs list below).
 Per-room damage meters are ASCII pairs at `RoomDamageDigits` `$7536`
-(`AddRoomDamage` `$9532`, half-steps of the tens digit); tens digit '3'
+(`AddRoomDamage` `$952A`, half-steps of the tens digit); tens digit '3'
 raises alarms #22–#25 or sets an engine room on FIRE (`ShipSystemFlags`
-bits 3–5), '7' = structural damage, past '9' = ship lost. The oxygen clock
-at `$95DE` drains faster the fewer actors live (period = 2× live count);
+bits 3–5), '7' = structural damage, past '9' = ship lost. The oxygen
+counter (ASCII digits at `$95E6`, tick reload at `$95D5`) drains faster the
+fewer actors live (period = 2× live count over all 8 status bytes);
 borrow past its digits = Endgame_OxygenOut. Trackers (and the caught cat)
-are motion detectors: `FindTrackerHolders` `$9707` sweeps rooms adjacent to
-front-hand holders into `NearRoomList` `$8394` — "all clear" is worth +1
+are motion detectors: `FindTrackerHolders` `$97F7` sweeps rooms adjacent to
+front-hand holders into `NearRoomList` `$839C` — "all clear" is worth +1
 morale, motion makes the viewed holder's tracker beep (or Jones uneasy).
+Tracker quirks (all tape-authentic): a tracker held in the ducts always
+reports motion (the own-room skip compares the unmasked room byte); a
+dropped tracker's last NearRoomList entry persists; and an alien that
+survives an airlock venting keeps status 1 — a tracker-ghost that also no
+longer counts toward the oxygen period.
 All 34 status-message triggers are documented at the `MessageTextTable`
 header (`$8464`). The endgame Competence Rating = Σ 2×strength over live
 human crew + 1 per room with damage < 20 + 2× the oxygen counter's leading
@@ -232,7 +240,7 @@ room's 5 direction slots (slot value = destination; own ID = no exit).
 
 ### ROM Script System (AI/randomness)
 
-The alien and crew AI consumes a "script" of commands by walking ZX Spectrum ROM bytes. The low nibble of each byte is used as a command (0–15). The script pointer lives at `$7A21` and is seeded from the ZX system variable `FRAMES` (`$5C78`, the ROM's 50 Hz frame counter — not `SEED`, which is at `$5C76`) via `ResetScriptPtr` `$8370`. This provides time-dependent but RNG-free varied behaviour.
+The alien and crew AI consumes a "script" of commands by walking ZX Spectrum ROM bytes. The low nibble of each byte is used as a command (0–15). The script pointer lives at `$7A21` and is seeded from the ZX system variable `FRAMES` (`$5C78`, the ROM's 50 Hz frame counter — not `SEED`, which is at `$5C76`) via `ResetScriptPtr` `$8340`. This provides time-dependent but RNG-free varied behaviour.
 
 ### Actor record (8 bytes, base `$737E` + slot×8, accessed via IX)
 
@@ -244,28 +252,28 @@ Same records as `ActorRecords` above (`$7386` = slot 1); in the room view the pe
 | `IX+1` | Current room (bits 0–5) + in-ducts flag (bit 6); `$FF` = HostMarker |
 | `IX+2` | Destination room |
 | `IX+3` | Action state (1=move to `IX+2` / idle, 2=duct transit through the grille, 3=remove grille, 4=ATTACK order, 5=alien attack tick, 6=hypersleep completion, 7=Android attack) |
-| `IX+4` | Strength/injury (0=Dead, 1=Collapsed, 2=Wounded, 3+=OK); slot 0 = the alien's wound counter (dies at `AlienKillThreshold` = 15) |
-| `IX+5` | Base courage — raised by carried weapons (`ItemCourageBonus`), decays over time (`DecayCrewCourage` `$8E4C`); slot 0 = the slot of a corpse the alien has dragged off-ship |
-| `IX+6` | Morale (0–4 index into `CrewMoraleText`) = courage + companion support, recomputed by `RecalcMorale` `$8D5B`; witnesses of a death lose morale (`KillActorMoraleHit` `$B211`) |
-| `IX+7` | Status (0 = alive, 1 = dead, `$FF` = removed / chestburster host) |
+| `IX+4` | Strength/injury (0=Dead, 1=Collapsed, 2–3=Wounded, 4+=OK on the condition line); slot 0 = the alien's wound counter (dies at `AlienKillThreshold` = 15) |
+| `IX+5` | Base courage — raised by carried weapons (`ItemCourageBonus`), knocked down by grim events (`DecayCrewCourage` `$8E4C`: −1 for the whole crew when a body is found or a kill is witnessed); slot 0 = the slot of a corpse the alien has dragged off-ship |
+| `IX+6` | Morale = courage + companion support, recomputed by `RecalcMorale` `$8D5B` (the display clamps to the 0–4 `CrewMoraleText` band; the byte itself can exceed 4); witnesses of a death lose morale (`KillActorMoraleHit` `$B211`) |
+| `IX+7` | Status (0 = alive, 1 = dead, 2 = dead-and-found — also the defeated Android's lockout — `$FF` = removed / chestburster host) |
 
 ### Key Annotated Routines
 
 | Label | Address | Description |
 |-------|---------|-------------|
-| `GameEntry` | `$8E69` | Entry: init stack, run screens, enter main loop |
-| `ResetScriptPtr` | `$8370` | Seed ROM-traversal pointer from `FRAMES` |
-| `AdvanceScriptPtr` | `$8365` | Step pointer, return low nibble (0–15) |
-| `DrawSpriteRow` | `$7A71` | Blit one 8px-tall tile column onto display |
-| `DrawSprite` | `$7BA2` | Blit full 10-column × 8-row sprite |
-| `DrawIntroScreen` | `$A665` | Animated Alien title screen |
-| `GameModeScreen` | `$A785` | Crew-roster + game-mode menu screen (ex-"DrawShipMap" — no map is drawn) |
+| `GameEntry` | `$8E69` | Entry: init stack, run screens (then a one-time `UpdateAllCrew` `$B159` companion-morale pass), enter main loop |
+| `ResetScriptPtr` | `$8340` | Seed ROM-traversal pointer from `FRAMES` |
+| `AdvanceScriptPtr` | `$8335` | Step pointer, return low nibble (0–15) |
+| `DrawSpriteRow` | `$7A89` | Blit one 8px-tall tile column onto display |
+| `DrawSprite` | `$7B92` | Blit full 10-column × 8-row sprite |
+| `DrawIntroScreen` | `$A655` | Animated Alien title screen |
+| `GameModeScreen` | `$A745` | Crew-roster + game-mode menu screen (ex-"DrawShipMap" — no map is drawn) |
 | `OptionsScreen` | `$AA5A` | Input-device menu: 1–4 pick joystick/keyboard, 5 = start; Y = redefine keys |
 | `PickNextRoom` | `$8F6D` | Choose an actor's next room from the adjacency maps |
 | `RedrawRoomScene` | `$7FCF` | Rebuild the full room view: menu strip, info panel, actors |
 | `DrawDoorArm` | `$81C7` | Walk a wall path from the room anchor, painting an exit arm cyan (corner glyphs 128–131 steer it) |
 | `FindHeldItems` | `$7C4F` | Load an actor's front/back-hand item ids from `ItemLocations` |
 | `UpdateJones` | `$8FFB` | Jones the cat's per-move wander/draw/message logic |
-| `ClearDisplay` | `$A5E5` | Zero display file `$4000–$57FF` |
-| `FillAttributes` | `$A5F3` | Flood-fill attribute file `$5800–$5AFF` |
-| `ScreenTransition` | `$ADF1` | Animated top-to-bottom wipe to black |
+| `ClearDisplay` | `$A605` | Zero display file `$4000–$57FF` |
+| `FillAttributes` | `$A613` | Flood-fill attribute file `$5800–$5AFF` |
+| `ScreenTransition` | `$AE11` | Animated top-to-bottom wipe to black |

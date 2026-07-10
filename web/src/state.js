@@ -21,13 +21,14 @@
       roomGrille: new Array(34),     // 255 in place / 0 removed
       shipFlags: 0,                  // ShipSystemFlags
       oxygen: K.OXYGEN_START,        // 4-digit counter value
-      oxygenTick: 1,                 // frames until next drain
+      oxygenTick: 10,                // frames until next drain (OxygenTickInit boots at 10)
       oxygenCritFired: false,
-      shipTick: 100,                 // 100-frame ship-systems tick
+      shipTick: 50,                  // ship-systems tick (boots at 50, reloads with 100)
       eventPace: 0,                  // gates the tracker beep to every 8th pass
       engineFix: [0, 0, 0],          // per-engine fire-fighting progress
       destructArmed: false,
-      destructFrames: 0,             // frames left (seconds * 20)
+      destructSeconds: 0,            // countdown seconds left once armed (5:00 = 300)
+      destructSub: 0,                // 20-frame sub-tick toward the next second
       alienTargetID: K.NO_ANDROID,   // android slot, or 9 = none
       alienActive: 0,                // 0 dormant / 255 hostile android
       androidActivated: false,       // one-shot activation guard

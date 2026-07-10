@@ -17,9 +17,19 @@ A faithful, standalone web port of the **Long Game** from *Alien (BUGFIX 1.7)*
   severity colours and timestamps), right column = controls (compact crew roster
   + a contextual action panel with the selected crew's hands and pending order).
   All of it replaces the original's 19-cell cursor strip.
-- **Definitive rules**: the four documented original bugs (LaunchGate all-aboard
-  drift, harpoon-vs-android inverted wipe, unreachable scare bonus) are **fixed**;
-  the load-bearing 3-crew room cap is kept.
+- **Definitive rules**: the three fixable documented bugs are **corrected** — the
+  LaunchGate all-aboard drift, the harpoon-vs-android inverted wipe, and the
+  unreachable scare bonus (fixed as {incinerators, harpoon, lasers}, see
+  `PORT_REFERENCE` §11.3); the fourth (the RecalcMorale spill) never fires because
+  the load-bearing 3-crew room cap is kept. **Every other tape quirk is
+  reproduced**: duct-held trackers always report motion, a dropped tracker's last
+  "all clear" reading persists (and keeps paying +1 morale), an alien that
+  survives an airlock venting comes back as a tracker-ghost, strength 3 still
+  reads "Wounded", and "WARNING:%RDEPRESSURISED" really is jammed on the tape.
+- **Documented deviations**: the ROM-byte script stream is replaced by a seeded
+  PRNG preserving the observable probabilities (`src/rng.js`); the 19-cell cursor
+  strip is replaced by direct manipulation; the ship log records every status
+  message (the original printed a few only for the viewed crew member).
 
 ## Run it
 
@@ -113,8 +123,12 @@ web/
 The engine logic tests need **no dependencies** (pure Node):
 
 ```bash
-node web/test/parity.js     # 33 assertions: init, weighted dir, alien-dies-at-15,
-                            # oxygen period, harpoon, launch gate, android, rating, stability
+node web/test/parity.js     # 92 assertions: init + the opening morale pass, weighted
+                            # direction, movement kernel, combat (alien-dies-at-15,
+                            # laser, harpoon), witnessed/unwitnessed collapse, alien AI,
+                            # Jones, trackers (incl. the tape quirks), oxygen, destruct,
+                            # airlocks, hypersleep, PreActionCheck, launch gate, android,
+                            # endgame roster/texts/rating, 20k-frame stability
 ```
 
 Optional headless checks (install the dev dep first):

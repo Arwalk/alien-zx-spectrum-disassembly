@@ -248,7 +248,8 @@
   }
 
   function crewCondition(a) {
-    var inj = D.injuryText[Math.min(a.strength, 3)] || "Dead";
+    // strength 3 still reads "Wounded" — only 4+ is "OK" (DrawCrewCondition $7E81)
+    var inj = D.injuryText[a.strength >= 4 ? 3 : Math.min(a.strength, 2)] || "Dead";
     var mor = D.moraleText[Math.min(Math.max(a.morale, 0), 4)] || "Broken";
     return { inj: inj, mor: mor };
   }
@@ -262,8 +263,9 @@
       var card = el("div", "crewCard");
       if (k === sel) card.classList.add("sel");
       if (a.status === 255) card.classList.add("removed");
-      if (a.status === 1) card.classList.add("dead");
-      if (a.status === 2) card.classList.add("android-down");
+      // status 1 = dead, 2 = dead-and-found (or the defeated android)
+      if (a.status === 1 || (a.status === 2 && k !== s.alienTargetID)) card.classList.add("dead");
+      if (a.status === 2 && k === s.alienTargetID) card.classList.add("android-down");
       if (a.status === 0) {                       // in danger: a hostile shares the room
         var alienHere = s.actors[0].room === a.room;
         var androidHere = s.alienActive && k !== s.alienTargetID && s.actors[s.alienTargetID].room === a.room;

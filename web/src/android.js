@@ -57,7 +57,9 @@
     if (target < 0) return;
     var v = s.actors[target];
     v.strength -= 1;
-    if (v.strength < 2) { MO.collapseVictim(s, target); }
+    // Witnesses = the android itself + the other room-mate: the android is a
+    // live status-0 actor, so its kills are always "seen" (insta-found + decay).
+    if (v.strength < 2) { MO.collapseVictim(s, target, [id].concat(mates)); }
     else if (v.strength >= 4) { /* shrugs it off silently */ }
     else { A.messages.enqueue(s, 29, { actor: target, target: id }); }
   }

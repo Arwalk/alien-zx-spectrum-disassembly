@@ -8,8 +8,11 @@
     if (n < 3) return 0; if (n < 6) return 1; if (n < 9) return 2;
     if (n < 12) return 3; return 4;
   }
-  // "serious weapon" for the scare bonus (definitive fix, §17): incinerators,
-  // harpoon and lasers make well-armed crew scarier to the alien.
+  // "serious weapon" for the scare bonus (definitive fix, §17.3): incinerators,
+  // harpoon and lasers make well-armed crew scarier to the alien. The original
+  // bonus is unreachable dead code; its compare shape hints at a 6-12 range
+  // (trackers/extinguishers/harpoon) instead — this port's chosen
+  // interpretation is the semantic one, documented in PORT_REFERENCE §11.3.
   function isSeriousWeapon(id) {
     return id === 3 || id === 4 || id === 5 || id === 12 || id === 13 || id === 14 || id === 15;
   }
@@ -123,7 +126,7 @@
       var v = s.actors[victim];
       if (v.status === 0) {                    // a live victim: drain a strength point
         v.strength -= 1;
-        if (v.strength < 2) MO.collapseVictim(s, victim);
+        if (v.strength < 2) MO.collapseVictim(s, victim, gathered); // room-mates witness it
         else if (v.strength < 4) A.messages.enqueue(s, 10, { actor: victim });
         else A.messages.enqueue(s, 1, { actor: victim });
         return;

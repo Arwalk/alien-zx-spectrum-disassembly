@@ -23,18 +23,39 @@
     }
   }
 
-  // Mark an actor dead (strength 0, status 1) with the witness morale hit.
-  function markDead(s, k) {
-    s.actors[k].status = 1;
-    s.actors[k].strength = 0;
-    decayCrewCourage(s);
+  // KillActorMoraleHit ($B211): stamp the victim dead (+7 = 1) and shake the
+  // witnesses — each live one loses 1 morale. With at least one live witness
+  // the death is seen at once: the body is already "found" (+7 = 2), msg #20
+  // fires (actor = the last live witness scanned) and the whole crew's courage
+  // decays. Unwitnessed, the body stays at status 1 for a later discovery via
+  // moraleFromCompanion. Strength stays as drained (a status-1 corpse can
+  // still read "Collapsed" on the condition line — authentic).
+  function killActorMoraleHit(s, victim, witnesses) {
+    s.actors[victim].status = 1;
+    var lastLive = -1;
+    for (var i = 0; i < witnesses.length; i++) {
+      var w = witnesses[i];
+      if (w === 255 || w === victim) continue;
+      var wa = s.actors[w];
+      if (wa.status !== 0) continue;
+      wa.morale = clamp0(wa.morale - 1);
+      lastLive = w;
+    }
+    if (lastLive >= 0) {
+      s.actors[victim].status = 2;
+      A.messages.enqueue(s, 20, { actor: lastLive, target: victim });
+      decayCrewCourage(s);
+    }
   }
 
-  // A victim collapses under attack: dead + drop items + msg #21 + parked.
-  function collapseVictim(s, k) {
-    markDead(s, k);
-    dropHeldItems(s, k);
+  // A victim collapses under attack (VictimItemDrop $99E8): the witness morale
+  // hit, park the countdown, drop everything, msg #21. (The original logs #21
+  // only when the victim is the viewed crew member; the port's log shows
+  // everything — a documented UI adaptation.)
+  function collapseVictim(s, k, witnesses) {
+    killActorMoraleHit(s, k, witnesses || []);
     s.actors[k].t = 0;
+    dropHeldItems(s, k);
     A.messages.enqueue(s, 21, { actor: k });
   }
 
@@ -87,7 +108,7 @@
     clamp0: clamp0,
     decayCrewCourage: decayCrewCourage,
     dropHeldItems: dropHeldItems,
-    markDead: markDead,
+    killActorMoraleHit: killActorMoraleHit,
     collapseVictim: collapseVictim,
     moraleFromCompanion: moraleFromCompanion,
     recalcMorale: recalcMorale

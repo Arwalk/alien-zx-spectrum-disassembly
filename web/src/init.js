@@ -62,8 +62,21 @@
     // damage meters all 0; oxygen 7500; deck 1 (UI).
     for (i = 0; i < 35; i++) s.roomDamage[i] = 0;
     s.oxygen = D.K.OXYGEN_START;
-    s.oxygenTick = 1;
+    s.oxygenTick = 10; // OxygenTickInit's boot value ($95D5)
     s.deck = 1;
+
+    // GameEntry's one-time UpdateAllCrew pass ($B159), run before the main
+    // loop: every same-room crew pair mutually adds (partner courage - 2) to
+    // morale — the dinner-scene trios open around morale 6-7. No clamps (all
+    // starting courage is 3+, so no underflow can occur).
+    for (var p = 1; p < 8; p++) {
+      for (var q = p + 1; q < 8; q++) {
+        var ap = s.actors[p], aq = s.actors[q];
+        if (ap.room !== aq.room) continue;
+        aq.morale += ap.courage - 2;
+        ap.morale += aq.courage - 2;
+      }
+    }
 
     return s;
   }

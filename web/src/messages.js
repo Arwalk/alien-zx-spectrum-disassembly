@@ -21,7 +21,7 @@
     "DESTRUCT SEQUENCE INITIATED",         // 13
     "DESTRUCT SEQUENCE ABORTED",           // 14
     "Fire extinguished in %R",             // 15
-    "WARNING: %R DEPRESSURISED",           // 16
+    "WARNING:%RDEPRESSURISED",             // 16 (jammed on the tape — sic)
     "%R PRESSURE RESTORED",                // 17
     "INTRUDER ENTERING %R",                // 18
     "Jones is looking uneasy",             // 19

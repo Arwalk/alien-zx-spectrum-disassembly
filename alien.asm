@@ -2477,7 +2477,7 @@ DrawRoomBackground_0:
 ;
 ; Draws one 8-pixel-tall column of a sprite tile onto the screen. Reads a tile
 ; index byte from (DE), multiplies by 8 to get an offset into the
-; 8-byte-per-row character bitmap table at $6935 (CharBitmaps + index×8), then
+; 8-byte-per-row character bitmap table at $68F5 (CharBitmaps + index×8), then
 ; writes all 8 bytes vertically downward from the current draw pointer at
 ; DrawScreenPtr (INC H steps through ZX Spectrum display rows within the same
 ; character cell column).
@@ -2498,7 +2498,7 @@ DrawTileA:
   ADD HL,HL               ; HL = index × 2
   ADD HL,HL               ; HL = index × 4
   ADD HL,HL               ; HL = index × 8
-  LD BC,CharBitmaps       ; BC = $6935 (character bitmap base)
+  LD BC,CharBitmaps       ; BC = $68F5 (character bitmap base)
   ADD HL,BC               ; HL = address of first row of tile bitmap
   EX DE,HL                ; DE = bitmap source; HL = old DE (tile index ptr)
   LD HL,(DrawScreenPtr)   ; HL = screen destination (DrawScreenPtr)
@@ -4347,8 +4347,10 @@ AlienKillThreshold:
                           ; and fires the endgame ($AC5D) on reaching it
 ItemCharges:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; per-item charge counters, items 0-7
-                                       ; (prods, incinerators, trackers):
-                                       ; consumed at $9344
+                                       ; (prods, incinerators, trackers —
+                                       ; chargeless, never spent; the charged
+                                       ; ids 8-15 are consumed via the indexed
+                                       ; lookup at $9344)
 ItemChargesHi:
   DEFB $03,$03,$03,$03,$01,$08,$08,$08 ; ...items 8-15: extinguishers 3
                                        ; charges, Harpoon Gun 1, laser pistols
@@ -4979,7 +4981,7 @@ AnimateCrewB:
                           ; (AnimFramePhase)
   BIT 7,A                 ; bit 7 = freeze flag
   RET NZ                  ; frozen: skip
-  LD HL,FrameCounterB     ; HL = frame counter B ($83CA)
+  LD HL,FrameCounterB     ; HL = frame counter B ($839A)
   DEC (HL)                ; tick down counter
   RET NZ                  ; not expired
   LD (HL),$05             ; reset to 5 frames per phase (2× speed of set A)
@@ -5136,7 +5138,7 @@ OpenCrewRoomView:
   LD A,(AlienActiveFlag)  ; alien loose (AlienActiveFlag)?
   AND A
   JP Z,RedrawRoomScene    ; no: build the room view
-  LD HL,AlienTargetID     ; HL = alien's target slot ($83C7)
+  LD HL,AlienTargetID     ; HL = alien's target slot ($83A7)
   LD A,(DrawSlotIndex)    ; targeting the crew member just picked?
   CP (HL)
   JP Z,InitGameView       ; yes: bounce back to the orders screen
@@ -6042,6 +6044,13 @@ BusyWaitLoop:
 ; screens, then enters the per-frame main loop. The loop calls every major
 ; subsystem once per frame and repeats indefinitely.
 ;
+; The loop is NOT synced to the 50 Hz interrupt: an idle iteration contains two
+; ~36 ms BusyWait delays (via FrameTiming and PlayMusic) plus the real work,
+; and measures ~260,000 T-states ≈ 74 ms ≈ 13.5 iterations/s
+; (skoolkit-simulator median over 200 idle gameplay passes). Every "frame"
+; timer in the game counts these ~74 ms loop passes, and a queued sound effect
+; stretches its iteration by another ~0.25 s.
+;
 ; Used by the routines at EndgameScreen and PauseMenu.
 GameEntry:
   LD SP,$FFFA             ; stack at $FFFA (top of game RAM, below extra data)
@@ -6056,7 +6065,7 @@ GameEntry:
 ; Main per-frame loop body. Re-entered every frame via JR back to here.
 MainLoop:
   CALL HandleInput        ; HandleInput: scan keyboard, dispatch crew movement
-  CALL FrameTiming        ; FrameTiming: ~1/50s frame wait or play queued sound
+  CALL FrameTiming        ; FrameTiming: ~36ms busy-wait or play queued sound
   CALL UpdateAlien        ; UpdateAlien: alien movement & crew-attack logic
   CALL TriggerAlienEvent  ; TriggerAlienEvent: poll alien event timer
   CALL UpdateAlienAI      ; UpdateAlienAI: give the idle alien its next action
@@ -8961,19 +8970,19 @@ Launch_AttrLoop:
 ; FrameTiming
 ;
 ; Controls frame timing and plays a queued sound effect. Reads the sound-
-; request flag at SoundReqFlag. If zero, calls the standard one-frame wait at
-; BusyWait (approx 1/50s on a 48K Spectrum) and returns. If non-zero, plays a
-; beeper tone by reading 1-KB ROM bytes starting at $0200 and toggling bit 4 of
-; port $FE for each byte; the outer loop runs 255 × 4 iterations with a short
-; delay (D=64 counts) between each toggle. After playback, clears the
-; sound-request flag.
+; request flag at SoundReqFlag. If zero, calls the fixed ~36 ms delay at
+; BusyWait — nearly two 50 Hz frames, so the main loop is not interrupt-synced
+; (see the GameEntry header) — and returns. If non-zero, plays a beeper tone by
+; reading 1-KB ROM bytes starting at $0200 and toggling bit 4 of port $FE for
+; each byte; the outer loop runs 255 × 4 iterations with a short delay (D=64
+; counts) between each toggle. After playback, clears the sound-request flag.
 ;
 ; Used by the routines at GameEntry, LaunchSequence and IntroductionMode.
 FrameTiming:
   LD A,(SoundRequest)     ; A = sound-request flag (SoundReqFlag)
   AND A                   ; any sound queued?
   JR NZ,Frame_PlayEffect  ; yes: play beeper effect
-  CALL BusyWait           ; no: standard one-frame timing wait (~1/50s)
+  CALL BusyWait           ; no: fixed ~36ms busy-wait
   RET
 Frame_PlayEffect:
   LD HL,$0200             ; HL = $0200 (ROM tone data source)
@@ -9217,20 +9226,21 @@ Android_WoundVictim:
 ;
 ; Returns immediately if any of:
 ; * AlienActiveFlag == 0 (the trigger has not fired)
-; * alien_target's byte +0 != 0 (Android already activated; the activation
-;   stamp at Android_Activate sets +0 = 80, so on every subsequent frame this
-;   guard short-circuits the routine)
+; * alien_target's byte +0 != 0 (mid-cycle; the activation stamp at
+;   Android_Activate arms +0, so the routine stays out until that countdown has
+;   run back down to 0)
 ; * alien_target's byte +7 != 0 (lockout sentinel — CrewHitsAndroid's collapse
 ;   path at Android_Collapsed writes +7 = 2, and that prevents re-activation if
 ;   the Android has been defeated)
 ;
-; In other words: the routine fires exactly ONCE per game for the Android, the
-; first frame the trigger is set and the slot is still in its as-issued
-; template state (LongGameCrewInit, gives +0 = +7 = 0 for every slot).
+; In other words: the routine re-fires every time the Android's countdown parks
+; at 0 while AlienActiveFlag is set — once per attack/wander cycle, not once
+; per game — until the collapse lockout lands. (LongGameCrewInit issues every
+; slot with +0 = +7 = 0, so the first firing is the frame the trigger is set.)
 ;
 ; When all guards pass:
 ; * 1. IX = alien_target record; stamp (IX+0) = 80 (activation marker and timer
-;   that also blocks future re-entry into this branch).
+;   that also holds this branch shut while it counts down).
 ; * 2. Cache AlienTargetID into CrewIndex for downstream message enqueues.
 ; * 3. CALL GatherSameRoomSlots — gather up to two other crew standing in the
 ;   Android's room into NearestCrewA/B (its victim pool).
@@ -9945,8 +9955,8 @@ PressAnyKeyText:
 ;   LongGameTargetTable, until the looked-up value A_target differs from A_host
 ;   — the Android can't be the same slot the alien just hatched out of.
 ; * 6. Store A_target in AlienTargetID — this slot is the per-run ANDROID: a
-;   dormant traitor crew member that UpdateAlien flips hostile on first
-;   encounter with the loose alien.
+;   dormant traitor crew member that UpdateAlien flips hostile once the crew
+;   has wounded the alien 6+ times (TriggerAlienEvent).
 ; * 7. Enqueue message #33 ("Alien has hatched from {actor}") via
 ;   EnqueueMessage, with the host slot index as the actor parameter — this is
 ;   the long game's opening narrative beat.
@@ -10031,9 +10041,9 @@ LongGame_StoreTargetPtr:
 ; shared post-init for both Short and Long modes. Called (via JP) from
 ; ShortGameInit_Done (the tail of ShortGameInit) and fallen into from
 ; LongGameInit. Resets the alien runtime state, seeds the crew workspace
-; tables, clears the corridor cursor at $757C, picks the initial alien event
-; timer from the script, and switches the room mode to 1 (corridor view) so the
-; player drops straight into gameplay.
+; tables, re-arms the duct grilles at $757C (RoomGrilleState), rolls Jones's
+; start room and the alien's lair from the script, and switches the room mode
+; to 1 (corridor view) so the player drops straight into gameplay.
 CommonGameInit:
   XOR A                   ; AlienActiveFlag = 0: the Android starts dormant
   LD (AlienActiveFlag),A
@@ -11556,19 +11566,20 @@ PauseMenu:
 ; PlayMusic
 ;
 ; Plays a background music phrase through the ZX Spectrum beeper. Reads the
-; music-active flag at MusicActiveFlag. If zero, falls through to the standard
-; frame- timing wait at BusyWait and returns. Otherwise plays a descending
-; sequence of tones: reads 32 consecutive ROM bytes from $0200 and for each
-; byte toggles bit 4 of port $FE (beeper output), with a delay of C counts
-; between toggles. After each 32-byte block, decrements C by 8 to raise the
-; pitch, producing a descending arpeggio effect. Runs until C underflows (B=255
-; exhausted), then returns.
+; music-active flag at MusicActiveFlag. If zero, falls through to the fixed ~36
+; ms delay at BusyWait and returns — the idle main loop therefore pays this
+; wait TWICE per iteration (here and in FrameTiming). Otherwise plays a
+; descending sequence of tones: reads 32 consecutive ROM bytes from $0200 and
+; for each byte toggles bit 4 of port $FE (beeper output), with a delay of C
+; counts between toggles. After each 32-byte block, decrements C by 8 to raise
+; the pitch, producing a descending arpeggio effect. Runs until C underflows
+; (B=255 exhausted), then returns.
 ;
 ; Used by the routines at GameEntry and IntroductionMode.
 PlayMusic:
   LD A,(SoundPending)     ; A = sound-pending flag (queued by e.g.
   AND A                   ; CrewAction3_RemoveGrille); anything queued?
-  JP Z,BusyWait           ; no: standard frame-timing wait and return
+  JP Z,BusyWait           ; no: fixed ~36ms busy-wait and return
   LD HL,$0200             ; HL = $0200 (ROM data used as tone source)
   LD BC,$0880             ; B=8 (8 pitch steps), C=$88 (initial delay = 136)
 Music_PitchLoop:

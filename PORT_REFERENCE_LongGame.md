@@ -39,7 +39,7 @@ Intro title  ──any key──▶  Game-mode menu  ──"4: Select"──▶ 
                                loops back to this menu)        4 Keyboard (Y = redefine keys)
 ```
 
-- `GameModeScreen $A785` shows all seven crew portraits + a 3-line menu; key **4** is
+- `GameModeScreen $A745` shows all seven crew portraits + a 3-line menu; key **4** is
   *confirm* (not a fourth mode). It dispatches through `GameModeDispatchTable $A87F`:
   0 → `ShortGameInit`, 1 → `LongGameInit`, 2 → `IntroductionMode` (a "MAPPING SYMBOLS"
   legend page that returns to this menu).
@@ -84,18 +84,18 @@ Slot k's name is entry k of the crew-name table: **0 = ALIEN, 1 = Dallas, 2 = Ka
 | +1 | **Current room** | bits 0–5 = room id 0–34; **bit 6 = "in the air-ducts"**. `$FF` = *HostMarker* (slot excluded from all normal processing — the chestburster host). |
 | +2 | **Destination room** | Written by `PickNextRoom`/menu move; bit 6 carries the duct flag. |
 | +3 | **Action state** | 1 = move/arrive, 2 = duct transit (through a grille), 3 = remove grille, 4 = ATTACK order, 5 = alien attack tick, 6 = hypersleep completion, 7 = android attack. 0 = none. |
-| +4 | **Strength / hit points** | 0 Dead · 1 Collapsed · 2 Wounded · 3+ OK. **Slot 0 (alien) uses +4 as a *wound counter that climbs*; the alien dies at 15** (`AlienKillThreshold`). |
-| +5 | **Courage** | Base bravery; raised by a carried front-hand weapon, decays over time, ±1 for duct crawl/exit. Clamped ≥0, and ≤8 by the scare bonus. *(Slot 0 reuses +5 to remember the slot of a corpse it is dragging off-ship.)* |
-| +6 | **Morale** | 0 Broken · 1 Shaken · 2 Uneasy · 3 Stable · 4 Confident. Recomputed from courage + companions (§14). Combat needs morale ≥ 2. |
-| +7 | **Status** | 0 = alive · 1 = killed · 2 = android defeated (re-activation lockout) · `$FF` = removed from play (hypersleep, or the host). |
+| +4 | **Strength / hit points** | Condition-line bands: 0 Dead · 1 Collapsed · 2–3 Wounded · 4+ OK (`DrawCrewCondition $7E81` folds 3 into "Wounded"). Combat needs ≥ 2; the scare total counts fighters at ≥ 3. **Slot 0 (alien) uses +4 as a *wound counter that climbs*; the alien dies at 15** (`AlienKillThreshold`). |
+| +5 | **Courage** | Base bravery; raised by a carried front-hand weapon, knocked down by grim events (a body found / a kill witnessed: `DecayCrewCourage` −1 crew-wide), ±1 for duct crawl/exit. Clamped ≥0, and ≤8 by the scare bonus. *(Slot 0 reuses +5 to remember the slot of a corpse it is dragging off-ship.)* |
+| +6 | **Morale** | Display bands 0 Broken · 1 Shaken · 2 Uneasy · 3 Stable · 4 Confident (the byte itself can exceed 4; the display clamps). Recomputed from courage + companions (§14). Combat needs morale ≥ 2. |
+| +7 | **Status** | 0 = alive · 1 = killed · 2 = dead-and-found (a discovered body; doubles as the defeated android's re-activation lockout) · `$FF` = removed from play (hypersleep, or the host). |
 
-> **Note on +5/+6.** The `ActorRecords` block header still carries a stale "sprite X/Y"
-> reading for +5/+6; the *combat and morale code* unambiguously treats **+5 = courage,
-> +6 = morale** (e.g. `MoraleFromCompanion` reads +5, writes +6; `SwapHeldItems`,
-> `DecayCrewCourage`, the scare bonus all operate on +5/+6). Use courage/morale.
+> **Note on +5/+6.** These bytes were once mis-read as "sprite X/Y" (the skool header
+> has since been corrected); the *combat and morale code* unambiguously treats **+5 =
+> courage, +6 = morale** (e.g. `MoraleFromCompanion` reads +5, writes +6;
+> `SwapHeldItems`, `DecayCrewCourage`, the scare bonus all operate on +5/+6).
 
 Injury and morale are shown to the player as text bands, keyed by +4 and +6
-respectively (`CrewInjuryText`/`CrewMoraleText $759E`).
+respectively (`CrewInjuryText $759E` / `CrewMoraleText $75BC`).
 
 ### 2.2 Item locations — 1 byte per item (`ItemLocations $74F4`, 22 items)
 
@@ -534,7 +534,9 @@ if roll != 15 AND roll < total:
     each fighter present: +1 courage (cap 8) and +1 morale
 ```
 
-*(A "serious weapon" bonus was intended but is **unreachable** — an original bug, §17.)*
+*(A "serious weapon" bonus was intended but is **unreachable** — an original bug, §17.
+The shipped compare shape hints the intended set was weapon ids 6–12; the web port
+fixes the bonus with the semantic set **{3–5 incinerators, 12 harpoon, 13–15 lasers}**.)*
 
 ### 11.4 Crew attacks the android (`CrewHitsAndroid $9FED`)
 
@@ -542,6 +544,9 @@ Same guards and weapon dispatch as §11.1, but aimed at the android (messages #3
 Differences: prods/spanners/tracker/laser **wound the android −1 strength** (it
 collapses below 2 → +7 = 2, `AlienActiveFlag` cleared). The Net disables it. **The
 harpoon path has an inverted item-wipe bug** (§17) and does **not** wound the android.
+*(The web port's fix mirrors the alien-side primitive: gathered crew die, items they
+hold or that lie in the room are wiped, +15 room damage, and the android takes −5
+strength → collapse.)*
 
 ---
 
@@ -703,6 +708,14 @@ holder (corridor or duct graph):
   **viewed** holder's tracker **beeps** (every 8th pass) or, if he carries the cat,
   **msg #19** "Jones is looking uneasy".
 
+Quirks (tape-authentic, reproduced by the port): the own-room skip compares the
+**unmasked** holder byte, so a tracker held **in the ducts** always reports motion
+(the holder detects himself); entries are only written while their tracker is
+front-held, so a dropped tracker's last reading **persists** — a stale "all clear"
+room keeps paying its +1 morale; and a vented alien that crawls back aboard keeps
+status 1, making it **invisible to trackers** (and absent from the oxygen
+live-count).
+
 ---
 
 ## 14. Morale & courage
@@ -732,10 +745,11 @@ Two per-crew stats drive everything soft about the crew.
   clamp morale >= 0
   ```
 
-Morale is displayed in 5 bands (Broken/Shaken/Uneasy/Stable/Confident, indices 0–4) and
-**gates combat** (needs ≥ 2). Injury is displayed by strength (Dead/Collapsed/Wounded/OK
-for 0/1/2/3+). Witnessing a death applies a morale hit to onlookers
-(`KillActorMoraleHit`).
+Morale is displayed in 5 bands (Broken/Shaken/Uneasy/Stable/Confident; the value can
+exceed 4 — the display clamps to "Confident") and **gates combat** (needs ≥ 2). Injury
+is displayed by strength: Dead/Collapsed/Wounded for 0/1/2–3 — "OK" only from 4
+(`DrawCrewCondition $7E81` folds 3 into "Wounded"). Witnessing a death applies a
+morale hit to onlookers (`KillActorMoraleHit`).
 
 The 3-crew room cap (§5.1) is what keeps `RecalcMorale` from processing a third
 room-mate (which would overwrite adjacent state).
@@ -829,7 +843,9 @@ whether to preserve or correct. All are simulator-verified where noted.
 3. **AlienScareCheck weapon bonus unreachable** (§11.3): two mutually exclusive equality
    tests (`==6` and `==7`) both required, so the "armed with something serious"
    scare-bonus never applies. — *Recommend: fix (was meant to make well-armed crew
-   scarier to the alien), or drop the dead code.*
+   scarier to the alien), or drop the dead code. The web port fixes it with the
+   semantic set {3–5 incinerators, 12 harpoon, 13–15 lasers}; the shipped compare
+   shape arguably pointed at a 6–12 range instead.*
 4. **RecalcMorale third-room-mate spill**: `RecalcMorale` would write a third
    room-mate's slot past `RoomMateB` into adjacent state, but `PreActionCheck`'s 3-crew
    room cap and single-file ducts prevent the condition arising. — *Recommend: keep the
