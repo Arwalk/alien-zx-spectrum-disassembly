@@ -55,6 +55,8 @@ button { font-family: var(--mono); cursor: pointer; }
 .encHead { display: flex; align-items: center; gap: 12px; color: var(--red); letter-spacing: .1em; }
 .encHead button { background: none; border: 1px solid var(--line); color: var(--dim); border-radius: 4px; padding: 2px 8px; }
 #encCanvas { border: 1px solid #1c3a2c; max-width: 90%; height: auto; }
+#encActions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; max-width: 92%; }
+.encPend { color: var(--cyan); font-size: 12px; min-height: 15px; }
 .encHint { color: var(--dim); font-size: 12px; }
 
 /* Sidebar */

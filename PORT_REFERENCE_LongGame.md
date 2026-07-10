@@ -296,12 +296,16 @@ the HostMarker; Ripley/Lambert/Parker on the bridge, strengths 4/4/6), then jump
 
 ## 5. The frame loop (turn structure)
 
-`MainLoop $8E81` runs forever, once per ~1/50 s frame. The **order matters** — copy
-it:
+`MainLoop $8E81` runs forever. One iteration = one game "frame", but it is **not**
+a 50 Hz video frame: the loop is not interrupt-synced. An idle iteration contains
+two ~36 ms `BusyWait` delays (steps 2 and 10) plus the real work — measured
+~260,000 T-states ≈ **74 ms ≈ 13.5 iterations/s** (skoolkit simulator, median of
+200 idle gameplay passes; a queued sound effect adds ~0.25 s to its iteration).
+The **order matters** — copy it:
 
 1. `HandleInput` — scan device, move cursor, and *on action-key release* dispatch the
    selected menu row (this is the only place the player affects the world).
-2. `FrameTiming` — ~1/50 s wait, or play one queued sound effect.
+2. `FrameTiming` — ~36 ms busy-wait, or play one queued sound effect.
 3. `UpdateAlien` — **android activation only** (see §10). One-shot.
 4. `TriggerAlienEvent` — arm the android once the alien has taken ≥6 wounds (§10).
 5. `UpdateAlienAI` — **the alien's brain**: decide its next queued action (§8).
@@ -310,7 +314,7 @@ it:
 8. `ResetCrewTimers` — **walk all 8 actors, decrement +0, fire the action on 1→0**
    through `DispatchCrewAction` → `CrewActionDispatch` (this is the turn engine; §5.1).
 9. `AnimateCrewA` / `AnimateCrewB` — draw the two blinking map markers (XOR blit).
-10. `PlayMusic` — one beeper note.
+10. `PlayMusic` — one beeper phrase if queued, else the second ~36 ms busy-wait.
 11. `AnimateCrewA` / `AnimateCrewB` again (XOR erase — double-buffer).
 12. `TickMessageQueue` again.
 13. `UpdateRoomActors` — **the ship simulation**: destruct ticker, motion-tracker scan,
@@ -850,9 +854,12 @@ probabilities** quoted here (weighted 5-way direction 3:3:3:3:4, "3-in-16" grill
 "6-in-16" duct, "14-in-16" airlock survival, per-slot Jones-catch thresholds, the scare
 comparison). Seed from wall-clock time to match the original's FRAMES-seeded feel.
 
-**Timing.** The original is frame-locked at 50 Hz and expresses every duration in
-frames. Keep a fixed 50 Hz logic tick (decoupled from render) so the timer constants in
-§15 stay meaningful; scale if you want a different base rate.
+**Timing.** The original expresses every duration in "frames" = main-loop iterations,
+but the loop is **not** 50 Hz: it free-runs at ~13.5 iterations/s idle (~74 ms each —
+two ~36 ms busy-waits plus the work; simulator-measured), slower still while sound
+effects play. Keep a fixed logic tick (decoupled from render) so the §15 timer
+constants keep their ratios, and pace it at ~13.5 ticks/s for the authentic feel;
+scale if you want a different base rate.
 
 **Faithful vs. fixed.** Decide up front whether this is a *preservation* port (keep all
 §17 bugs) or a *definitive* port (fix them). The LaunchGate and Harpoon-vs-Android bugs

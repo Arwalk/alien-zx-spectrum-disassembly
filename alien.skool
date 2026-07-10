@@ -6209,6 +6209,13 @@ c36448 LD BC,4863    ; 4863 iterations of 26 T-states
 ; screens, then enters the per-frame main loop. The loop calls every major
 ; subsystem once per frame and repeats indefinitely.
 ; .
+; The loop is NOT synced to the 50 Hz interrupt: an idle iteration contains
+; two ~36 ms #R36448(BusyWait) delays (via FrameTiming and PlayMusic) plus
+; the real work, and measures ~260,000 T-states ≈ 74 ms ≈ 13.5 iterations/s
+; (skoolkit-simulator median over 200 idle gameplay passes). Every "frame"
+; timer in the game counts these ~74 ms loop passes, and a queued sound
+; effect stretches its iteration by another ~0.25 s.
+; .
 ; Used by the routines at #R44125 and #R44815.
 @label=GameEntry
 c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
@@ -6222,7 +6229,7 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
 ; Main per-frame loop body. Re-entered every frame via JR back to here.
 @label=MainLoop
 *36481 CALL 34684    ; HandleInput: scan keyboard, dispatch crew movement
- 36484 CALL 40319    ; FrameTiming: ~1/50s frame wait or play queued sound
+ 36484 CALL 40319    ; FrameTiming: ~36ms busy-wait or play queued sound
  36487 CALL 40826    ; UpdateAlien: alien movement & crew-attack logic
  36490 CALL 41264    ; TriggerAlienEvent: poll alien event timer
  36493 CALL 37018    ; UpdateAlienAI: give the idle alien its next action
@@ -9390,8 +9397,9 @@ c40281 LD B,75       ; 75 flash frames:
 ; FrameTiming
 ;
 ; Controls frame timing and plays a queued sound effect. Reads the sound-
-; request flag at #R33731. If zero, calls the standard one-frame wait at
-; #R36448 (approx 1/50s on a 48K Spectrum) and returns. If non-zero, plays a
+; request flag at #R33731. If zero, calls the fixed ~36 ms delay at
+; #R36448(BusyWait) — nearly two 50 Hz frames, so the main loop is not
+; interrupt-synced (see the #R36457(GameEntry) header) — and returns. If non-zero, plays a
 ; beeper tone by reading 1-KB ROM bytes starting at $0200 and toggling bit 4
 ; of port $FE for each byte; the outer loop runs 255 × 4 iterations with a
 ; short delay (D=64 counts) between each toggle. After playback, clears the
@@ -9405,7 +9413,7 @@ c40281 LD B,75       ; 75 flash frames:
 c40319 LD A,(33699)  ; A = sound-request flag (#R33731)
  40322 AND A         ; any sound queued?
  40323 JR NZ,40329   ; yes: play beeper effect
- 40325 CALL 36448    ; no: standard one-frame timing wait (~1/50s)
+ 40325 CALL 36448    ; no: fixed ~36ms busy-wait
  40328 RET           ;
 @label=Frame_PlayEffect
 *40329 LD HL,512     ; HL = $0200 (ROM tone data source)
@@ -12301,8 +12309,10 @@ c44815 CALL 33479    ; draw game-window border
 ; PlayMusic
 ;
 ; Plays a background music phrase through the ZX Spectrum beeper. Reads the
-; music-active flag at #R33737. If zero, falls through to the standard frame-
-; timing wait at #R36448 and returns. Otherwise plays a descending sequence of
+; music-active flag at #R33737. If zero, falls through to the fixed ~36 ms
+; delay at #R36448(BusyWait) and returns — the idle main loop therefore pays
+; this wait TWICE per iteration (here and in #R40319(FrameTiming)).
+; Otherwise plays a descending sequence of
 ; tones: reads 32 consecutive ROM bytes from $0200 and for each byte toggles
 ; bit 4 of port $FE (beeper output), with a delay of C counts between
 ; toggles. After each 32-byte block, decrements C by 8 to raise the pitch,
@@ -12316,7 +12326,7 @@ c44815 CALL 33479    ; draw game-window border
 @ignoreua
 c44880 LD A,(33705)  ; A = sound-pending flag (queued by e.g.
  44883 AND A         ; CrewAction3_RemoveGrille); anything queued?
- 44884 JP Z,36448    ; no: standard frame-timing wait and return
+ 44884 JP Z,36448    ; no: fixed ~36ms busy-wait and return
  44887 LD HL,512     ; HL = $0200 (ROM data used as tone source)
  44890 LD BC,2176    ; B=8 (8 pitch steps), C=$88 (initial delay = 136)
 @label=Music_PitchLoop

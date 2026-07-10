@@ -42,9 +42,11 @@
         <div class="mapWrap">
           <canvas id="mapCanvas"></canvas>
           <div id="encounter" hidden>
-            <div class="encHead"><span id="encTitle">ALIEN ENCOUNTER</span><button id="encClose">✕</button></div>
+            <div class="encHead"><span id="encTitle">ALIEN ENCOUNTER</span><button id="encClose" title="hide (show the map)">✕</button></div>
             <canvas id="encCanvas" width="360" height="300"></canvas>
-            <p class="encHint">Order this crew member to ATTACK, or move them away.</p>
+            <div id="encActions"></div>
+            <div id="encPend" class="encPend"></div>
+            <p class="encHint">It strikes every few seconds — attack, or get them out. ✕ shows the map.</p>
           </div>
         </div>
         <p class="maplegend">◍ your crew &nbsp; ⌁ dashed = in the ducts &nbsp; ▲ fire &nbsp; the alien is hidden — track it with a Tracker.</p>

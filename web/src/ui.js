@@ -1,15 +1,21 @@
-// DOM shell, the 50 Hz game loop, and the direct-manipulation command UI.
+// DOM shell, the fixed-step game loop, and the direct-manipulation command UI.
 (function (root) {
   var A = (root.ALIEN = root.ALIEN || {});
   var D = A.data, ST = A.state, CMD = A.commands, JN = A.jones, RN = A.render, AS = A.assets;
 
-  // Game-speed levels: `v` is the wall-clock -> game-time multiplier (1.0 = the
-  // original 50 Hz). The default is slower so there's time to react in a
-  // click-driven UI; all frame-based timers scale together, so balance is kept.
-  var SPEEDS = [{ n: "Slow", v: 0.28 }, { n: "Normal", v: 0.5 }, { n: "Fast", v: 1.0 }];
+  // Game-speed levels: `v` is the wall-clock -> game-time multiplier, where
+  // 1.0 = 50 engine steps/s. The original main loop was NOT 50 Hz: each idle
+  // pass ran two ~36 ms busy-waits (FrameTiming + PlayMusic) plus the real
+  // work — a simulator-measured ~74 ms/iteration, i.e. ~13.5 steps/s. So
+  // "Normal" (0.27) IS the authentic hardware pace; all frame-based timers
+  // scale together, so balance is kept at every speed.
+  var SPEEDS = [{ n: "Slow", v: 0.15 }, { n: "Normal", v: 0.27 }, { n: "Fast", v: 0.5 }];
   var speedIdx = 1;
   var game = null, sel = -1, running = false, speed = SPEEDS[speedIdx].v, acc = 0, lastT = 0;
   var reachable = {}, hoverRoom = -1, encFrame = 0;
+  // encDismissed: the ✕ hid the overlay for the CURRENT encounter (re-arms
+  // when the encounter ends); encKey fingerprints the overlay's button strip.
+  var encDismissed = false, encKey = "";
   // hoverSource: who owns hoverRoom ("map" | "chip" | null). peekDeck: the deck to
   // restore after a cross-deck move-chip hover temporarily switched the view.
   var hoverSource = null, peekDeck = -1;
@@ -87,13 +93,13 @@
       els.log.scrollTop = els.log.scrollHeight;
       els.logJump.hidden = true;
     });
-    $("encClose").addEventListener("click", function () { els.enc.hidden = true; });
+    $("encClose").addEventListener("click", function () { encDismissed = true; els.enc.hidden = true; });
     document.addEventListener("keydown", onKey);
   }
 
   function newGame() {
     game = A.engine.startLongGame((Date.now() & 0x7fffffff) || 1);
-    sel = -1; reachable = {}; encFrame = 0;
+    sel = -1; reachable = {}; encFrame = 0; encDismissed = false; encKey = "";
     hoverRoom = -1; hoverSource = null; peekDeck = -1; panelKey = ""; actionsDirty = false;
     logLastEntry = null; logLast = { text: null, el: null, badge: null, n: 1 };
     els.logJump.hidden = true;
@@ -119,7 +125,7 @@
     $("btnSpeed").textContent = "⏱ " + SPEEDS[speedIdx].n;
   }
 
-  // ---- the 50 Hz loop ---------------------------------------------------
+  // ---- the fixed-step loop (one engine step per 20 ms of scaled time) ----
   function loop(t) {
     if (!game) return;
     var dt = Math.min(t - lastT, 200); lastT = t;
@@ -185,12 +191,15 @@
     }
     appendNewLog();
     updateHudLive();
-    // alien-encounter overlay (sits on top of the map pane)
-    if (showEnc) {
+    // alien-encounter overlay (sits on top of the map pane; ✕ hides it for
+    // the rest of this encounter, so the map stays reachable underneath)
+    if (!showEnc) { encDismissed = false; encKey = ""; }
+    if (showEnc && !encDismissed) {
       els.enc.hidden = false;
       encFrame += 0.25;
       RN.drawEncounter(els.encCtx, els.encCanvas.width, els.encCanvas.height, Math.floor(encFrame), null);
       $("encTitle").textContent = "ALIEN ENCOUNTER — " + D.crewNames[sel];
+      refreshEncActions();
     } else if (!els.enc.hidden) {
       els.enc.hidden = true;
     }
@@ -419,6 +428,37 @@
   function btn(label, fn, cls) { var b = el("button", "act" + (cls ? " " + cls : ""), label); b.addEventListener("click", fn); return b; }
   function afterOrder() { renderRoster(); renderActions(); renderTick(); }
 
+  // ---- encounter-overlay command strip -----------------------------------
+  // ATTACK beside every escape route, so fleeing is as obvious as fighting.
+  // Rebuilt only when the option set changes, and never under the pointer
+  // (same freeze rule as the action panel); the pending line updates live.
+  function encActionsKey() {
+    var s = game.state, a = s.actors[sel];
+    var opts = CMD.moveOptions(s, sel).map(function (o) { return o.grille ? "g" : o.byte; }).join(",");
+    return [sel, a.room, a.state, a.t > 0 ? 1 : 0, opts].join("|");
+  }
+  function refreshEncActions() {
+    var key = encActionsKey();
+    if (key !== encKey) {
+      var box = $("encActions");
+      var hovering = false; try { hovering = box.matches(":hover"); } catch (e) {}
+      if (!hovering) {
+        encKey = key;
+        clear(box);
+        var s = game.state, a = s.actors[sel], inDuct = (a.room & 64) !== 0;
+        box.appendChild(btn("⚔ ATTACK", function () { CMD.attackOrder(s, sel); afterOrder(); }, "chip danger"));
+        CMD.moveOptions(s, sel).forEach(function (o) {
+          if (o.grille) box.appendChild(btn(inDuct ? "🏃 Flee out of the duct" : "🏃 Flee into the duct",
+            function () { CMD.moveThroughGrille(s, sel); afterOrder(); }, "chip"));
+          else box.appendChild(btn("🏃 Flee to " + D.roomNames[o.room] + ((o.byte & 64) ? " (duct)" : ""),
+            function () { CMD.moveTo(s, sel, o.byte); afterOrder(); }, "chip"));
+        });
+      }
+    }
+    var a2 = game.state.actors[sel];
+    $("encPend").textContent = a2.t > 0 ? orderText(a2) + " (" + a2.t + ")" : "";
+  }
+
   // ---- action-chip <-> map hover linkage --------------------------------
   // Hovering a Move-to chip highlights its room on the map; if the room is on
   // another deck, the view peeks at that deck and reverts on mouse-leave.
@@ -538,7 +578,7 @@
     if (!game) return;
     if (ev.key === " ") { ev.preventDefault(); togglePause(); }
     else if (ev.key >= "1" && ev.key <= "7") { var k = +ev.key; if (game.state.actors[k].status === 0) selectCrew(k); }
-    else if (ev.key === "Escape") { els.enc.hidden = true; }
+    else if (ev.key === "Escape") { encDismissed = true; els.enc.hidden = true; }
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

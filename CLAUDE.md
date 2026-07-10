@@ -117,8 +117,14 @@ Addresses in `alien.skool` are **decimal** (`36457`, not `$8E69`); hex appears o
 
 ### Main Loop (each frame, in order)
 
+A "frame" is one loop iteration, NOT a 50 Hz video frame: an idle iteration
+runs two ~36 ms `BusyWait` `$8E60` delays (`FrameTiming` + idle `PlayMusic`)
+plus the work — ~74 ms ≈ 13.5 iterations/s, simulator-measured (a queued
+sound effect adds ~0.25 s to its iteration). All game timers count these
+loop passes.
+
 1. `HandleInput` `$877C` — key 6 = advance cursor, 7 = retreat, 5/8 = row moves, **0 = action** (on release, dispatches `RoomDispatchTable[$8402]` by room mode `$7A14`; modes 0/1 re-dispatch on the cursor ROW through overlapping halves of the same table — full row map at the `RoomDispatchTable` header). Before the row dispatch, `PreDispatchHook` `$B2B9` forces the special row to "ATTACK" (52) when the alien/Android is in the viewed room; 238 in `CursorCellValue` marks a press that landed on "RmveGrille" during that same swap, so the grille job still starts (see the `$B2B9` header). The chosen input device patches the scanner CALL operand at `$874D` from the vector table at `$A405` (Kempston/AGF/Sinclair/Keyboard)
-2. `FrameTiming` `$9D7F` — ~1/50s wait or play queued sound
+2. `FrameTiming` `$9D7F` — ~36 ms busy-wait or queued-sound playback
 3. `UpdateAlien` `$9F5A` — Android activation only: once `TriggerAlienEvent` `$A130` has set `AlienActiveFlag` (the alien has taken 6+ wounds while the Android is dormant), the Android turns hostile (state 7, wounds room-mates via `CrewAction7_Handler`). The alien's own attack is `CrewAction5_AlienAttack` `$9958` (drains a strength point per tick; may drag a corpse off-ship into its +5 byte); the crew's counter-attack is `CrewHitsAlien` `$92D0` (weapon dispatch on the attacker's front-hand item: Net = single-use disable, Harpoon Gun fires the kill primitive `$9365` killing attacker+bystanders with +15 room damage, prods/spanners/incinerators wound +1, trackers shatter but still wound, extinguishers only scare (`AlienScareCheck` `$9468`), lasers wound +2 and scorch the room +6). Attacks require attacker strength ≥ 2 AND morale ≥ 2, and land on whatever hostile shares the attacker's room
 4. `UpdateCrewState` — advance per-crew action timers
 5. `UpdateAlienAI` `$90D2` — the ALIEN's brain (crew act only on player orders): when its countdown is parked, attack room-mates (state 5), rip out the room's grille, slip through an open grille, or wander — damaging the room +1 when it stays put
@@ -126,7 +132,7 @@ Addresses in `alien.skool` are **decimal** (`36457`, not `$8E69`); hex appears o
 7. `UpdateJones` `$8FFB` — walk Jones the cat one room per ~5s (room in `$83AA`); draws the cat into corridor cell 14, enqueues msg #0 when seen, avoids the alien's room
 8. `UpdateCorridors` — advance crew along corridor (×2 passes)
 9. `AnimateCrewA` `$88A7` / `AnimateCrewB` `$88D8` — animate the two map markers: channel A = walking crew figure on the viewed room, channel B = blinking box on a candidate room (XOR-blit)
-10. `PlayMusic` `$AF60` — beeper tone phrase
+10. `PlayMusic` `$AF60` — beeper tone phrase, or the second ~36 ms busy-wait when nothing is queued
 11. `CheckCrewAlive` `$AD19` — end the game (Endgame_CrewLost) if no human crew member is left alive; the Android's slot doesn't count
 
 Key 1 opens `PauseMenu` `$AF0F`; pressing 1 again restarts.

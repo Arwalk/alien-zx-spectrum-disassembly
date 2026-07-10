@@ -58,9 +58,11 @@ No backend, no build step. Either:
 
 ## Architecture
 
-Four decoupled layers (per `PORT_REFERENCE` §18): a **state block** → a fixed
-**50 Hz update pipeline** → a **command layer** (one queued order per crew) → a
-**render layer** that is a pure function of state. Plain vanilla JS, no framework.
+Four decoupled layers (per `PORT_REFERENCE` §18): a **state block** → a
+**fixed-step update pipeline** (the original main loop measures ~13.5
+iterations/s on hardware — the "Normal" speed; "Fast" runs the same steps at
+25/s) → a **command layer** (one queued order per crew) → a **render layer**
+that is a pure function of state. Plain vanilla JS, no framework.
 
 ```
 web/
@@ -86,7 +88,7 @@ web/
     engine.js     turn engine (dispatch + PreActionCheck), main loop, endgame + rating
     assets.js     decode the 1bpp ZX bitmaps -> canvases (browser only)
     render.js     draw the deck map + overlays + encounter (browser only)
-    ui.js         DOM shell, 50 Hz loop, direct-manipulation interaction (browser only)
+    ui.js         DOM shell, fixed-step loop, direct-manipulation interaction (browser only)
 ```
 
 ## Regenerating the assets
