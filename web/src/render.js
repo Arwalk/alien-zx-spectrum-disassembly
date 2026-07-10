@@ -58,6 +58,19 @@
       if (sel >= 1 && (s.actors[sel].room & 63) === room) {
         ctx.strokeStyle = "#ffb020"; ctx.lineWidth = 2.5; roundRect(ctx, x, y, bw, bh, 4); ctx.stroke();
       }
+      // selected crew's queued destination — dashed amber pulse (drawMap runs
+      // every frame, so the Date.now() phase animates for free)
+      if (sel >= 1) {
+        var qa = s.actors[sel];
+        if (qa.status === 0 && qa.state === 1 && qa.t > 0 && (qa.dest & 63) === room && (qa.room & 63) !== room) {
+          ctx.save();
+          ctx.setLineDash([6, 4]);
+          ctx.strokeStyle = "#ffb020"; ctx.lineWidth = 2;
+          ctx.globalAlpha = 0.45 + 0.35 * Math.sin(Date.now() / 300);
+          roundRect(ctx, x, y, bw, bh, 4); ctx.stroke();
+          ctx.restore();
+        }
+      }
       // damage / fire badges
       var dmg = s.roomDamage[room];
       var onFire = room >= 17 && room <= 19 && (s.shipFlags & fireBits[room - 17]);

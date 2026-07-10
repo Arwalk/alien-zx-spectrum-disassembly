@@ -12,8 +12,11 @@ A faithful, standalone web port of the **Long Game** from *Alien (BUGFIX 1.7)*
   Nostromo deck maps, the seven crew portraits, the four-frame Alien animation,
   Jones, and the ZX font/tiles — rendered crisp (nearest-neighbour) on canvas.
 - **Modern mouse + keyboard UI**: click a crew member, click a room on the map (or
-  a menu button) to give orders; a contextual action panel, a scrolling ship log,
-  and a live HUD replace the original's 19-cell cursor strip.
+  a move chip — hovering one highlights its room, peeking at the target's deck if
+  needed) to give orders. Left column = situation (deck map + ship log with
+  severity colours and timestamps), right column = controls (compact crew roster
+  + a contextual action panel with the selected crew's hands and pending order).
+  All of it replaces the original's 19-cell cursor strip.
 - **Definitive rules**: the four documented original bugs (LaunchGate all-aboard
   drift, harpoon-vs-android inverted wipe, unreachable scare bonus) are **fixed**;
   the load-bearing 3-crew room cap is kept.

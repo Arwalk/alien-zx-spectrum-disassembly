@@ -9,7 +9,17 @@
   var SPEEDS = [{ n: "Slow", v: 0.28 }, { n: "Normal", v: 0.5 }, { n: "Fast", v: 1.0 }];
   var speedIdx = 1;
   var game = null, sel = -1, running = false, speed = SPEEDS[speedIdx].v, acc = 0, lastT = 0;
-  var reachable = {}, hoverRoom = -1, encFrame = 0, lastLogLen = 0;
+  var reachable = {}, hoverRoom = -1, encFrame = 0;
+  // hoverSource: who owns hoverRoom ("map" | "chip" | null). peekDeck: the deck to
+  // restore after a cross-deck move-chip hover temporarily switched the view.
+  var hoverSource = null, peekDeck = -1;
+  // panelKey fingerprints the action panel's content so renderTick only rebuilds
+  // it when something actually changed (buttons must not shift under the mouse);
+  // actionsDirty defers a needed rebuild while the pointer is over the panel.
+  var panelKey = "", actionsDirty = false;
+  // log bookkeeping: last appended state.log entry (by identity — the log array
+  // is a capped ring, so indices shift) and the last DOM line for "×n" dedupe.
+  var logLastEntry = null, logLast = { text: null, el: null, badge: null, n: 1 };
   var els = {};
 
   // Minimal, self-contained beeper. Guarded so a missing AudioContext (e.g.
@@ -45,6 +55,7 @@
     els.map = $("mapCanvas"); els.mapCtx = els.map.getContext("2d");
     els.map.width = RN.MAPW; els.map.height = RN.MAPH;
     els.roster = $("roster"); els.actions = $("actionPanel"); els.log = $("log");
+    els.logJump = $("logJump");
     els.hud = $("hud"); els.deckTabs = $("deckTabs");
     els.enc = $("encounter"); els.encCanvas = $("encCanvas"); els.encCtx = els.encCanvas.getContext("2d");
     els.endgame = $("endgame"); els.start = $("startScreen");
@@ -62,15 +73,30 @@
     buildDeckTabs();
 
     els.map.addEventListener("mousemove", onMapHover);
-    els.map.addEventListener("mouseleave", function () { hoverRoom = -1; });
+    els.map.addEventListener("mouseleave", function () {
+      if (hoverSource === "map") { hoverRoom = -1; hoverSource = null; }
+      syncChipHl(-1);
+    });
     els.map.addEventListener("click", onMapClick);
+    // flush a deferred action-panel rebuild once the pointer is out of the way
+    els.actions.addEventListener("mouseleave", function () {
+      clearChipHover();
+      if (actionsDirty) renderActions();
+    });
+    els.logJump.addEventListener("click", function () {
+      els.log.scrollTop = els.log.scrollHeight;
+      els.logJump.hidden = true;
+    });
     $("encClose").addEventListener("click", function () { els.enc.hidden = true; });
     document.addEventListener("keydown", onKey);
   }
 
   function newGame() {
     game = A.engine.startLongGame((Date.now() & 0x7fffffff) || 1);
-    sel = -1; reachable = {}; lastLogLen = 0; encFrame = 0;
+    sel = -1; reachable = {}; encFrame = 0;
+    hoverRoom = -1; hoverSource = null; peekDeck = -1; panelKey = ""; actionsDirty = false;
+    logLastEntry = null; logLast = { text: null, el: null, badge: null, n: 1 };
+    els.logJump.hidden = true;
     els.start.hidden = true; els.endgame.hidden = true; els.enc.hidden = true;
     audio.init();
     clear(els.log);
@@ -109,6 +135,7 @@
 
   // ---- selection & deck -------------------------------------------------
   function selectCrew(k) {
+    clearChipHover();
     sel = k;
     game.state.viewedSlot = k;
     reachable = {};
@@ -125,7 +152,7 @@
     var names = ["Upper Deck", "Middle Deck", "Lower Deck"];
     for (var d = 0; d < 3; d++) (function (d) {
       var b = el("button", "deckTab", names[d]);
-      b.addEventListener("click", function () { if (game) { game.state.deck = d; renderAll(); } });
+      b.addEventListener("click", function () { if (game) { clearChipHover(); game.state.deck = d; renderAll(); } });
       els.deckTabs.appendChild(b);
     })(d);
   }
@@ -167,13 +194,19 @@
     } else if (!els.enc.hidden) {
       els.enc.hidden = true;
     }
-    // periodic roster/action refresh (status changes over time). Don't rebuild
-    // the action panel while the pointer is over it — that would yank a button
-    // out from under a click.
+    // periodic roster/action refresh (status changes over time)
     if ((s.frame & 15) === 0) {
       renderRoster();
-      var hovering = false; try { hovering = els.actions.matches(":hover"); } catch (e) {}
-      if (!hovering) renderActions();
+      refreshActions();
+    }
+    // live in-place updates while the panel is hover-frozen: the pending
+    // countdown (acknowledging completion) and the header's room name
+    if (sel >= 1 && s.actors[sel].status === 0) {
+      var pa = s.actors[sel];
+      var pt = els.actions.querySelector(".pendText");
+      if (pt) pt.textContent = pa.t > 0 ? orderText(pa) + " (" + pa.t + ")" : "✓ order carried out";
+      var rm = els.actions.querySelector(".detailHead .crewRoom");
+      if (rm) rm.textContent = D.roomNames[pa.room & 63] + ((pa.room & 64) ? " (duct)" : "");
     }
     if (s.trackerBeep) { pulse($("hud")); audio.beep(1500, 0.05, 0.05, "square"); }
   }
@@ -184,6 +217,8 @@
     return { inj: inj, mor: mor };
   }
 
+  // Slim one-line rows: name, injury/morale, ongoing order. Room + hand items
+  // live in the row tooltip and in the action panel's detail header.
   function renderRoster() {
     var s = game.state; clear(els.roster);
     for (var k = 1; k < 8; k++) (function (k) {
@@ -199,29 +234,23 @@
         if (alienHere || androidHere) card.classList.add("danger");
       }
       // portrait
-      var pc = el("canvas", "portrait"); pc.width = 24; pc.height = 24;
+      var pc = el("canvas", "portrait sm"); pc.width = 24; pc.height = 24;
       pc.getContext("2d").drawImage(AS.portrait(k - 1), 0, 0);
       card.appendChild(pc);
-      var info = el("div", "crewInfo");
-      info.appendChild(el("div", "crewName", D.crewNames[k]));
-      if (a.status === 255) info.appendChild(el("div", "crewStat", k === s.hostSlot ? "— chestburster host" : "— hypersleep"));
-      else if (a.status === 1) info.appendChild(el("div", "crewStat", "— dead"));
-      else if (a.status === 2) info.appendChild(el("div", "crewStat", "— android disabled"));
+      card.appendChild(el("span", "crewName", D.crewNames[k]));
+      if (a.status === 255) card.appendChild(el("span", "crewOrder", k === s.hostSlot ? "— chestburster host" : "— hypersleep"));
+      else if (a.status === 1) card.appendChild(el("span", "crewOrder", "— dead"));
+      else if (a.status === 2) card.appendChild(el("span", "crewOrder", "— android disabled"));
       else {
         var c = crewCondition(a);
-        var line = el("div", "crewStat");
-        line.appendChild(el("span", "band inj i" + Math.min(a.strength, 3), c.inj));
-        line.appendChild(el("span", "band mor m" + Math.min(a.morale, 4), c.mor));
-        info.appendChild(line);
-        var room = el("div", "crewRoom", D.roomNames[a.room & 63] + ((a.room & 64) ? " (duct)" : ""));
-        info.appendChild(room);
+        card.appendChild(el("span", "band inj i" + Math.min(a.strength, 3), c.inj));
+        card.appendChild(el("span", "band mor m" + Math.min(a.morale, 4), c.mor));
+        card.appendChild(el("span", "crewOrder", a.t > 0 ? orderText(a) : ""));
         var f = JN.frontHandItem(s, k), b = JN.backHandItem(s, k);
-        if (f !== 255 || b !== 255) {
-          info.appendChild(el("div", "crewItems", "✋ " + (f !== 255 ? D.itemName(f) : "—") + "  ·  " + (b !== 255 ? D.itemName(b) : "—")));
-        }
-        if (a.t > 0) info.appendChild(el("div", "crewOrder", orderText(a)));
+        card.title = D.roomNames[a.room & 63] + ((a.room & 64) ? " (duct)" : "") +
+          ((f !== 255 || b !== 255)
+            ? " — ✋ " + (f !== 255 ? D.itemName(f) : "—") + " · " + (b !== 255 ? D.itemName(b) : "—") : "");
       }
-      card.appendChild(info);
       if (a.status === 0) card.addEventListener("click", function () { selectCrew(k); });
       els.roster.appendChild(card);
     })(k);
@@ -238,71 +267,131 @@
     }
   }
 
+  // Fingerprint of everything the action panel displays (except the live
+  // countdown, updated in place). renderTick skips the rebuild when unchanged.
+  function computePanelKey() {
+    var s = game.state;
+    if (sel < 1 || s.actors[sel].status !== 0) return "none:" + sel;
+    var a = s.actors[sel];
+    var f = JN.frontHandItem(s, sel), b = JN.backHandItem(s, sel);
+    var opts = CMD.moveOptions(s, sel).map(function (o) { return o.grille ? "g" : o.byte; }).join(",");
+    var sp = CMD.specialFor(s, sel);
+    return [sel, a.room, a.state, a.t > 0 ? 1 : 0, f, b,
+      CMD.roomFloorItems(s, a.room).join("."), opts, sp ? sp.kind : "-",
+      s.jonesRoom === (a.room & 63) ? 1 : 0, s.destructArmed ? 1 : 0,
+      s.shipFlags & 63, s.deck].join("|");
+  }
+  function refreshActions() {
+    if (computePanelKey() === panelKey) return;
+    var hovering = false; try { hovering = els.actions.matches(":hover"); } catch (e) {}
+    if (hovering) { actionsDirty = true; return; } // don't yank a button out from under a click
+    renderActions();
+  }
+
   function renderActions() {
     var s = game.state; clear(els.actions);
+    actionsDirty = false; clearChipHover(); // self-heal if rebuilt under the cursor
+    panelKey = computePanelKey();
     if (sel < 1 || s.actors[sel].status !== 0) {
       els.actions.appendChild(el("p", "hint", "Select a crew member to give orders."));
       return;
     }
     var a = s.actors[sel];
-    els.actions.appendChild(el("h3", null, D.crewNames[sel]));
+    var f = JN.frontHandItem(s, sel), b = JN.backHandItem(s, sel);
 
-    // MOVE
+    // detail header: who/where + the two hands (master-detail: the roster rows
+    // stay minimal, the selected crew's full context lives here)
+    var head = el("div", "detailHead");
+    var pc = el("canvas", "portrait"); pc.width = 24; pc.height = 24;
+    pc.getContext("2d").drawImage(AS.portrait(sel - 1), 0, 0);
+    head.appendChild(pc);
+    var info = el("div", "detailInfo");
+    info.appendChild(el("div", "crewName", D.crewNames[sel]));
+    info.appendChild(el("div", "crewRoom", D.roomNames[a.room & 63] + ((a.room & 64) ? " (duct)" : "")));
+    head.appendChild(info);
+    var hands = el("div", "hands");
+    var front = el("span", "handSlot", "✋ " + (f !== 255 ? D.itemName(f) : "empty"));
+    front.title = "front hand — weapons act from here";
+    hands.appendChild(front);
+    var back = el("button", "handSlot act", "⇄ " + (b !== 255 ? D.itemName(b) : "empty"));
+    back.title = "back hand — click to swap hands";
+    if (b === 255) back.disabled = true;
+    else back.addEventListener("click", function () { CMD.swapHands(s, sel); afterOrder(); });
+    hands.appendChild(back);
+    head.appendChild(hands);
+    els.actions.appendChild(head);
+
+    var body = el("div", "actBody");
+
+    // MOVE — chips; hovering one highlights its room on the map (deck-peeking
+    // to the target's deck if needed), clicking issues the order
     var inDuct = (a.room & 64) !== 0;
     var opts = CMD.moveOptions(s, sel);
     var grp = group(inDuct ? "Crawl to" : "Move to");
+    var chips = el("div", "chips");
     var hasGrille = false;
     opts.forEach(function (o) {
       if (o.grille) {
         hasGrille = true;
-        grp.appendChild(btn(inDuct ? "⬆ Climb out of the duct here" : "⬇ Enter the air duct",
-          function () { CMD.moveThroughGrille(s, sel); afterOrder(); }));
+        chips.appendChild(btn(inDuct ? "⬆ Climb out here" : "⬇ Enter the air duct",
+          function () { clearChipHover(); CMD.moveThroughGrille(s, sel); afterOrder(); }, "chip"));
       } else {
-        var label = (o.byte & 64) ? ("⛆ " + D.roomNames[o.room] + " (duct)") : D.roomNames[o.room];
-        grp.appendChild(btn(label, function () { CMD.moveTo(s, sel, o.byte); afterOrder(); }));
+        var label = (o.byte & 64) ? ("⛆ " + D.roomNames[o.room]) : D.roomNames[o.room];
+        var cb = btn(label, function () { clearChipHover(); CMD.moveTo(s, sel, o.byte); afterOrder(); }, "chip");
+        cb.dataset.room = o.room;
+        var dk = D.roomTypeTable[o.room];
+        if (dk < 3 && dk !== s.deck) cb.appendChild(el("span", "deckBadge", ["UPPER", "MID", "LOWER"][dk]));
+        cb.addEventListener("mouseenter", function () { setChipHover(o.room); });
+        cb.addEventListener("mouseleave", function () { clearChipHover(); });
+        chips.appendChild(cb);
       }
     });
+    grp.appendChild(chips);
     if (!opts.length) grp.appendChild(el("span", "hint", "no exits"));
-    if (inDuct && !hasGrille) grp.appendChild(el("span", "hint", "No open grille here — crawl to a room with a removed grille to climb out."));
-    els.actions.appendChild(grp);
+    else if (!inDuct) grp.appendChild(el("div", "hint", "…or click a highlighted room on the map"));
+    if (inDuct && !hasGrille) grp.appendChild(el("div", "hint", "No open grille here — crawl to a room with a removed grille to climb out."));
+    body.appendChild(grp);
 
-    // USE (items)
-    var f = JN.frontHandItem(s, sel), b = JN.backHandItem(s, sel);
+    // USE (items) — swap lives on the back-hand slot in the header
     var floor = CMD.roomFloorItems(s, a.room);
-    var ug = group("Use");
-    if (b !== 255) ug.appendChild(btn("⇄ Swap hands (" + D.itemName(f === 255 ? b : f) + ")", function () { CMD.swapHands(s, sel); afterOrder(); }));
     var handsFull = f !== 255 && b !== 255;
-    floor.forEach(function (id) {
-      var b2 = btn((handsFull ? "⬇ Get (hands full) " : "⬇ Get ") + D.itemName(id), function () { CMD.getItem(s, sel, id); afterOrder(); });
-      if (handsFull) b2.disabled = true;
-      ug.appendChild(b2);
-    });
-    if (f !== 255 || b !== 255) ug.appendChild(btn("⇩ Leave item", function () { CMD.leaveItem(s, sel); afterOrder(); }));
-    if (f === 255 && b === 255 && !floor.length) ug.appendChild(el("span", "hint", "empty-handed, nothing here"));
-    els.actions.appendChild(ug);
+    if (floor.length || f !== 255 || b !== 255) {
+      var ug = group("Use");
+      var uchips = el("div", "chips");
+      floor.forEach(function (id) {
+        var b2 = btn("⬇ Get " + D.itemName(id), function () { CMD.getItem(s, sel, id); afterOrder(); }, "chip");
+        if (handsFull) { b2.disabled = true; b2.title = "hands full"; }
+        uchips.appendChild(b2);
+      });
+      if (f !== 255 || b !== 255) uchips.appendChild(btn("⇩ Leave item", function () { CMD.leaveItem(s, sel); afterOrder(); }, "chip"));
+      ug.appendChild(uchips);
+      body.appendChild(ug);
+    }
 
     // SPECIAL
     var sp = CMD.specialFor(s, sel);
     var jonesHere = s.jonesRoom === (a.room & 63) && !(a.room & 64);
     if (sp || jonesHere) {
       var spg = group("Special");
-      if (sp && sp.kind === "attack") spg.appendChild(btn("⚔ ATTACK", function () { CMD.attackOrder(s, sel); afterOrder(); }, "danger"));
-      if (sp && sp.kind === "grille") spg.appendChild(btn("⛏ Remove grille", function () { CMD.removeGrille(s, sel); afterOrder(); }));
-      if (jonesHere && (f === 16 || f === 17)) spg.appendChild(btn("🐱 Get Jones", function () { JN.getJones(s, sel, game.rng); afterOrder(); }));
+      if (sp && sp.kind === "attack") spg.appendChild(btn("⚔ ATTACK", function () { CMD.attackOrder(s, sel); afterOrder(); }, "wide danger"));
+      if (sp && sp.kind === "grille") spg.appendChild(btn("⛏ Remove grille", function () { CMD.removeGrille(s, sel); afterOrder(); }, "wide"));
+      if (jonesHere && (f === 16 || f === 17)) spg.appendChild(btn("🐱 Get Jones", function () { JN.getJones(s, sel, game.rng); afterOrder(); }, "wide"));
       else if (jonesHere) spg.appendChild(el("span", "hint", "need Net or Cat Box to catch Jones"));
-      els.actions.appendChild(spg);
+      body.appendChild(spg);
     }
 
     // FIXTURE
     var fg = fixtureGroup(s, sel, a);
-    if (fg) els.actions.appendChild(fg);
+    if (fg) body.appendChild(fg);
 
-    // pending order / cancel
+    els.actions.appendChild(body);
+
+    // pending order — pinned bar at the panel foot, countdown updated live
     if (a.t > 0) {
-      var pend = group("Pending");
-      pend.appendChild(el("span", "hint", orderText(a) + " (" + a.t + ")"));
-      pend.appendChild(btn("✖ Cancel", function () { CMD.cancelOrder(s, sel); afterOrder(); }));
-      els.actions.appendChild(pend);
+      var bar = el("div", "pendingBar");
+      bar.appendChild(el("span", "pendText", orderText(a) + " (" + a.t + ")"));
+      bar.appendChild(btn("✖ Cancel", function () { CMD.cancelOrder(s, sel); afterOrder(); }, "chip danger"));
+      els.actions.appendChild(bar);
     }
   }
 
@@ -310,18 +399,18 @@
     var room = a.room & 63, inDuct = (a.room & 64) !== 0;
     if (inDuct) return null;
     var g = group("Fixture"), any = false;
-    if (room === D.ROOM.COMMD) { g.appendChild(btn(s.destructArmed ? "⏻ Abort self-destruct" : "☢ Arm self-destruct", function () { A.ship.destructToggle(s); afterOrder(); }, s.destructArmed ? "" : "danger")); any = true; }
+    if (room === D.ROOM.COMMD) { g.appendChild(btn(s.destructArmed ? "⏻ Abort self-destruct" : "☢ Arm self-destruct", function () { A.ship.destructToggle(s); afterOrder(); }, s.destructArmed ? "wide" : "wide danger")); any = true; }
     if (room === D.ROOM.CORRIDOR6) {
       [0, 1].forEach(function (w) {
         var blown = s.shipFlags & (w === 0 ? 2 : 4);
         g.appendChild(btn((blown ? "🔧 Seal Airlock #" : "💥 Blow Airlock #") + (w + 1), function () {
           if (blown) A.ship.sealLock(s, w); else if (confirmVent(w)) A.ship.blowLock(s, w, game.rng); afterOrder();
-        }, blown ? "" : "danger"));
+        }, blown ? "wide" : "wide danger"));
       }); any = true;
     }
-    if (room === D.ROOM.CRYO) { g.appendChild(btn("❄ Enter hypersleep", function () { A.ship.hypersleepStart(s, slot); afterOrder(); })); any = true; }
-    if (room >= 17 && room <= 19 && (s.shipFlags & (8 << (room - 17)))) { g.appendChild(btn("🧯 Fight fire", function () { A.ship.fightFire(s, slot, room); afterOrder(); })); any = true; }
-    if (room === D.ROOM.NARCISSUS) { g.appendChild(btn("🚀 LAUNCH", function () { A.ship.launchGate(s); afterOrder(); }, "danger")); any = true; }
+    if (room === D.ROOM.CRYO) { g.appendChild(btn("❄ Enter hypersleep", function () { A.ship.hypersleepStart(s, slot); afterOrder(); }, "wide")); any = true; }
+    if (room >= 17 && room <= 19 && (s.shipFlags & (8 << (room - 17)))) { g.appendChild(btn("🧯 Fight fire", function () { A.ship.fightFire(s, slot, room); afterOrder(); }, "wide")); any = true; }
+    if (room === D.ROOM.NARCISSUS) { g.appendChild(btn("🚀 LAUNCH", function () { A.ship.launchGate(s); afterOrder(); }, "wide danger")); any = true; }
     return any ? g : null;
   }
   function confirmVent(w) { return window.confirm("Blow Airlock #" + (w + 1) + "? Everyone in that room will be killed."); }
@@ -329,6 +418,29 @@
   function group(title) { var g = el("div", "actGroup"); g.appendChild(el("div", "actTitle", title)); return g; }
   function btn(label, fn, cls) { var b = el("button", "act" + (cls ? " " + cls : ""), label); b.addEventListener("click", fn); return b; }
   function afterOrder() { renderRoster(); renderActions(); renderTick(); }
+
+  // ---- action-chip <-> map hover linkage --------------------------------
+  // Hovering a Move-to chip highlights its room on the map; if the room is on
+  // another deck, the view peeks at that deck and reverts on mouse-leave.
+  function setChipHover(room) {
+    hoverRoom = room; hoverSource = "chip";
+    if (sel >= 1 && (game.state.actors[sel].room & 64)) return; // duct view pins its own deck
+    var d = D.roomTypeTable[room];
+    if (d < 3 && d !== game.state.deck && peekDeck < 0) { peekDeck = game.state.deck; game.state.deck = d; }
+  }
+  function clearChipHover() {
+    if (peekDeck >= 0) { game.state.deck = peekDeck; peekDeck = -1; }
+    if (hoverSource === "chip") { hoverRoom = -1; hoverSource = null; }
+  }
+  // The reverse: hovering a reachable room on the map rings its chip.
+  function syncChipHl(room) {
+    var cur = els.actions.querySelector(".chip.hl");
+    if (cur && +cur.dataset.room !== room) cur.classList.remove("hl");
+    if (room >= 0) {
+      var next = els.actions.querySelector('.chip[data-room="' + room + '"]');
+      if (next) next.classList.add("hl");
+    }
+  }
 
   // ---- HUD & log --------------------------------------------------------
   function renderHud() { updateHudLive(); }
@@ -349,15 +461,39 @@
     $("frame").textContent = "T+" + (s.frame / 50 | 0) + "s";
   }
 
+  // message id -> log-line severity class
+  var LOG_SEV = {};
+  [1, 8, 9, 10, 13, 16, 18, 21, 25, 26, 28, 29, 33].forEach(function (id) { LOG_SEV[id] = "bad"; });
+  [5, 6, 7, 19, 20, 22, 23, 24, 27].forEach(function (id) { LOG_SEV[id] = "warn"; });
+  [2, 3, 4, 12, 14, 15, 17, 31, 32].forEach(function (id) { LOG_SEV[id] = "good"; });
+
   function appendNewLog() {
-    var s = game.state;
-    for (var i = lastLogLen; i < s.log.length; i++) {
-      var line = el("div", "logline", s.log[i].text);
-      els.log.appendChild(line);
-      if (ALARM_IDS[s.log[i].id]) audio.beep(196, 0.2, 0.06, "sawtooth"); // low warning tone
+    var s = game.state, log = s.log;
+    // resume after the last entry we appended — by identity, because the log
+    // array is a 200-entry ring (shift() breaks index-based tracking)
+    var start = logLastEntry ? log.lastIndexOf(logLastEntry) + 1 : 0;
+    if (start >= log.length) return;
+    // keep autoscroll only when the user is already at the bottom; otherwise
+    // offer the "new messages" jump instead of yanking their scroll position
+    var atBottom = els.log.scrollHeight - els.log.scrollTop - els.log.clientHeight < 26;
+    for (var i = start; i < log.length; i++) {
+      var entry = log[i];
+      if (logLast.el && entry.text === logLast.text) {   // collapse repeats into "×n"
+        logLast.n++;
+        if (!logLast.badge) { logLast.badge = el("span", "logN"); logLast.el.appendChild(logLast.badge); }
+        logLast.badge.textContent = "×" + logLast.n;
+      } else {
+        var line = el("div", "logline" + (LOG_SEV[entry.id] ? " " + LOG_SEV[entry.id] : ""));
+        line.appendChild(el("span", "logT", "T+" + (entry.frame / 50 | 0) + "s"));
+        line.appendChild(el("span", null, entry.text));
+        els.log.appendChild(line);
+        logLast = { text: entry.text, el: line, badge: null, n: 1 };
+      }
+      if (ALARM_IDS[entry.id]) audio.beep(196, 0.2, 0.06, "sawtooth"); // low warning tone
     }
-    lastLogLen = s.log.length;
-    els.log.scrollTop = els.log.scrollHeight;
+    logLastEntry = log[log.length - 1];
+    if (atBottom) { els.log.scrollTop = els.log.scrollHeight; els.logJump.hidden = true; }
+    else els.logJump.hidden = false;
   }
 
   function pulse(e) { e.classList.remove("pulse"); void e.offsetWidth; e.classList.add("pulse"); }
@@ -382,6 +518,8 @@
     var px = (ev.clientX - r.left) * (els.map.width / r.width);
     var py = (ev.clientY - r.top) * (els.map.height / r.height);
     hoverRoom = RN.roomAtPoint(game.state, px, py);
+    hoverSource = hoverRoom >= 0 ? "map" : null;
+    syncChipHl(sel >= 1 && reachable[hoverRoom] ? hoverRoom : -1);
     els.map.style.cursor = (sel >= 1 && reachable[hoverRoom]) ? "pointer" : "default";
   }
   function onMapClick(ev) {
