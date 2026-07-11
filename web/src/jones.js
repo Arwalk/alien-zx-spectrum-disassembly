@@ -41,6 +41,7 @@
     if (front === 16) thr -= 4;                       // Net is easier
     var roll = rng.nibble();
     if (roll < thr) {                                 // failed: the cat bolts
+      A.messages.enqueue(s, 34, { actor: slot });     // port-only: log the escape
       s.jonesMoveTimer = 1;
       updateJones(s, rng);
       return false;

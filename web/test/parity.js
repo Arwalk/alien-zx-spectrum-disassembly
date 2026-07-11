@@ -300,6 +300,16 @@ function combatSetup(weaponId, attacker) {
   ok("getJones success at roll>=thr-4", A.jones.getJones(s, 3, fixedRng([13])) === true);
   ok("net -> cat-in-net in hand", s.items[16] === 255 && s.items[20] === 160 + 3);
   ok("jones off-map + comfort", s.jonesRoom === 255 && s.actors[3].courage === c + 1 && s.actors[3].morale === m + 1);
+
+  // Cat Box catch: full threshold (no -4), failure spooks the cat into moving
+  s.jonesRoom = 8; s.actors[3].room = 8;
+  s.items[17] = 160 + 3;                             // the Cat Box in Ripley's front hand
+  ok("box fail below threshold", A.jones.getJones(s, 3, fixedRng([12, 0])) === false);
+  ok("box fail: cat bolts, box kept", s.jonesRoom !== 8 && s.jonesRoom !== 255 && s.items[17] === 160 + 3);
+  ok("box fail: escape logged", s.log.some(e => e.id === 34 && e.text === "Jones escapes from Ripley"));
+  s.jonesRoom = 8;
+  ok("box catch at full threshold", A.jones.getJones(s, 3, fixedRng([13])) === true);
+  ok("box -> cat-in-box in hand", s.items[17] === 255 && s.items[21] === 160 + 3 && s.jonesRoom === 255);
 })();
 
 // 17. trackers: floor scan + duct-lurker detection, the duct-holder quirk,

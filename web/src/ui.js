@@ -533,7 +533,7 @@
   // message id -> log-line severity class
   var LOG_SEV = {};
   [1, 8, 9, 10, 13, 16, 18, 21, 25, 26, 28, 29, 33].forEach(function (id) { LOG_SEV[id] = "bad"; });
-  [5, 6, 7, 19, 20, 22, 23, 24, 27].forEach(function (id) { LOG_SEV[id] = "warn"; });
+  [5, 6, 7, 19, 20, 22, 23, 24, 27, 34].forEach(function (id) { LOG_SEV[id] = "warn"; });
   [2, 3, 4, 12, 14, 15, 17, 31, 32].forEach(function (id) { LOG_SEV[id] = "good"; });
 
   function appendNewLog() {

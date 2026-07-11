@@ -38,7 +38,9 @@
     "%A is attacking %T",                  // 30
     "%A nets %T",                          // 31
     "%A hits the Android",                 // 32
-    "Alien has hatched from %A"            // 33
+    "Alien has hatched from %A",           // 33
+    // --- port-only messages (the tape's table ends at 33) ---
+    "Jones escapes from %A"                // 34: failed Get Jones roll
   ];
 
   // Resolve a message id + context {actor, target, room} (slot ids / room id).
