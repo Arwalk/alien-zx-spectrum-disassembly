@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ALIEN — Nostromo</title>
+  <style>
+    /* Same "ship terminal" tokens as the web port (web/style.css). */
+    :root {
+      --bg: #06090c; --panel: #0d1319; --panel2: #111a22; --line: #1e2c36;
+      --ink: #cfe8dd; --dim: #7c93a0; --green: #38d977; --amber: #ffb020;
+      --cyan: #23d2d2; --red: #ff5545;
+      --mono: "SFMono-Regular", ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--ink);
+      font-family: var(--mono); font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh;
+      padding: 24px; }
+
+    .inner { text-align: center; max-width: 720px; }
+    h1 { font-size: 46px; letter-spacing: .5em; margin: 0 0 6px; padding-left: .5em; /* recenter the tracked type */
+      color: var(--green); text-shadow: 0 0 22px rgba(56, 217, 119, .4); }
+    .sub { color: var(--dim); font-size: 11px; letter-spacing: .3em; text-transform: uppercase;
+      margin: 0 0 18px; }
+    .tag { color: var(--ink); line-height: 1.6; margin: 0 auto 26px; max-width: 560px; }
+
+    .doors { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
+    @media (max-width: 620px) { .doors { grid-template-columns: 1fr; } }
+    .door { display: block; background: var(--panel); border: 1px solid var(--line);
+      border-radius: 10px; padding: 18px 20px; text-decoration: none; color: var(--ink);
+      transition: border-color .12s ease, box-shadow .12s ease, background .12s ease; }
+    .door:hover, .door:focus-visible { background: var(--panel2); outline: none; }
+    .door.game:hover, .door.game:focus-visible { border-color: var(--green);
+      box-shadow: 0 0 18px rgba(56, 217, 119, .3); }
+    .door.dis:hover, .door.dis:focus-visible { border-color: var(--cyan);
+      box-shadow: 0 0 18px rgba(35, 210, 210, .3); }
+    .doorHead { font-size: 16px; letter-spacing: .1em; margin-bottom: 6px; }
+    .door.game .doorHead { color: var(--green); }
+    .door.dis .doorHead { color: var(--cyan); }
+    .door p { margin: 0; color: var(--dim); font-size: 12px; line-height: 1.55; }
+    .door p strong { color: var(--ink); font-weight: normal; }
+    .go { display: inline-block; margin-top: 10px; font-size: 12px; letter-spacing: .08em; }
+    .door.game .go { color: var(--green); }
+    .door.dis .go { color: var(--cyan); }
+
+    .fine { color: var(--dim); font-size: 11px; margin-top: 24px; line-height: 1.5; }
+    .fine .cursor { color: var(--green); animation: blink 1s steps(2) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+  </style>
+</head>
+<body>
+  <div class="inner">
+    <h1>A L I E N</h1>
+    <p class="sub">USCSS Nostromo &middot; 180924609</p>
+    <p class="tag">The ZX Spectrum 48K strategy game (BUGFIX 1.7) — playable again,
+      and taken apart byte by byte.</p>
+
+    <nav class="doors">
+      <a class="door game" href="/game">
+        <div class="doorHead">&#9654; PLAY THE GAME</div>
+        <p>A faithful web remake of the <strong>Long Game</strong>. Command the crew,
+          track the xenomorph, and escape in the Narcissus — before the air runs out.
+          Original graphics, definitive rules, mouse&nbsp;+&nbsp;keyboard.</p>
+        <span class="go">/game</span>
+      </a>
+      <a class="door dis" href="/disassembly">
+        <div class="doorHead">&#9636; READ THE DISASSEMBLY</div>
+        <p>The fully annotated <strong>Z80 disassembly</strong>: every routine, table
+          and sprite of the original tape, cross-linked and browsable. Built with
+          skoolkit from <code>alien.skool</code>.</p>
+        <span class="go">/disassembly</span>
+      </a>
+    </nav>
+
+    <p class="fine">MU/TH/UR 6000 &mdash; PRIORITY ONE &mdash; ALL OTHER CONSIDERATIONS SECONDARY<span class="cursor">&block;</span></p>
+  </div>
+</body>
+</html>

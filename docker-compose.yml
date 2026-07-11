@@ -1,0 +1,7 @@
+services:
+  blog:
+    build: .
+    container_name: alien
+    ports:
+      - "6573:80"
+    restart: always
