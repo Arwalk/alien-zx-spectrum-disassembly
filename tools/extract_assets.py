@@ -84,7 +84,8 @@ assets["portraits"] = [rd(30216 + i * 72, 72) for i in range(7)]
 # 3. Three Nostromo deck maps (ShipMapData @ 24576): 20 wide x 19 tall tile ids.
 assets["decks"] = [rd(24576 + d * 380, 380) for d in range(3)]
 
-# 4. Room interior templates (RLE) -> 19x20 grids of tile ids.
+# 4. Per-deck air-duct maps (RLE) -> 19x20 grids of tile ids
+#    (upper/middle/lower; exported as "roomLayouts" for web compatibility).
 layouts = []
 layout_consumed = []
 for a in (25716, 25835, 25996):
@@ -93,7 +94,7 @@ for a in (25716, 25835, 25996):
     layout_consumed.append(used)
 assets["roomLayouts"] = layouts
 
-# 5. Room anchors for the interior template (RoomOriginTable @ 26501, 34 x row,col)
+# 5. Room anchors on the duct maps (RoomOriginTable @ 26501, 34 x row,col)
 origins = rd(26501, 34 * 2)
 assets["roomOrigins"] = [[origins[i * 2], origins[i * 2 + 1]] for i in range(34)]
 

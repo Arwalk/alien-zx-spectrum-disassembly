@@ -1162,16 +1162,18 @@ b24576 DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  ; UPPER deck row 0
  25676 DEFB 0,0,0,0,0,0,2,96,2,0,0,0,45,44,44,0,0,0,0,0  ; LOWER deck row 17
  25696 DEFB 0,0,0,0,0,0,25,1,20,1,1,1,41,40,40,0,0,0,0,0  ; LOWER deck row 18
 
-; Room-interior layout template 0 (RLE-compressed)
+; Upper-deck air-duct map (RLE-compressed)
 ;
-; Selected by room type (#R31243) at #R32981(PickRoomLayout) and decompressed
-; into the grid buffer at #R26121 by #R33153(RoomLayoutExpand): byte < 30 =
-; that many zero cells, 30-254 = literal tile code, 255 = end.
+; The deck's duct network, drawn as the view background while the viewed
+; position is inside the ducts (#R32967(RedrawRoomView)): selected by room
+; type (#R31243) at #R32981(PickDuctMap) and decompressed into the grid
+; buffer at #R26121 by #R33153(RleMapExpand): byte < 30 = that many zero
+; cells, 30-254 = literal tile code, 255 = end.
 ; .
 ; Expanded and rendered via #R26869(CharBitmaps):
 ; .
-; #HTML(#UDGARRAY20,7,2(26869x66;27869;27877x2;27869;27877x4;27869;26869x11;27885;26869x2;27885;26869x4;27933;26869x11;27885;26869x2;27885;26869x4;27933;26869x11;27885;26869x2;27885;26869x3;27893;27909;26869x11;27885;26869x2;27885;26869x3;27885;26869x12;27885;26869x2;27885;26869x3;27885;26869x12;27885;26869x2;27869;27877x3;27869;27877x3;27869;27917;26869x7;27885;26869x2;27885;26869x3;27885;26869x4;27933;26869x7;27885;26869x2;27885;26869x3;27885;26869x4;28013;26869x7;27885;26869x2;27885;26869x3;27901;27917;26869x11;27885;26869x2;27885;26869x4;27933;26869x11;27885;26869x2;27885;26869x4;27933;26869x11;27869;27877x2;27869;27877x4;27869;26869x65)(room_layout0))
-@label=RoomLayout0
+; #HTML(#UDGARRAY20,7,2(26869x66;27869;27877x2;27869;27877x4;27869;26869x11;27885;26869x2;27885;26869x4;27933;26869x11;27885;26869x2;27885;26869x4;27933;26869x11;27885;26869x2;27885;26869x3;27893;27909;26869x11;27885;26869x2;27885;26869x3;27885;26869x12;27885;26869x2;27885;26869x3;27885;26869x12;27885;26869x2;27869;27877x3;27869;27877x3;27869;27917;26869x7;27885;26869x2;27885;26869x3;27885;26869x4;27933;26869x7;27885;26869x2;27885;26869x3;27885;26869x4;28013;26869x7;27885;26869x2;27885;26869x3;27901;27917;26869x11;27885;26869x2;27885;26869x4;27933;26869x11;27885;26869x2;27885;26869x4;27933;26869x11;27869;27877x2;27869;27877x4;27869;26869x65)(duct_map_upper))
+@label=DuctMapUpper
 b25716 DEFB 20,20,20,6,125,126,126,125,126,126,126,126,125,5,6,127
  25732 DEFB 2,127,4,133,5,6,127,2,127,4,133,5,6,127,2,127
  25748 DEFB 3,128,130,5,6,127,2,127,3,127,6,6,127,2,127,3
@@ -1181,16 +1183,18 @@ b25716 DEFB 20,20,20,6,125,126,126,125,126,126,126,126,125,5,6,127
  25812 DEFB 5,6,127,2,127,4,133,5,6,125,126,126,125,126,126,126
  25828 DEFB 126,125,5,20,20,20,255
 
-; Room-interior layout template 1 (RLE-compressed)
+; Middle-deck air-duct map (RLE-compressed)
 ;
-; Selected by room type (#R31243) at #R32981(PickRoomLayout) and decompressed
-; into the grid buffer at #R26121 by #R33153(RoomLayoutExpand): byte < 30 =
-; that many zero cells, 30-254 = literal tile code, 255 = end.
+; The deck's duct network, drawn as the view background while the viewed
+; position is inside the ducts (#R32967(RedrawRoomView)): selected by room
+; type (#R31243) at #R32981(PickDuctMap) and decompressed into the grid
+; buffer at #R26121 by #R33153(RleMapExpand): byte < 30 = that many zero
+; cells, 30-254 = literal tile code, 255 = end.
 ; .
 ; Expanded and rendered via #R26869(CharBitmaps):
 ; .
-; #HTML(#UDGARRAY20,7,2(26869x49;27893;27877x2;27869;27877x2;27917;27869;27877;27917;26869x10;27869;27877;27917;26869x3;27933;26869x2;27933;26869x12;27933;26869x3;27933;26869x2;27933;26869x12;27933;26869x3;27933;26869x2;27933;26869x6;27869;27877x5;27869;26869x3;27933;26869x2;27933;26869x6;27885;26869x2;27893;27877x2;27909;26869x3;27933;26869x2;27933;28005;26869x5;27885;26869x2;27885;26869x6;27933;26869x2;27933x2;27869;27877x4;27869;26869x2;27869;26869x2;27869;27877x3;27869;27877x2;27869;27909;26869x5;27885;26869x2;27885;26869x6;27933;26869x2;27933;26869x6;27885;26869x2;27901;27877x2;27917;26869x3;27933;26869x2;27933;26869x6;27869;27877x5;27869;26869x3;27933;26869x2;27933;26869x12;27933;26869x3;27933;26869x2;27933;26869x12;27933;26869x3;27933;26869x2;27933;26869x10;27869;27925;27909;26869x3;27933;26869x2;27933;26869x10;27901;27925x2;27869;27925x2;27909;27869;27925;27909;26869x41)(room_layout1))
-@label=RoomLayout1
+; #HTML(#UDGARRAY20,7,2(26869x49;27893;27877x2;27869;27877x2;27917;27869;27877;27917;26869x10;27869;27877;27917;26869x3;27933;26869x2;27933;26869x12;27933;26869x3;27933;26869x2;27933;26869x12;27933;26869x3;27933;26869x2;27933;26869x6;27869;27877x5;27869;26869x3;27933;26869x2;27933;26869x6;27885;26869x2;27893;27877x2;27909;26869x3;27933;26869x2;27933;28005;26869x5;27885;26869x2;27885;26869x6;27933;26869x2;27933x2;27869;27877x4;27869;26869x2;27869;26869x2;27869;27877x3;27869;27877x2;27869;27909;26869x5;27885;26869x2;27885;26869x6;27933;26869x2;27933;26869x6;27885;26869x2;27901;27877x2;27917;26869x3;27933;26869x2;27933;26869x6;27869;27877x5;27869;26869x3;27933;26869x2;27933;26869x12;27933;26869x3;27933;26869x2;27933;26869x12;27933;26869x3;27933;26869x2;27933;26869x10;27869;27925;27909;26869x3;27933;26869x2;27933;26869x10;27901;27925x2;27869;27925x2;27909;27869;27925;27909;26869x41)(duct_map_middle))
+@label=DuctMapMiddle
 b25835 DEFB 20,20,9,128,126,126,125,126,126,131,125,126,131,1,9,125
  25851 DEFB 126,131,3,133,2,133,1,11,133,3,133,2,133,1,11,133
  25867 DEFB 3,133,2,133,1,5,125,126,126,126,126,126,125,3,133,2
@@ -1203,16 +1207,18 @@ b25835 DEFB 20,20,9,128,126,126,125,126,126,131,125,126,131,1,9,125
  25979 DEFB 133,1,9,129,132,132,125,132,132,130,125,132,130,1,20,20
  25995 DEFB 255
 
-; Room-interior layout template 2 (RLE-compressed)
+; Lower-deck air-duct map (RLE-compressed)
 ;
-; Selected by room type (#R31243) at #R32981(PickRoomLayout) and decompressed
-; into the grid buffer at #R26121 by #R33153(RoomLayoutExpand): byte < 30 =
-; that many zero cells, 30-254 = literal tile code, 255 = end.
+; The deck's duct network, drawn as the view background while the viewed
+; position is inside the ducts (#R32967(RedrawRoomView)): selected by room
+; type (#R31243) at #R32981(PickDuctMap) and decompressed into the grid
+; buffer at #R26121 by #R33153(RleMapExpand): byte < 30 = that many zero
+; cells, 30-254 = literal tile code, 255 = end.
 ; .
 ; Expanded and rendered via #R26869(CharBitmaps):
 ; .
-; #HTML(#UDGARRAY20,7,2(26869x41;27893;27877x3;27869;27877x3;27917;26869x11;27885;26869x7;27933;26869x11;27885;26869x7;27869;27877x4;27917;26869x6;27885;26869x12;27933;26869;28005;26869x4;27885;26869x12;27933;26869;27885;26869x4;27885;26869x12;27933;26869;27901;27925;27869;26869x2;27885;26869x12;27933;26869x3;27933;26869x2;27869;26869x7;27869;27925x4;27869;27925x3;27909;26869x2;27885;26869x12;27933;26869x6;27885;26869x12;27933;26869x6;27885;26869x12;27933;26869x6;27885;26869x12;27933;26869x6;27901;27925x3;27869;26869x3;27869;27925x4;27909;26869x10;27885;26869x3;27933;26869x15;27885;26869x3;27933;26869x15;27869;27925x3;27909;26869x30)(room_layout2))
-@label=RoomLayout2
+; #HTML(#UDGARRAY20,7,2(26869x41;27893;27877x3;27869;27877x3;27917;26869x11;27885;26869x7;27933;26869x11;27885;26869x7;27869;27877x4;27917;26869x6;27885;26869x12;27933;26869;28005;26869x4;27885;26869x12;27933;26869;27885;26869x4;27885;26869x12;27933;26869;27901;27925;27869;26869x2;27885;26869x12;27933;26869x3;27933;26869x2;27869;26869x7;27869;27925x4;27869;27925x3;27909;26869x2;27885;26869x12;27933;26869x6;27885;26869x12;27933;26869x6;27885;26869x12;27933;26869x6;27885;26869x12;27933;26869x6;27901;27925x3;27869;26869x3;27869;27925x4;27909;26869x10;27885;26869x3;27933;26869x15;27885;26869x3;27933;26869x15;27869;27925x3;27909;26869x30)(duct_map_lower))
+@label=DuctMapLower
 b25996 DEFB 20,20,1,128,126,126,126,125,126,126,126,131,10,1,127,7
  26012 DEFB 133,10,1,127,7,125,126,126,126,126,131,5,1,127,12,133
  26028 DEFB 1,142,3,1,127,12,133,1,127,3,1,127,12,133,1,129
@@ -2035,8 +2041,8 @@ b29630 DEFB 73,255,255,255,255,255,255,74
 ; Per-room type table
 ;
 ; One byte per room (0-34): the map-view layout type fed to
-; #R31243(RoomTypeByte) — 0/1/2 pick the layout templates at
-; #R25716, #R25835 and #R25996; 3 = the Narcissus. Read by
+; #R31243(RoomTypeByte) — 0/1/2 = the room's deck, picking its
+; air-duct map at #R25716, #R25835 or #R25996; 3 = the Narcissus. Read by
 ; #R35338(LocationListAction) when a room is picked from the
 ; Indicate Location list, and by #R34933(UpdateRoomMarkerB) to
 ; check an exit room against the displayed deck.
@@ -2295,7 +2301,7 @@ b30626 DEFB 2,1,1,0,0,0,223,96
 
 ; Narcissus corridor-view layout (RLE)
 ;
-; The shuttle's 20x19 view background in RoomLayoutExpand's RLE
+; The shuttle's 20x19 view background in RleMapExpand's RLE
 ; format (byte < 30 = that many blank cells, 30-254 = literal tile
 ; code, 255 = end; 141 bytes). Expanded into the grid buffer and
 ; rendered by #R33644(NarcissusBackground) when a room of type 3
@@ -3584,7 +3590,7 @@ c32719 CALL 32684    ; ResetActionMenu
  32760 CALL 31759    ; and build the exit list
  32763 JR 32768      ;
 @label=Redraw_Ducts
-*32765 CALL 32967    ; yes: the duct/room interior view
+*32765 CALL 32967    ; yes: the air-duct view
 @label=Redraw_Common
 *32768 CALL 33500    ; the crew portrait,
  32771 CALL 31796    ; the room's item list,
@@ -3699,7 +3705,7 @@ c32816 LD HL,16406   ; blank the name row
 ; Called from RedrawRoomScene only when the viewed position has bit 6
 ; set (inside the ducts).
 ; .
-; Expands the deck's wall-glyph template into the grid buffer, redraws
+; Expands the deck's air-duct map into the grid buffer, redraws
 ; it with all attributes black (so the deck outline is present but
 ; invisible), builds the anonymous N/E/S/W "move to:" rows, then marks
 ; the room's anchor cell bright white and walks a cyan arm along the
@@ -3716,17 +3722,17 @@ c32967 LD A,(31243)  ; A = room type
  32977 CALL 33421    ; and rebuild the duct move-to rows
  32980 RET           ;
 
-; PickRoomLayout
-@label=PickRoomLayout
-c32981 LD HL,25716   ; room type 0: layout template 0
+; PickDuctMap
+@label=PickDuctMap
+c32981 LD HL,25716   ; room type 0: upper-deck duct map
  32984 AND A         ; type 0?
- 32985 JR Z,32997    ; 
- 32987 LD HL,25835   ; room type 1: layout template 1
- 32990 CP 1          ; 
- 32992 JR Z,32997    ; 
- 32994 LD HL,25996   ; room type 2: layout template 2
-@label=PickLayout_Expand
-*32997 CALL 33153    ; RoomLayoutExpand: wall-glyph template -> grid buffer
+ 32985 JR Z,32997    ;
+ 32987 LD HL,25835   ; room type 1: middle-deck duct map
+ 32990 CP 1          ;
+ 32992 JR Z,32997    ;
+ 32994 LD HL,25996   ; room type 2: lower-deck duct map
+@label=PickDuct_Expand
+*32997 CALL 33153    ; RleMapExpand: duct-map glyphs -> grid buffer
  33000 CALL 33421    ; BuildDuctExitList: N/E/S/W move-to rows
  33003 CALL 33395    ; ClearRoomAttrs: hide the view, redraw the glyphs
  33006 CALL 33178    ; SetRoomOrigin: cursors -> the room's anchor
@@ -3749,7 +3755,7 @@ c32981 LD HL,25716   ; room type 0: layout template 0
  33047 ADD HL,DE     ; 
  33048 LD (31255),HL ; 
  33051 CALL 33223    ; DrawDoorArm
-@label=PickLayout_Exit2
+@label=PickDuct_Exit2
 *33054 LD A,(29633)  ; 2nd exit (menu strip cell 3)?
  33057 CP 255        ; 
  33059 JR Z,33088    ; 
@@ -3765,7 +3771,7 @@ c32981 LD HL,25716   ; room type 0: layout template 0
  33077 LD (31244),BC ; 
  33081 LD (31246),BC ; 
  33085 CALL 33223    ; DrawDoorArm
-@label=PickLayout_Exit3
+@label=PickDuct_Exit3
 *33088 LD A,(29634)  ; 3rd exit (menu strip cell 4)?
  33091 CP 255        ; 
  33093 JR Z,33123    ; 
@@ -3782,7 +3788,7 @@ c32981 LD HL,25716   ; room type 0: layout template 0
  33116 ADD HL,DE     ; 
  33117 LD (31255),HL ; 
  33120 CALL 33223    ; DrawDoorArm
-@label=PickLayout_Exit4
+@label=PickDuct_Exit4
 *33123 POP HL        ; restore the anchor grid/attr addresses
  33124 POP DE        ; 
  33125 LD A,(29635)  ; 4th exit (menu strip cell 5)?
@@ -3798,14 +3804,15 @@ c32981 LD HL,25716   ; room type 0: layout template 0
  33149 CALL 33223    ; DrawDoorArm
  33152 RET           ; 
 
-; RoomLayoutExpand
+; RleMapExpand
 ;
-; Decompresses the RLE room layout at HL into the 20x19 grid buffer:
+; Decompresses the RLE map at HL into the 20x19 grid buffer:
 ; byte < 30 = that many zero cells, 30-254 = literal tile code,
 ; 255 = end.
 ; .
-; Used by #R33644(NarcissusBackground) and #R32981(PickRoomLayout).
-@label=RoomLayoutExpand
+; Used by #R32981(PickDuctMap) for the three per-deck air-duct maps
+; and by #R33644(NarcissusBackground) for the shuttle cabin layout.
+@label=RleMapExpand
 c33153 LD DE,26121   ; DE = grid buffer; HL = RLE source
 @label=RleExpand_Loop
 *33156 LD A,(HL)     ; next RLE byte
@@ -4224,7 +4231,7 @@ c33610 PUSH AF       ; save the actor slot
 ; they never boarded the shuttle.
 @label=NarcissusBackground
 c33644 LD HL,30720   ; NarcissusLayout: RLE source
- 33647 CALL 33153    ; RoomLayoutExpand -> grid buffer
+ 33647 CALL 33153    ; RleMapExpand -> grid buffer
  33650 LD DE,30861   ; NarcissusAttrs
  33653 LD HL,22528   ; attribute file base
  33656 LD C,19       ; 19 rows...
