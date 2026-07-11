@@ -78,7 +78,7 @@ rip out a duct grille, slip into the ducts, or wander.</li>
 corridor and air-duct graphs.</li>
 <li>#R41264(TriggerAlienEvent) — the film's Ash twist, in code: once the alien
 has taken enough wounds, a hidden crew member turns hostile.</li>
-<li>#R40826(UpdateAlien) — what the activated Android actually does each
+<li>#R40826(UpdateAndroid) — what the activated Android actually does each
 frame.</li>
 <li>#R39256(CrewAction5_AlienAttack) — the alien's attack tick; it can even
 drag a corpse off into the ducts.</li>

@@ -4329,7 +4329,7 @@ b33682 DEFB 0                ; Keyboard/joystick scan bitmask (bit 0=R, 1=L, 2=D
 @label=AlienTargetPtr
  33701 DEFB 134,115          ; pointer to the alien-target / Android ActorRecords slot
 @label=AlienTargetID
- 33703 DEFB 9                ; In the Long Game this is the ANDROID slot index (1..7): the dormant traitor crew member that #R40826(UpdateAlien) activates on first encounter with the alien (the first frame AlienActiveFlag is set and the slot still has its template +0=+7=0). Once activated, the Android enters action state 7 and wounds nearby crew via #R40757(CrewAction7_Handler). Values >= 8 (e.g. ShortGameInit's hard-wired 9) disable the mechanic — #R41264(TriggerAlienEvent) treats them as "no valid target".
+ 33703 DEFB 9                ; In the Long Game this is the ANDROID slot index (1..7): the dormant traitor crew member that #R40826(UpdateAndroid) activates on first encounter with the alien (the first frame AlienActiveFlag is set and the slot still has its template +0=+7=0). Once activated, the Android enters action state 7 and wounds nearby crew via #R40757(CrewAction7_Handler). Values >= 8 (e.g. ShortGameInit's hard-wired 9) disable the mechanic — #R41264(TriggerAlienEvent) treats them as "no valid target".
 @label=AlienActiveFlag
  33704 DEFB 0                ; 255 once the alien has taken 6+ wounds while the
                              ; Android is still dormant (TriggerAlienEvent
@@ -4527,7 +4527,7 @@ w33794 DEFW 35314,35314,35338,35338
 ; { 26 | oxygen clock reaches "05:00" }
 ; { 27/28 | launch check: Jones missing / crew not all aboard
 ;   (#R40212(LaunchGate)) }
-; { 29/30/31/32 | Android combat set (UpdateAlien / CrewHitsAndroid) }
+; { 29/30/31/32 | Android combat set (UpdateAndroid / CrewHitsAndroid) }
 ; { 33 | Long Game opening: chestburster host named (LongGameInit) }
 ; TABLE#
 @ignoreua
@@ -4668,7 +4668,7 @@ b33862 DEFW 35725,35448  ; rows 11-12
 ; #32: "{actor} hits the Android"
 ; Enqueued by #R40941(CrewHitsAndroid). The "Android" is the long-game
 ; AlienTargetID slot (#R33703) — the dormant traitor crew member that
-; #R40826(UpdateAlien) activates on first encounter with the alien.
+; #R40826(UpdateAndroid) activates on first encounter with the alien.
 ; The actor placeholder is filled from #R33700(CrewIndex) = the slot
 ; currently being dispatched in combat state 4 — whichever crew
 ; member stands in the Android's room when the ATTACK order fires
@@ -6264,7 +6264,7 @@ c36457 LD SP,65530   ; stack at $FFFA (top of game RAM, below extra data)
 @label=MainLoop
 *36481 CALL 34684    ; HandleInput: scan keyboard, dispatch crew movement
  36484 CALL 40319    ; FrameTiming: ~36ms busy-wait or play queued sound
- 36487 CALL 40826    ; UpdateAlien: alien movement & crew-attack logic
+ 36487 CALL 40826    ; UpdateAndroid: activate the Android once the alien event has fired
  36490 CALL 41264    ; TriggerAlienEvent: poll alien event timer
  36493 CALL 37018    ; UpdateAlienAI: give the idle alien its next action
  36496 CALL 37363    ; TickMessageQueue: tick the queued per-crew animation slots
@@ -7128,7 +7128,7 @@ c37493 LD A,40       ; base countdown 40
 ; #R33703(AlienTargetID). That crew member is dormant at first — they
 ; appear and behave like a normal crew member.
 ; .
-; #R40826(UpdateAlien) turns them hostile the first frame the alien is
+; #R40826(UpdateAndroid) turns them hostile the first frame the alien is
 ; loose and the slot is still in its template state (the "first
 ; encounter"), stamping them into action state 7 and giving them
 ; targets via NearestCrewA/B (see #R37876).
@@ -9659,7 +9659,7 @@ b40504 DEFB 0,0,0,1,2,3,4,0,0,0,0  ; row  0
 ; CrewAction7_Handler — the Android's attack tick (action state 7)
 ;
 ; Dispatched via CrewActionDispatch entry 7 for the activated Android
-; (see #R40826(UpdateAlien)). Gathers the crew sharing the Android's
+; (see #R40826(UpdateAndroid)). Gathers the crew sharing the Android's
 ; room (#R37876) and wounds the first live one found (NearestCrewA,
 ; then NearestCrewB): strength (+4) -1. Below 2 the victim collapses
 ; (#R39400(VictimItemDrop), msg #21); at 2-3, msg #29 announces the
@@ -9719,7 +9719,7 @@ c40757 CALL 37876    ; gather the crew in the Android's room
  40822 CALL 37176    ; — "<Android> is attacking <victim>"
  40825 RET           ;
 
-; UpdateAlien
+; UpdateAndroid
 @ignoreua
 ;
 ; Per-frame Android activation check. Once #R41264(TriggerAlienEvent) has set
@@ -9772,7 +9772,7 @@ c40757 CALL 37876    ; gather the crew in the Android's room
 ; .
 ; Used by the routine at #R36457.
 @nowarn=33704
-@label=UpdateAlien
+@label=UpdateAndroid
 @ssub=LD A,(AlienActiveFlag)
 @ignoreua
 c40826 LD A,(33704)  ; A = AlienActiveFlag
@@ -9874,7 +9874,7 @@ c40826 LD A,(33704)  ; A = AlienActiveFlag
 ;   netted, out of action — destroy the Net, msg #31 "{actor} nets
 ;   {target}" }
 ; { 0-5, 18-19 | wound: Android strength (+4) -1; below 2 it collapses
-;   — status (+7) = 2 (the lockout UpdateAlien's gate at #R40841
+;   — status (+7) = 2 (the lockout UpdateAndroid's gate at #R40841
 ;   respects), msg #21 "{Android} has collapsed", and AlienActiveFlag
 ;   is cleared }
 ; { 6-7 (Tracker) | tracker shatters (destroyed, msg #5) but still
@@ -10106,7 +10106,7 @@ c40941 LD A,(IX+4)   ; attacker's strength >= 2?
 ; times (slot 0 byte +4), and a valid Android slot exists
 ; (AlienTargetID < 8 — Long Game only) whose record is still dormant
 ; (+7 = 0), set AlienActiveFlag = 255 via
-; #R45732(AlienEventDispatch). #R40826(UpdateAlien) sees the flag and turns the
+; #R45732(AlienEventDispatch). #R40826(UpdateAndroid) sees the flag and turns the
 ; Android hostile — the traitor reveals himself when the alien is in
 ; danger.
 ; .
@@ -10219,7 +10219,7 @@ b41374 DEFB 1,2,5,1,2,5,1,2,5,1,2,5,1,2,5,2
 ; .
 ; This selection is the long-game ANDROID ASSIGNMENT. The chosen
 ; crew member behaves like a normal crew member at first;
-; #R40826(UpdateAlien) activates them as hostile the first time the alien is
+; #R40826(UpdateAndroid) activates them as hostile the first time the alien is
 ; loose AND their slot is still in template state (i.e. they haven't
 ; been activated or defeated yet). After activation they enter action
 ; state 7 and wound their sprite-class kin via
@@ -10449,9 +10449,9 @@ t41572 DEFM "MAPPING SYMBOLS"  ; "MAPPING SYMBOLS" (ship-map legend title)
 ; Dallas / Kane / Ash / Parker). That slot is dormant at game start —
 ; it appears as just another crew member.
 ; .
-; #R40826(UpdateAlien) flips it hostile on the FIRST ENCOUNTER with the
+; #R40826(UpdateAndroid) flips it hostile on the FIRST ENCOUNTER with the
 ; alien: the first frame AlienActiveFlag is non-zero AND the slot still
-; carries the template's zero values in bytes +0 and +7, UpdateAlien
+; carries the template's zero values in bytes +0 and +7, UpdateAndroid
 ; stamps it into action state 7 (attack) and arms it with sprite-class
 ; kin as targets.
 ; .
@@ -10487,12 +10487,12 @@ t41572 DEFM "MAPPING SYMBOLS"  ; "MAPPING SYMBOLS" (ship-map legend title)
 ;   just hatched out of. }
 ; { 6. Store A_target in #R33703(AlienTargetID) — this slot is the
 ;   per-run ANDROID: a dormant traitor crew member that
-;   #R40826(UpdateAlien) flips hostile once the crew has wounded the
+;   #R40826(UpdateAndroid) flips hostile once the crew has wounded the
 ;   alien 6+ times (#R41264(TriggerAlienEvent)). }
 ; { 7. Enqueue message #33 ("Alien has hatched from {actor}") via
 ;   #R37176, with the host slot index as the actor parameter — this
 ;   is the long game's opening narrative beat. }
-; { 8. Store &slot[A_target] in #R33701(AlienTargetPtr) so UpdateAlien
+; { 8. Store &slot[A_target] in #R33701(AlienTargetPtr) so UpdateAndroid
 ;   and CrewHitsAndroid can access the Android's crew record directly. }
 ; { 9. Fall through into the common init at #R42380(CommonGameInit). }
 ; LIST#

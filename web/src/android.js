@@ -23,7 +23,7 @@
     return out;
   }
 
-  // UpdateAlien: activation. Fires whenever the android's timer is parked and it
+  // UpdateAndroid: activation. Fires whenever the android's timer is parked and it
   // is still active & undefeated — which recurs each attack cycle, so the
   // android keeps hunting until stopped.
   function updateAlien(s, rng) {

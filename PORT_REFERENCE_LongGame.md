@@ -306,7 +306,8 @@ The **order matters** — copy it:
 1. `HandleInput` — scan device, move cursor, and *on action-key release* dispatch the
    selected menu row (this is the only place the player affects the world).
 2. `FrameTiming` — ~36 ms busy-wait, or play one queued sound effect.
-3. `UpdateAlien` — **android activation only** (see §10). One-shot.
+3. `UpdateAndroid` — **android activation only** (see §10). Re-fires each time the
+   android's countdown parks, until the defeat lockout.
 4. `TriggerAlienEvent` — arm the android once the alien has taken ≥6 wounds (§10).
 5. `UpdateAlienAI` — **the alien's brain**: decide its next queued action (§8).
 6. `TickMessageQueue` — advance the status-line teletype.
@@ -456,9 +457,10 @@ crew.
 - **Arming** (`TriggerAlienEvent`, each frame): once the **alien has taken ≥6 wounds**
   (slot 0 +4 ≥ 6) **and** `AlienTargetID < 8` **and** the android is still dormant
   (+7 == 0) → set `AlienActiveFlag = 255`.
-- **Activation** (`UpdateAlien`, each frame): fires **exactly once** — the first frame
-  after arming while the android slot is still in template state (+0 == 0, +7 == 0):
-  - stamp android +0 = 80 (marker that blocks re-entry),
+- **Activation** (`UpdateAndroid`, each frame): fires whenever the android's
+  countdown is parked (+0 == 0) and it is not defeated (+7 == 0) — first time on the
+  frame after arming, then **once per parked cycle** until the defeat lockout:
+  - stamp android +0 = 80 (holds this branch shut while the countdown runs),
   - gather up to two other crew in the android's room,
   - if one is alive → **message #30** "{android} is attacking {victim}", set android
     state **7**, timer **40**;
@@ -909,7 +911,7 @@ substitution codes (254 = actor name, 253 = target name, 252 = room name).
 | Main loop | `GameEntry $8E69`, `MainLoop $8E81`, `ResetCrewTimers $8C85`, `DispatchCrewAction $8CAE` |
 | RNG | `ResetScriptPtr $8340`, `AdvanceScriptPtr $8335`, `ScriptNibbleToDirection $8F9B` |
 | Movement/AI | `PickNextRoom $8F6D`, `UpdateAlienAI $909A`, `UpdateJones $8FFB` |
-| Android | `TriggerAlienEvent $A130`, `UpdateAlien $9F7A`, `CrewAction7_Handler $9F35`, `CrewHitsAndroid $9FED` |
+| Android | `TriggerAlienEvent $A130`, `UpdateAndroid $9F7A`, `CrewAction7_Handler $9F35`, `CrewHitsAndroid $9FED` |
 | Combat | `CrewHitsAlien $92D0`, `AlienKillPrimitive $9365`, `AlienScareCheck $9468`, `CrewAction5_AlienAttack $9958` |
 | UI | `HandleInput $877C`, `RoomDispatchTable $8402`, item handlers `SwapHeldItems $8A7B`…`GetJonesHandler $8C05` |
 | Ship sim | `UpdateRoomActors $95EB`, `FixtureAction $95FE`, `AddRoomDamage $952A`, `OxygenTick $9A6B`, `BlowLock $96F5`, `LaunchGate $9D14` |

@@ -84,7 +84,7 @@ The AI is driven by a "script" that walks ZX Spectrum ROM bytes, using the low n
 
 ### Main Game Loop
 
-One loop pass ≈ 74 ms (~13.5 passes/s — two ~36 ms busy-waits plus the work; all game timers count passes, not video frames). Each pass, in order: `HandleInput` → `FrameTiming` → `UpdateAlien` (android activation) → `TriggerAlienEvent` → `UpdateAlienAI` (the alien's brain) → `TickMessageQueue` → `UpdateJones` → `ResetCrewTimers` (the action-countdown walk) → `AnimateCrewA`/`B` → `PlayMusic` → the second `AnimateCrewA`/`B` + `TickMessageQueue` pass → `UpdateRoomActors` (destruct, trackers, oxygen, fires) → `CheckCrewAlive` → pause-key poll → one script nibble consumed. Key 1 opens `PauseMenu`; pressing 1 again restarts.
+One loop pass ≈ 74 ms (~13.5 passes/s — two ~36 ms busy-waits plus the work; all game timers count passes, not video frames). Each pass, in order: `HandleInput` → `FrameTiming` → `UpdateAndroid` (android activation) → `TriggerAlienEvent` → `UpdateAlienAI` (the alien's brain) → `TickMessageQueue` → `UpdateJones` → `ResetCrewTimers` (the action-countdown walk) → `AnimateCrewA`/`B` → `PlayMusic` → the second `AnimateCrewA`/`B` + `TickMessageQueue` pass → `UpdateRoomActors` (destruct, trackers, oxygen, fires) → `CheckCrewAlive` → pause-key poll → one script nibble consumed. Key 1 opens `PauseMenu`; pressing 1 again restarts.
 
 ### Key Annotated Routines
 
@@ -105,7 +105,7 @@ One loop pass ≈ 74 ms (~13.5 passes/s — two ~36 ms busy-waits plus the work;
 | `UpdateRoomActors` | `$95EB` | Per-frame ship simulation driver |
 | `LaunchGate` | `$9D14` | The Narcissus launch check (see the §17 bug) |
 | `FrameTiming` | `$9D7F` | Frame pacing and one-shot sound player |
-| `UpdateAlien` | `$9F7A` | Android activation (per-cycle re-fire once armed) |
+| `UpdateAndroid` | `$9F7A` | Android activation (per-cycle re-fire once armed) |
 | `LongGameInit` | `$A524` | Long-Game setup: host, android, Brett's reseat |
 | `ClearDisplay` | `$A605` | Zero the display file (`$4000–$57FF`) |
 | `FillAttributes` | `$A613` | Flood-fill the attribute file (`$5800–$5AFF`) |

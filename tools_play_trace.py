@@ -41,7 +41,7 @@ WATCH = {
     36457: 'GameEntry', 42581: 'DrawIntroScreen', 42821: 'DrawShipMap',
     43242: 'IntroductionMode', 43610: 'OptionsScreen', 44561: 'ScreenTransition',
     45401: 'InitCrewPositions', 31417: 'InitGameView', 36481: 'MainLoop',
-    44815: 'PauseMenu', 40826: 'UpdateAlien', 37733: 'AlienKillPrimitive',
+    44815: 'PauseMenu', 40826: 'UpdateAndroid', 37733: 'AlienKillPrimitive',
     37584: 'CrewHitsAlien', 44125: 'Auto_AC5D(endgame?)', 45019: 'CtrlRoom45019',
     45080: 'CtrlRoom45080', 38715: 'Kill38715', 38784: 'CrewAction6',
 }
