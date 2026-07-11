@@ -1,0 +1,145 @@
+; Ref file for the Alien (BUGFIX 1.7) HTML disassembly.
+; Adds a curated "Highlights" page for readers who are not fluent in Z80 /
+; ZX Spectrum internals, and a "Bugs" reference page for the verified
+; original-game bugs. skool2html.py picks this file up automatically.
+
+[Game]
+Game=Alien (BUGFIX 1.7)
+
+[Index]
+Highlights
+MemoryMaps
+Graphics
+DataTables
+OtherCode
+Reference
+
+[Index:Highlights:New here? Start with these]
+Highlights
+
+[Links]
+Highlights=Highlights: a guided tour of the good bits
+
+[Titles]
+Highlights=Highlights — a guided tour
+
+[PageHeaders]
+Highlights=Highlights
+
+[Page:Highlights]
+PageContent=#INCLUDE(HighlightsContent)
+
+[HighlightsContent]
+<div class="paragraph">
+This page is for readers who want to see the interesting parts of the game
+without wading through 20,000 lines of Z80. Every entry below links into the
+full disassembly; each block has a plain-English header comment, so you can
+get the idea from the prose even if you skip the instructions.
+</div>
+
+<h3>How the game draws things</h3>
+<div class="paragraph">
+There is no general-purpose graphics library — just a handful of tricks.
+<ul>
+<li>#R26869(CharBitmaps) — the game's entire font and tile set, 8 bytes per
+glyph. Squint at the 1s and 0s of each DEFB row and you can see the pixels.</li>
+<li>#R28221(RoomNameTable) — the cleverest data structure on the tape: a table
+of 10-character strings ("Bridge", "Elctrc Prd"...) that the renderer also
+treats as <em>sprite strips</em> — the ASCII text is the drawing command
+list.</li>
+<li>#R31634(DrawSprite) and #R31369(DrawSpriteRow) — the two blitters that put
+everything on screen, one 8×8 tile column at a time.</li>
+<li>#R42581(DrawIntroScreen) — the animated ALIEN title screen.</li>
+<li>#R44561(ScreenTransition) — the top-to-bottom wipe to black between
+screens.</li>
+<li>#R39764(BlitAlienFrame) and #R39832(BlitJonesFrame) — the alien-encounter
+screen: a 4-frame alien body animation, and Jones the cat sprinting across the
+screen with a 5-frame run cycle, erased and redrawn with XOR.</li>
+<li>#R33644(NarcissusBackground) — the shuttle screen is stored
+run-length-encoded and expanded at draw time.</li>
+<li>#R33223(DrawDoorArm) — draws a corridor "arm" by literally walking along
+the wall data, steered by corner glyphs embedded in the map.</li>
+<li>#R24576(ShipMapData) — the three deck maps of the Nostromo, stored as
+plain tile grids you can read by eye.</li>
+</ul>
+</div>
+
+<h3>The alien's brain (and everyone else's)</h3>
+<div class="paragraph">
+The game has no random number generator. All "randomness" comes from walking
+the ZX Spectrum's ROM and using the bytes found there as a script.
+<ul>
+<li>#R33600(ResetScriptPtr) — where that trick starts: the script pointer is
+seeded from the ROM's 50&nbsp;Hz frame counter, so behaviour is
+time-dependent but fully deterministic.</li>
+<li>#R37018(UpdateAlienAI) — the alien's decision loop: attack room-mates,
+rip out a duct grille, slip into the ducts, or wander.</li>
+<li>#R36717(PickNextRoom) — how any actor picks its next room from the ship's
+corridor and air-duct graphs.</li>
+<li>#R41264(TriggerAlienEvent) — the film's Ash twist, in code: once the alien
+has taken enough wounds, a hidden crew member turns hostile.</li>
+<li>#R40826(UpdateAlien) — what the activated Android actually does each
+frame.</li>
+<li>#R39256(CrewAction5_AlienAttack) — the alien's attack tick; it can even
+drag a corpse off into the ducts.</li>
+<li>#R36859(UpdateJones) — Jones the cat's wander logic. He avoids the room
+the alien is in, and there's a message when the crew spots him.</li>
+</ul>
+</div>
+
+<h3>Gameplay worth reading</h3>
+<div class="paragraph">
+<ul>
+<li>#R36457(GameEntry) — the entry point; the main-loop structure is
+documented step by step from here.</li>
+<li>#R34684(HandleInput) — one cursor, one action key: how a whole strategy
+game is driven with five keys (or a joystick, via self-modifying code that
+patches the scanner CALL).</li>
+<li>#R37584(CrewHitsAlien) — the weapon table in code form: nets disable,
+the harpoon gun kills (and takes bystanders with it), extinguishers only
+scare, trackers shatter when used as clubs.</li>
+<li>#R38379(UpdateRoomActors) — the ship simulation: self-destruct countdown,
+oxygen clock, motion trackers, engine fires.</li>
+<li>#R40212(LaunchGate) — the escape-shuttle launch check (all living crew +
+Jones aboard). Also home to the best bug on the tape — see the Bugs page.</li>
+<li>#R44125(EndgameScreen) — how your final "competence rating" is scored.</li>
+<li>#R44880(PlayMusic) — beeper music: one channel, hand-timed loops.</li>
+</ul>
+</div>
+
+<h3>Data tables you can read like a document</h3>
+<div class="paragraph">
+<ul>
+<li>#R29171(RoomAdjCorridors) and #R29346(RoomAdjDucts) — the ship itself:
+which rooms connect by door and by air duct. The whole map is ~350 bytes.</li>
+<li>#R29566(ActorRecords) — 8 bytes per character: room, destination,
+strength, courage, morale, status. The whole cast's state fits in 64
+bytes.</li>
+<li>#R29940(ItemLocations) — one byte per portable item says where it is,
+including which hand of which crew member holds it.</li>
+<li>#R33892(MessageTextTable) — every status message in the game, with the
+trigger conditions documented alongside.</li>
+<li>#R29516(CrewNameTable) — ALIEN, Dallas, Kane, Ripley, Ash, Lambert,
+Parker, Brett.</li>
+</ul>
+</div>
+
+[Bug:launchgate:The launch check that checks almost nobody]
+The escape-shuttle rule is meant to be "all living crew members and Jones
+must be aboard the Narcissus". But #R40212(LaunchGate)'s loop steps 8 bytes
+from the wrong column after the first living crew member, so in practice the
+launch only requires the <em>first-listed</em> living crew member (plus
+Jones) to be aboard — and a later crew member standing in Airlock&nbsp;#1
+bogusly blocks it. Verified in the simulator.
+
+[Bug:harpoon:The harpoon gun that destroys the ship's inventory]
+When the harpoon gun is fired at the Android, the item-wipe loop at #R40941(CrewHitsAndroid)
+has an inverted final compare versus the alien-side version: it destroys
+every item in the game <em>except</em> those lying loose in the room —
+everything held by anyone, anywhere, is wiped — and the Android itself takes
+no wound. Verified in the simulator.
+
+[Bug:scare:The scare bonus that can never happen]
+#R37992(AlienScareCheck) is supposed to grant a bonus when the crew member is
+armed with a serious weapon, but the test requires two mutually exclusive
+equality checks to both pass, so the bonus is unreachable.
