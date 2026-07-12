@@ -1,0 +1,272 @@
+/* Alien (BUGFIX 1.7) disassembly — "Nostromo terminal" theme.
+   Same design tokens as the web port (web/style.css): modern ship-terminal
+   shell, authentic ZX pixel art left untouched. Standalone replacement for
+   skoolkit.css, targeting SkoolKit 10.0 markup. */
+
+:root {
+  --bg: #06090c; --panel: #0d1319; --panel2: #111a22; --line: #1e2c36;
+  --ink: #cfe8dd; --dim: #7c93a0; --green: #38d977; --amber: #ffb020;
+  --cyan: #23d2d2; --red: #ff5545; --blue: #4a86ff;
+  --mono: "SFMono-Regular", ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace;
+}
+
+body {
+  margin: 0 auto;
+  padding: 0 16px 24px;
+  max-width: 1080px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: #1c3a2c; }
+
+img {
+  border-width: 0;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+a { text-decoration: none; color: var(--cyan); }
+a:hover, a.map-entry-title:hover { color: var(--amber); }
+a.map-entry-title { color: inherit; }
+
+/* Header — the port's HUD bar */
+table.header {
+  width: calc(100% + 32px);
+  margin: 0 -16px 14px;
+  border-collapse: collapse;
+  background: linear-gradient(180deg, #0c141b, #080d12);
+  border-bottom: 1px solid var(--line);
+}
+table.header td {
+  vertical-align: middle;
+  padding: 10px 16px;
+}
+td.logo {
+  color: var(--green);
+  font-weight: bold;
+  font-size: 18px;
+  letter-spacing: .1em;
+  text-align: center;
+}
+td.logo a { color: var(--green); }
+td.logo a:hover { color: var(--amber); }
+td.page-header {
+  white-space: nowrap;
+  color: var(--dim);
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+div.section-header {
+  color: var(--amber);
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin: 22px 0 6px;
+}
+h3 {
+  color: var(--green);
+  font-size: 14px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 4px;
+  margin: 26px 0 8px;
+}
+
+footer {
+  clear: both;
+  margin-top: 26px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+  color: var(--dim);
+  font-size: 11px;
+}
+footer a { color: var(--dim); text-decoration: underline; }
+footer a:hover { color: var(--cyan); }
+
+td.transparent { background-color: transparent !important; }
+
+ul.contents {
+  list-style-type: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+span.register { color: var(--cyan); }
+
+/* Boxed entries (Bugs / Pokes / Facts pages) — port panel cards */
+div.box, div.list-entry {
+  max-width: 800px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--cyan);
+  border-radius: 6px;
+}
+body.Bugs div.box { border-left-color: var(--red); }
+div.box-title, div.list-entry-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--amber);
+  letter-spacing: .04em;
+}
+div.box p { margin-bottom: 0; }
+div.box-1, div.list-entry-1 { background-color: var(--panel); }
+div.box-2, div.list-entry-2 { background-color: var(--panel2); }
+div.list-entry-desc { margin-top: 5px; }
+ul.list-entry { margin-top: 5px; margin-bottom: 0; }
+
+div.paragraph { margin-top: 10px; }
+
+/* #TABLE output inside comments */
+table.default { border-collapse: collapse; margin: 6px 0; }
+table table.default th, table.default th {
+  background-color: var(--panel2);
+  color: var(--dim);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+  padding: 3px 8px;
+  text-align: left;
+}
+table table.default td, table.default td {
+  background-color: var(--panel);
+  border: 1px solid var(--line);
+  padding: 3px 8px;
+}
+td.centre { text-align: center; }
+
+ul.index-list {
+  list-style-type: none;
+  margin-top: 0;
+  margin-left: 0;
+  padding-left: 20px;
+}
+ul.index-list li { margin: 3px 0; }
+
+/* Prev / Up / Next strip — port button look */
+table.asm-navigation {
+  margin-top: 10px;
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+table.asm-navigation td {
+  background-color: #14202a;
+  border: 1px solid var(--line);
+  padding: 5px 10px;
+  color: var(--dim);
+}
+table.asm-navigation td.prev { width: 30%; text-align: left; border-radius: 5px 0 0 5px; }
+table.asm-navigation td.up { width: 40%; text-align: center; }
+table.asm-navigation td.next { width: 30%; text-align: right; border-radius: 0 5px 5px 0; }
+
+/* Disassembly listing */
+table.disassembly {
+  width: 100%;
+  border-collapse: collapse;
+}
+div.description {
+  margin-top: 14px;
+  font-weight: bold;
+  font-size: 16px;
+  color: var(--green);
+  letter-spacing: .04em;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 4px;
+}
+div.details { margin-bottom: 10px; }
+div.details div.paragraph, div.comments div.paragraph { max-width: 800px; }
+div.comments { margin-top: 12px; margin-bottom: 12px; }
+
+table.input, table.output { margin-bottom: 10px; border-collapse: collapse; }
+table.input td, table.output td {
+  background-color: var(--panel);
+  border: 1px solid var(--line);
+  padding: 2px 8px;
+}
+table.input th, table.output th {
+  background-color: var(--panel2);
+  border: 1px solid var(--line);
+  color: var(--dim);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+}
+td.register {
+  color: var(--cyan);
+  width: 20px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+td.asm-label, td.address-1, td.address-2, td.bytes, td.instruction {
+  font-family: var(--mono);
+  vertical-align: top;
+  padding: 1px 12px 1px 0;
+  white-space: pre;
+}
+td.asm-label, td.address-1, td.address-2 { color: var(--dim); }
+td.asm-label, td.address-2 { color: var(--amber); font-weight: bold; }
+td.bytes { color: var(--dim); }
+td.instruction { color: var(--green); }
+td.instruction a { color: var(--cyan); }
+td.instruction a:hover { color: var(--amber); }
+td.comment-0, td.comment-1 {
+  width: 100%;
+  vertical-align: top;
+  color: var(--ink);
+  padding: 1px 6px;
+}
+td.comment-1 { background-color: var(--panel); border-left: 2px solid var(--line); }
+td.routine-comment { padding-left: 0; }
+tr:hover > td.instruction, tr:hover > td.address-1, tr:hover > td.address-2,
+tr:hover > td.asm-label, tr:hover > td.bytes {
+  background-color: var(--panel2);
+}
+tr:hover > td.comment-1 { background-color: var(--panel2); }
+
+/* Memory map pages */
+div.map-intro { margin-bottom: 10px; color: var(--dim); }
+table.map { border-collapse: collapse; width: 100%; }
+table.map th {
+  background-color: var(--panel2);
+  color: var(--dim);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+  padding: 4px 8px;
+  text-align: left;
+}
+table.map td {
+  background-color: var(--panel);
+  border: 1px solid var(--line);
+  padding: 3px 8px;
+}
+table.map tr:hover td { background-color: var(--panel2); }
+td.map-page, td.map-byte, td.map-length,
+td.map-b, td.map-c, td.map-g, td.map-s, td.map-t, td.map-u, td.map-w {
+  text-align: center;
+  vertical-align: top;
+  white-space: nowrap;
+}
+td.map-page, td.map-byte, td.map-length { color: var(--dim); }
+td.map-c-desc { color: var(--green); }
+td.map-b-desc, td.map-w-desc { color: var(--cyan); }
+td.map-g-desc { color: var(--amber); }
+td.map-t-desc { color: var(--amber); font-family: var(--mono); }
+td.map-s-desc, td.map-u-desc { color: var(--dim); }
+div.map-entry-title-10, div.map-entry-title-11 { font-family: var(--mono); }
+div.map-entry-title-11 { font-weight: bold; }
+div.map-entry-desc { color: var(--ink); font-family: var(--mono); }

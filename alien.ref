@@ -5,6 +5,7 @@
 
 [Game]
 Game=Alien (BUGFIX 1.7)
+StyleSheet=alien.css
 
 [Index]
 Highlights

@@ -53,7 +53,8 @@ The `html/` directory is gitignored.
 | File | Role |
 |------|------|
 | `alien.skool` | **Main working document** — annotated disassembly with comments, labels, directives. Uses **decimal** addresses (e.g. `36457` = `$8E69`) |
-| `alien.ref` | SkoolKit ref file for the HTML build (auto-loaded by `skool2html.py`): defines the curated "Highlights" guided-tour index page and the "Bugs" reference page. Hand-edited; `#R` links use decimal addresses |
+| `alien.ref` | SkoolKit ref file for the HTML build (auto-loaded by `skool2html.py`): defines the curated "Highlights" guided-tour index page, the "Bugs" reference page, and points `[Game] StyleSheet` at `alien.css`. Hand-edited; `#R` links use decimal addresses |
+| `alien.css` | "Nostromo terminal" theme for the HTML build — same design tokens as `web/style.css` (dark panels, mono type, green/amber/cyan accents) rewritten against SkoolKit 10.0's class names. Full replacement for the stock `skoolkit.css`; copied into `html/` by `skool2html.py` |
 | `alien.ctl` | Generated block-type map (code/data/text per block). Regenerate with `skool2ctl.py -w b alien.skool > alien.ctl` after adding/splitting blocks — do not edit directly |
 | `alien.asm` | Generated plain assembly — do not edit directly |
 | `alien.z80` | Z80 snapshot built from the tape by `tap2sna.py`, PC forced to game entry (`$8E69`) |
