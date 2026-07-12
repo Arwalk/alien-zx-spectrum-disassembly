@@ -107,20 +107,36 @@
       else if (dmg > 0) { badge(ctx, bx, by, "rgba(255,190,60,0.7)", ""); }
     }
 
-    // crew markers (live human crew + active android show as a crew dot)
+    // crew markers (live human crew + active android show as a crew dot);
+    // co-located occupants (incl. Jones) fan out horizontally so everyone
+    // stays visible
+    var occ = {};
     for (var k = 1; k < 8; k++) {
       var a = s.actors[k];
       if (a.status !== 0) continue;
       var room2 = a.room & 63;
-      if (D.roomTypeTable[room2] !== deck) continue;
-      var cc = cell(room2); if (!cc) continue;
-      crewDot(ctx, cc.cx, cc.cy, D.crewNames[k].charAt(0), k === sel, (a.room & 64) !== 0);
+      if (D.roomTypeTable[room2] !== deck || !cell(room2)) continue;
+      (occ[room2] = occ[room2] || []).push(k);
     }
-    // Jones
-    if (s.jonesRoom >= 0 && s.jonesRoom < 34 && D.roomTypeTable[s.jonesRoom] === deck) {
-      var jc = cell(s.jonesRoom);
-      if (jc) { crewDot(ctx, jc.cx + 14, jc.cy, "🐱", false, false, "#8bd"); }
+    if (s.jonesRoom >= 0 && s.jonesRoom < 34 && D.roomTypeTable[s.jonesRoom] === deck && cell(s.jonesRoom)) {
+      (occ[s.jonesRoom] = occ[s.jonesRoom] || []).push(-1); // -1 = Jones
     }
+    Object.keys(occ).forEach(function (rm) {
+      var list = occ[rm], cc = cell(+rm);
+      var step = list.length > 3 ? 15 : 18;
+      // draw the selected crew member's (bigger) dot last so it sits on top
+      var order = list.map(function (_, i) { return i; });
+      order.sort(function (p, q) { return (list[p] === sel ? 1 : 0) - (list[q] === sel ? 1 : 0); });
+      order.forEach(function (i) {
+        var mx = cc.cx + (i - (list.length - 1) / 2) * step;
+        if (list[i] === -1) {
+          crewDot(ctx, mx, cc.cy, "🐱", false, false, "#8bd");
+        } else {
+          var a2 = s.actors[list[i]];
+          crewDot(ctx, mx, cc.cy, D.crewNames[list[i]].charAt(0), list[i] === sel, (a2.room & 64) !== 0);
+        }
+      });
+    });
   }
 
   function badge(ctx, x, y, color, glyph) {
