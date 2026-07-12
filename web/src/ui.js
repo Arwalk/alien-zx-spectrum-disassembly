@@ -261,8 +261,8 @@
     return { inj: inj, mor: mor };
   }
 
-  // Slim one-line rows: name, injury/morale, ongoing order. Room + hand items
-  // live in the row tooltip and in the action panel's detail header.
+  // Slim one-line rows: name, injury/morale, current room, ongoing order.
+  // Hand items live in the row tooltip and in the action panel's detail header.
   function renderRoster() {
     var s = game.state; clear(els.roster);
     for (var k = 1; k < 8; k++) (function (k) {
@@ -290,6 +290,7 @@
         var c = crewCondition(a);
         card.appendChild(el("span", "band inj i" + Math.min(a.strength, 3), c.inj));
         card.appendChild(el("span", "band mor m" + Math.min(a.morale, 4), c.mor));
+        card.appendChild(el("span", "crewRoom", D.roomNames[a.room & 63] + ((a.room & 64) ? " (duct)" : "")));
         card.appendChild(el("span", "crewOrder", a.t > 0 ? orderText(a) : ""));
         var f = JN.frontHandItem(s, k), b = JN.backHandItem(s, k);
         card.title = D.roomNames[a.room & 63] + ((a.room & 64) ? " (duct)" : "") +

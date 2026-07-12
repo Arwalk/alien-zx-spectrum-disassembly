@@ -90,6 +90,7 @@ button { font-family: var(--mono); cursor: pointer; }
 .band.i3, .band.m3 { background: #123222; color: #8fe6b3; }
 .band.m4 { background: #103828; color: #6affb0; }
 .crewRoom { color: var(--cyan); font-size: 12px; }
+.crewCard .crewRoom { font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .crewOrder { color: var(--amber); font-size: 11px; flex: 1; min-width: 0; text-align: right;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
