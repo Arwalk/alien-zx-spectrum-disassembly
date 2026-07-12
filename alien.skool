@@ -1,5 +1,6 @@
 @start
 @org
+@assemble=2
 ; Loading screen — display file and attributes
 @ignoreua
 ;
@@ -4229,6 +4230,11 @@ c33610 PUSH AF       ; save the actor slot
 ; the grid via #R31312(DrawRoomBackground_0). No skoolkit-visible caller — the
 ; JP hides in DEFB data — and absent from the execution traces only because
 ; they never boarded the shuttle.
+; .
+; The screen this routine produces, rendered by executing it in the
+; simulator against the pristine snapshot:
+; .
+; #HTML(#PUSHS #SIM(start=33644,stop=33681) #SCR2,0,0,20,19(narcissus_screen) #POPS)
 @label=NarcissusBackground
 c33644 LD HL,30720   ; NarcissusLayout: RLE source
  33647 CALL 33153    ; RleMapExpand -> grid buffer
