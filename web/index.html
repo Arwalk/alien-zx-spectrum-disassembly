@@ -49,6 +49,8 @@
             <div id="encPend" class="encPend"></div>
             <p class="encHint">It strikes every few seconds — attack, or get them out. ✕ shows the map.</p>
           </div>
+          <div id="mapTip" hidden></div>
+          <div id="pausedBanner" hidden>⏸ PAUSED — <kbd>Space</kbd> resumes</div>
         </div>
         <p class="maplegend">◍ your crew &nbsp; ⌁ dashed = in the ducts &nbsp; ▲ fire &nbsp; the alien is hidden — track it with a Tracker.</p>
         <section id="logPane">
@@ -68,10 +70,12 @@
     <div id="tutorial" hidden>
       <div class="tutBox">
         <h2 class="tutTitle">NOSTROMO — CREW MANUAL</h2>
-        <p class="tutIntro">A xenomorph is loose aboard. Give your crew one order at a time
-          while the ship — and the alien — keep moving underneath.
-          <strong>Kill it (15 wounds) or escape in the Narcissus shuttle</strong>,
-          before the oxygen runs out.</p>
+        <p class="tutIntro">A xenomorph is loose aboard. <strong>The game runs in real
+          time</strong>: the ship — and the alien — keep moving while you think, so press
+          <kbd>Space</kbd> (or the ⏸ button) to pause whenever you need to plan; you can
+          still inspect the ship and give orders while paused. Give your crew one order
+          at a time and <strong>kill it (15 wounds) or escape in the Narcissus
+          shuttle</strong>, before the oxygen runs out.</p>
         <div class="tutGrid">
           <div class="tutCard">
             <div class="tutHead">🚶 Select &amp; move</div>

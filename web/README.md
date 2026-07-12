@@ -45,6 +45,10 @@ No backend, no build step. Either:
 
 ## How to play
 
+**The game runs in real time** — the ship, the crew and the alien keep moving
+while you think. Press **`Space`** (or the HUD's ⏸ button) to pause at any
+moment; you can still inspect the ship and give orders while paused.
+
 The first time you press **Start the Long Game** a one-page tutorial ("NOSTROMO —
 CREW MANUAL") opens, covering the base mechanics: selecting & moving crew, the
 two-hand item system, fighting, tracking, air ducts, and the ship fixtures. It's

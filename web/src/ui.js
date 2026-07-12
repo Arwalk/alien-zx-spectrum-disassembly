@@ -12,7 +12,10 @@
   var SPEEDS = [{ n: "Slow", v: 0.15 }, { n: "Normal", v: 0.27 }, { n: "Fast", v: 0.5 }];
   var speedIdx = 1;
   var game = null, sel = -1, running = false, speed = SPEEDS[speedIdx].v, acc = 0, lastT = 0;
-  var reachable = {}, hoverRoom = -1, encFrame = 0;
+  // encStart: engine frame the current encounter overlay appeared on; the alien
+  // body advances one frame per engine step (UpdateAlienAnim's authentic cadence,
+  // so it scales with the speed setting and freezes on pause). -1 = no encounter.
+  var reachable = {}, hoverRoom = -1, encStart = -1;
   // encDismissed: the ✕ hid the overlay for the CURRENT encounter (re-arms
   // when the encounter ends); encKey fingerprints the overlay's button strip.
   var encDismissed = false, encKey = "";
@@ -65,6 +68,7 @@
     els.hud = $("hud"); els.deckTabs = $("deckTabs");
     els.enc = $("encounter"); els.encCanvas = $("encCanvas"); els.encCtx = els.encCanvas.getContext("2d");
     els.endgame = $("endgame"); els.start = $("startScreen");
+    els.mapTip = $("mapTip"); els.paused = $("pausedBanner");
 
     // loading-screen splash on the title card
     var splash = $("splashCanvas");
@@ -91,6 +95,7 @@
     els.map.addEventListener("mouseleave", function () {
       if (hoverSource === "map") { hoverRoom = -1; hoverSource = null; }
       syncChipHl(-1);
+      els.mapTip.hidden = true;
     });
     els.map.addEventListener("click", onMapClick);
     // flush a deferred action-panel rebuild once the pointer is out of the way
@@ -108,7 +113,7 @@
 
   function newGame() {
     game = A.engine.startLongGame((Date.now() & 0x7fffffff) || 1);
-    sel = -1; reachable = {}; encFrame = 0; encDismissed = false; encKey = "";
+    sel = -1; reachable = {}; encStart = -1; encDismissed = false; encKey = "";
     hoverRoom = -1; hoverSource = null; peekDeck = -1; panelKey = ""; actionsDirty = false;
     logLastEntry = null; logLast = { text: null, el: null, badge: null, n: 1 };
     els.logJump.hidden = true;
@@ -118,6 +123,7 @@
     running = true; lastT = performance.now(); acc = 0;
     speedIdx = 1; speed = SPEEDS[speedIdx].v; $("btnSpeed").textContent = "⏱ " + SPEEDS[speedIdx].n;
     $("btnPause").textContent = "⏸ Pause";
+    els.paused.hidden = true; els.mapTip.hidden = true;
     selectCrew(-1);
     renderAll();
     requestAnimationFrame(loop);
@@ -126,6 +132,7 @@
   function togglePause() {
     running = !running;
     $("btnPause").textContent = running ? "⏸ Pause" : "▶ Resume";
+    els.paused.hidden = running || !game || game.state.gameOver;
     if (running) { lastT = performance.now(); requestAnimationFrame(loop); }
   }
   function cycleSpeed() {
@@ -220,11 +227,11 @@
     updateHudLive();
     // alien-encounter overlay (sits on top of the map pane; ✕ hides it for
     // the rest of this encounter, so the map stays reachable underneath)
-    if (!showEnc) { encDismissed = false; encKey = ""; }
+    if (!showEnc) { encDismissed = false; encKey = ""; encStart = -1; }
     if (showEnc && !encDismissed) {
       els.enc.hidden = false;
-      encFrame += 0.25;
-      RN.drawEncounter(els.encCtx, els.encCanvas.width, els.encCanvas.height, Math.floor(encFrame), null);
+      if (encStart < 0) encStart = s.frame;
+      RN.drawEncounter(els.encCtx, els.encCanvas.width, els.encCanvas.height, s.frame - encStart, null);
       $("encTitle").textContent = "ALIEN ENCOUNTER — " + D.crewNames[sel];
       refreshEncActions();
     } else if (!els.enc.hidden) {
@@ -590,6 +597,20 @@
     hoverSource = hoverRoom >= 0 ? "map" : null;
     syncChipHl(sel >= 1 && reachable[hoverRoom] ? hoverRoom : -1);
     els.map.style.cursor = (sel >= 1 && reachable[hoverRoom]) ? "pointer" : "default";
+    moveMapTip(ev, r);
+  }
+  // Room-name tooltip beside the cursor. DOM-based (not canvas-drawn) so it
+  // stays live while the game is paused and the rAF loop isn't redrawing.
+  function moveMapTip(ev, r) {
+    var tip = els.mapTip;
+    if (hoverRoom < 0) { tip.hidden = true; return; }
+    tip.textContent = D.roomNames[hoverRoom];
+    tip.hidden = false;
+    var x = ev.clientX - r.left + 14, y = ev.clientY - r.top + 14;
+    x = Math.min(x, r.width - tip.offsetWidth - 4);
+    y = Math.min(y, r.height - tip.offsetHeight - 4);
+    tip.style.left = Math.max(2, x) + "px";
+    tip.style.top = Math.max(2, y) + "px";
   }
   function onMapClick(ev) {
     if (!game || sel < 1) return;

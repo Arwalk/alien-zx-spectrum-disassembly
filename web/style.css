@@ -47,6 +47,13 @@ button { font-family: var(--mono); cursor: pointer; }
   border-radius: 9px; font-size: 10px; padding: 0 5px; font-weight: bold; }
 .mapWrap { position: relative; background: #05080a; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; flex: none; }
 #mapCanvas { display: block; width: 100%; height: auto; }
+#mapTip { position: absolute; z-index: 3; pointer-events: none; white-space: nowrap;
+  background: rgba(8, 16, 20, .92); color: var(--ink); border: 1px solid var(--cyan);
+  border-radius: 4px; padding: 2px 8px; font-size: 12px; }
+#pausedBanner { position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  z-index: 4; pointer-events: none; white-space: nowrap;
+  background: rgba(8, 16, 20, .92); color: var(--amber); border: 1px solid var(--amber);
+  border-radius: 5px; padding: 5px 12px; font-size: 12px; letter-spacing: .08em; }
 .maplegend { color: var(--dim); font-size: 11px; margin: 6px 2px; line-height: 1.5; flex: none; }
 
 /* Encounter overlay */
