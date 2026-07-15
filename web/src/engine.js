@@ -39,7 +39,7 @@
     if (a.state === 0) return false;      // parked, nothing to fire
     if (slot === s.alienTargetID) {       // the android
       if (a.state === 4) {                // silently refuses an ATTACK order
-        MV.pickNextRoom(s, slot, rng); a.state = 1; a.t = 20; return false;
+        MV.pickNextRoom(s, slot, rng); a.state = 1; a.t = a.t0 = 20; return false;
       }
       if (a.state >= 3) return true;
       return moveGate(s, slot, rng);

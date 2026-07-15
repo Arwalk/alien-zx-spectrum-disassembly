@@ -15,7 +15,7 @@
     var tpl = D.longGameCrewInit;
     for (var k = 0; k < 8; k++) {
       var a = s.actors[k], b = k * 8;
-      a.t = tpl[b]; a.room = tpl[b + 1]; a.dest = tpl[b + 2]; a.state = tpl[b + 3];
+      a.t = a.t0 = tpl[b]; a.room = tpl[b + 1]; a.dest = tpl[b + 2]; a.state = tpl[b + 3];
       a.strength = tpl[b + 4]; a.courage = tpl[b + 5]; a.morale = tpl[b + 6]; a.status = tpl[b + 7];
     }
 

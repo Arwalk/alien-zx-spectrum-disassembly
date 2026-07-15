@@ -40,10 +40,10 @@
     }
     if (target >= 0) {
       A.messages.enqueue(s, 30, { actor: id, target: target });
-      android.state = 7; android.t = D.K.ANDROID_ATTACK_T;
+      android.state = 7; android.t = android.t0 = D.K.ANDROID_ATTACK_T;
     } else {
       MV.pickNextRoom(s, id, rng);
-      android.state = 1; android.t = D.K.ANDROID_WANDER_T;
+      android.state = 1; android.t = android.t0 = D.K.ANDROID_WANDER_T;
     }
   }
 

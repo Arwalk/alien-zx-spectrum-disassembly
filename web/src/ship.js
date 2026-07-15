@@ -94,7 +94,7 @@
 
   // --- hypersleep --------------------------------------------------------
   function hypersleepStart(s, slot) {
-    s.actors[slot].state = 6; s.actors[slot].t = D.K.HYPERSLEEP_BASE;
+    s.actors[slot].state = 6; s.actors[slot].t = s.actors[slot].t0 = D.K.HYPERSLEEP_BASE;
     A.messages.enqueue(s, 11, { actor: slot });
   }
   function hypersleepComplete(s, slot) {

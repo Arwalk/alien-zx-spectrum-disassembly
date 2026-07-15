@@ -7,6 +7,7 @@
   function setActionTimer(s, slot, base) {
     var str = s.actors[slot].strength & 7;
     s.actors[slot].t = base + D.actionTimeBySlot[slot] + D.actionTimeByStrength[str];
+    s.actors[slot].t0 = s.actors[slot].t; // render-only: progress-ring reference
   }
 
   // Slots among `slots` whose current-room byte (+1) equals `spot` (room+duct bit).

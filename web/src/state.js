@@ -8,7 +8,9 @@
   var HOST_MARKER = 255; // $FF in +1/+7 = removed from play (chestburster host)
 
   function makeActor() {
-    return { t: 0, room: 0, dest: 0, state: 0, strength: 0, courage: 0, morale: 0, status: 0 };
+    // t0 is render-only: the countdown's starting value, so the map can show
+    // order progress. The engine never reads it.
+    return { t: 0, t0: 0, room: 0, dest: 0, state: 0, strength: 0, courage: 0, morale: 0, status: 0 };
   }
 
   function createState() {

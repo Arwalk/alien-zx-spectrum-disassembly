@@ -55,6 +55,62 @@
     if (!roomPath(ctx, room)) roundRect(ctx, x, y, bw, bh, 4);
   }
 
+  // ---- order indicators ---------------------------------------------------
+  // Per-state colours/glyphs for the progress ring + badge over a crew dot.
+  // State 1 (move) gets the arrow instead of a glyph; 5 is the alien's own
+  // attack tick (slot 0, never drawn).
+  var ORDER_COLOR = { 1: "#6ee18c", 2: "#23d2d2", 3: "#23d2d2", 4: "#ff5040", 6: "#9ad2ff", 7: "#ff5040" };
+  var ORDER_GLYPH = { 2: "⇅", 3: "⛏", 4: "⚔", 6: "❄", 7: "⚔" };
+
+  // Marching-dash arrow from (x1,y1) to (x2,y2): tail trimmed clear of the
+  // crew dot, dashes animated toward the filled head (drawMap runs every
+  // frame, so Date.now() animates for free, and freezes on pause).
+  function orderArrow(ctx, x1, y1, x2, y2, color, ductMove) {
+    var dx = x2 - x1, dy = y2 - y1, len = Math.sqrt(dx * dx + dy * dy);
+    if (len < 30) return;
+    var ux = dx / len, uy = dy / len;
+    var ax = x1 + ux * 16, ay = y1 + uy * 16;   // clear of the dot
+    var hx = x2 - ux * 6, hy = y2 - uy * 6;     // head tip, short of the centre
+    ctx.save();
+    ctx.strokeStyle = color; ctx.fillStyle = color;
+    ctx.lineWidth = ductMove ? 2 : 2.5; ctx.lineCap = "round";
+    ctx.setLineDash(ductMove ? [3, 5] : [7, 5]);
+    ctx.lineDashOffset = -((Date.now() / 45) % (ductMove ? 8 : 12));
+    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(hx - ux * 9, hy - uy * 9); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(hx, hy);
+    ctx.lineTo(hx - ux * 10 - uy * 5, hy - uy * 10 + ux * 5);
+    ctx.lineTo(hx - ux * 10 + uy * 5, hy - uy * 10 - ux * 5);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  // Countdown ring around a crew dot: faint full track + the elapsed arc.
+  function progressRing(ctx, cx, cy, r, frac, color) {
+    if (frac < 0) frac = 0; if (frac > 1) frac = 1;
+    ctx.save();
+    ctx.lineWidth = 2.5; ctx.lineCap = "round";
+    ctx.strokeStyle = "rgba(0,0,0,0.5)";
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.stroke();
+    ctx.strokeStyle = color;
+    ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+    ctx.restore();
+  }
+
+  // Small action badge floated above a crew dot (⛏ ⚔ ❄ ⇅).
+  function orderBadge(ctx, cx, cy, glyph, color) {
+    ctx.save();
+    ctx.fillStyle = "rgba(4,10,12,0.85)";
+    ctx.beginPath(); ctx.arc(cx, cy, 8, 0, 7); ctx.fill();
+    ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = color; ctx.font = "10px monospace";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(glyph, cx, cy + 0.5);
+    ctx.restore();
+  }
+  function orderFrac(a) { return a.t0 > 0 ? 1 - a.t / a.t0 : 0; }
+
   function drawMap(ctx, s, sel, reachable, hoverRoom) {
     if (!cells) buildCells();
     var deck = s.deck, dc = AS.deck(deck);
@@ -107,6 +163,36 @@
       else if (dmg > 0) { badge(ctx, bx, by, "rgba(255,190,60,0.7)", ""); }
     }
 
+    // movement arrows: every live crew member on this deck with a pending
+    // MOVE order gets a marching-dash arrow toward the destination (cyan
+    // dashes = a duct crawl). A cross-deck destination becomes a vertical
+    // stub with the target-deck tag; a mover ARRIVING on this deck from
+    // another one is announced by an inbound stub at the destination room.
+    for (var k0 = 1; k0 < 8; k0++) {
+      var ma = s.actors[k0];
+      if (ma.status !== 0 || ma.t === 0 || ma.state !== 1 || ma.dest === ma.room) continue;
+      var mFrom = cell(ma.room & 63), mTo = cell(ma.dest & 63);
+      var fromDeck = D.roomTypeTable[ma.room & 63], destDeck = D.roomTypeTable[ma.dest & 63];
+      var mCol = k0 === sel ? "#ffb020" : ((ma.dest & 64) ? "rgba(35,210,210,0.8)" : "rgba(110,225,140,0.8)");
+      if (fromDeck === deck && mFrom) {
+        if (mTo && destDeck === deck) {
+          orderArrow(ctx, mFrom.cx, mFrom.cy, mTo.cx, mTo.cy, mCol, (ma.dest & 64) !== 0);
+        } else {                     // leaving this deck: stub + deck tag
+          var up = destDeck < deck || destDeck > 2;
+          var sy = mFrom.cy + (up ? -42 : 42);
+          orderArrow(ctx, mFrom.cx, mFrom.cy, mFrom.cx, sy + (up ? -12 : 12), mCol, false);
+          ctx.fillStyle = mCol; ctx.font = "8px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillText(destDeck > 2 ? "NARCISSUS" : ["UPPER", "MID", "LOWER"][destDeck], mFrom.cx, sy + (up ? -18 : 18));
+        }
+      } else if (destDeck === deck && mTo && fromDeck !== deck) {
+        var down = fromDeck < deck || fromDeck > 2; // arriving from above
+        var ty = mTo.cy + (down ? -42 : 42);
+        orderArrow(ctx, mTo.cx, ty, mTo.cx, mTo.cy, mCol, false);
+        ctx.fillStyle = mCol; ctx.font = "8px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(D.crewNames[k0], mTo.cx, ty + (down ? -8 : 8));
+      }
+    }
+
     // crew markers (live human crew + active android show as a crew dot);
     // co-located occupants (incl. Jones) fan out horizontally so everyone
     // stays visible
@@ -134,6 +220,15 @@
         } else {
           var a2 = s.actors[list[i]];
           crewDot(ctx, mx, cc.cy, D.crewNames[list[i]].charAt(0), list[i] === sel, (a2.room & 64) !== 0);
+          // pending timed order: countdown ring + action badge (moves get
+          // the arrow instead of a badge)
+          if (a2.t > 0 && a2.state > 0) {
+            var dotR = list[i] === sel ? 11 : 9;
+            var ringR = dotR + ((a2.room & 64) ? 7 : 4.5); // outside the duct dash
+            var oc = list[i] === sel && a2.state === 1 ? "#ffb020" : (ORDER_COLOR[a2.state] || "#6ee18c");
+            progressRing(ctx, mx, cc.cy, ringR, orderFrac(a2), oc);
+            if (ORDER_GLYPH[a2.state]) orderBadge(ctx, mx, cc.cy - ringR - 8, ORDER_GLYPH[a2.state], oc);
+          }
         }
       });
     });
@@ -215,6 +310,23 @@
     for (var r = 0; r < 34; r++) {
       if (D.roomTypeTable[r] !== deck || s.roomGrille[r] !== 0) continue;
       var cg = cell(r); if (cg) ctx.fillText("↑", cg.cx, cg.cy - 12);
+    }
+    // pending crawl: marching-dash arrow to the destination duct node,
+    // countdown ring + badge around the crawler (same language as the map)
+    if (cur && a.t > 0 && a.state > 0) {
+      if (a.state === 1 && a.dest !== a.room) {
+        var cd = cell(a.dest & 63), cdDeck = D.roomTypeTable[a.dest & 63];
+        if (cd && cdDeck === deck) {
+          orderArrow(ctx, cur.cx, cur.cy, cd.cx, cd.cy, "#7ef0f0", true);
+        } else {                    // crawling to another deck: stub + tag
+          var cup = cdDeck < deck;
+          orderArrow(ctx, cur.cx, cur.cy, cur.cx, cur.cy + (cup ? -54 : 54), "#7ef0f0", true);
+          ctx.fillStyle = "#7ef0f0"; ctx.font = "8px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillText(["UPPER", "MID", "LOWER"][cdDeck] || "", cur.cx, cur.cy + (cup ? -60 : 60));
+        }
+      }
+      progressRing(ctx, cur.cx, cur.cy, 21, orderFrac(a), ORDER_COLOR[a.state] || "#7ef0f0");
+      if (ORDER_GLYPH[a.state]) orderBadge(ctx, cur.cx, cur.cy - 29, ORDER_GLYPH[a.state], ORDER_COLOR[a.state] || "#7ef0f0");
     }
     // the crawling crew member over its current room (moves as it crawls)
     if (cur) {

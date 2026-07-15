@@ -16,6 +16,9 @@ A faithful, standalone web port of the **Long Game** from *Alien (BUGFIX 1.7)*
   needed) to give orders. Left column = situation (deck map + ship log with
   severity colours and timestamps), right column = controls (compact crew roster
   + a contextual action panel with the selected crew's hands and pending order).
+  Pending orders are live on the map: a marching-dash arrow per moving crew member
+  (cyan = duct crawl; cross-deck moves become tagged stubs on both decks), a
+  countdown ring around the marker, and ⛏ ⚔ ❄ ⇅ badges for timed non-move jobs.
   All of it replaces the original's 19-cell cursor strip.
 - **Definitive rules**: the three fixable documented bugs are **corrected** — the
   LaunchGate all-aboard drift, the harpoon-vs-android inverted wipe, and the
